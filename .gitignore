@@ -3,6 +3,7 @@
 
 #DB
 src/front/docker/volumes
+src/user/docker/volumes
 
 # Django #
 *.log

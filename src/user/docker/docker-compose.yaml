@@ -1,8 +1,8 @@
 services:
-    front-nginx:
+    user-nginx:
         networks:
             - transcendence
-            - front
+            - user
         build:
             context: nginx
             dockerfile: Dockerfile
@@ -10,37 +10,37 @@ services:
             - "80:80"
             - "443:443"
         depends_on:
-            - front
+            - user
         volumes:
-            - front_static_volume:/app/static
-            - front_media_volume:/app/media
+            - user_static_volume:/app/static
+            - user_media_volume:/app/media
         restart: on-failure
 
 
-    front:
+    user:
         networks:
-            - front
+            - user
         build:
             context: .
             dockerfile: Dockerfile
-        command: gunicorn front.wsgi:application -w 4 -b 0.0.0.0:8000
+        command: gunicorn user.wsgi:application -w 4 -b 0.0.0.0:8000
         volumes:
-            - front_code:/app/front/
+            - user_code:/app/user/
         expose:
             - "8000"
         depends_on:
-            - front-db
+            - user-db
         restart: on-failure
 
 
-    front-db:
+    user-db:
         networks:
-            - front
+            - user
         image: postgres:16.0-bookworm
         environment:
             POSTGRES_DB: mydatabase
             POSTGRES_USER: myuser
             POSTGRES_PASSWORD: mypassword
         volumes:
-            - front_postgres_volume:/var/lib/postgresql/data
+            - user_postgres_volume:/var/lib/postgresql/data
         restart: on-failure

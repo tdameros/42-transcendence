@@ -16,10 +16,26 @@ services:
             file: src/front/docker/docker-compose.yaml
             service: front-nginx
 
+    user:
+        extends:
+            file: src/user/docker/docker-compose.yaml
+            service: user
+    user-db:
+        extends:
+            file: src/user/docker/docker-compose.yaml
+            service: user-db
+    user-nginx:
+        extends:
+            file: src/user/docker/docker-compose.yaml
+            service: user-nginx
+
 
 networks:
     front:
         driver: bridge
+    user:
+        driver: bridge
+
     transcendence:
         driver: bridge
 
@@ -38,3 +54,18 @@ volumes:
             device: src/front/front/
     front_static_volume:
     front_media_volume:
+
+    user_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/user/docker/volumes/db/
+    user_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/user/user/
+    user_static_volume:
+    user_media_volume:
