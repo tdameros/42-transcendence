@@ -4,7 +4,7 @@ import requests
 
 def hello(request):
     try:
-        request = requests.get("http://127.0.0.1:8000/api/")
+        request = requests.get("http://user-nginx/api/")
     except:
         return HttpResponse("Failed to ping user microservice")
     if not request.ok:
