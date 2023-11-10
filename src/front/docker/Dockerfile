@@ -1,4 +1,4 @@
-FROM python:3.12.0-bullseye
+FROM python:3.12.0-bookworm
 
 # Créez le répertoire de travail et définissez-le comme répertoire de travail actuel
 RUN mkdir /app
@@ -9,9 +9,6 @@ COPY requirements.txt /app/
 
 # Installez les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiez le reste des fichiers dans le conteneur
-COPY . /app/
 
 # Exposez le port 8000 pour que Gunicorn puisse l'utiliser
 EXPOSE 8000

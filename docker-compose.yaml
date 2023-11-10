@@ -1,0 +1,40 @@
+version: '3'
+
+name: transcendence
+
+services:
+    front:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front
+    front-db:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front-db
+    front-nginx:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front-nginx
+
+
+networks:
+    front:
+        driver: bridge
+    transcendence:
+        driver: bridge
+
+volumes:
+    front_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/front/docker/volumes/db/
+    front_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/front/front/
+    front_static_volume:
+    front_media_volume:
