@@ -22,7 +22,7 @@ services:
             dockerfile: Dockerfile
         command: sh -c "python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ user.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        gunicorn --chdir src/ user_management.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
             - user_management_code:/app/src/
         expose:
