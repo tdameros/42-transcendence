@@ -1,22 +1,22 @@
 services:
-    user-nginx:
+    user-management-nginx:
         networks:
             - transcendence
-            - user
+            - user_management
         build:
             context: nginx
             dockerfile: Dockerfile
         depends_on:
-            - user
+            - user-management
         volumes:
-            - user_static_volume:/app/static
-            - user_media_volume:/app/media
+            - user_management_static_volume:/app/static
+            - user_management_media_volume:/app/media
         restart: on-failure
 
 
-    user:
+    user-management:
         networks:
-            - user
+            - user_management
         build:
             context: .
             dockerfile: Dockerfile
@@ -24,22 +24,22 @@ services:
                         python3 src/manage.py migrate &&
                         gunicorn --chdir src/ user.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - user_code:/app/src/
+            - user_management_code:/app/src/
         expose:
             - "8000"
         depends_on:
-            - user-db
+            - user-management-db
         restart: on-failure
 
 
-    user-db:
+    user-management-db:
         networks:
-            - user
+            - user_management
         image: postgres:16.0-bookworm
         environment:
             POSTGRES_DB: mydatabase
             POSTGRES_USER: myuser
             POSTGRES_PASSWORD: mypassword
         volumes:
-            - user_postgres_volume:/var/lib/postgresql/data
+            - user_management_postgres_volume:/var/lib/postgresql/data
         restart: on-failure

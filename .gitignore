@@ -2,8 +2,7 @@
 .env
 
 #DB
-src/front/docker/volumes
-src/user/docker/volumes
+volumes/
 
 # Django #
 *.log

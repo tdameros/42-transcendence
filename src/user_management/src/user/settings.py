@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'mydatabase',
         'USER': 'myuser',
         'PASSWORD': 'mypassword',
-        'HOST': 'user-db',
+        'HOST': 'user-management-db',
         'PORT': '5432',
     }
 }
