@@ -24,9 +24,11 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: gunicorn front.wsgi:application -w 4 -b 0.0.0.0:8000
+        command: sh -c "python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ front.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - front_code:/app/front/
+            - front_code:/app/src/
         expose:
             - "8000"
         depends_on:

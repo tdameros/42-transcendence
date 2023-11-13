@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'mydatabase',
         'USER': 'myuser',
         'PASSWORD': 'mypassword',
-        'HOST': '192.168.228.2',
+        'HOST': 'front-db',
         'PORT': '5432',
     }
 }

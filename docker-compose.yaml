@@ -51,7 +51,7 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/front/front/
+            device: src/front/src/
     front_static_volume:
     front_media_volume:
 
@@ -66,6 +66,6 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/user/user/
+            device: src/user/src/
     user_static_volume:
     user_media_volume:

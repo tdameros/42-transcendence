@@ -20,9 +20,11 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: gunicorn user.wsgi:application -w 4 -b 0.0.0.0:8000
+        command: sh -c "python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ user.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - user_code:/app/user/
+            - user_code:/app/src/
         expose:
             - "8000"
         depends_on:
