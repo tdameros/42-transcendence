@@ -15,24 +15,62 @@ function main() {
 
     const {renderer, camera} = initThreeJS();
 
-    const {scene, objects} = initScene();
+    let {scene, objects} = initScene();
 
+    const boardBounds = getBoardBounds(objects.board, objects.player1);
+
+    let player1Direction = new THREE.Vector3(0.3, -0.3, 0);
+    let player2Direction = new THREE.Vector3(-0.3, 0.3, 0);
     function animate() {
-        const currentTime = new Date().getTime() % 0.025;
-    
-        objects.cubes.cube1.rotation.x += currentTime;
-        objects.cubes.cube1.rotation.y += Math.abs(Math.sin(currentTime)) / 1.5;
-        
-        objects.cubes.cube2.rotation.x = -objects.cubes.cube1.rotation.x
-        objects.cubes.cube2.rotation.y = -objects.cubes.cube1.rotation.y
-    
-        objects.cubes.group.rotation.x = objects.cubes.cube1.rotation.x;
-        objects.cubes.group.rotation.z = objects.cubes.cube1.rotation.y;
-        objects.cubes.group.rotation.y = (objects.cubes.cube1.rotation.x
-                                         + objects.cubes.cube1.rotation.y) / 2;
-    
+        updatePlayerPosition(objects.player1, player1Direction, boardBounds);
+        updatePlayerPosition(objects.player2, player2Direction, boardBounds);
+
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
     }
     animate()
+}
+
+function getBoardBounds(board, player) {
+    let boundingBox = new THREE.Box3().setFromObject(board);
+    const boardSize = new THREE.Vector3();
+    boundingBox.getSize(boardSize);
+
+    boundingBox.setFromObject(player);
+    const playerSize = new THREE.Vector3();
+    boundingBox.getSize(playerSize);
+
+    return {
+        ceiling: board.position.y + boardSize.y / 2 - playerSize.y,
+        floor: board.position.y - boardSize.y / 2  + playerSize.y,
+
+        leftWall: board.position.x - boardSize.x / 2 + playerSize.z,
+        rightWall: board.position.x + boardSize.x / 2 - playerSize.z
+    };
+}
+
+function updatePlayerPosition(player, playerDirection, boardBounds) {
+    player.position.set(player.position.x + playerDirection.x,
+                        player.position.y + playerDirection.y,
+                        player.position.z + playerDirection.z);
+
+    const moduloValue = .4;
+    const bias = .8;
+    if (player.position.x < boardBounds.leftWall) {
+        player.position.x = boardBounds.leftWall;
+        playerDirection.x *= -(Math.random() % moduloValue + bias)
+    }
+    else if (player.position.x > boardBounds.rightWall) {
+        player.position.x = boardBounds.rightWall;
+        playerDirection.x *= -(Math.random() % moduloValue + bias)
+    }
+
+    if (player.position.y < boardBounds.floor) {
+        player.position.y = boardBounds.floor;
+        playerDirection.y *= -(Math.random() % moduloValue + bias)
+    }
+    else if (player.position.y > boardBounds.ceiling) {
+        player.position.y = boardBounds.ceiling;
+        playerDirection.y *= -(Math.random() % moduloValue + bias)
+    }
 }

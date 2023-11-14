@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export function initThreeJS() {
     const renderer = initRenderer();
-    const camera = initCamera(new THREE.Vector3(0, 0, 5),
+    const camera = initCamera(new THREE.Vector3(0, 0, 20),
                               new THREE.Vector3(0, 0, -1))
 
     addResizeEventListener(renderer, camera);

@@ -3,29 +3,29 @@ import * as THREE from 'three';
 export function initScene() {
     const scene = new THREE.Scene();
     
-    const group = new THREE.Group();
-    scene.add(group);
+    const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+    let player1 = new THREE.Mesh(playerGeometry,
+                                   new THREE.MeshBasicMaterial({color: 0x00ff00}));
+    player1.position.set(-17, 0, 0);
+    scene.add(player1);
     
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    const cube1 = new THREE.Mesh(geometry, material);
-    cube1.position.set(0, 1.5, 0);
-    group.add(cube1);
-    
-    const cube2 = new THREE.Mesh(geometry, material);
-    cube2.position.set(0, -1.5, 0);
-    group.add(cube2);
-    
-    group.position.set(0, 0, 0);
+    let player2 = new THREE.Mesh(playerGeometry,
+                                   new THREE.MeshBasicMaterial({color: 0xff0000}));
+    player2.position.set(17, 0, 0);
+    scene.add(player2);
+
+
+    let board = new THREE.Mesh(new THREE.PlaneGeometry(40, 20),
+                                 new THREE.MeshBasicMaterial({color: 0x0000ff}));
+    board.position.set(0, 0, -1);
+    scene.add(board);
 
     return {
         scene: scene,
         objects: {
-            cubes: {
-                group: group,
-                cube1: cube1,
-                cube2: cube2
-            }
+            player1: player1,
+            player2: player2,
+            board: board
         }
     };
 }
