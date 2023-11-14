@@ -7,6 +7,11 @@ USER_MANAGEMENT_DB_VOLUME_PATH	=	src/user_management/docker/volumes/db
 MATCHMAKING_DB_VOLUME_PATH		=	src/matchmaking/docker/volumes/db
 TOURNAMENT_DB_VOLUME_PATH		=	src/tournament/docker/volumes/db
 
+DB_VOLUMES						=	$(FRONT_DB_VOLUME_PATH) \
+									$(USER_MANAGEMENT_DB_VOLUME_PATH) \
+									$(MATCHMAKING_DB_VOLUME_PATH) \
+									$(TOURNAMENT_DB_VOLUME_PATH)
+
 .PHONY: all
 all:
 	$(MAKE) up
@@ -45,15 +50,8 @@ re: fclean
 
 .PHONY: create_volume_path
 create_volume_path:
-	mkdir -p $(FRONT_DB_VOLUME_PATH) \
-	         $(USER_MANAGEMENT_DB_VOLUME_PATH) \
-	         $(MATCHMAKING_DB_VOLUME_PATH) \
-	         $(TOURNAMENT_DB_VOLUME_PATH)
+	mkdir -p $(DB_VOLUMES)
 
 .PHONY: delete_volume_path
 delete_volume_path:
-	$(RM) -r $(FRONT_DB_VOLUME_PATH) \
-			 $(USER_MANAGEMENT_DB_VOLUME_PATH) \
-             $(MATCHMAKING_DB_VOLUME_PATH) \
-             $(TOURNAMENT_DB_VOLUME_PATH)
-
+	$(RM) -r $(DB_VOLUMES)
