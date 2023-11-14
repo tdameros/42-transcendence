@@ -9,6 +9,4 @@ services:
         command: bash -c "cd /app/src && cat /dev/null"
         volumes:
             - pong_server_code:/app/src/
-        expose:
-            - "443"
         restart: on-failure
