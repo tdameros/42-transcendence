@@ -9,7 +9,3 @@ COPY requirements.txt /app/
 
 # Installez les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Exposez le port 8000 pour que Gunicorn puisse l'utiliser
-# TODO Gunicorn not needed
-EXPOSE 8000
