@@ -7,8 +7,8 @@ services:
             context: nginx
             dockerfile: Dockerfile
         expose:
-            - "80:80"
-            - "443:443"
+            - "80"
+            - "443"
         depends_on:
             - user-management
         volumes:
