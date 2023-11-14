@@ -20,15 +20,16 @@ down:
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: start
+start:
 	$(DOCKER_COMPOSE) start
 
 .PHONY: stop
 stop:
-	$(DOCKER_COMPOSE) stop
+	$(DOCKER_COMPOSE) stop $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: restart
-restart: create_volume_path
-	$(DOCKER_COMPOSE) restart
+restart:
+	$(DOCKER_COMPOSE) restart $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: clean
 clean:
