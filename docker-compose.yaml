@@ -31,6 +31,20 @@ services:
             file: src/user_management/docker/docker-compose.yaml
             service: user-management-nginx
 
+    # Tournament
+    tournament:
+        extends:
+            file: src/tournament/docker/docker-compose.yaml
+            service: tournament
+    tournament-db:
+        extends:
+            file: src/tournament/docker/docker-compose.yaml
+            service: tournament-db
+    tournament-nginx:
+        extends:
+            file: src/tournament/docker/docker-compose.yaml
+            service: tournament-nginx
+
     # Server Side Pong
     pong-server:
         extends:
@@ -39,16 +53,15 @@ services:
 
 
 networks:
-    # Front
     front:
         driver: bridge
 
-    # User management
     user_management:
         driver: bridge
 
+    tournament:
+        driver: bridge
 
-    # Global
     transcendence:
         driver: bridge
 
@@ -85,6 +98,22 @@ volumes:
             device: src/user_management/src/
     user_management_static_volume:
     user_management_media_volume:
+
+    # Tournament
+    tournament_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/tournament/docker/volumes/db/
+    tournament_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/tournament/src/
+    tournament_static_volume:
+    tournament_media_volume:
 
     # Server Side Pong
     pong_server_code:
