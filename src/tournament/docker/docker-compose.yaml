@@ -22,8 +22,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: sh -c "python3 src/manage.py makemigrations &&
-            python3 src/manage.py migrate &&
-            gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
+                 python3 src/manage.py migrate &&
+                 gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
             - tournament_code:/app/src/
         expose:
