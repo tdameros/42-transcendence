@@ -1,45 +1,45 @@
 services:
-    user-management-nginx:
+    matchmaking-nginx:
         networks:
             - transcendence
-            - user_management
+            - matchmaking
         build:
             context: nginx
             dockerfile: Dockerfile
+        ports:
+            - "5000:80"
         depends_on:
-            - user-management
+            - matchmaking
         volumes:
-            - user_management_static_volume:/app/static
-            - user_management_media_volume:/app/media
+            - matchmaking_static_volume:/app/static
+            - matchmaking_media_volume:/app/media
         restart: on-failure
 
 
-    user-management:
+    matchmaking:
         networks:
-            - user_management
+            - matchmaking
         build:
             context: .
             dockerfile: Dockerfile
         command: sh -c "python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ user_management.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        gunicorn --chdir src/ matchmaking.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - user_management_code:/app/src/
-        expose:
-            - "8000"
+            - matchmaking_code:/app/src/
         depends_on:
-            - user-management-db
+            - matchmaking-db
         restart: on-failure
 
 
-    user-management-db:
+    matchmaking-db:
         networks:
-            - user_management
+            - matchmaking
         image: postgres:16.0-bookworm
         environment:
             POSTGRES_DB: mydatabase
             POSTGRES_USER: myuser
             POSTGRES_PASSWORD: mypassword
         volumes:
-            - user_management_postgres_volume:/var/lib/postgresql/data
+            - matchmaking_postgres_volume:/var/lib/postgresql/data
         restart: on-failure

@@ -31,6 +31,20 @@ services:
             file: src/user_management/docker/docker-compose.yaml
             service: user-management-nginx
 
+    # Matchmaking
+    matchmaking:
+        extends:
+            file: src/matchmaking/docker/docker-compose.yaml
+            service: matchmaking
+    matchmaking-db:
+        extends:
+            file: src/matchmaking/docker/docker-compose.yaml
+            service: matchmaking-db
+    matchmaking-nginx:
+        extends:
+            file: src/matchmaking/docker/docker-compose.yaml
+            service: matchmaking-nginx
+
     # Server Side Pong
     pong-server:
         extends:
@@ -47,6 +61,9 @@ networks:
     user_management:
         driver: bridge
 
+    # Matchmaking
+    matchmaking:
+        driver: bridge
 
     # Global
     transcendence:
@@ -85,6 +102,22 @@ volumes:
             device: src/user_management/src/
     user_management_static_volume:
     user_management_media_volume:
+
+    # Matchmaking
+    matchmaking_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/matchmaking/docker/volumes/db/
+    matchmaking_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/matchmaking/src/
+    matchmaking_static_volume:
+    matchmaking_media_volume:
 
     # Server Side Pong
     pong_server_code:
