@@ -1,0 +1,45 @@
+services:
+    tournament-nginx:
+        networks:
+            - transcendence
+            - tournament
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        ports:
+            - "5001:443"
+        depends_on:
+            - tournament
+        volumes:
+            - tournament_static_volume:/app/static
+            - tournament_media_volume:/app/media
+        restart: on-failure
+
+    tournament:
+        networks:
+            - tournament
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "python3 src/manage.py makemigrations &&
+            python3 src/manage.py migrate &&
+            gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
+        volumes:
+            - tournament_code:/app/src/
+        expose:
+            - "8000"
+        depends_on:
+            - tournament-db
+        restart: on-failure
+
+    tournament-db:
+        networks:
+            - tournament
+        image: postgres:16.0-bookworm
+        environment:
+            POSTGRES_DB: mydatabase
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - tournament_postgres_volume:/var/lib/postgresql/data
+        restart: on-failure
