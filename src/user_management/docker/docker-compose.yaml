@@ -6,6 +6,9 @@ services:
         build:
             context: nginx
             dockerfile: Dockerfile
+        expose:
+            - "80"
+            - "443"
         depends_on:
             - user-management
         volumes:
