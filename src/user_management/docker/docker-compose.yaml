@@ -6,7 +6,7 @@ services:
         build:
             context: nginx
             dockerfile: Dockerfile
-        ports:
+        expose:
             - "80:80"
             - "443:443"
         depends_on:
