@@ -1,0 +1,12 @@
+services:
+    pong-server:
+        networks:
+            - transcendence
+        build:
+            context: .
+            dockerfile: Dockerfile
+        # TODO make and exec server
+        command: bash -c "cd /app/src && cat /dev/null"
+        volumes:
+            - pong_server_code:/app/src/
+        restart: on-failure

@@ -1,0 +1,95 @@
+version: '3'
+
+name: transcendence
+
+services:
+    # Front
+    front:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front
+    front-db:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front-db
+    front-nginx:
+        extends:
+            file: src/front/docker/docker-compose.yaml
+            service: front-nginx
+
+    # User management
+    user-management:
+        extends:
+            file: src/user_management/docker/docker-compose.yaml
+            service: user-management
+    user-management-db:
+        extends:
+            file: src/user_management/docker/docker-compose.yaml
+            service: user-management-db
+    user-management-nginx:
+        extends:
+            file: src/user_management/docker/docker-compose.yaml
+            service: user-management-nginx
+
+    # Server Side Pong
+    pong-server:
+        extends:
+            file: src/pong_server/docker/docker-compose.yaml
+            service: pong-server
+
+
+networks:
+    # Front
+    front:
+        driver: bridge
+
+    # User management
+    user_management:
+        driver: bridge
+
+
+    # Global
+    transcendence:
+        driver: bridge
+
+
+volumes:
+    # Front
+    front_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/front/docker/volumes/db/
+    front_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/front/src/
+    front_static_volume:
+    front_media_volume:
+
+    # User management
+    user_management_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/user_management/docker/volumes/db/
+    user_management_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/user_management/src/
+    user_management_static_volume:
+    user_management_media_volume:
+
+    # Server Side Pong
+    pong_server_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: src/pong_server/src/
