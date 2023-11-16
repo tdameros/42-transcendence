@@ -4,12 +4,16 @@ export function initThreeJS() {
     const renderer = initRenderer();
     const camera = initCamera(new THREE.Vector3(0, 0, 20),
                               new THREE.Vector3(0, 0, -1))
+    let pressedKeys = []
 
     addResizeEventListener(renderer, camera);
+    window.addEventListener('keydown', handleKeyDown.bind(null, pressedKeys));
+    window.addEventListener('keyup', handleKeyUp.bind(null, pressedKeys));
 
     return {
         renderer: renderer,
-        camera: camera
+        camera: camera,
+        pressedKeys: pressedKeys
     };
 }
 
@@ -38,4 +42,22 @@ function addResizeEventListener(renderer, camera) {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
     });
+}
+
+function handleKeyDown(pressedKeys, event) {
+    if (pressedKeys.includes(event.key.toLowerCase())) return;
+
+    pressedKeys.push(event.key.toLowerCase());
+}
+
+function handleKeyUp(pressedKeys, event) {
+    let keyToRemove = event.key.toLowerCase();
+    let i = 0;
+    while (i < pressedKeys.length) {
+        if (pressedKeys[i] === keyToRemove) {
+            pressedKeys.splice(i, 1);
+            continue;
+        }
+        ++i;
+    }
 }

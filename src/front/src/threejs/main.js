@@ -13,7 +13,7 @@ function main() {
         return;
     }
 
-    const {renderer, camera} = initThreeJS();
+    const {renderer, camera, pressedKeys} = initThreeJS();
 
     let {scene, objects} = initScene();
 
@@ -22,6 +22,7 @@ function main() {
     let player1Direction = new THREE.Vector3(0.3, -0.3, 0);
     let player2Direction = new THREE.Vector3(-0.3, 0.3, 0);
     function animate() {
+        handlePressedKeys(pressedKeys, camera)
         updatePlayerPosition(objects.player1, player1Direction, boardBounds);
         updatePlayerPosition(objects.player2, player2Direction, boardBounds);
 
@@ -72,5 +73,20 @@ function updatePlayerPosition(player, playerDirection, boardBounds) {
     else if (player.position.y > boardBounds.ceiling) {
         player.position.y = boardBounds.ceiling;
         playerDirection.y *= -(Math.random() % moduloValue + bias)
+    }
+}
+
+function handlePressedKeys(pressedKeys, camera) {
+    for (let i = 0; i < pressedKeys.length; ++i) {
+        switch (pressedKeys[i]) {
+            case 'w':
+                camera.position.z -= 1;
+                break;
+            case 's':
+               camera.position.z += 1;
+               break;
+           default:
+              break;
+        }
     }
 }
