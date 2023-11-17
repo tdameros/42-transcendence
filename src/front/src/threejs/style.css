@@ -1,0 +1,32 @@
+#container {
+    position: relative;
+    height: 100vh;
+}
+
+#rendererCanvas {
+    /* Assurez-vous que le canvas Three.js a une z-index inférieure */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#contentAboveCanvas {
+    /* Placez du contenu au-dessus du canvas */
+    /*position: absolute;*/
+    color: white;
+    z-index: 1; /* Z-index supérieur pour être au-dessus du canvas */
+     /*Autres styles*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    /*height: 100vh; !* Taille égale à la hauteur de la fenêtre *!*/
+    /*width: 100vw;*/
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

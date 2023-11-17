@@ -1,0 +1,11 @@
+Model Information:
+* title:	Practice / Pokemon Arena
+* source:	https://sketchfab.com/3d-models/practice-pokemon-arena-a6b9bca28b9f44429e41b815976584ad
+* author:	NaydrusS (https://sketchfab.com/NaydrusS)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Practice / Pokemon Arena" (https://sketchfab.com/3d-models/practice-pokemon-arena-a6b9bca28b9f44429e41b815976584ad) by NaydrusS (https://sketchfab.com/NaydrusS) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

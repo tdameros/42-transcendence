@@ -3,6 +3,7 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 
 import {initThreeJS} from './initThreeJS.js'
 import {initScene} from './initScene.js'
+import {OrbitControls} from "three/addons/controls/OrbitControls";
 
 main();
 
@@ -15,6 +16,8 @@ function main() {
 
     const {renderer, camera} = initThreeJS();
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.update();
     let {scene, objects} = initScene();
 
     const boardBounds = getBoardBounds(objects.board, objects.player1);
@@ -25,6 +28,7 @@ function main() {
         updatePlayerPosition(objects.player1, player1Direction, boardBounds);
         updatePlayerPosition(objects.player2, player2Direction, boardBounds);
 
+        controls.update();
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
     }
