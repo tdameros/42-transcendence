@@ -17,76 +17,67 @@ function main() {
 
     let {scene, objects} = initScene();
 
-    const boardBounds = getBoardBounds(objects.board, objects.player1);
+    const boardBounds = getBoardBounds(objects.board, objects.cube1);
 
-    let player1Direction = new THREE.Vector3(0.3, -0.3, 0);
-    let player2Direction = new THREE.Vector3(-0.3, 0.3, 0);
+    let cube1Direction = new THREE.Vector3(0.3, -0.3, 0);
+    let cube2Direction = new THREE.Vector3(-0.3, 0.3, 0);
+    let clock = new THREE.Clock();
     function animate() {
-        handlePressedKeys(engine._pressedKeys, engine._camera)
-        updatePlayerPosition(objects.player1, player1Direction, boardBounds);
-        updatePlayerPosition(objects.player2, player2Direction, boardBounds);
+        const delta = clock.getDelta();
+        // engine.handlePressedKeys()
+        updateCubePosition(objects.cube1, cube1Direction, boardBounds);
+        updateCubePosition(objects.cube2, cube2Direction, boardBounds);
 
         requestAnimationFrame(animate);
+        engine._controls.update(delta);
+        window.dispatchEvent(new MouseEvent('mousemove',
+                                            {clientX: window.innerWidth / 2,
+                                             clientY: window.innerHeight / 2}));
         engine._renderer.render(scene, engine._camera);
     }
     animate()
 }
 
-function getBoardBounds(board, player) {
+function getBoardBounds(board, cube) {
     let boundingBox = new THREE.Box3().setFromObject(board);
     const boardSize = new THREE.Vector3();
     boundingBox.getSize(boardSize);
 
-    boundingBox.setFromObject(player);
-    const playerSize = new THREE.Vector3();
-    boundingBox.getSize(playerSize);
+    boundingBox.setFromObject(cube);
+    const cubeSize = new THREE.Vector3();
+    boundingBox.getSize(cubeSize);
 
     return {
-        ceiling: board.position.y + boardSize.y / 2 - playerSize.y,
-        floor: board.position.y - boardSize.y / 2  + playerSize.y,
+        ceiling: board.position.y + boardSize.y / 2. - cubeSize.y / 2.,
+        floor: board.position.y - boardSize.y / 2. + cubeSize.y / 2.,
 
-        leftWall: board.position.x - boardSize.x / 2 + playerSize.z,
-        rightWall: board.position.x + boardSize.x / 2 - playerSize.z
+        leftWall: board.position.x - boardSize.x / 2. + cubeSize.z / 2.,
+        rightWall: board.position.x + boardSize.x / 2. - cubeSize.z / 2.
     };
 }
 
-function updatePlayerPosition(player, playerDirection, boardBounds) {
-    player.position.set(player.position.x + playerDirection.x,
-                        player.position.y + playerDirection.y,
-                        player.position.z + playerDirection.z);
+function updateCubePosition(cube, cubeDirection, boardBounds) {
+    cube.position.set(cube.position.x + cubeDirection.x,
+                        cube.position.y + cubeDirection.y,
+                        cube.position.z + cubeDirection.z);
 
     const moduloValue = .4;
     const bias = .8;
-    if (player.position.x < boardBounds.leftWall) {
-        player.position.x = boardBounds.leftWall;
-        playerDirection.x *= -(Math.random() % moduloValue + bias)
+    if (cube.position.x < boardBounds.leftWall) {
+        cube.position.x = boardBounds.leftWall;
+        cubeDirection.x *= -(Math.random() % moduloValue + bias)
     }
-    else if (player.position.x > boardBounds.rightWall) {
-        player.position.x = boardBounds.rightWall;
-        playerDirection.x *= -(Math.random() % moduloValue + bias)
+    else if (cube.position.x > boardBounds.rightWall) {
+        cube.position.x = boardBounds.rightWall;
+        cubeDirection.x *= -(Math.random() % moduloValue + bias)
     }
 
-    if (player.position.y < boardBounds.floor) {
-        player.position.y = boardBounds.floor;
-        playerDirection.y *= -(Math.random() % moduloValue + bias)
+    if (cube.position.y < boardBounds.floor) {
+        cube.position.y = boardBounds.floor;
+        cubeDirection.y *= -(Math.random() % moduloValue + bias)
     }
-    else if (player.position.y > boardBounds.ceiling) {
-        player.position.y = boardBounds.ceiling;
-        playerDirection.y *= -(Math.random() % moduloValue + bias)
-    }
-}
-
-function handlePressedKeys(pressedKeys, camera) {
-    for (let i = 0; i < pressedKeys.length; ++i) {
-        switch (pressedKeys[i]) {
-            case 'w':
-                camera.position.z -= 1;
-                break;
-            case 's':
-               camera.position.z += 1;
-               break;
-           default:
-              break;
-        }
+    else if (cube.position.y > boardBounds.ceiling) {
+        cube.position.y = boardBounds.ceiling;
+        cubeDirection.y *= -(Math.random() % moduloValue + bias)
     }
 }
