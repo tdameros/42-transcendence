@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
-import {initThreeJS} from './initThreeJS.js'
+import {Engine} from './Engine.js'
 import {initScene} from './initScene.js'
 
 main();
@@ -13,7 +13,7 @@ function main() {
         return;
     }
 
-    const {renderer, camera, pressedKeys} = initThreeJS();
+    const engine = new Engine();
 
     let {scene, objects} = initScene();
 
@@ -22,12 +22,12 @@ function main() {
     let player1Direction = new THREE.Vector3(0.3, -0.3, 0);
     let player2Direction = new THREE.Vector3(-0.3, 0.3, 0);
     function animate() {
-        handlePressedKeys(pressedKeys, camera)
+        handlePressedKeys(engine._pressedKeys, engine._camera)
         updatePlayerPosition(objects.player1, player1Direction, boardBounds);
         updatePlayerPosition(objects.player2, player2Direction, boardBounds);
 
         requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+        engine._renderer.render(scene, engine._camera);
     }
     animate()
 }
