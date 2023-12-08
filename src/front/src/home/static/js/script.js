@@ -1,4 +1,3 @@
-
 isDarkMode = false;
 
 function switchMode() {
@@ -7,8 +6,7 @@ function switchMode() {
         document.querySelector("#switch-btn").classList.remove("btn-outline-dark");
         document.querySelector("#switch-btn").setAttribute("class", "btn btn-outline-light")
         isDarkMode = true;
-    }
-    else {
+    } else {
         document.querySelector("body").setAttribute("data-bs-theme", "light");
         document.querySelector("#switch-btn").classList.remove("btn-outline-light");
         document.querySelector("#switch-btn").setAttribute("class", "btn btn-outline-dark")
@@ -16,23 +14,36 @@ function switchMode() {
     }
 }
 
-async function loginRoute() {
-    url = "http://127.0.0.1:8000/signup"
+async function loadComponent(uri, parentId) {
     try {
-        const response = await fetch(url);
-
+        const host = window.location.href;
+        const response = await fetch(host + uri);
         if (!response.ok) {
-          throw new Error('La requête a échoué');
+            throw new Error('Request failed');
+            return false;
         }
-
         const html = await response.text();
-        console.log(html);
-        document.open(); // Ouvre un nouveau document
-        document.write(html); // Écrit le contenu HTML récupéré
-        document.close(); // Ferme le document en cours de traitemen
-        // const contenuDiv = document.getElementById('contenu');
-        // contenuDiv.innerHTML = html; // Remplace le contenu de la div avec le HTML reçu
+        const contentDiv = document.querySelector("#" + parentId);
+        contentDiv.innerHTML = html;
+        // Exécuter le script à l'aide de eval()
+        const scripts = document.getElementById(parentId).getElementsByTagName('script');
+        for (let i = 0; i < scripts.length; i++) {
+            eval(scripts[i].innerText);
+        }
     } catch (error) {
-        console.error('Erreur :', error);
+        console.error('Error:', error);
+        return false;
     }
+    return false;
 }
+
+function homeNav(event) {
+    const contentDiv = document.querySelector("#content");
+    contentDiv.innerHTML = "";
+    return false;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const navbarBrandElement = document.querySelector('.navbar-brand');
+    navbarBrandElement.addEventListener('click', homeNav);
+});

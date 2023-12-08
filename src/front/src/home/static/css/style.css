@@ -47,38 +47,43 @@ body {
     font-family: 'JetBrains Mono Light', monospace;
 }
 
-/* Utilisez la police dans votre style CSS */
-.active {
-    font-family: 'JetBrains Mono', monospace;
-}
-
-#login {
-    height: 100vh;
-}
-
-#github-btn {
-    background-color: #000000;
-    color: #ffffff;
-}
-
-#github-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-    outline: 1px solid #000000; /* Largeur, style et couleur de l'outline */
-}
-
-#intra-btn {
-    background-color: #ffffff;
-    color: #000000;"
+a {
+    cursor: pointer;
 }
 
 
-#intra-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    fill: white;
-}
+/*!* Utilisez la police dans votre style CSS *!*/
+/*.active {*/
+/*    font-family: 'JetBrains Mono', monospace;*/
+/*}*/
 
-#intra-btn:hover svg polygon {
-    fill: #ffffff; /* Changement de la couleur en blanc au survol */
-}
+/*#login {*/
+/*    height: 100vh;*/
+/*}*/
+
+/*#github-btn {*/
+/*    background-color: #000000;*/
+/*    color: #ffffff;*/
+/*}*/
+
+/*#github-btn:hover {*/
+/*    background-color: #ffffff;*/
+/*    color: #000000;*/
+/*    outline: 1px solid #000000; !* Largeur, style et couleur de l'outline *!*/
+/*}*/
+
+/*#intra-btn {*/
+/*    background-color: #ffffff;*/
+/*    color: #000000;"*/
+/*}*/
+
+
+/*#intra-btn:hover {*/
+/*    background-color: #000000;*/
+/*    color: #ffffff;*/
+/*    fill: white;*/
+/*}*/
+
+/*#intra-btn:hover svg polygon {*/
+/*    fill: #ffffff; !* Changement de la couleur en blanc au survol *!*/
+/*}*/
