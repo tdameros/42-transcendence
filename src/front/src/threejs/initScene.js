@@ -18,8 +18,8 @@ export function initScene() {
     light.shadow.camera.bottom = -25;
     scene.add(light);
     //Create a helper for the shadow camera (optional)
-    const helper = new THREE.CameraHelper( light.shadow.camera );
-    scene.add( helper );
+//    const helper = new THREE.CameraHelper( light.shadow.camera );
+//    scene.add( helper );
 
     light = new THREE.AmbientLight(0x101010, 0);
     scene.add(light);
