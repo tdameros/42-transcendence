@@ -5,10 +5,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        # TODO make and exec server
-        command: bash -c "cd /app/src && cat /dev/null"
+        command: python3 /app/src/main.py
         volumes:
             - pong_server_code:/app/src/
         expose:
-            - "443"
+            - "4242"
         restart: on-failure
