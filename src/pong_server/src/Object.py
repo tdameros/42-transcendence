@@ -34,14 +34,14 @@ class Ball(object):
     def __init__(self, x: float, y: float, z: float):
         self.position = numpy.array([x, y, z])
         if random.randint(0, 1) == 0:
-            x = -2.
+            x = -5.5
         else:
-            x = 2.
+            x = 5.5
         rand = random.randint(0, 2)
         if rand == 0:
-            y = -.1
+            y = -2.8
         elif rand == 1:
-            y = .1
+            y = 2.8
         else:
             y = 0.
         self.move_direction = numpy.array([x, y, 0.])

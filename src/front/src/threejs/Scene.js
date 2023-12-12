@@ -13,13 +13,6 @@ export class Scene {
         const light = new THREE.AmbientLight(0xffffff, 0);
         this._threeJSScene.add(light);
 
-        let board = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000),
-            new THREE.MeshStandardMaterial({color: 0x000000}));
-        board.position.set(0., 0., 0.);
-        board.castShadow = false;
-        board.receiveShadow = false;
-        this._threeJSScene.add(board);
-
         this._loadBoards(jsonScene["boards"]);
         this._loadBalls(jsonScene["balls"]);
         this._loadPlayers(jsonScene["players"]);
