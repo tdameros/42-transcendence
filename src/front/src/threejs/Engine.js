@@ -48,6 +48,10 @@ export class Engine {
             this._scene = new Scene(sceneData);
         });
 
+        this._socket.on("update_player_movement", (data) => {
+            this._scene.updatePlayerMovement(data);
+        });
+
         this._socket.connect();
     }
 
@@ -99,7 +103,7 @@ export class Engine {
 
         switch (event.key) {
             case 'w':
-                await this._socket.emit("move_down_pressed", "");
+                await this._socket.emit("move_up_pressed", "");
                 return;
 
             case 's':

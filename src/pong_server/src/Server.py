@@ -43,11 +43,23 @@ class Server(object):
     async def register(self, sid: str, query):
         await self._add_player(sid, Player(query, sid))
 
-    def disconnect(self, sid: str, sio):
+    def get_player_by_sid(self, sid):
+        return self._players.get(sid, None)
+
+    async def set_player_movement(self, sid, sio, movement):
+        player = self.get_player_by_sid(sid)
+        if player is not None:
+            await player.set_movement(sio, movement)
+
+    def remove_game(self, game: Game):
+        self._games.pop(game.get_id(), None)
+
+    async def disconnect(self, sid: str, sio):
         player: Player = self._players.pop(sid, None)
         if player is None:
             return
 
-        player.game.stop_game(sio, self)
+        player.disconnect()
+        await player.get_game().stop_game(sio, self)
 
         # TODO will need to do other things

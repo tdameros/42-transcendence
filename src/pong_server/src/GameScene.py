@@ -15,6 +15,9 @@ class GameScene(object):
             "players": [player.to_json() for player in self._players],
         }
 
+    def set_player_movement(self, player_index, movement):
+        self._players[player_index].set_movement(movement)
+
     def init_2_player_game(self):
         self._boards.append(Object.Board(0., 0., 0.))
 

@@ -2,7 +2,6 @@ from typing import *
 
 from Player import Player
 from GameScene import GameScene
-from vector_to_dict import vec3_to_dict
 
 
 class Game(object):
@@ -20,7 +19,8 @@ class Game(object):
         print(f"Added player {player.get_id()} to game {self._id}")
         self._players.append(player)
         self._players_score.append(0)
-        await sio.enter_room(player.get_sid(), self._room)
+        if player.is_connected():
+            await sio.enter_room(player.get_sid(), self._room)
 
     async def start(self, sio):
         self._init_scene()
@@ -33,6 +33,31 @@ class Game(object):
 
     async def stop_game(self, sio, server):
         for player in self._players:
-            await sio.leave_room(player.get_sid(), self._room)
-            server.add_player_to_players_without_a_game(player)
+            if player.is_connected():
+                await sio.leave_room(player.get_sid(), self._room)
+                server.add_player_to_players_without_a_game(player)
             player.game = None
+        server.remove_game(self)
+
+    async def set_player_movement(self, sio, player, movement):
+        player_index = self.get_player_index(player)
+        if player_index == -1:
+            return
+
+        self._scene.set_player_movement(player_index, movement)
+
+        await sio.emit("update_player_movement", {
+            "player_index": player_index,
+            "move_direction": movement
+        }, room=self.get_room())
+        """TODO Make it so the player that sent the move event
+           doesn't receive the player_move event"""
+
+    def get_player_index(self, player: Player) -> int:
+        try:
+            return self._players.index(player)
+        except ValueError:
+            return -1
+
+    def get_room(self):
+        return self._room

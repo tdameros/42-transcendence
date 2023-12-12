@@ -118,6 +118,10 @@ export class Scene {
         }
     }
 
+    updatePlayerMovement(data) {
+        this._players[data["player_index"]].updateDirection(data["move_direction"]);
+    }
+
     getThreeJSScene() {
         return this._threeJSScene;
     }

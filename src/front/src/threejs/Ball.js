@@ -20,8 +20,4 @@ export class Ball {
             jsonDirection["y"],
             jsonDirection["z"]);
     }
-
-    getBall() {
-        return this._ball;
-    }
 }

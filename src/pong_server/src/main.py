@@ -21,28 +21,28 @@ async def connect(sid, environ, auth):
 
 @sio.event
 async def move_up_pressed(sid, data):
-    await sio.emit("debug", "Server received move up pressed", room=sid)
+    await server.set_player_movement(sid, sio, 9.)
 
 
 @sio.event
 async def move_down_pressed(sid, data):
-    await sio.emit("debug", "Server received move down pressed", room=sid)
+    await server.set_player_movement(sid, sio, -9.)
 
 
 @sio.event
 async def move_up_released(sid, data):
-    await sio.emit("debug", "Server received move up released", room=sid)
+    await server.set_player_movement(sid, sio, 0.)
 
 
 @sio.event
 async def move_down_released(sid, data):
-    await sio.emit("debug", "Server received move down released", room=sid)
+    await server.set_player_movement(sid, sio, 0.)
 
 
 @sio.event
-def disconnect(sid):
+async def disconnect(sid):
     print('disconnect ', sid)
-    server.disconnect(sid, sio)
+    await server.disconnect(sid, sio)
 
 
 if __name__ == '__main__':
