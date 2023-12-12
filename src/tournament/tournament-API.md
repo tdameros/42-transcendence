@@ -19,7 +19,6 @@
 |--------|---------------------------------------|-----------------------------------------------|
 | `GET`  | `/tournament/{id}/players`            | Retrieve the list of players for a tournament |
 | `POST` | `/tournament/{id}/players`            | Add a player to a specific tournament         |
-| `POST` | `/tournament/{id}/regenerate-matches` | Regenerates matches for a tournament          |
 
 ### 3. Matches:
 
@@ -29,3 +28,4 @@
 | `GET`   | `/tournament/{id}/matches/{match-id}`       | Retrieve details of a match for a tournament  |
 | `PATCH` | `/tournament/{id}/matches/{match-id}/start` | Start a match                                 |
 | `PATCH` | `/tournament/{id}/matches/{match-id}/end`   | End a match                                   |
+| `POST`  | `/tournament/{id}/matches/regenerate`       | Regenerates matches for a tournament          |
