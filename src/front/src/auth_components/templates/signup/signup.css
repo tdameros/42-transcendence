@@ -1,4 +1,3 @@
-/* Utilisez la police dans votre style CSS */
 .active {
     font-family: 'JetBrains Mono', monospace;
 }
@@ -7,15 +6,18 @@
     height: 100vh;
 }
 
+.login-card {
+    width: 650px;
+}
+
 #github-btn {
     background-color: #000000;
     color: #ffffff;
 }
 
 #github-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-    outline: 1px solid #000000; /* Largeur, style et couleur de l'outline */
+    background-color: #252525;
+    color: #ffffff;
 }
 
 #intra-btn {
@@ -25,13 +27,8 @@
 
 
 #intra-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    fill: white;
-}
-
-#intra-btn:hover svg polygon {
-    fill: #ffffff; /* Changement de la couleur en blanc au survol */
+    background-color: #f6f6f6;
+    color: #000000;"
 }
 
 .form-group mb-4 {
@@ -40,6 +37,11 @@
 }
 
 #password-feedback {
-    white-space: pre-line; /* Permet les retours à la ligne */
-    word-wrap: break-word; /* Coupe les mots longs */
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+.eye-box:hover {
+    background: #efefef;
+    color: #2d2d2d;
 }

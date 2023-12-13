@@ -62,7 +62,7 @@ password.addEventListener('input', function () {
         const feedback = document.querySelector("#password-feedback");
         feedback.innerHTML = '';
         let htmlMessage = document.createElement('p');
-        htmlMessage.textContent = validy.join('\n');
+        htmlMessage.textContent = validy[0];
         feedback.appendChild(htmlMessage);
     } else {
         password.classList.remove("is-invalid")
@@ -79,3 +79,39 @@ confirm_password.addEventListener('input', function () {
         confirm_password.classList.add("is-valid");
     }
 });
+
+const confirm_password_eye_icon = document.querySelector('#confirm-password-eye');
+confirm_password_eye_icon_status = false;
+
+confirm_password_eye_icon.addEventListener('click', function () {
+    if (!confirm_password_eye_icon_status) {
+        confirm_password_eye_icon.children[0].classList.remove('fa-eye');
+        confirm_password_eye_icon.children[0].classList.add('fa-eye-slash');
+        confirm_password.type = 'text';
+        confirm_password_eye_icon_status = true;
+    }
+    else {
+        confirm_password_eye_icon.children[0].classList.remove('fa-eye-slash');
+        confirm_password_eye_icon.children[0].classList.add('fa-eye');
+        confirm_password.type = 'password';
+        confirm_password_eye_icon_status = false;
+    }
+})
+
+const password_eye_icon = document.querySelector('#password-eye');
+password_eye_icon_status = false;
+
+password_eye_icon.addEventListener('click', function () {
+    if (!password_eye_icon_status) {
+        password_eye_icon.children[0].classList.remove('fa-eye');
+        password_eye_icon.children[0].classList.add('fa-eye-slash');
+        password.type = 'text';
+        password_eye_icon_status = true;
+    }
+    else {
+        password_eye_icon.children[0].classList.remove('fa-eye-slash');
+        password_eye_icon.children[0].classList.add('fa-eye');
+        password.type = 'password';
+        password_eye_icon_status = false;
+    }
+})
