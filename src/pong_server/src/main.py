@@ -20,23 +20,28 @@ async def connect(sid, environ, auth):
 
 
 @sio.event
-async def move_up_pressed(sid, data):
+async def player_moves_up(sid, data):
     await server.set_player_movement(sid, sio, 9.)
 
+    # TODO remove line below
+    await sio.emit("debug", "Received moves up", room=sid)
+
 
 @sio.event
-async def move_down_pressed(sid, data):
+async def player_moves_down(sid, data):
     await server.set_player_movement(sid, sio, -9.)
 
-
-@sio.event
-async def move_up_released(sid, data):
-    await server.set_player_movement(sid, sio, 0.)
+    # TODO remove line below
+    await sio.emit("debug", "Received moves down", room=sid)
 
 
 @sio.event
-async def move_down_released(sid, data):
+async def player_stopped_moving(sid, data):
     await server.set_player_movement(sid, sio, 0.)
+    # TODO send final position (as calculated on the server)
+
+    # TODO remove line below
+    await sio.emit("debug", "Received stopped moving", room=sid)
 
 
 @sio.event

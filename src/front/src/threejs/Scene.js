@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import {Ball} from "./Ball";
 import {Player} from "./Player";
-import {RectAreaLightHelper} from "three/addons";
 
 export class Scene {
     constructor(jsonScene) {
@@ -48,7 +47,8 @@ export class Scene {
 
     _addBall(position) {
         let ball = new THREE.Mesh(new THREE.SphereGeometry(1., 10, 10),
-            new THREE.MeshStandardMaterial({color: 0xFFFFFF, emissive: 0xFFFFFF}));
+                                  new THREE.MeshStandardMaterial({color: 0xFFFFFF,
+                                                                  emissive: 0xFFFFFF}));
         ball.position.set(position.x, position.y, position.z);
         ball.castShadow = false;
         ball.receiveShadow = false;
@@ -73,7 +73,10 @@ export class Scene {
             let player = this._addPlayer(position, color);
             let light = this._addPlayerLight(position, color, i, matchBoardPosition);
 
-            this._players.push(new Player(player, light, jsonPlayer["move_direction"], matchBoardPosition));
+            this._players.push(new Player(player,
+                                          light,
+                                          jsonPlayer["move_direction"],
+                                          matchBoardPosition));
             i++;
         }
     }

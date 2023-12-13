@@ -40,7 +40,7 @@ export class Engine {
         });
 
         this._socket.on('debug', (message) => {
-            console.log('debug: ', message);
+            console.log('Server debug message: ', message);
         });
 
         this._socket.on("scene", async (sceneData) => {
