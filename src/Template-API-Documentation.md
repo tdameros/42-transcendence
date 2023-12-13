@@ -26,9 +26,9 @@
 
 #### Cookie
 
-> | name    | data type | description                    | type      |
-> |---------|-----------|--------------------------------|-----------|
-> | refresh | String    | Token for user authentication  | Required  |
+> | name       | data type | description                    | type      |
+> |------------|-----------|--------------------------------|-----------|
+> | `refresh`  | String    | Token for user authentication  | Required  |
 
 #### Responses
 
@@ -59,9 +59,9 @@
 
 #### Cookie
 
-> | name    | data type | description                    | type      |
-> |---------|-----------|--------------------------------|-----------|
-> | refresh | String    | Token for user authentication  | Required  |
+> | name       | data type | description                    | type      |
+> |------------|-----------|--------------------------------|-----------|
+> | `refresh`  | String    | Token for user authentication  | Required  |
 
 #### Body
 
@@ -107,9 +107,9 @@
 
 #### Cookie
 
-> | name    | data type | description                    | type      |
-> |---------|-----------|--------------------------------|-----------|
-> | refresh | String    | Token for user authentication  | Required  |
+> | name       | data type | description                    | type      |
+> |------------|-----------|--------------------------------|-----------|
+> | `refresh`  | String    | Token for user authentication  | Required  |
 
 #### Responses
 
