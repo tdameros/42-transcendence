@@ -1,12 +1,15 @@
 from django.http import JsonResponse
 from django.views import View
 from api.models import Tournament
+from tournament.authenticate_request import authenticate_request
 import json
 
 class Tournament(View):
     def post(self, request):
         try:
-            # TODO: Verify JWT
+            user, authenticate_errors = authenticate_request()
+            if user is None:
+                return JsonResponse(data={'errors': authenticate_errors}, status=401)
             json_request = json.loads(request.body.decode('utf8'))
             valid_tournament, errors = Tournament.is_valid_tournament(json_request)
             if not valid_tournament:
