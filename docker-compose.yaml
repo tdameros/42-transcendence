@@ -6,63 +6,63 @@ services:
     # Front
     front:
         extends:
-            file: src/front/docker/docker-compose.yaml
+            file: front/docker/docker-compose.yaml
             service: front
     front-db:
         extends:
-            file: src/front/docker/docker-compose.yaml
+            file: front/docker/docker-compose.yaml
             service: front-db
     front-nginx:
         extends:
-            file: src/front/docker/docker-compose.yaml
+            file: front/docker/docker-compose.yaml
             service: front-nginx
 
     # User management
     user-management:
         extends:
-            file: src/user_management/docker/docker-compose.yaml
+            file: user_management/docker/docker-compose.yaml
             service: user-management
     user-management-db:
         extends:
-            file: src/user_management/docker/docker-compose.yaml
+            file: user_management/docker/docker-compose.yaml
             service: user-management-db
     user-management-nginx:
         extends:
-            file: src/user_management/docker/docker-compose.yaml
+            file: user_management/docker/docker-compose.yaml
             service: user-management-nginx
 
     # Matchmaking
     matchmaking:
         extends:
-            file: src/matchmaking/docker/docker-compose.yaml
+            file: matchmaking/docker/docker-compose.yaml
             service: matchmaking
     matchmaking-db:
         extends:
-            file: src/matchmaking/docker/docker-compose.yaml
+            file: matchmaking/docker/docker-compose.yaml
             service: matchmaking-db
     matchmaking-nginx:
         extends:
-            file: src/matchmaking/docker/docker-compose.yaml
+            file: matchmaking/docker/docker-compose.yaml
             service: matchmaking-nginx
 
     # Tournament
     tournament:
         extends:
-            file: src/tournament/docker/docker-compose.yaml
+            file: tournament/docker/docker-compose.yaml
             service: tournament
     tournament-db:
         extends:
-            file: src/tournament/docker/docker-compose.yaml
+            file: tournament/docker/docker-compose.yaml
             service: tournament-db
     tournament-nginx:
         extends:
-            file: src/tournament/docker/docker-compose.yaml
+            file: tournament/docker/docker-compose.yaml
             service: tournament-nginx
 
     # Server Side Pong
     pong-server:
         extends:
-            file: src/pong_server/docker/docker-compose.yaml
+            file: pong_server/docker/docker-compose.yaml
             service: pong-server
 
 
@@ -90,13 +90,13 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/front/docker/volumes/db/
+            device: front/docker/volumes/db/
     front_code:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: src/front/src/
+            device: front/src/
     front_static_volume:
     front_media_volume:
 
@@ -106,13 +106,13 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/user_management/docker/volumes/db/
+            device: user_management/docker/volumes/db/
     user_management_code:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: src/user_management/src/
+            device: user_management/src/
     user_management_static_volume:
     user_management_media_volume:
 
@@ -122,13 +122,13 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/matchmaking/docker/volumes/db/
+            device: matchmaking/docker/volumes/db/
     matchmaking_code:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: src/matchmaking/src/
+            device: matchmaking/src/
     matchmaking_static_volume:
     matchmaking_media_volume:
 
@@ -138,13 +138,13 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/tournament/docker/volumes/db/
+            device: tournament/docker/volumes/db/
     tournament_code:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: src/tournament/src/
+            device: tournament/src/
     tournament_static_volume:
     tournament_media_volume:
 
@@ -154,4 +154,4 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: src/pong_server/src/
+            device: pong_server/src/
