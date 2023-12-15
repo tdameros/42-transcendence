@@ -88,6 +88,9 @@ export class Engine {
     }
 
     _initKeyHooks() {
+        this._upKeyIsPressed = false;
+        this._downKeyIsPressed = false;
+        this._serverKnownMovement = "none";
         window.addEventListener('keydown', async () => {
             await this._onKeyPress(event)
         }, false);
@@ -97,17 +100,31 @@ export class Engine {
     }
 
     async _onKeyPress(event) {
-        if (event.repeat === true) {
-            return;
-        }
-
         switch (event.key) {
             case 'w':
-                await this._socket.emit("move_up_pressed", "");
+                this._upKeyIsPressed = true;
+                if (this._downKeyIsPressed) {
+                    await this._handleBothUpAndDownKeysArePressed();
+                    return;
+                }
+                if (this._serverKnownMovement === "up")
+                    return;
+
+                await this._socket.emit("player_moves_up", "");
+                this._serverKnownMovement = "up"
                 return;
 
             case 's':
-                await this._socket.emit("move_down_pressed", "");
+                this._downKeyIsPressed = true;
+                if (this._upKeyIsPressed) {
+                    await this._handleBothUpAndDownKeysArePressed();
+                    return;
+                }
+                if (this._serverKnownMovement === "down")
+                    return;
+
+                await this._socket.emit("player_moves_down", "");
+                this._serverKnownMovement = "down"
                 return;
 
             default:
@@ -115,14 +132,35 @@ export class Engine {
         }
     }
 
+    async _handleBothUpAndDownKeysArePressed() {
+        if (this._serverKnownMovement !== "none") {
+            await this._socket.emit("player_stopped_moving", "");
+            this._serverKnownMovement = "none";
+        }
+    }
+
     async _onKeyRelease(event) {
         switch (event.key) {
             case 'w':
-                await this._socket.emit("move_up_released", "");
+                if (this._downKeyIsPressed) {
+                    await this._socket.emit("player_moves_down", "");
+                    this._serverKnownMovement = "down";
+                } else {
+                    await this._socket.emit("player_stopped_moving", "");
+                    this._serverKnownMovement = "none";
+                }
+                this._upKeyIsPressed = false;
                 return;
 
             case 's':
-                await this._socket.emit("move_down_released", "");
+                if (this._upKeyIsPressed) {
+                    await this._socket.emit("player_moves_up", "");
+                    this._serverKnownMovement = "up";
+                } else {
+                    await this._socket.emit("player_stopped_moving", "");
+                    this._serverKnownMovement = "none";
+                }
+                this._downKeyIsPressed = false;
                 return;
 
             default:
