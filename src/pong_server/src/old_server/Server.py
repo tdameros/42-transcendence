@@ -60,6 +60,8 @@ class Server(object):
             return
 
         player.disconnect()
-        await player.get_game().stop_game(sio, self)
+        player_game = player.get_game()
+        if player_game is not None:
+            await player_game.stop_game(sio, self)
 
         # TODO will need to do other things
