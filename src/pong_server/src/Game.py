@@ -1,18 +1,16 @@
 class Game(object):
     def __init__(self, clients: list[str]):
         self._clients: list[str] = clients
-        self._was_server_created: bool = False
-        self._ip: str | None = None
-        self._port: str | None = None
+        self._uri: str | None = None
 
     def create_server(self):
-        pass
+        print("Created server")
 
-    def was_server_created(self):
-        return self._was_server_created
+    def was_server_created(self) -> bool:
+        return self._uri is not None
 
-    def get_ip(self):
-        return self._ip
+    def get_clients(self) -> list[str]:
+        return self._clients
 
-    def get_port(self):
-        return self._port
+    def get_uri(self) -> str | None:
+        return self._uri

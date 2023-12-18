@@ -3,18 +3,18 @@ import {Ball} from "./Ball";
 import {Player} from "./Player";
 
 export class Scene {
-    constructor(jsonScene) {
+    constructor(boards, balls, players) {
         this._threeJSScene = new THREE.Scene();
         this._boards = [];
         this._balls = [];
         this._players = [];
 
-        const light = new THREE.AmbientLight(0xffffff, 0);
-        this._threeJSScene.add(light);
+        const light = new THREE.AmbientLight(0xffffff, 0); // TODO maybe remove this?
+        this._threeJSScene.add(light);                     // TODO maybe remove this?
 
-        this._loadBoards(jsonScene["boards"]);
-        this._loadBalls(jsonScene["balls"]);
-        this._loadPlayers(jsonScene["players"]);
+        this._loadBoards(boards);
+        this._loadBalls(balls);
+        this._loadPlayers(players);
     }
 
     _loadBoards(boards) {
@@ -27,7 +27,7 @@ export class Scene {
 
     _addBoard(position) {
         let board = new THREE.Mesh(new THREE.PlaneGeometry(40, 27.5),
-            new THREE.MeshStandardMaterial({color: 0x222277}));
+                                   new THREE.MeshStandardMaterial({color: 0x222277}));
         board.position.set(position.x, position.y, position.z);
         board.castShadow = false;
         board.receiveShadow = true;
@@ -83,7 +83,8 @@ export class Scene {
 
     _addPlayer(position, color) {
         let player = new THREE.Mesh(new THREE.BoxGeometry(1, 5, 1),
-            new THREE.MeshStandardMaterial({color: color, emissive: color}));
+                                    new THREE.MeshStandardMaterial({color: color,
+                                                                    emissive: color}));
         player.position.set(position.x, position.y, position.z);
         player.castShadow = true;
         player.receiveShadow = false;
@@ -108,7 +109,9 @@ export class Scene {
     }
 
     static jsonToVector3(dictionary) {
-        return new THREE.Vector3(dictionary["x"], dictionary["y"], dictionary["z"]);
+        return new THREE.Vector3(dictionary["x"],
+                                 dictionary["y"],
+                                 dictionary["z"]);
     }
 
     updateObjectsPositions(time_ratio) {

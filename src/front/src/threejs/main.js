@@ -1,42 +1,60 @@
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
-import {Engine} from './Engine.js'
+import {Engine} from './Engine/Engine.js'
 import * as THREE from "three";
 
 await main();
 
 async function main() {
     if (!WebGL.isWebGLAvailable()) {
-        const warning = WebGL.getWebGLErrorMessage();
-        document.getElementById('container').appendChild(warning);
+        document.querySelector('#container')
+                .appendChild(WebGL.getWebGLErrorMessage());
         return;
     }
 
     const engine = new Engine();
 
-    while (engine.getScene() === null) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    // const boardBounds = getBoardBounds(engine._objects.board, engine._objects.cube1);
-
-    // let cube1Direction = new THREE.Vector3(0.3, -0.3, 0);
-    // let cube2Direction = new THREE.Vector3(-0.3, 0.3, 0);
-    let clock = new THREE.Clock();
-
-    function animate() {
-        const delta = clock.getDelta();
-        engine.getScene().updateObjectsPositions(delta);
-        // updateCubePosition(engine._objects.cube1, cube1Direction, boardBounds);
-        // updateCubePosition(engine._objects.cube2, cube2Direction, boardBounds);
-
-        requestAnimationFrame(animate);
-        engine.renderFrame();
-    }
-
-    animate()
+    await Promise.all([displayBaseScene(engine), engine.connectToServer()]);
 }
 
+async function displayBaseScene(engine) {
+    let clock = new THREE.Clock();
+
+    engine.setAnimationLoop(() => {
+        const delta = clock.getDelta();
+        engine.getScene().updateObjectsPositions(delta);
+
+        engine.renderFrame();
+    });
+}
+
+// async function main() {
+//     if (!WebGL.isWebGLAvailable()) {
+//         document.querySelector('#container')
+//                 .appendChild(WebGL.getWebGLErrorMessage());
+//         return;
+//     }
+//
+//     const engine = new Engine();
+//
+//     const boardBounds = getBoardBounds(engine._objects.board, engine._objects.cube1);
+//
+//     let cube1Direction = new THREE.Vector3(0.3, -0.3, 0);
+//     let cube2Direction = new THREE.Vector3(-0.3, 0.3, 0);
+//     let clock = new THREE.Clock();
+//
+//     function animate() {
+//         const delta = clock.getDelta();
+//         engine.getScene().updateObjectsPositions(delta);
+//         updateCubePosition(engine._objects.cube1, cube1Direction, boardBounds);
+//         updateCubePosition(engine._objects.cube2, cube2Direction, boardBounds);
+//
+//         requestAnimationFrame(animate);
+//         engine.renderFrame();
+//     }
+//
+//     animate()
+// }
 //
 // function getBoardBounds(board, cube) {
 //     let boundingBox = new THREE.Box3().setFromObject(board);
