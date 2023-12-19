@@ -130,3 +130,20 @@ class SignInView(View):
         return validation_errors
 
 
+class IsUsernameTakenView(View):
+    @staticmethod
+    def get(request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            username = json_request.get('username')
+            if username is None:
+                return JsonResponse(data={'is_taken': True}, status=400)
+            users = User.objects.filter(username=username)
+            if users.exists():
+                return JsonResponse(data={'is_taken': True}, status=200)
+            else:
+                return JsonResponse(data={'is_taken': False}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        except Exception as e:
+            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)

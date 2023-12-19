@@ -23,3 +23,5 @@ this documentation details the different endpoints of each microservice.
 ## User Management
 > ### [/user/signup](User_management.md#signup)
 > ### [/user/signin](User_management.md#signin)
+> ### [/user/username-exist](User_management.md#username-exist)
+
