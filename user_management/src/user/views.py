@@ -91,19 +91,42 @@ class SignUpView(View):
             return False, "Password missing special character"
         return True, None
 
+@method_decorator(csrf_exempt, name='dispatch')
+class SignInView(View):
+    @csrf_exempt
+    def post(self, request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            validation_errors = SignInView.signin_infos_validation(json_request)
+            if not validation_errors:
+                user = User.objects.filter(username=json_request['username']).first()
+                refresh_token = JWTManager('refresh').generate_token(user.id)
+                return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+            else:
+                return JsonResponse(data={'errors': validation_errors}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
-class EncodeJwtView(View):
+        except Exception as e:
+            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+
     @staticmethod
-    def get(request, user_id):
-        users = User.objects.filter(id=user_id)
-        if not users.exists():
-            return JsonResponse(data={}, status=404)
+    def signin_infos_validation(json_request):
+        validation_errors = []
 
-        payload = {
-            'user_id': user_id,
-            'exp': datetime.now() + timedelta(days=1),
-            'iat': datetime.now()
-        }
+        username = json_request.get('username')
+        password = json_request.get('password')
+        if username is None:
+            validation_errors.append("Username empty")
+        if password is None:
+            validation_errors.append("Password empty")
 
-        jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-        return JsonResponse({"jwt": f"{jwt_token}"})
+        user = User.objects.filter(username=username).first()
+        if user is None:
+            validation_errors.append("Username not found")
+        elif user is not None and password != user.password:
+            validation_errors.append("Invalid password")
+
+        return validation_errors
+
+

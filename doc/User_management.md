@@ -54,3 +54,44 @@ all fields are mandatory
 > - Invalid JSON format in the request body
 > - An unexpected error occurred
 </details>
+
+
+## `signin`
+
+### User connection
+
+will return a refresh token when successful
+
+<details>
+ <summary><code>POST</code> <code><b>/user/signin/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+all fields are mandatory
+
+> ``` javascript
+> {
+>     "username": "Aurel",
+>     "password": "Validpass21*"
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type               | response                            |
+> |-----------|----------------------------|-------------------------------------|
+> | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`   |
+> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> 
+> errors can be combined
+
+> errors can be :
+> - Username empty
+> - Password empty
+> - Username not found
+> - Invalid password
+> - Invalid JSON format in the request body
+> - An unexpected error occurred
+
