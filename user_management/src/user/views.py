@@ -56,8 +56,10 @@ class SignUpView(View):
     def is_valid_username(username):
         if username is None:
             return False, "Username empty"
-        if len(username) > 20:
-            return False, f"Username length {len(username)} > 20"
+        if len(username) < {settings.USERNAME_MIN_LENGTH}:
+            return False, f"Username length {len(username)} < {settings.USERNAME_MIN_LENGTH}"
+        if len(username) > {settings.USERNAME_MAX_LENGTH}:
+            return False, f"Username length {len(username)} > {settings.USERNAME_MAX_LENGTH}"
         users = User.objects.filter(username=username)
         if users.exists():
             return False, "Username already taken"
@@ -68,23 +70,35 @@ class SignUpView(View):
         if email is None:
             return False, "Email empty"
         if len(email) > 50:
-            return False, f"Email length {len(email)} > 50"
+            return False, f"Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}"
         if '@' not in email:
             return False, "Email missing @"
         if '.' not in email:
             return False, "Email missing \".\" character"
         if email.count('@') > 1:
             return False, "Email contains more than one @ character"
+        _, domain_and_tld = email.rsplit('@', 1)
+        domain, tld = domain_and_tld.split('.')
+        if not domain or not domain.isalnum():
+            return False, "Invalid domain in email address"
+        if not tld or not tld.isalnum():
+            return False, "Invalid TLD in email address"
+        if len(tld) > {settings.MAX_TLD_LENGTH}:
+            return False, f"TLD length {len(tld)} > {settings.MAX_TLD_LENGTH}"
         return True, None
 
     @staticmethod
     def is_valid_password(password):
         if password is None:
             return False, "Password empty"
-        if len(password) < 8:
-            return False, f"Password length {len(password)} < 8"
+        if len(password) < {settings.PASSWORD_MIN_LENGTH}:
+            return False, f"Password length {len(password)} < {settings.PASSWORD_MIN_LENGTH}"
+        if len(password) > {settings.PASSWORD_MAX_LENGTH}:
+            return False, f"Password length {len(password)} > {settings.PASSWORD_MAX_LENGTH}"
         if not any(char.isupper() for char in password):
             return False, "Password missing uppercase character"
+        if not any(char.islower() for char in password):
+            return False, "Password missing lowercase character"
         if not any(char.isdigit() for char in password):
             return False, "Password missing digit"
         if not any(char in "!@#$%^&*()-_+=" for char in password):
@@ -120,7 +134,8 @@ class SignInView(View):
             validation_errors.append("Username empty")
         if password is None:
             validation_errors.append("Password empty")
-
+        if username is None or password is None:
+            return validation_errors
         user = User.objects.filter(username=username).first()
         if user is None:
             validation_errors.append("Username not found")
