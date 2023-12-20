@@ -19,12 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-MAX_EMAIL_LENGTH = 60
-MAX_USERNAME_LENGTH = 20
-MIN_PASSWORD_LENGTH = 8
-MAX_PASSWORD_LENGTH = 30
+EMAIL_MAX_LENGTH = 60
+EMAIL_LOCAL_PART_MIN_LENGTH = 1
+USERNAME_MAX_LENGTH = 20
+USERNAME_MIN_LENGTH = 2
+PASSWORD_MIN_LENGTH = 8
+PASSWORD_MAX_LENGTH = 30
 ELO_DEFAULT = 500
-MAX_TLD_LENGTH = 15
+TLD_MAX_LENGTH = 15
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
@@ -72,7 +74,7 @@ ACCESS_EXPIRATION_MINUTES = 15
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -125,24 +127,24 @@ WSGI_APPLICATION = 'user_management.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # #SQLite 3 for local development
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# PostgreSQL for production
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'myuser',
-        'PASSWORD': 'mypassword',
-        'HOST': 'user-management-db',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# PostgreSQL for production
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'mydatabase',
+#         'USER': 'myuser',
+#         'PASSWORD': 'mypassword',
+#         'HOST': 'user-management-db',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
