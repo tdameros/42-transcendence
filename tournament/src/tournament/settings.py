@@ -19,6 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+MIN_TOURNAMENT_NAME_LENGTH = 3
+MAX_TOURNAMENT_NAME_LENGTH = 20
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
 
