@@ -1,5 +1,5 @@
 from django.db import models
-from enum import Enum
+from tournament import settings
 
 
 class Tournament(models.Model):
@@ -7,7 +7,7 @@ class Tournament(models.Model):
     IN_PROGRESS = 1
     FINISHED = 2
 
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=settings.MAX_TOURNAMENT_NAME_LENGTH)
     max_players = models.IntegerField(default=16)
     registration_deadline = models.DateTimeField(blank=True, null=True)
     is_private = models.BooleanField(default=False)
