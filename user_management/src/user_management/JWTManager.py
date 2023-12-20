@@ -24,7 +24,7 @@ class JWTManager:
             self.algorithm = 'RS256'
             self.expire_minutes_reference = settings.REFRESH_EXPIRATION_MINUTES
         else:
-            raise Exception("Invalid token type")
+            raise Exception('Invalid token type')
         self.token_type = token_type
         self.payload = payload
 
@@ -50,14 +50,14 @@ class JWTManager:
         encoded_jwt = request.headers.get('Authorization')
         success, decoded_payload = self.decode_jwt(encoded_jwt)
         if not success:
-            return False, "Invalid token", None
+            return False, 'Invalid token', None
         if decoded_payload is None:
-            return False, "Empty payload", None
+            return False, 'Empty payload', None
         if decoded_payload.get('exp') < datetime.now():
-            return False, "Token expired", None
+            return False, 'Token expired', None
         user_id = decoded_payload.get('user_id')
         if user_id is None:
-            return False, "No user_id in payload", None
+            return False, 'No user_id in payload', None
         if user_exist(user_id):
             return True, None, user_id
-        return False, "User does not exist", None
+        return False, 'User does not exist', None
