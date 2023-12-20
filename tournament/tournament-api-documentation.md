@@ -6,17 +6,61 @@
 
 ### Create / retrieve tournament
 
+Retrieve list of available public tournament
+
 <details>
  <summary><code>GET</code> <code><b>/tournament</b></code></summary>
 
-#### Retrieve list of available public tournament
-
 </details>
+
+Create a new tournament
 
 <details>
  <summary><code>POST</code> <code><b>/tournament</b></code></summary>
 
-#### Create a new tournament
+
+### Parameters
+
+#### Body
+
+- Tournament name must be between 3 and 20 characters and can only contain alnum and space
+- Max players must be between 2 and 16 (optional, default = 16 players)
+- Registration deadline (optional)
+- A boolean that specifies if tournament is private
+
+> ```javascript
+> {
+>     "name": "World Championship",
+>     "max-players": "16",
+>     "registration-deadline": "2024-02-17T10:53",
+>     "is-private": "True"
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                            |
+> |-----------|--------------------|-------------------------------------|
+> | `201`     | `application/json` | `{"status": "Created"               |
+> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
+
+errors can be combined
+ 
+> errors can be:
+
+> - Missing name field
+> - Tournament name must contain at least 3 characters
+> - Tournament name must contain less than 20 characters
+> - Tournament name may only contain letters, numbers and spaces
+ 
+> - Max players must contain less than 16 slots
+> - Max players must contain at least 2 slots
+ 
+> - Registration deadline has passed
+ 
+> - Missing is-private field
+ 
+> - Invalid JSON format in request body
 
 </details>
 

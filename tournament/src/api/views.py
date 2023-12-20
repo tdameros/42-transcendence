@@ -21,7 +21,7 @@ class Tournament(View):
             )
             return JsonResponse(data={}, status=201)
         except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format']}, status=400)
+            return JsonResponse(data={'errors': ['Invalid JSON format in request body']}, status=400)
 
     @staticmethod
     def is_valid_tournament(json_request):
@@ -38,6 +38,8 @@ class Tournament(View):
     def is_valid_name(name):
         errors = []
 
+        if name is None:
+            errors.append('Missing name field')
         if len(name) < settings.MIN_TOURNAMENT_NAME_LENGTH:
             errors.append(f'Tournament name must contain at least {settings.MIN_TOURNAMENT_NAME_LENGTH} characters')
         elif len(name) > settings.MAX_TOURNAMENT_NAME_LENGTH:
