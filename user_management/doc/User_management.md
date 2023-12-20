@@ -95,3 +95,42 @@ all fields are mandatory
 > - Invalid JSON format in the request body
 > - An unexpected error occurred
 
+</details>
+
+
+## `username-exist`
+
+### Check if username is already taken
+
+will return a boolean
+
+<details>
+ <summary><code>POST</code> <code><b>/user/username-exist/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+> ``` javascript
+> {
+>     "username": "Aurel"
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type               | response                            |
+> |-----------|----------------------------|-------------------------------------|
+> | `200`     | `application/json`         | `{"is_taken": false}`               |
+> | `200`     | `application/json`         | `{"is_taken": true}`                |
+> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> 
+> errors can be combined
+
+> errors can be :
+> - Invalid JSON format in the request body
+> - An unexpected error occurred
+> 
+> NB : An empty username is considered as not taken
+
+</details>

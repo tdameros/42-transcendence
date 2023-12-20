@@ -21,7 +21,7 @@ this documentation details the different endpoints of each microservice.
 ## Tournament
 
 ## User Management
-> ### [/user/signup](User_management.md#signup)
-> ### [/user/signin](User_management.md#signin)
-> ### [/user/username-exist](User_management.md#username-exist)
+> ### [/user/signup](../user_management/doc/User_management.md#signup)
+> ### [/user/signin](../user_management/doc/User_management.md#signin)
+> ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
 

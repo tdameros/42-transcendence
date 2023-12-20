@@ -145,9 +145,10 @@ class SignInView(View):
         return validation_errors
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class IsUsernameTakenView(View):
     @staticmethod
-    def get(request):
+    def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             username = json_request.get('username')
