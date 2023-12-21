@@ -36,6 +36,7 @@ all fields are mandatory
 >errors can be combined
 
 > errors can be :
+> - Username empty
 > - Username already taken
 > - Username length {len(username)} > 20
 
