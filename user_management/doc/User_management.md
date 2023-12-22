@@ -28,10 +28,11 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type       | response                            |
-> |-----------|--------------------|-------------------------------------|
-> | `201`     | `application/json` | `{"refresh_token": "eyJhbGci.."}`   |
-> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
+> | http code | content-type       | response                                       |
+> |-----------|--------------------|------------------------------------------------|
+> | `201`     | `application/json` | `{"refresh_token": "eyJhbGci.."}`              |
+> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`            |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred']}` |
 
 >errors can be combined
 
@@ -81,10 +82,11 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type               | response                            |
-> |-----------|----------------------------|-------------------------------------|
-> | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`   |
-> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> | http code | content-type               | response                                       |
+> |-----------|----------------------------|------------------------------------------------|
+> | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`              |
+> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`            |
+> | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred']}` |
 > 
 > errors can be combined
 
@@ -120,11 +122,13 @@ will return a boolean
 
 #### Responses
 
-> | http code | content-type               | response                            |
-> |-----------|----------------------------|-------------------------------------|
-> | `200`     | `application/json`         | `{"is_taken": false}`               |
-> | `200`     | `application/json`         | `{"is_taken": true}`                |
-> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> | http code | content-type             | response                                       |
+> |-----------|--------------------------|------------------------------------------------|
+> | `200`     | `application/json`       | `{"is_taken": false}`                          |
+> | `200`     | `application/json`       | `{"is_taken": true}`              n            |
+> | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`            |
+> | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred']}` |
+
 > 
 > errors can be combined
 
