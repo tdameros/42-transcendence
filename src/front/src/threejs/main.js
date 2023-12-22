@@ -3,9 +3,9 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import {Engine} from './Engine/Engine.js'
 import * as THREE from "three";
 
-await main();
+main();
 
-async function main() {
+function main() {
     if (!WebGL.isWebGLAvailable()) {
         document.querySelector('#container')
                 .appendChild(WebGL.getWebGLErrorMessage());
@@ -14,10 +14,11 @@ async function main() {
 
     const engine = new Engine();
 
-    await Promise.all([displayBaseScene(engine), engine.connectToServer()]);
+    displayBaseScene(engine);
+    engine.connectToServer();
 }
 
-async function displayBaseScene(engine) {
+function displayBaseScene(engine) {
     let clock = new THREE.Clock();
 
     engine.setAnimationLoop(() => {

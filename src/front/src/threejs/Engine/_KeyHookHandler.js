@@ -4,7 +4,7 @@ export class _KeyHookHandler {
 
         this._upKeyIsPressed = false;
         this._downKeyIsPressed = false;
-        this._serverKnownMovement = "none";
+        this._serverKnownMovement = 'none';
     }
 
     listenForKeyHooks() {
@@ -37,33 +37,33 @@ export class _KeyHookHandler {
     async _pressUpKey() {
         this._upKeyIsPressed = true;
         if (this._downKeyIsPressed) {
-            if (this._serverKnownMovement !== "none") {
-                await this._engine.emit("player_stopped_moving", "");
-                this._serverKnownMovement = "none";
+            if (this._serverKnownMovement !== 'none') {
+                await this._engine.emit('player_stopped_moving', '');
+                this._serverKnownMovement = 'none';
             }
             return;
         }
-        if (this._serverKnownMovement === "up")
+        if (this._serverKnownMovement === 'up')
             return;
 
-        await this._engine.emit("player_moves_up", "");
-        this._serverKnownMovement = "up"
+        await this._engine.emit('player_moves_up', '');
+        this._serverKnownMovement = 'up'
     }
 
     async _pressDownKey() {
         this._downKeyIsPressed = true;
         if (this._upKeyIsPressed) {
-            if (this._serverKnownMovement !== "none") {
-                await this._engine.emit("player_stopped_moving", "");
-                this._serverKnownMovement = "none";
+            if (this._serverKnownMovement !== 'none') {
+                await this._engine.emit('player_stopped_moving', '');
+                this._serverKnownMovement = 'none';
             }
             return;
         }
-        if (this._serverKnownMovement === "down")
+        if (this._serverKnownMovement === 'down')
             return;
 
-        await this._engine.emit("player_moves_down", "");
-        this._serverKnownMovement = "down"
+        await this._engine.emit('player_moves_down', '');
+        this._serverKnownMovement = 'down'
     }
 
     async _onKeyRelease(event) {
@@ -81,22 +81,22 @@ export class _KeyHookHandler {
 
     async _releaseUpKey() {
         if (this._downKeyIsPressed) {
-            await this._engine.emit("player_moves_down", "");
-            this._serverKnownMovement = "down";
+            await this._engine.emit('player_moves_down', '');
+            this._serverKnownMovement = 'down';
         } else {
-            await this._engine.emit("player_stopped_moving", "");
-            this._serverKnownMovement = "none";
+            await this._engine.emit('player_stopped_moving', '');
+            this._serverKnownMovement = 'none';
         }
         this._upKeyIsPressed = false;
     }
 
     async _releaseDownKey() {
         if (this._upKeyIsPressed) {
-            await this._engine.emit("player_moves_up", "");
-            this._serverKnownMovement = "up";
+            await this._engine.emit('player_moves_up', '');
+            this._serverKnownMovement = 'up';
         } else {
-            await this._engine.emit("player_stopped_moving", "");
-            this._serverKnownMovement = "none";
+            await this._engine.emit('player_stopped_moving', '');
+            this._serverKnownMovement = 'none';
         }
         this._downKeyIsPressed = false;
     }

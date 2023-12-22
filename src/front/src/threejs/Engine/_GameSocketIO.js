@@ -10,33 +10,37 @@ export class _GameSocketIO {
     _initGameSocketIO(uri) {
         this._socket = io(uri, {
             query: {
-                "json_web_token": {
-                    "player_id": "player_1", // TODO use client account primary key
+                'json_web_token': {
+                    'player_id': 'player_1', // TODO use client account primary key
                 },
             },
         });
 
         this._socket.on('connect', () => {
-            console.log('connection established');
+            console.log('connection to game server established');
+        });
+
+        this._socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
         });
 
         this._socket.on('disconnect', () => {
-            console.log('disconnected from server');
+            console.log('disconnected from game server');
         });
 
         this._socket.on('debug', (message) => {
-            console.log('Server debug message: ', message);
+            console.warn('Server debug message: ', message);
         });
 
-        this._socket.on("scene", async (sceneData) => {
-            console.log("scene data received");
+        this._socket.on('scene', (sceneData) => {
+            console.log('scene data received');
             this._server.stopAnimationLoop();
-            this._server._scene = new Scene(sceneData["boards"],
-                sceneData["balls"],
-                sceneData["players"]);
+            this._server._scene = new Scene(sceneData['boards'],
+                                            sceneData['balls'],
+                                            sceneData['players']);
         });
 
-        this._socket.on("update_player_movement", (data) => {
+        this._socket.on('update_player_movement', (data) => {
             this._server._scene.updatePlayerMovement(data);
         });
 

@@ -4,6 +4,7 @@ class Game(object):
         self._uri: str | None = None
 
     def create_server(self):
+        self._uri = "http://localhost:50761"
         print("Created server")
 
     def was_server_created(self) -> bool:

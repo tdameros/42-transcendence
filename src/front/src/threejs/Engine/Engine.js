@@ -1,4 +1,4 @@
-import {Scene} from "../Scene";
+import {Scene} from '../Scene';
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {_RedirectionSocketIO} from './_RedirectionSocketIO';
@@ -15,8 +15,8 @@ export class Engine {
         const boards = [];
         const balls = [
             {
-                "position": {x: 0., y: 0., z: 0.5},
-                "move_direction": {x: 1., y: 0., z: 0.}
+                'position': {x: 0., y: 0., z: 0.5},
+                'move_direction': {x: 1., y: 0., z: 0.}
             }
         ];
         const players = [];
@@ -24,7 +24,7 @@ export class Engine {
         this._scene = new Scene(boards, balls, players);
     }
 
-    async connectToServer() {
+    connectToServer() {
         this._socket = new _RedirectionSocketIO(this);
     }
 
@@ -34,7 +34,7 @@ export class Engine {
 
     emit(event, data) {
         if (this._socket === null) {
-            console.log("Error: Socket is null: Failed to send event(", event, "): ", data);
+            console.log('Error: Socket is null: Failed to send event(', event, '): ', data);
             return;
         }
 
