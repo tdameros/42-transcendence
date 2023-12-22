@@ -31,9 +31,9 @@ Create a new tournament
 > ```javascript
 > {
 >     "name": "World Championship",
->     "max-players": "16",
+>     "max-players": 16,
 >     "registration-deadline": "2024-02-17T10:53",
->     "is-private": "True"
+>     "is-private": true
 > }
 > ```
 
@@ -53,12 +53,15 @@ errors can be combined
 > - Tournament name must contain less than 20 characters
 > - Tournament name may only contain letters, numbers and spaces
  
+> - Max players must be an integer
 > - Max players must contain less than 16 slots
 > - Max players must contain at least 2 slots
- 
+
+> - Registration deadline not in ISO 8601 date and time format
 > - Registration deadline has passed
  
 > - Missing is-private field
+> - Is private must be a boolean
  
 > - Invalid JSON format in request body
 
