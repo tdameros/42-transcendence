@@ -17,9 +17,11 @@ class SignUpView(View):
             validation_errors = self.signup_infos_validation(json_request)
             if not validation_errors:
                 user = User.objects.create(username=json_request['username'],
-                                    email=json_request['email'],
-                                    password=json_request['password'])
-                refresh_token = JWTManager('refresh').generate_token(user.id)
+                                           email=json_request['email'],
+                                           password=json_request['password'])
+                success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+                if success is False:
+                    return JsonResponse(data={'errors': errors}, status=500)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=201)
             else:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
@@ -113,7 +115,9 @@ class SignInView(View):
             validation_errors = SignInView.signin_infos_validation(json_request)
             if not validation_errors:
                 user = User.objects.filter(username=json_request['username']).first()
-                refresh_token = JWTManager('refresh').generate_token(user.id)
+                success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+                if success is False:
+                    return JsonResponse(data={'errors': errors}, status=500)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=200)
             else:
                 return JsonResponse(data={'errors': validation_errors}, status=400)

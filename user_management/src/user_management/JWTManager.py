@@ -36,15 +36,20 @@ class JWTManager:
             return False, None
 
     def generate_token(self, user_id):
-        now = datetime.utcnow()
-        expiration_time = now + timedelta(minutes=self.expire_minutes_reference)
-        payload = {
-            'user_id': user_id,
-            'exp': expiration_time,
-            'token_type': self.token_type
-        }
-        token = jwt.encode(payload, self.private_key, algorithm=self.algorithm)
-        return token
+        if not user_exist(user_id):
+            return False, None, 'User does not exist'
+        try:
+            now = datetime.utcnow()
+            expiration_time = now + timedelta(minutes=self.expire_minutes_reference)
+            payload = {
+                'user_id': user_id,
+                'exp': expiration_time,
+                'token_type': self.token_type
+            }
+            token = jwt.encode(payload, self.private_key, algorithm=self.algorithm)
+        except Exception as e:
+            return False, None, e
+        return True, token, None
 
     def is_authentic_and_valid_request(self, request):
         encoded_jwt = request.headers.get('Authorization')
