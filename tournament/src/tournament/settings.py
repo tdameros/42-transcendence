@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MIN_TOURNAMENT_NAME_LENGTH = 3
 MAX_TOURNAMENT_NAME_LENGTH = 20
+MAX_PLAYERS = 16
+MIN_PLAYERS = 2
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'

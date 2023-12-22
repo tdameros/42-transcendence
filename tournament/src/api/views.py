@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views import View
 from api.models import Tournament
+from dateutil import parser
+from datetime import datetime, timezone
 from tournament.authenticate_request import authenticate_request
 from tournament import settings
 import json
@@ -27,9 +29,25 @@ class Tournament(View):
     def is_valid_tournament(json_request):
         errors = []
         name = json_request.get('name')
+        max_players = json_request.get('max-players')
+        registration_deadline = json_request.get('registration-deadline')
+        is_private = json_request.get('is-private')
+
         valid_name, name_errors = Tournament.is_valid_name(name)
+        valid_max_players, max_players_error = Tournament.is_valid_max_players(max_players)
+        valid_deadline, deadline_error = Tournament.is_valid_deadline(registration_deadline)
+
         if not valid_name:
             errors.append(name_errors)
+        if not valid_max_players:
+            errors.append(max_players_error)
+        if not valid_deadline:
+            errors.append(deadline_error)
+        if is_private is None:
+            errors.append('Missing is-private field')
+        elif not isinstance(is_private, bool):
+            errors.append('Is private must be a boolean')
+
         if errors:
             return False, errors
         return True, None
@@ -51,5 +69,28 @@ class Tournament(View):
             return False, errors
         return True, None
 
+    @staticmethod
+    def is_valid_max_players(max_players):
+        if max_players is None:
+            return True, None
+        if not isinstance(max_players, int):
+            return False, 'Max players must be an integer'
+        if max_players > settings.MAX_PLAYERS:
+            return False, f'Max players must contain less than {settings.MAX_PLAYERS} slots'
+        if max_players < settings.MIN_PLAYERS:
+            return False, f'Max players must contain at least {settings.MIN_PLAYERS} slots'
+        return True, None
 
+    @staticmethod
+    def is_valid_deadline(registration_deadline):
+        if registration_deadline is None:
+            return True, None
+        try:
+            deadline_time = parser.isoparse(registration_deadline)
+            current_time = datetime.now(timezone.utc)
+            if deadline_time < current_time:
+                return False, 'Registration deadline has passed'
+            return True, None
+        except ValueError:
+            return False, 'Registration deadline not in ISO 8601 date and time format'
 
