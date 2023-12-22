@@ -75,10 +75,9 @@ class SignUpView(View):
             return False, 'Email missing "." character'
         if email.count('@') > 1:
             return False, 'Email contains more than one @ character'
-        local_part, _ = email.rsplit('@', 1)
+        local_part, domain_and_tld = email.rsplit('@', 1)
         if len(local_part) < settings.EMAIL_LOCAL_PART_MIN_LENGTH:
             return False, f'Local part length {len(local_part)} < {settings.EMAIL_LOCAL_PART_MIN_LENGTH}'
-        _, domain_and_tld = email.rsplit('@', 1)
         if domain_and_tld.count('.') == 0:
             return False, 'Email missing TLD'
         tld = domain_and_tld.rsplit('.')[-1]
