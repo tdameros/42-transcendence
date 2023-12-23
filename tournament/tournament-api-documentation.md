@@ -41,7 +41,7 @@ Create a new tournament
 
 > | http code | content-type       | response                            |
 > |-----------|--------------------|-------------------------------------|
-> | `201`     | `application/json` | `{"status": "Created"               |
+> | `201`     | `application/json` | `{"status": "Created"}`             |
 > | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
 
 errors can be combined
@@ -63,6 +63,7 @@ errors can be combined
 > - Missing is-private field
 > - Is private must be a boolean
  
+> - Missing Authorization header
 > - Invalid JSON format in request body
 
 </details>

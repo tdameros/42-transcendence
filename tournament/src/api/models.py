@@ -8,7 +8,7 @@ class Tournament(models.Model):
     FINISHED = 2
 
     name = models.CharField(max_length=settings.MAX_TOURNAMENT_NAME_LENGTH)
-    max_players = models.IntegerField(default=16)
+    max_players = models.IntegerField(default=16, blank=True)
     registration_deadline = models.DateTimeField(blank=True, null=True)
     is_private = models.BooleanField(default=False)
     status = models.IntegerField(default=CREATED)

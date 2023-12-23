@@ -7,7 +7,7 @@ def authenticate_request(request):
     encoded_jwt = request.headers.get('Authorization')
     errors = []
     if encoded_jwt is None:
-        return None, errors
+        return None, "Missing Authorization header"
     payload = decode_jwt(encoded_jwt, errors)
     if payload is None:
         return None, errors

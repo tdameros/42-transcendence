@@ -1,15 +1,21 @@
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
 from api.models import Tournament
 from dateutil import parser
 from datetime import datetime, timezone
-from tournament.authenticate_request import authenticate_request
-from tournament import settings
 import json
 
+from tournament.authenticate_request import authenticate_request
+from tournament import settings
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class Tournament(View):
-    def post(self, request):
+    @staticmethod
+    def post(request):
         try:
             user, authenticate_errors = authenticate_request(request)
             if user is None:
@@ -19,7 +25,9 @@ class Tournament(View):
             if not valid_tournament:
                 return JsonResponse(data={'errors': errors}, status=400)
             Tournament.objects.create(
-                name=json_request['name']
+                name=json_request['name'],
+                is_private=json_request['is-private'],
+                admin_id=user.pk
             )
             return JsonResponse(data={}, status=201)
         except json.JSONDecodeError:
