@@ -21,7 +21,7 @@ class SignUpView(View):
                                            password=json_request['password'])
                 success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
                 if success is False:
-                    return JsonResponse(data={'errors': errors}, status=500)
+                    return JsonResponse(data={'errors': errors}, status=400)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=201)
             else:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
@@ -117,7 +117,7 @@ class SignInView(View):
                 user = User.objects.filter(username=json_request['username']).first()
                 success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
                 if success is False:
-                    return JsonResponse(data={'errors': errors}, status=500)
+                    return JsonResponse(data={'errors': errors}, status=400)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=200)
             else:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
