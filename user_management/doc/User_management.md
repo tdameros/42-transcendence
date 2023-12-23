@@ -140,14 +140,14 @@ will return a boolean
 
 </details>
 
-## `refreshJWT`
+## `refresh-jwt`
 
 ### Trade a valid refresh token for an access token
 
 will return an access token when successful
 
 <details>
- <summary><code>POST</code><code><b>/user/signup/</b></code></summary>
+ <summary><code>POST</code><code><b>/user/refresh-jwt/</b></code></summary>
 
 ### Parameters
 

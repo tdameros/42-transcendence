@@ -12,7 +12,7 @@ def user_exist(user_id):
             or user_id == ''
             or type(user_id) != int
             or user_id < 0
-            or user_id > 2147483647):
+            or user_id > settings.MAX_USER_ID):
         return False
     return User.objects.filter(id=user_id).exists()
 
