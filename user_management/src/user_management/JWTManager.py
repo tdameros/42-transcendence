@@ -37,9 +37,9 @@ class JWTManager:
     def decode_jwt(self, encoded_jwt):
         try:
             decoded_payload = jwt.decode(encoded_jwt, self.public_key, algorithms=[self.algorithm])
-            return True, decoded_payload
-        except:
-            return False, None
+            return True, decoded_payload, None
+        except Exception as e:
+            return False, None, str(e)
 
     def generate_token(self, user_id):
         if not user_exist(user_id):
@@ -54,21 +54,30 @@ class JWTManager:
             }
             token = jwt.encode(payload, self.private_key, algorithm=self.algorithm)
         except Exception as e:
-            return False, None, e
+            return False, None, str(e)
         return True, token, None
 
-    def is_authentic_and_valid_request(self, request):
-        encoded_jwt = request.headers.get('Authorization')
-        success, decoded_payload = self.decode_jwt(encoded_jwt)
+    def is_authentic_and_valid_request(self, encoded_jwt):
+        success, decoded_payload, error_decode = self.decode_jwt(encoded_jwt)
+        errors = []
         if not success:
-            return False, 'Invalid token', None
-        if decoded_payload is None:
-            return False, 'Empty payload', None
-        if decoded_payload.get('exp') < datetime.now():
-            return False, 'Token expired', None
+            errors.append(error_decode)
+        elif decoded_payload is None:
+            errors.append('Token expired')
+        elif decoded_payload == {}:
+            errors.append('Empty payload')
+        if errors:
+            return False, errors, None
+
+        exp_date = decoded_payload.get('exp')
+        exp_date_formatted = datetime.utcfromtimestamp(exp_date)
+        if exp_date_formatted < datetime.utcnow():
+            errors.append(f'Token expired : {exp_date_formatted} < {datetime.utcnow()}')
         user_id = decoded_payload.get('user_id')
-        if user_id is None:
-            return False, 'No user_id in payload', None
-        if user_exist(user_id):
-            return True, None, user_id
-        return False, 'User does not exist', None
+        if user_id is None or user_id == '':
+            errors.append('No user_id in payload')
+        elif not user_exist(user_id):
+            errors.append('User does not exist')
+        if errors:
+            return False, errors, None
+        return True, None, user_id
