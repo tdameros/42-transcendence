@@ -1,10 +1,13 @@
 import json
 import random
+from datetime import datetime, timedelta
 
+import jwt
 from django.test import TestCase
 from django.urls import reverse
 
 from user_management import settings
+from user_management.JWTManager import JWTManager
 
 
 class TestsSignup(TestCase):
@@ -239,3 +242,110 @@ class TestsUsernameExist(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('is_taken' in result.json())
         self.assertFalse(result.json()['is_taken'])
+
+
+class TestsRefreshJWT(TestCase):
+
+    def test_refresh_jwt(self):
+        print('\n-------------------\nTesting Refresh JWT')
+        data_preparation = {
+            'username': 'Aurel303',
+            'email': 'alevra@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        print('Creating user...')
+        refresh_token = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        print('User created')
+        data = {
+            'refresh_token': refresh_token.json()['refresh_token']
+        }
+        url = reverse('refreshJWT')
+        print('Testing valid refresh token')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('access_token' in result.json())
+        print('Testing invalids refresh tokens ... :')
+        # 1 Refresh token not found
+        valid_access_token = JWTManager('access').generate_token(1)[1]
+
+        # 2 Invalid token
+        valid_payload = {
+            'user_id': 1,
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        bad_signature_token = jwt.encode(valid_payload, '''-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkd6N6q+mBYJS2
+gciw3ljqk2joDLKuF3NHP6C7Q1z9Q7g9t499RabtVMgxbCMPIJ5vWvk9T3KVg5QC
+E3jfctd3yzETAmDLARrwoxn3wtlicdguPgz1TNQr+7kl4PY0Tegq+v1jdKEmW2Si
+aRbsfoCDve3zFMZoj8qM/F+vu5ZRaBdz1/D+2SUgl+b45usCPdRDaJ9JN5YFE9+J
+Ey1dHvvXZCqNqEOcA4/g9yk6vXivm3jLUYwfYDv0/twMOOwYel8DPHPzCoIOKs/X
+S2IkdukTtIrJeTJDAi3i1JqAyAxWeogHSXqVlXHofZlHRgonhSWPZthxt7y7Bi2M
+oeT8HVT7AgMBAAECggEAUGPyUqnpL0YoKrVxhZKJX8/B/XsHc7UesfrV8/LPZzRM
+wE4TIyaCm4tPd2jmEiTdjIypO2C0H4T7ObCO6pnV3EZDrIkDCvd1VZ5DuSlS3J3N
+D31hFB4Dr6QRMgSuE47pJukcJhsCEh+mJwS7IcoLw1l5D9Jd0QpH9XX+x4Unyo4P
+32oXI5RWSR1wl4fBBiH2ev5G7fEx9oOl50GjajPacQYkDF7hja3RfUij6TVozz/8
+4A29swUAMup6DCnZs3X/JHgVfWbjhwRlj08cx6Ixsk9sfmw1oayqZ2HxuzFEmM6b
+LouJx7QsoW7LRSJ8MV4yTY+qFoNtFslKAYDfPCuFwQKBgQDXwnVvgKY8Q+7ZlVsL
+AGfrpAOT7l8fJg1dEZfFQjdAbAObBSPi69AOSQi0owmz4iyIQkguw0zBcLdh9W3L
+mLY7CNvjHlvkj9mZt6E2EIkVMot4UQ1qaX2EzCq+KUZPQIJzWu8dPAdsQ4IN7BCU
+hljrw1qprCVZaPBm7tUefXNOsQKBgQDDJDUDhHfozWotbVNCPV1LwfW9Pn2eHKCI
+3mJnYxs5aBR9KilzbpBfy+xWDNz5C7JjDaSLuGeGBnCDe2AbEgNhabyxM1Sbfw2V
+KTuyZKbFwzMF7MmqGzCnM7/00ZfULkDucts3lofFH8jjeKKxW/qqQWlBLsq7NaXz
+y0fSnhjBawKBgADxCk4oQ5FzwnEUo8cSg2GV36Yfni6mndxQHVdxCIixb/qXNSbi
+XJATZYRUSdCNJiCaGXKKy6T0dvhod8gxrGnpifwdv8zpi8uN75gqzk5XYCBwShyy
+xSd1NKKLz5C8+VTDitOX1Xh1evXQl+nuBClTOuwOokMXoCTy2d8+MOihAoGADVAQ
+CdBkuc4huz2lG3TCQ6PU1vdHbJz5Wr0JK5J4Tf9Kvos8zrIxSUfJNMml3ZutrNJG
+cn2/GkagMGgfU1l0P5YOGGyvDfip/Y4Vk4MIWZ+KgJH55A/8zrtaEiKmYARTy7Cs
+QeuUEZ+sfdBCESV8QVc7DgZaMFFlo+8vVDAS8kcCgYEAuVNF8PpCDXf5nudrh9Pi
+422yWJBkWS/XL4xUEP4IxR4sBLQI1CU6vOUPY7md4dkVssC9oCEwauFIa9z5xf2y
+c9U/kV9am2cE8Sn5uwpG6IepgNgzPzC7YplVQycHgI/di8JsR28FQqkrz3RWumPr
+WnzdEMvDqr+OGEpn5fYLRDo=
+-----END PRIVATE KEY-----''', 'RS256')
+        # 3 Empty payload
+        payload = {}
+        empty_payload = jwt.encode(payload, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 4 Token expired
+        payload_expired = {
+            'user_id': 1,
+            'exp': datetime.utcnow(),
+            'token_type': 'refresh'
+        }
+        expired_token = jwt.encode(payload_expired, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 5 No user_id in payload
+        payload_no_user_id = {
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        token_no_user_id = jwt.encode(payload_no_user_id, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 6 User does not exist
+        payload_user_not_exist = {
+            'user_id': 999,
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        token_user_not_exist = jwt.encode(payload_user_not_exist, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        errors = [('Refresh token not found', {'access_token': valid_access_token}),
+                  ('Signature verification failed', {'refresh_token': bad_signature_token}),
+                  ('Empty payload', {'refresh_token': empty_payload}),
+                  ('Signature has expired', {'refresh_token': expired_token}),
+                  ('No user_id in payload', {'refresh_token': token_no_user_id}),
+                  ('User does not exist', {'refresh_token': token_user_not_exist})
+                  ]
+
+        for error in errors:
+            print(f'\nTesting {error[0]}')
+            url = reverse('refreshJWT')
+            try:
+                result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
+            except Exception as e:
+                print(e)
+            error_message = result.json()['errors']
+            self.assertEqual(result.status_code, 400)
+            self.assertTrue('errors' in result.json())
+            self.assertEqual(result.json()['errors'], [error[0]])

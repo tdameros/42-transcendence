@@ -166,3 +166,25 @@ class IsUsernameTakenView(View):
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
             return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class RefreshJWT(View):
+    @staticmethod
+    def post(request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            refresh_token = json_request.get('refresh_token')
+            if refresh_token is None:
+                return JsonResponse(data={'errors': ['Refresh token not found']}, status=400)
+            success, errors, user_id = JWTManager('refresh').is_authentic_and_valid_request(refresh_token)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            success, access_token, errors = JWTManager('access').generate_token(user_id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'access_token': access_token}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        except Exception as e:
+            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
