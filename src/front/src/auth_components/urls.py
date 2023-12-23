@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import signup, signin
+from .views import signup, signin, reset_password_email
 
 app_name = "auth_components"
 
 urlpatterns = [
     path('signup/', signup),
     path('signin/', signin),
+    path('reset-password-email/', reset_password_email),
 ]

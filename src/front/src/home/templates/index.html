@@ -5,19 +5,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 <script src="{% static 'js/script.js' %}"></script>
 
 <body class="bg-body-secondary">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand">42-Transcendence</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -36,21 +45,32 @@
                 </li>
             </ul>
             <div class="d-flex">
-                <button id="switch-btn" class="btn btn-outline-dark" onclick="switchMode()" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
+                <button id="switch-btn" class="btn btn-outline-dark"
+                        onclick="switchMode()" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                         height="16" fill="currentColor" class="bi bi-moon-fill"
+                         viewBox="0 0 16 16">
                         <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
                     </svg>
                 </button>
                 <form class="d-flex" role="search">
-                    <input class="form-control ms-2 me-2" type="search" placeholder="Search" aria-label="Search">
+                    <input class="form-control ms-2 me-2" type="search"
+                           placeholder="Search" aria-label="Search">
                 </form>
-                <button class="btn btn-outline-success" onclick="loadComponent('auth/signup/', 'content')">SignUp</button>
-                <button type="button" class="btn btn-primary ms-2" onclick="loadComponent('auth/signin/', 'content')">SignIn</button>
+                <div id="login-part" class="d-flex align-items-center">
+                    <button class="btn btn-outline-success"
+                            onclick="loadComponent('auth/signup/', 'content')">
+                        SignUp
+                    </button>
+                    <button type="button" class="btn btn-primary ms-2"
+                            onclick="loadComponent('auth/signin/', 'content')">
+                        SignIn
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </nav>
-
 <div id="content"></div>
 </body>
 </html>

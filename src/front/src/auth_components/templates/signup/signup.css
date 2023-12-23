@@ -7,7 +7,7 @@
 }
 
 .login-card {
-    width: 650px;
+    width: 550px;
 }
 
 #github-btn {
@@ -44,4 +44,13 @@
 .eye-box:hover {
     background: #efefef;
     color: #2d2d2d;
+}
+
+.invalid-feedback p {
+    margin: 0;
+}
+
+#have-account {
+    font-size: 13px;
+    color: rgb(13, 110, 253);
 }
