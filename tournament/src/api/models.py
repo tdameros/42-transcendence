@@ -12,3 +12,4 @@ class Tournament(models.Model):
     registration_deadline = models.DateTimeField(blank=True, null=True)
     is_private = models.BooleanField(default=False)
     status = models.IntegerField(default=CREATED)
+    admin_id = models.BigIntegerField(default=0)
