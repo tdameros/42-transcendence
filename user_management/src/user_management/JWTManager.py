@@ -7,7 +7,7 @@ from user.models import User
 import jwt
 
 
-def user_exist(user_id):
+def user_exist(user_id: int) -> bool:
     if (user_id is None
             or user_id == ''
             or type(user_id) != int
@@ -18,7 +18,7 @@ def user_exist(user_id):
 
 
 class JWTManager:
-    def __init__(self, token_type, payload=None):
+    def __init__(self, token_type: str, payload: dict = None):
         if token_type == 'access':
             self.private_key = settings.ACCESS_KEY
             self.public_key = settings.ACCESS_KEY
@@ -34,14 +34,14 @@ class JWTManager:
         self.token_type = token_type
         self.payload = payload
 
-    def decode_jwt(self, encoded_jwt):
+    def decode_jwt(self, encoded_jwt: str) -> (bool, dict, str):
         try:
             decoded_payload = jwt.decode(encoded_jwt, self.public_key, algorithms=[self.algorithm])
             return True, decoded_payload, None
         except Exception as e:
             return False, None, str(e)
 
-    def generate_token(self, user_id):
+    def generate_token(self, user_id: int) -> (bool, str, str):
         if not user_exist(user_id):
             return False, None, 'User does not exist'
         try:
@@ -57,7 +57,7 @@ class JWTManager:
             return False, None, str(e)
         return True, token, None
 
-    def is_authentic_and_valid_request(self, encoded_jwt):
+    def is_authentic_and_valid_request(self, encoded_jwt: str) -> (bool, list, int):
         success, decoded_payload, error_decode = self.decode_jwt(encoded_jwt)
         errors = []
         if not success:
