@@ -1,7 +1,7 @@
 import src.shared_code.settings as settings
 
 
-async def emit(sio, event, message, room):
+async def emit(sio, event, room, message):
     if settings.DEBUG:
-        print(f'emit("{event}", "{message}", room="{room}")')
+        print(f'\tsio.emit("{event}", "{message}", room="{room}")')
     await sio.emit(event, message, room=room)

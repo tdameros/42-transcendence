@@ -1,11 +1,12 @@
-from src.redirection_server.Game import Game
 from src.shared_code.emit import emit
+from src.shared_code.get_query_string import get_query_string
+from src.shared_code.get_json_web_token import get_json_web_token
 
+from src.redirection_server.Game import Game
+
+from typing import AnyStr
 from aiohttp import web
 import socketio
-from typing import AnyStr
-from urllib.parse import unquote
-import json
 
 #      dict[GameID, Game]
 games: dict[str, Game] = {'game_1': Game(['player_1'])}
@@ -14,95 +15,23 @@ games: dict[str, Game] = {'game_1': Game(['player_1'])}
 sids_to_disconnect = []
 is_sids_to_disconnect_being_used = False
 time_to_wait_for_sids_to_disconnect = 1
-sid_being_disconnected = ""
+sid_being_disconnected = ''
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
 sio.attach(app)
 
 
-async def add_sid_to_sids_to_disconnect(sid):
-    global is_sids_to_disconnect_being_used
-    while is_sids_to_disconnect_being_used:
-        print('add_sid_to_sids_to_disconnect loop')
-        await sio.sleep(time_to_wait_for_sids_to_disconnect)
-
-    is_sids_to_disconnect_being_used = True
-    sids_to_disconnect.append(sid)
-    is_sids_to_disconnect_being_used = False
-
-
-async def get_query_string(sid, environ) -> dict[AnyStr, list[AnyStr]] | None:
-    query_string = environ.get('QUERY_STRING', None)
-    if query_string is None:
-        await emit(sio, 'error',
-                   'environ does not contain query string',
-                   room=sid)
-        return None
-
-    query_string = unquote(query_string).split('=undefined')
-    if len(query_string) == 0:
-        await emit(sio, 'error',
-                   f'invalid query string: {environ.get('QUERY_STRING')}',
-                   room=sid)
-        return None
-
-    query_string = query_string[0]
-
-    try:
-        return json.loads(query_string)
-    except json.JSONDecodeError as e:
-        await emit(sio, 'error',
-                   f'Failed to parse query string: {e}',
-                   room=sid)
-        return None
-
-
-async def get_json_web_token(sid, query_string):
-    json_web_token = query_string.get('json_web_token', None)
-    if json_web_token is None:
-        await emit(sio, 'error',
-                   'json_web_token was not found in query string',
-                   room=sid)
-        return None
-    # TODO check jwt validity
-    return json_web_token
-
-
-async def get_user_id_from_json_web_token(sid, token) -> str | None:
-    user_id = token.get('user_id', None)
-    if user_id is None:
-        await emit(sio, 'error',
-                   'json_web_token did not contain a user_id field',
-                   room=sid)
-        return None
-    if not isinstance(user_id, str):
-        await emit(sio, 'error',
-                   'json_web_token user_id field must be a string',
-                   room=sid)
-        return None
-    return user_id
-
-
-async def get_game_id(sid, query_string) -> str | None:
-    game_id = query_string.get('game_id', None)
+def get_game_id(query_string) -> str:
+    game_id = query_string.get('game_id')
     if game_id is None:
-        await emit(sio, 'error',
-                   'game_id was not found in query string',
-                   room=sid)
-        return None
-    if len(game_id) == 0:
-        return None
+        raise Exception('game_id was not found in query string')
     if not isinstance(game_id, str):
-        await emit(sio, 'error',
-                   'game_id must be a string',
-                   room=sid)
-        return None
+        raise Exception('game_id must be a string')
+    if len(game_id) == 0:
+        raise Exception('game_id may not be an empty string')
     if games.get(game_id) is None:
-        await emit(sio, 'error',
-                   f'game {game_id} does not exist',
-                   room=sid)
-        return None
+        raise Exception(f'game {game_id} does not exist')
     return game_id
 
 
@@ -121,61 +50,45 @@ def get_newly_created_games():
     pass
 
 
-async def get_game_client_is_in(sid, game_id: str) -> Game | None:
-    game_client_is_in = games.get(game_id, None)
-    if game_client_is_in is not None:
-        return game_client_is_in
-    await emit(sio, 'error', f'Game: {game_id} was not found', room=sid)
-    return None
-
-
-async def redirect_user(sid, user_id: str, game: Game, game_id: str):
+def get_game(game_id: str, user_id: str) -> Game:
+    game = games.get(game_id)
+    if game is None:
+        raise Exception(f'Game: {game_id} was not found')
     if user_id not in game.get_clients():
-        await emit(sio, 'error',
-                   f'User {user_id} is not part of game {game_id}',
-                   room=sid)
-        return
+        raise Exception(f'User {user_id} is not part of game {game_id}')
+    return game
 
+
+def create_game_server_if_needed(game: Game):
     if not game.was_server_created():
-        try:
-            game.create_server()
-        except Exception as e:
-            await emit(sio, 'error', str(e), room=sid)
-            return
-    await emit(sio, 'game_server_uri', game.get_uri(), room=sid)
+        game.create_server()
+
+
+async def add_sid_to_sids_to_disconnect(sid):
+    global is_sids_to_disconnect_being_used
+    while is_sids_to_disconnect_being_used:
+        print('add_sid_to_sids_to_disconnect loop')
+        await sio.sleep(time_to_wait_for_sids_to_disconnect)
+
+    is_sids_to_disconnect_being_used = True
+    sids_to_disconnect.append(sid)
+    is_sids_to_disconnect_being_used = False
 
 
 @sio.event
 async def connect(sid, environ, auth):
     print(f'{sid} connected')
-    query_string = await get_query_string(sid, environ)
-    if query_string is None:
-        await add_sid_to_sids_to_disconnect(sid)
-        return True
+    try:
+        query_string = get_query_string(environ)
+        json_web_token = get_json_web_token(query_string)
+        game_id = get_game_id(query_string)
+        update_game_database()
+        game = get_game(game_id, json_web_token['user_id'])
+        create_game_server_if_needed(game)
+        await emit(sio, 'game_server_uri', sid, game.get_uri())
+    except Exception as e:
+        await emit(sio, 'error', sid, str(e))
 
-    json_web_token = await get_json_web_token(sid, query_string)
-    if json_web_token is None:
-        await add_sid_to_sids_to_disconnect(sid)
-        return True
-
-    user_id = await get_user_id_from_json_web_token(sid, json_web_token)
-    if user_id is None:
-        await add_sid_to_sids_to_disconnect(sid)
-        return True
-
-    game_id = await get_game_id(sid, query_string)
-    if game_id is None:
-        await add_sid_to_sids_to_disconnect(sid)
-        return True
-
-    update_game_database()
-
-    game_client_is_in = await get_game_client_is_in(sid, game_id)
-    if game_client_is_in is None:
-        await add_sid_to_sids_to_disconnect(sid)
-        return True
-
-    await redirect_user(sid, user_id, game_client_is_in, game_id)
     await add_sid_to_sids_to_disconnect(sid)
     return True
 
@@ -217,7 +130,7 @@ async def background_task():
             print(f'Disconnecting {sid}, they did not disconnect themself')
             sid_being_disconnected = sid
             await sio.disconnect(sid)
-        sid_being_disconnected = ""
+        sid_being_disconnected = ''
         sids_to_disconnect.clear()
         is_sids_to_disconnect_being_used = False
 

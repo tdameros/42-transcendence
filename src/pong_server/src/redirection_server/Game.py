@@ -13,6 +13,7 @@ class Game(object):
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
                                    universal_newlines=True)
+        # TODO handle errors when the command doesn't work
 
         while process.poll() is None:
             line = process.stdout.readline()
@@ -23,6 +24,7 @@ class Game(object):
             if self.parse_subprocess_line(line):
                 return
         raise Exception('Error creating game server: Undefined Error')
+        # TODO handle errors when the server fails starting
 
     def parse_subprocess_line(self, line):
         """ Can Raise Exception """
