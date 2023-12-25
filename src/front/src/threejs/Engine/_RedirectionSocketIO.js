@@ -2,13 +2,13 @@ import {io} from 'socket.io-client';
 import {_GameSocketIO} from './_GameSocketIO';
 
 export class _RedirectionSocketIO {
-    constructor(server, gameSocketIOClass = _GameSocketIO) {
-        this._server = server;
+    constructor(engine, gameSocketIOClass = _GameSocketIO) {
+        this._engine = engine;
         this._initRedirectionSocketIO(gameSocketIOClass);
     }
 
     _initRedirectionSocketIO(gameSocketIOClass) {
-        this._socket = io('http://localhost:4242', { // TODO use real server address
+        this._socketIO = io('http://localhost:4242', { // TODO use real server address
             query: JSON.stringify({
                 'json_web_token': {
                     'user_id': 'player_1', // TODO use client account primary key
@@ -17,19 +17,19 @@ export class _RedirectionSocketIO {
             }),
         });
 
-        this._socket.on('connect', () => {
+        this._socketIO.on('connect', () => {
             console.log('connection to redirection server established');
         });
 
-        this._socket.on('connect_error', (error) => {
+        this._socketIO.on('connect_error', (error) => {
             console.error('Connection error:', error);
         });
 
-        this._socket.on('disconnect', () => {
+        this._socketIO.on('disconnect', () => {
             console.log('disconnected from redirection server');
         });
 
-        this._socket.on('error', async (message) => {
+        this._socketIO.on('error', async (message) => {
             try {
                 await this._waitForConnection();
             } catch (e) {
@@ -38,11 +38,11 @@ export class _RedirectionSocketIO {
             }
 
             console.error('Server error message: ', message);
-            this._socket.disconnect();
-            this._server._socket = null;
+            this._socketIO.disconnect();
+            this._engine.setSocket(null);
         });
 
-        this._socket.on('game_server_uri', async (gameServerUri) => {
+        this._socketIO.on('game_server_uri', async (gameServerUri) => {
             try {
                 await this._waitForConnection();
             } catch (e) {
@@ -51,24 +51,24 @@ export class _RedirectionSocketIO {
             }
 
             console.log('game_server_uri received: ', gameServerUri);
-            this._socket.disconnect();
-            this._server._socket = new gameSocketIOClass(this._server, gameServerUri);
+            this._socketIO.disconnect();
+            this._engine.setSocket(new gameSocketIOClass(this._engine, gameServerUri));
         });
 
-        this._socket.connect();
+        this._socketIO.connect();
     }
 
     async _waitForConnection(waitTime = 100, timeout = 10000) {
-        for (let i = 0; !this._socket.connected && i < timeout; i += waitTime) {
+        for (let i = 0; !this._socketIO.connected && i < timeout; i += waitTime) {
             await new Promise(resolve => setTimeout(resolve, waitTime));
         }
 
-        if (!this._socket.connected) {
+        if (!this._socketIO.connected) {
             throw new Error('_waitForConnection timed out');
         }
     }
 
     emit(event, data) {
-        this._socket.emit(event, data);
+        this._socketIO.emit(event, data);
     }
 }

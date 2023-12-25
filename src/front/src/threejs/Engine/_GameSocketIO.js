@@ -1,9 +1,9 @@
-import {io} from "socket.io-client";
-import {Scene} from "../Scene";
+import {io} from 'socket.io-client';
+import {Scene} from '../Scene';
 
 export class _GameSocketIO {
-    constructor(server, uri) {
-        this._server = server;
+    constructor(engine, uri) {
+        this._engine = engine;
         this._initGameSocketIO(uri);
     }
 
@@ -34,14 +34,14 @@ export class _GameSocketIO {
 
         this._socket.on('scene', (sceneData) => {
             console.log('scene data received');
-            this._server.stopAnimationLoop();
-            this._server._scene = new Scene(sceneData['boards'],
+            this._engine.stopAnimationLoop();
+            this._engine._scene = new Scene(sceneData['boards'],
                                             sceneData['balls'],
                                             sceneData['players']);
         });
 
         this._socket.on('update_player_movement', (data) => {
-            this._server._scene.updatePlayerMovement(data);
+            this._engine._scene.updatePlayerMovement(data);
         });
 
         this._socket.connect();

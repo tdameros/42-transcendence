@@ -52,4 +52,8 @@ export class Engine {
     stopAnimationLoop() {
         this._threeJS.stopAnimationLoop();
     }
+
+    setSocket(socket) {
+        this._socket = socket;
+    }
 }
