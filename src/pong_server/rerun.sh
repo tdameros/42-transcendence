@@ -14,5 +14,5 @@ while true; do
     kill -9 $(pgrep '[P]ython')
     sleep 1
     clear
-    find . -name '*.py' | entr -z -d python3 pong_redirection_server.py
+    find . -name '*.py' | entr -z -d python3 -m src.redirection_server
 done

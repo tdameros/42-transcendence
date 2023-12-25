@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from aiohttp import web
 import socketio
 import subprocess
@@ -41,8 +42,8 @@ async def background_task():
     """ The async sleep is here so that the server starts before
             this function is executed """
 
-    print(get_server_uri())
-
+    print(f'uri: {get_server_uri()}')
+    sys.stdout.flush()
     while True:
         await sio.sleep(3)
         # print('background task')
@@ -58,3 +59,6 @@ app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     # web.run_app(app, port=4242)
     web.run_app(app, host='localhost', port=0)
+    # TODO on error do
+    # print(error)
+    # sys.stdout.flush()
