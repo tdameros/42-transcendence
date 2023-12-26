@@ -23,13 +23,11 @@ class SignUpView(View):
                 if success is False:
                     return JsonResponse(data={'errors': errors}, status=400)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=201)
-            else:
-                return JsonResponse(data={'errors': validation_errors}, status=400)
+            return JsonResponse(data={'errors': validation_errors}, status=400)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
-
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
     def signup_infos_validation(self, json_request):
         validation_errors = []
@@ -119,13 +117,12 @@ class SignInView(View):
                 if success is False:
                     return JsonResponse(data={'errors': errors}, status=400)
                 return JsonResponse(data={'refresh_token': refresh_token}, status=200)
-            else:
-                return JsonResponse(data={'errors': validation_errors}, status=400)
+            return JsonResponse(data={'errors': validation_errors}, status=400)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
     @staticmethod
     def signin_infos_validation(json_request):
@@ -165,7 +162,7 @@ class IsUsernameTakenView(View):
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -187,4 +184,4 @@ class RefreshJWT(View):
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)

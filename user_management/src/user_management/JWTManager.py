@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 from django.conf import settings
 from user.models import User
 import jwt
@@ -62,17 +60,11 @@ class JWTManager:
         errors = []
         if not success:
             errors.append(error_decode)
-        elif decoded_payload is None:
-            errors.append('Token expired')
-        elif decoded_payload == {}:
+        elif decoded_payload is None or decoded_payload == {}:
             errors.append('Empty payload')
         if errors:
             return False, errors, None
 
-        exp_date = decoded_payload.get('exp')
-        exp_date_formatted = datetime.utcfromtimestamp(exp_date)
-        if exp_date_formatted < datetime.utcnow():
-            errors.append(f'Token expired : {exp_date_formatted} < {datetime.utcnow()}')
         user_id = decoded_payload.get('user_id')
         if user_id is None or user_id == '':
             errors.append('No user_id in payload')
