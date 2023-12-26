@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 
 from api.models import Tournament
 from dateutil import parser
@@ -13,7 +14,7 @@ from tournament import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class Tournament(View):
+class TournamentView(View):
     @staticmethod
     def post(request):
         try:
@@ -21,15 +22,15 @@ class Tournament(View):
             if user is None:
                 return JsonResponse(data={'errors': authenticate_errors}, status=401)
             json_request = json.loads(request.body.decode('utf8'))
-            valid_tournament, errors = Tournament.is_valid_tournament(json_request)
+            valid_tournament, errors = TournamentView.is_valid_tournament(json_request)
             if not valid_tournament:
                 return JsonResponse(data={'errors': errors}, status=400)
-            Tournament.objects.create(
+            tournament = Tournament.objects.create(
                 name=json_request['name'],
                 is_private=json_request['is-private'],
-                admin_id=user.pk
+                admin_id=user['id']
             )
-            return JsonResponse(data={}, status=201)
+            return JsonResponse(model_to_dict(tournament), status=201)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in request body']}, status=400)
 
@@ -41,9 +42,9 @@ class Tournament(View):
         registration_deadline = json_request.get('registration-deadline')
         is_private = json_request.get('is-private')
 
-        valid_name, name_errors = Tournament.is_valid_name(name)
-        valid_max_players, max_players_error = Tournament.is_valid_max_players(max_players)
-        valid_deadline, deadline_error = Tournament.is_valid_deadline(registration_deadline)
+        valid_name, name_errors = TournamentView.is_valid_name(name)
+        valid_max_players, max_players_error = TournamentView.is_valid_max_players(max_players)
+        valid_deadline, deadline_error = TournamentView.is_valid_deadline(registration_deadline)
 
         if not valid_name:
             errors.append(name_errors)

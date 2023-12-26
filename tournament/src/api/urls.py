@@ -1,7 +1,7 @@
 from django.urls import path
-from api.views import Tournament
+from api.views import TournamentView
 
 
 urlpatterns = [
-    path('', Tournament.as_view()),
+    path('', TournamentView.as_view()),
 ]
