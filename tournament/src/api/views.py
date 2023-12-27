@@ -17,33 +17,33 @@ from tournament import settings
 class TournamentView(View):
     @staticmethod
     def post(request):
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
         try:
-            user, authenticate_errors = authenticate_request(request)
-            if user is None:
-                return JsonResponse(data={'errors': authenticate_errors}, status=401)
-
             json_request = json.loads(request.body.decode('utf8'))
-            valid_tournament, errors = TournamentView.is_valid_tournament(json_request)
-            if not valid_tournament:
-                return JsonResponse(data={'errors': errors}, status=400)
-
-            tournament = Tournament(
-                name=json_request['name'],
-                is_private=json_request['is-private'],
-                admin_id=user['id']
-            )
-            max_players = json_request.get('max-players')
-            if max_players is not None:
-                tournament.max_players = max_players
-            registration_deadline = json_request.get('registration-deadline')
-            if json_request.get('registration-deadline') is not None:
-                registration_deadline = parser.isoparse(registration_deadline)
-                tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
-            tournament.save()
-
-            return JsonResponse(model_to_dict(tournament), status=201)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in request body']}, status=400)
+
+        valid_tournament, errors = TournamentView.is_valid_tournament(json_request)
+        if not valid_tournament:
+            return JsonResponse(data={'errors': errors}, status=400)
+
+        tournament = Tournament(
+            name=json_request['name'],
+            is_private=json_request['is-private'],
+            admin_id=user['id']
+        )
+        max_players = json_request.get('max-players')
+        if max_players is not None:
+            tournament.max_players = max_players
+        registration_deadline = json_request.get('registration-deadline')
+        if json_request.get('registration-deadline') is not None:
+            registration_deadline = parser.isoparse(registration_deadline)
+            tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
+        tournament.save()
+        return JsonResponse(model_to_dict(tournament), status=201)
 
     @staticmethod
     def is_valid_tournament(json_request):
@@ -106,13 +106,13 @@ class TournamentView(View):
             return True, None
         try:
             deadline_time = parser.isoparse(registration_deadline)
-            deadline_time = TournamentView.convert_to_utc_datetime(deadline_time)
-
-            if deadline_time < datetime.now(timezone.utc):
-                return False, 'Registration deadline has passed'
-            return True, None
         except ValueError:
             return False, 'Registration deadline not in ISO 8601 date and time format'
+
+        deadline_time = TournamentView.convert_to_utc_datetime(deadline_time)
+        if deadline_time < datetime.now(timezone.utc):
+            return False, 'Registration deadline has passed'
+        return True, None
 
     @staticmethod
     def is_valid_private(is_private):
