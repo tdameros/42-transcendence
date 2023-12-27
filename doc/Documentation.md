@@ -4,7 +4,7 @@ this documentation details the different endpoints of each microservice.
 
 ## Template
 
-> ### [/template](Template-API-Documentation.md#template)
+> ### [/template](Template_api_Documentation.md#template)
 >
 > #### Create / retrieve template
 
@@ -37,3 +37,7 @@ this documentation details the different endpoints of each microservice.
 > #### Manage matches of a tournament
 
 ## User Management
+> ### [/user/signup](../user_management/doc/User_management.md#signup)
+> ### [/user/signin](../user_management/doc/User_management.md#signin)
+> ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
+
