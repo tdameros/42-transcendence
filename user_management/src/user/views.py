@@ -15,19 +15,19 @@ class SignUpView(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = self.signup_infos_validation(json_request)
-            if not validation_errors:
-                user = User.objects.create(username=json_request['username'],
-                                    email=json_request['email'],
-                                    password=json_request['password'])
-                refresh_token = JWTManager('refresh').generate_token(user.id)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=201)
-            else:
+            if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
+            user = User.objects.create(username=json_request['username'],
+                                       email=json_request['email'],
+                                       password=json_request['password'])
+            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'refresh_token': refresh_token}, status=201)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
-
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
     def signup_infos_validation(self, json_request):
         validation_errors = []
@@ -111,17 +111,18 @@ class SignInView(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = SignInView.signin_infos_validation(json_request)
-            if not validation_errors:
-                user = User.objects.filter(username=json_request['username']).first()
-                refresh_token = JWTManager('refresh').generate_token(user.id)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=200)
-            else:
+            if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
+            user = User.objects.filter(username=json_request['username']).first()
+            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'refresh_token': refresh_token}, status=200)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
     @staticmethod
     def signin_infos_validation(json_request):
@@ -156,9 +157,30 @@ class IsUsernameTakenView(View):
             users = User.objects.filter(username=username)
             if users.exists():
                 return JsonResponse(data={'is_taken': True}, status=200)
-            else:
-                return JsonResponse(data={'is_taken': False}, status=200)
+            return JsonResponse(data={'is_taken': False}, status=200)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class RefreshJWT(View):
+    @staticmethod
+    def post(request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            refresh_token = json_request.get('refresh_token')
+            if refresh_token is None:
+                return JsonResponse(data={'errors': ['Refresh token not found']}, status=400)
+            success, errors, user_id = JWTManager('refresh').is_authentic_and_valid_request(refresh_token)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            success, access_token, errors = JWTManager('access').generate_token(user_id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'access_token': access_token}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)

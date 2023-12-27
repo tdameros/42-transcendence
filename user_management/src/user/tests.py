@@ -1,10 +1,13 @@
 import json
 import random
+from datetime import datetime, timedelta
 
+import jwt
 from django.test import TestCase
 from django.urls import reverse
 
 from user_management import settings
+from user_management.JWTManager import JWTManager
 
 
 class TestsSignup(TestCase):
@@ -239,3 +242,85 @@ class TestsUsernameExist(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('is_taken' in result.json())
         self.assertFalse(result.json()['is_taken'])
+
+
+class TestsRefreshJWT(TestCase):
+
+    def test_refresh_jwt(self):
+        print('\n-------------------\nTesting Refresh JWT')
+        data_preparation = {
+            'username': 'Aurel303',
+            'email': 'alevra@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        print('Creating user...')
+        refresh_token = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        print('User created')
+        data = {
+            'refresh_token': refresh_token.json()['refresh_token']
+        }
+        url = reverse('refresh-jwt')
+        print('Testing valid refresh token')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('access_token' in result.json())
+        print('Testing invalids refresh tokens ... :')
+        # 1 Refresh token not found
+        valid_access_token = JWTManager('access').generate_token(1)[1]
+
+        # 2 Invalid token
+        valid_payload = {
+            'user_id': 1,
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        bad_signature_token = jwt.encode(valid_payload,
+                                         open('./test_resources/invalid_key.pub').read(),
+                                         'RS256')
+        # 3 Empty payload
+        payload = {}
+        empty_payload = jwt.encode(payload, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 4 Token expired
+        payload_expired = {
+            'user_id': 1,
+            'exp': datetime.utcnow(),
+            'token_type': 'refresh'
+        }
+        expired_token = jwt.encode(payload_expired, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 5 No user_id in payload
+        payload_no_user_id = {
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        token_no_user_id = jwt.encode(payload_no_user_id, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        # 6 User does not exist
+        payload_user_not_exist = {
+            'user_id': 999,
+            'exp': datetime.utcnow() + timedelta(minutes=100),
+            'token_type': 'refresh'
+        }
+        token_user_not_exist = jwt.encode(payload_user_not_exist, settings.REFRESH_PRIVATE_KEY, 'RS256')
+
+        errors = [('Refresh token not found', {'access_token': valid_access_token}),
+                  ('Signature verification failed', {'refresh_token': bad_signature_token}),
+                  ('Empty payload', {'refresh_token': empty_payload}),
+                  ('Signature has expired', {'refresh_token': expired_token}),
+                  ('No user_id in payload', {'refresh_token': token_no_user_id}),
+                  ('User does not exist', {'refresh_token': token_user_not_exist})
+                  ]
+
+        for error in errors:
+            print(f'\nTesting {error[0]}')
+            url = reverse('refresh-jwt')
+            try:
+                result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
+            except Exception as e:
+                print(e)
+            error_message = result.json()['errors']
+            self.assertEqual(result.status_code, 400)
+            self.assertTrue('errors' in result.json())
+            self.assertEqual(result.json()['errors'], [error[0]])
