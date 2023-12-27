@@ -6,7 +6,7 @@ from user_management.JWTManager import JWTManager
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
+from django.core.mail import send_mail
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignUpView(View):
@@ -184,3 +184,34 @@ class RefreshJWT(View):
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SendEmailView(View): #we need a view that resend the 6 digit code, and we need to put this function outside this view
+
+    @staticmethod
+    def post(request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            refresh_token = json_request.get('refresh_token')
+            success, errors, user_id = JWTManager('refresh').is_authentic_and_valid_request(refresh_token)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            email = json_request.get('email')
+            if email is None:
+                return JsonResponse(data={'errors': ['Email empty']}, status=400)
+
+            subject = 'Hello'
+            message = ('I am the Pong server.\nEverything is running smoothly.\n'
+                       '\nHave a nice day!\n\n')
+
+            from_email = 'perfectpongproplayer@gmail.com'
+            recipient_list = ['aurelien.levra@gmail.com']
+
+            send_mail(subject, message, from_email, recipient_list)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+        return JsonResponse(data={'ok': 'ok'}, status=200)

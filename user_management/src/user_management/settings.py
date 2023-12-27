@@ -28,6 +28,16 @@ PASSWORD_MAX_LENGTH = 30
 ELO_DEFAULT = 500
 TLD_MAX_LENGTH = 15
 
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
+EMAIL_HOST_PASSWORD = 'jkabrqwookxrnfzv'
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
 ACCESS_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
