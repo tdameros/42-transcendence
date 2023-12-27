@@ -28,10 +28,11 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type       | response                            |
-> |-----------|--------------------|-------------------------------------|
-> | `201`     | `application/json` | `{"refresh_token": "eyJhbGci.."}`   |
-> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `201`     | `application/json` | `{"refresh_token": "eyJhbGci.."}`                    |
+> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 >errors can be combined
 
@@ -39,7 +40,7 @@ all fields are mandatory
 > - Username empty
 > - Username already taken
 > - Username length {len(username)} > 20
-
+> - 
 > - Email empty
 > - Email length {len(email)} > 50
 > - Email missing @
@@ -81,10 +82,11 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type               | response                            |
-> |-----------|----------------------------|-------------------------------------|
-> | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`   |
-> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> | http code | content-type               | response                                             |
+> |-----------|----------------------------|------------------------------------------------------|
+> | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`                    |
+> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`                  |
+> | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred : ...']}` |
 > 
 > errors can be combined
 
@@ -120,11 +122,13 @@ will return a boolean
 
 #### Responses
 
-> | http code | content-type               | response                            |
-> |-----------|----------------------------|-------------------------------------|
-> | `200`     | `application/json`         | `{"is_taken": false}`               |
-> | `200`     | `application/json`         | `{"is_taken": true}`                |
-> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}` |
+> | http code | content-type             | response                                             |
+> |-----------|--------------------------|------------------------------------------------------|
+> | `200`     | `application/json`       | `{"is_taken": false}`                                |
+> | `200`     | `application/json`       | `{"is_taken": true}`              n                  |
+> | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
+> | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
+
 > 
 > errors can be combined
 
@@ -135,3 +139,44 @@ will return a boolean
 > NB : An empty username is considered as not taken
 
 </details>
+
+## `refresh-jwt`
+
+### Trade a valid refresh token for an access token
+
+will return an access token when successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/refresh-jwt/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "refresh_jwt": "234235sfs3r2.."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"access_token": "eyJhbGci.."}`                     |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+>errors can be combined
+
+> errors can be :
+> - Refresh token not found
+> - Signature verification failed
+> - Empty payload
+> - Signature has expired
+> - No user_id in payload
+> - User does not exist
+> - Invalid JSON format in the request body
+> - An unexpected error occurred
+</details>
+
