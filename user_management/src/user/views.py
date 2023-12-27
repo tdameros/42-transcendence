@@ -15,15 +15,15 @@ class SignUpView(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = self.signup_infos_validation(json_request)
-            if not validation_errors:
-                user = User.objects.create(username=json_request['username'],
-                                           email=json_request['email'],
-                                           password=json_request['password'])
-                success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
-                if success is False:
-                    return JsonResponse(data={'errors': errors}, status=400)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=201)
-            return JsonResponse(data={'errors': validation_errors}, status=400)
+            if validation_errors:
+                return JsonResponse(data={'errors': validation_errors}, status=400)
+            user = User.objects.create(username=json_request['username'],
+                                       email=json_request['email'],
+                                       password=json_request['password'])
+            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'refresh_token': refresh_token}, status=201)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
@@ -111,13 +111,13 @@ class SignInView(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = SignInView.signin_infos_validation(json_request)
-            if not validation_errors:
-                user = User.objects.filter(username=json_request['username']).first()
-                success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
-                if success is False:
-                    return JsonResponse(data={'errors': errors}, status=400)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=200)
-            return JsonResponse(data={'errors': validation_errors}, status=400)
+            if validation_errors:
+                return JsonResponse(data={'errors': validation_errors}, status=400)
+            user = User.objects.filter(username=json_request['username']).first()
+            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'refresh_token': refresh_token}, status=200)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
@@ -157,8 +157,7 @@ class IsUsernameTakenView(View):
             users = User.objects.filter(username=username)
             if users.exists():
                 return JsonResponse(data={'is_taken': True}, status=200)
-            else:
-                return JsonResponse(data={'is_taken': False}, status=200)
+            return JsonResponse(data={'is_taken': False}, status=200)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
