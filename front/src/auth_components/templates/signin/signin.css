@@ -50,7 +50,7 @@
     margin: 0;
 }
 
-#forgot-password {
+#forgot-password, #dont-have-account {
     font-size: 13px;
     color: rgb(13, 110, 253);
 }

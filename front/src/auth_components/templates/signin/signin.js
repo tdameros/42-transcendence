@@ -19,6 +19,10 @@ forgotPassword.addEventListener('click', function () {
     loadComponent('auth/reset-password-email/', 'content');
 })
 
+const dontHaveAccount = document.querySelector('#dont-have-account');
+dontHaveAccount.addEventListener('click', function () {
+    loadComponent('auth/signup/', 'content');
+})
 
 const signinBtn = document.querySelector('#signin-btn');
 signinBtn.addEventListener('click', function (event) {
