@@ -3,10 +3,10 @@ name: User Management Tests
 on:
   push:
     branches:
-      - actions
+      - main
   pull_request:
     branches:
-      - actions
+      - main
 
 jobs:
   build:
