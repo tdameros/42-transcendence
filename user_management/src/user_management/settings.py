@@ -27,7 +27,6 @@ PASSWORD_MIN_LENGTH = 8
 PASSWORD_MAX_LENGTH = 30
 ELO_DEFAULT = 500
 TLD_MAX_LENGTH = 15
-MAX_USER_ID = 9223372036854775807
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'

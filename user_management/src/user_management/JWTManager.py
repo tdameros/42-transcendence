@@ -9,8 +9,7 @@ def user_exist(user_id: int) -> bool:
     if (user_id is None
             or user_id == ''
             or type(user_id) != int
-            or user_id < 0
-            or user_id > settings.MAX_USER_ID):
+            or user_id < 0):
         return False
     return User.objects.filter(id=user_id).exists()
 
