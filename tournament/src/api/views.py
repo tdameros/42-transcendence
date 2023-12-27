@@ -21,6 +21,7 @@ class TournamentView(View):
             user, authenticate_errors = authenticate_request(request)
             if user is None:
                 return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
             json_request = json.loads(request.body.decode('utf8'))
             valid_tournament, errors = TournamentView.is_valid_tournament(json_request)
             if not valid_tournament:
@@ -39,6 +40,7 @@ class TournamentView(View):
                 registration_deadline = parser.isoparse(registration_deadline)
                 tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
             tournament.save()
+
             return JsonResponse(model_to_dict(tournament), status=201)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in request body']}, status=400)
@@ -54,6 +56,7 @@ class TournamentView(View):
         valid_name, name_errors = TournamentView.is_valid_name(name)
         valid_max_players, max_players_error = TournamentView.is_valid_max_players(max_players)
         valid_deadline, deadline_error = TournamentView.is_valid_deadline(registration_deadline)
+        valid_private, is_private_error = TournamentView.is_valid_private(is_private)
 
         if not valid_name:
             errors.append(name_errors)
@@ -61,10 +64,8 @@ class TournamentView(View):
             errors.append(max_players_error)
         if not valid_deadline:
             errors.append(deadline_error)
-        if is_private is None:
-            errors.append('Missing is-private field')
-        elif not isinstance(is_private, bool):
-            errors.append('Is private must be a boolean')
+        if not valid_private:
+            errors.append(is_private_error)
 
         if errors:
             return False, errors
@@ -106,12 +107,20 @@ class TournamentView(View):
         try:
             deadline_time = parser.isoparse(registration_deadline)
             deadline_time = TournamentView.convert_to_utc_datetime(deadline_time)
-            current_time = datetime.now(timezone.utc)
-            if deadline_time < current_time:
+
+            if deadline_time < datetime.now(timezone.utc):
                 return False, 'Registration deadline has passed'
             return True, None
         except ValueError:
             return False, 'Registration deadline not in ISO 8601 date and time format'
+
+    @staticmethod
+    def is_valid_private(is_private):
+        if is_private is None:
+            return False, 'Missing is-private field'
+        elif not isinstance(is_private, bool):
+            return False, 'Is private must be a boolean'
+        return True, None
 
     @staticmethod
     def convert_to_utc_datetime(parsed_datetime):
