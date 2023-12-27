@@ -1,11 +1,13 @@
-from django.http import JsonResponse
-from user.models import User
-from django.views import View
-from django.conf import settings
-from user_management.JWTManager import JWTManager
 import json
-from django.views.decorators.csrf import csrf_exempt
+
+from django.conf import settings
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
+from user.models import User
+from user_management.JWTManager import JWTManager
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -17,17 +19,22 @@ class SignUpView(View):
             validation_errors = self.signup_infos_validation(json_request)
             if not validation_errors:
                 user = User.objects.create(username=json_request['username'],
-                                    email=json_request['email'],
-                                    password=json_request['password'])
+                                           email=json_request['email'],
+                                           password=json_request['password'])
                 refresh_token = JWTManager('refresh').generate_token(user.id)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=201)
+                return JsonResponse(data={'refresh_token': refresh_token},
+                                    status=201)
             else:
-                return JsonResponse(data={'errors': validation_errors}, status=400)
+                return JsonResponse(data={'errors': validation_errors},
+                                    status=400)
         except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+            return JsonResponse(
+                data={'errors': ['Invalid JSON format in the request body']},
+                status=400)
 
-        except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+        except Exception:
+            return JsonResponse(
+                data={'errors': ['An unexpected error occurred']}, status=500)
 
     def signup_infos_validation(self, json_request):
         validation_errors = []
@@ -36,9 +43,11 @@ class SignUpView(View):
         email = json_request.get('email')
         password = json_request.get('password')
 
-        valid_username, error_message_username = self.is_valid_username(username)
+        valid_username, error_message_username = self.is_valid_username(
+            username)
         valid_email, error_message_email = self.is_valid_email(email)
-        valid_password, error_message_password = self.is_valid_password(password)
+        valid_password, error_message_password = self.is_valid_password(
+            password)
 
         if not valid_username:
             validation_errors.append(error_message_username)
@@ -68,7 +77,7 @@ class SignUpView(View):
         if len(email) > settings.EMAIL_MAX_LENGTH:
             return False, f'Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}'
         if any(char in '!#$%^&*()=' for char in email):
-            return False, f'Invalid character in email address'
+            return False, 'Invalid character in email address'
         if '@' not in email:
             return False, 'Email missing @'
         if '.' not in email:
@@ -112,16 +121,22 @@ class SignInView(View):
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = SignInView.signin_infos_validation(json_request)
             if not validation_errors:
-                user = User.objects.filter(username=json_request['username']).first()
+                user = User.objects.filter(
+                    username=json_request['username']).first()
                 refresh_token = JWTManager('refresh').generate_token(user.id)
-                return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+                return JsonResponse(data={'refresh_token': refresh_token},
+                                    status=200)
             else:
-                return JsonResponse(data={'errors': validation_errors}, status=400)
+                return JsonResponse(data={'errors': validation_errors},
+                                    status=400)
         except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+            return JsonResponse(
+                data={'errors': ['Invalid JSON format in the request body']},
+                status=400)
 
-        except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+        except Exception:
+            return JsonResponse(
+                data={'errors': ['An unexpected error occurred']}, status=500)
 
     @staticmethod
     def signin_infos_validation(json_request):
@@ -159,6 +174,9 @@ class IsUsernameTakenView(View):
             else:
                 return JsonResponse(data={'is_taken': False}, status=200)
         except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
-        except Exception as e:
-            return JsonResponse(data={'errors': ['An unexpected error occurred']}, status=500)
+            return JsonResponse(
+                data={'errors': ['Invalid JSON format in the request body']},
+                status=400)
+        except Exception:
+            return JsonResponse(
+                data={'errors': ['An unexpected error occurred']}, status=500)

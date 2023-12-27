@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from django.conf import settings
-from user.models import User
 import jwt
+from django.conf import settings
+
+from user.models import User
 
 
 def user_exist(user_id):
@@ -32,7 +31,7 @@ class JWTManager:
         try:
             decoded_payload = jwt.decode(encoded_jwt, self.public_key, algorithms=[self.algorithm])
             return True, decoded_payload
-        except:
+        except Exception:
             return False, None
 
     def generate_token(self, user_id):
