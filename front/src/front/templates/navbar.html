@@ -36,7 +36,7 @@
                     <input class="form-control ms-2 me-2" type="search"
                            placeholder="Search" aria-label="Search">
                 </form>
-                <div id="login-part" class="d-flex align-items-center">
+                <div id="logout-part" class="d-flex align-items-center">
                     <button class="btn btn-outline-success"
                             onclick="loadComponent('auth/signup/', 'content')">
                         SignUp
@@ -45,6 +45,26 @@
                             onclick="loadComponent('auth/signin/', 'content')">
                         SignIn
                     </button>
+                </div>
+                <div id="log-part"  class="d-none d-flex align-items-center">
+                    <a class="mx-2">
+                        <i class="fas fa-bell text-dark-emphasis"></i>
+                    </a>
+                    <div class="dropdown mx-2">
+                        <span class="dropdown-toggle" id="dropdownMenuLink"
+                              data-bs-toggle="dropdown" aria-expanded="false">
+                            <img id="nav-profile-img" src="" alt="profile image"
+                                 class="rounded-circle"
+                                 style="width: 40px; height: 40px;">
+                            <span id="nav-username">@username</span>
+                        </span>
+                        <ul class="dropdown-menu dropdown-menu-end"
+                            aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item">Profil</a></li>
+                            <li><a class="dropdown-item">Settings</a></li>
+                            <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

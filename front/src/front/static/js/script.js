@@ -58,39 +58,25 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function logNav() {
-    const loginPart = document.querySelector('#login-part');
-    loginPart.innerHTML = `
-        <a class="mx-2">
-            <i class="fas fa-bell text-dark-emphasis"></i>
-        </a>
-        <div class="dropdown mx-2">
-        <span class="dropdown-toggle" id="dropdownMenuLink"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="static/img/tdameros.jpg" alt="Photo de profil"
-                   class="rounded-circle"
-                   style="width: 40px; height: 40px;">
-                <span class="">@tdameros</span>
-        </span>
-            <ul class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="dropdownMenuLink">
-                <li><a class="dropdown-item">Profil</a></li>
-                <li><a class="dropdown-item">Settings</a></li>
-                <li><a id="logout" class="dropdown-item text-danger">Sign out</a>
-                </li>
-            </ul>
-        </div>
-    `
-    document.querySelector('#logout').addEventListener('click', function () {
-        delogNav();
-    })
+    const logPart = document.querySelector('#log-part');
+    const logoutPart = document.querySelector('#logout-part')
+    const navUsername = document.querySelector('#nav-username');
+    const navProfileImg = document.querySelector('#nav-profile-img');
+    const username = 'tdameros';
+    const profileImg = 'static/img/tdameros.jpg';
+    navUsername.textContent = username;
+    navProfileImg.src = profileImg;
+    logoutPart.classList.add('d-none');
+    logPart.classList.remove('d-none');
+    const logoutButton = document.querySelector('#logout');
+    logoutButton.addEventListener('click', logoutNav);
 }
 
-function delogNav() {
-    const loginPart = document.querySelector('#login-part');
-    loginPart.innerHTML = `
-        <button class="btn btn-outline-success" onclick="loadComponent('auth/signup/', 'content')">SignUp</button>
-        <button type="button" class="btn btn-primary ms-2" onclick="loadComponent('auth/signin/', 'content')">SignIn</button>
-    `
+function logoutNav() {
+    const logPart = document.querySelector('#log-part');
+    const logoutPart = document.querySelector('#logout-part')
+    logPart.classList.add('d-none');
+    logoutPart.classList.remove('d-none');
 }
 
 window.addEventListener('popstate', function (event) {
