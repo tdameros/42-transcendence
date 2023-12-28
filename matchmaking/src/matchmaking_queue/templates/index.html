@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Matchmaking</title>
+</head>
+<body>
+    <h1>Matchmaking</h1>
+    <button class="matchmaking">Find Match</button>
+    <script>
+        const button = document.querySelector('.matchmaking');
+        const queueSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/queue/'
+        )
+
+        queueSocket.onmessage = (e) => {
+            const data = JSON.parse(e.data)
+            console.log(data)
+        }
+
+        button.onclick = (e) => {
+            queueSocket.send(JSON.stringify({
+                    'user-id': 'player_1',
+                    'elo': 500,
+                }
+            ));
+        }
+
+    </script>
+</body>
+</html>

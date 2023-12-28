@@ -31,13 +31,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'matchmaking_queue',
 ]
+
+ASGI_APPLICATION = 'matchmaking.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
