@@ -11,17 +11,19 @@ const logPart = document.querySelector('#log-part');
 const logoutPart = document.querySelector('#logout-part')
 const navUsername = document.querySelector('#nav-username');
 const navProfileImg = document.querySelector('#nav-profile-img');
+const body = document.querySelector('body');
+const switchButton = document.querySelector('#switch-btn');
 
 function switchMode() {
     if (!isDarkMode) {
-        document.querySelector('body').setAttribute('data-bs-theme', 'dark');
-        document.querySelector('#switch-btn').classList.remove('btn-outline-dark');
-        document.querySelector('#switch-btn').setAttribute('class', 'btn btn-outline-light')
+        body.setAttribute('data-bs-theme', 'dark');
+        switchButton.classList.remove('btn-outline-dark');
+        switchButton.setAttribute('class', 'btn btn-outline-light')
         isDarkMode = true;
     } else {
-        document.querySelector('body').setAttribute('data-bs-theme', 'light');
-        document.querySelector('#switch-btn').classList.remove('btn-outline-light');
-        document.querySelector('#switch-btn').setAttribute('class', 'btn btn-outline-dark');
+        body.setAttribute('data-bs-theme', 'light');
+        switchButton.classList.remove('btn-outline-light');
+        switchButton.setAttribute('class', 'btn btn-outline-dark');
         isDarkMode = false;
     }
 }
