@@ -3,6 +3,15 @@ let isDarkMode = false;
 const HOST = window.location.protocol + '//'
     + window.location.host + '/';
 
+const navbarBrandElement = document.querySelector('.navbar-brand');
+navbarBrandElement.addEventListener('click', homeNav);
+history.pushState({'previousComponent': '/'}, null, HOST);
+
+const logPart = document.querySelector('#log-part');
+const logoutPart = document.querySelector('#logout-part')
+const navUsername = document.querySelector('#nav-username');
+const navProfileImg = document.querySelector('#nav-profile-img');
+
 function switchMode() {
     if (!isDarkMode) {
         document.querySelector('body').setAttribute('data-bs-theme', 'dark');
@@ -51,17 +60,7 @@ function homeNav(event) {
     return false;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const navbarBrandElement = document.querySelector('.navbar-brand');
-    navbarBrandElement.addEventListener('click', homeNav);
-    history.pushState({'previousComponent': '/'}, null, HOST);
-});
-
 function logNav() {
-    const logPart = document.querySelector('#log-part');
-    const logoutPart = document.querySelector('#logout-part')
-    const navUsername = document.querySelector('#nav-username');
-    const navProfileImg = document.querySelector('#nav-profile-img');
     const username = 'tdameros';
     const profileImg = 'static/img/tdameros.jpg';
     navUsername.textContent = username;
@@ -73,8 +72,6 @@ function logNav() {
 }
 
 function logoutNav() {
-    const logPart = document.querySelector('#log-part');
-    const logoutPart = document.querySelector('#logout-part')
     logPart.classList.add('d-none');
     logoutPart.classList.remove('d-none');
 }
