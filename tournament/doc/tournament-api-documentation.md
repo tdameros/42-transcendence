@@ -24,7 +24,7 @@ Create a new tournament
 #### Body
 
 - Tournament name must be between 3 and 20 characters and can only contain alnum and space
-- Max players must be between 2 and 16 (optional, default = 16 players)
+- Players must be between 2 and 16 (optional, default = 16 players)
 - Registration deadline (optional)
 - A boolean that specifies if tournament is private
 

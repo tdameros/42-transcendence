@@ -1,4 +1,4 @@
-import json
+from tournament import settings
 import jwt
 import requests
 
@@ -24,8 +24,8 @@ def authenticate_request(request):
 
 def decode_jwt(encoded_jwt, errors):
     try:
-        decoded_payload = jwt.decode(encoded_jwt, 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k',
-                                     algorithms=["HS256"])
+        decoded_payload = jwt.decode(encoded_jwt, settings.ACCESS_PUBLIC_KEY,
+                                     algorithms=[settings.DECODE_ALGORITHM])
         return decoded_payload
     except Exception as e:
         errors.append(str(e))
