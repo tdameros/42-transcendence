@@ -1,11 +1,13 @@
-from django.http import JsonResponse
-from user.models import User
-from django.views import View
-from django.conf import settings
-from user_management.JWTManager import JWTManager
 import json
-from django.views.decorators.csrf import csrf_exempt
+
+from django.conf import settings
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
+from user.models import User
+from user_management.JWTManager import JWTManager
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -68,7 +70,7 @@ class SignUpView(View):
         if len(email) > settings.EMAIL_MAX_LENGTH:
             return False, f'Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}'
         if any(char in '!#$%^&*()=' for char in email):
-            return False, f'Invalid character in email address'
+            return False, 'Invalid character in email address'
         if '@' not in email:
             return False, 'Email missing @'
         if '.' not in email:
