@@ -6,7 +6,7 @@ from tournament.src.api.models import Tournament
 
 # Create your tests here.
 class TournamentBasicTest:
-    def basic_test(self):
+    def test_basic(self):
         data_tournamenent = {
             "name": "World Championship",
             "max-players": 16,
