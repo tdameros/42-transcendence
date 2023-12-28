@@ -96,9 +96,9 @@ class TournamentView(View):
         if not isinstance(max_players, int):
             return False, 'Max players must be an integer'
         if max_players > settings.MAX_PLAYERS:
-            return False, f'Max players must contain less than {settings.MAX_PLAYERS} slots'
+            return False, f'Tournament must contain less than {settings.MAX_PLAYERS} slots'
         if max_players < settings.MIN_PLAYERS:
-            return False, f'Max players must contain at least {settings.MIN_PLAYERS} slots'
+            return False, f'Tournament must contain at least {settings.MIN_PLAYERS} slots'
         return True, None
 
     @staticmethod

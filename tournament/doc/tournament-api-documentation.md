@@ -52,8 +52,8 @@ errors can be combined
 > - Tournament name must contain less than 20 characters
 > - Tournament name may only contain letters, numbers and spaces
 > - Max players must be an integer
-> - Max players must contain less than 16 slots
-> - Max players must contain at least 2 slots
+> - Tournament must contain less than 16 slots
+> - Tournament must contain at least 2 slots
 > - Registration deadline not in ISO 8601 date and time format
 > - Registration deadline has passed
 > - Missing is-private field
