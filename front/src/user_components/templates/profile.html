@@ -1,0 +1,356 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          rel="stylesheet">
+    <link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="{% static 'js/script.js' %}"></script>
+
+<body class="bg-body-secondary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand">42-Transcendence</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Singleplayer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Multiplayer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Tournaments</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <button id="switch-btn" class="btn btn-outline-dark"
+                        onclick="switchMode()" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                         height="16" fill="currentColor" class="bi bi-moon-fill"
+                         viewBox="0 0 16 16">
+                        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                    </svg>
+                </button>
+                <form class="d-flex" role="search">
+                    <input class="form-control ms-2 me-2" type="search"
+                           placeholder="Search" aria-label="Search">
+                </form>
+                <div id="login-part" class="d-flex align-items-center">
+                    <button class="btn btn-outline-success"
+                            onclick="loadComponent('auth/signup/', 'content')">
+                        SignUp
+                    </button>
+                    <button type="button" class="btn btn-primary ms-2"
+                            onclick="loadComponent('auth/signin/', 'content')">
+                        SignIn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div id="content">
+    <div class="profile-card card rounded">
+        <div class="card-body p-0">
+            <div class="banner">
+                <img src="{% static 'img/banner.jpg' %}" alt="Bannière"
+                     class="banner img-fluid vh-10 rounded-top">
+            </div>
+            <div class="profile-info">
+                <div class="profile-img-container">
+                    <img src="{% static 'img/tdameros.jpg' %}"
+                         class="profile-img">
+                </div>
+                <h1 class="username">@tdameros</h1>
+            </div>
+        </div>
+    </div>
+            <div class="card mt-5 m-3">
+                <div class="card-header border-bottom"><h5 class="mb-0">Latest
+                    games</h5></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-nowrap">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col">Adversary</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Team</th>
+                            <th scope="col">Completion</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
+                                     class="avatar avatar-sm rounded-circle me-2">
+                                <a
+                                        class="text-heading font-semibold"
+                                        href="#">@Alevra
+                                    </a></td>
+                            <td>23-01-2022</td>
+                            <td><span class="badge badge-lg badge-dot"><i
+                                    class="bg-warning"></i>In progress</span>
+                            </td>
+                            <td>
+                                <div class="avatar-group"><a href="#"
+                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-1.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-3.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..."
+                                        src="/img/people/img-4.jpg"></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center"><span
+                                        class="me-2">38%</span>
+                                    <div>
+                                        <div class="progress"
+                                             style="width:100px">
+                                            <div class="progress-bar bg-warning"
+                                                 role="progressbar"
+                                                 aria-valuenow="38"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:38%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end"><a href="#"
+                                                    class="btn btn-sm btn-neutral">View</a>
+                                <button type="button"
+                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
+                                    <i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
+                                     class="avatar avatar-sm rounded-circle me-2">
+                                <a
+                                        class="text-heading font-semibold"
+                                        href="#">@vfries
+                                    </a></td>
+                            <td>23-01-2022</td>
+                            <td><span class="badge badge-lg badge-dot"><i
+                                    class="bg-success"></i>Done</span></td>
+                            <td>
+                                <div class="avatar-group"><a href="#"
+                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-1.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-3.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..."
+                                        src="/img/people/img-4.jpg"></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center"><span
+                                        class="me-2">83%</span>
+                                    <div>
+                                        <div class="progress"
+                                             style="width:100px">
+                                            <div class="progress-bar bg-success"
+                                                 role="progressbar"
+                                                 aria-valuenow="83"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:83%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end"><a href="#"
+                                                    class="btn btn-sm btn-neutral">View</a>
+                                <button type="button"
+                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
+                                    <i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
+                                     class="avatar avatar-sm rounded-circle me-2">
+                                <a
+                                        class="text-heading font-semibold"
+                                        href="#">@edelage
+                                </a></td>
+                            <td>23-01-2022</td>
+                            <td><span class="badge badge-lg badge-dot"><i
+                                    class="bg-danger"></i>Project at risk</span>
+                            </td>
+                            <td>
+                                <div class="avatar-group"><a href="#"
+                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-1.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-3.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..."
+                                        src="/img/people/img-4.jpg"></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center"><span
+                                        class="me-2">4%</span>
+                                    <div>
+                                        <div class="progress"
+                                             style="width:100px">
+                                            <div class="progress-bar bg-danger"
+                                                 role="progressbar"
+                                                 aria-valuenow="4"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:4%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end"><a href="#"
+                                                    class="btn btn-sm btn-neutral">View</a>
+                                <button type="button"
+                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
+                                    <i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
+                                     class="avatar avatar-sm rounded-circle me-2">
+                                <a
+                                        class="text-heading font-semibold"
+                                        href="#">@bajeanno</a></td>
+                            <td>23-01-2022</td>
+                            <td><span class="badge badge-lg badge-dot"><i
+                                    class="bg-warning"></i>In progress</span>
+                            </td>
+                            <td>
+                                <div class="avatar-group"><a href="#"
+                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-1.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-3.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..."
+                                        src="/img/people/img-4.jpg"></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center"><span
+                                        class="me-2">10%</span>
+                                    <div>
+                                        <div class="progress"
+                                             style="width:100px">
+                                            <div class="progress-bar bg-primary"
+                                                 role="progressbar"
+                                                 aria-valuenow="10"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:10%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end"><a href="#"
+                                                    class="btn btn-sm btn-neutral">View</a>
+                                <button type="button"
+                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
+                                    <i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
+                                     class="avatar avatar-sm rounded-circle me-2">
+                                <a
+                                        class="text-heading font-semibold"
+                                        href="#">@hferraud</a></td>
+                            <td>23-01-2022</td>
+                            <td><span class="badge badge-lg badge-dot"><i
+                                    class="bg-warning"></i>In progress</span>
+                            </td>
+                            <td>
+                                <div class="avatar-group"><a href="#"
+                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-1.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..." src="/img/people/img-3.jpg">
+                                </a><a
+                                        href="#"
+                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
+                                        alt="..."
+                                        src="/img/people/img-4.jpg"></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center"><span
+                                        class="me-2">83%</span>
+                                    <div>
+                                        <div class="progress"
+                                             style="width:100px">
+                                            <div class="progress-bar bg-success"
+                                                 role="progressbar"
+                                                 aria-valuenow="83"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100"
+                                                 style="width:83%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end"><a href="#"
+                                                    class="btn btn-sm btn-neutral">View</a>
+                                <button type="button"
+                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
+                                    <i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
