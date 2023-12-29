@@ -5,6 +5,7 @@
 volumes/
 
 # Django #
+staticfiles/
 *.log
 *.pot
 *.pyc
