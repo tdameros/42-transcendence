@@ -4,7 +4,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 
-from typing import Dict, Tuple, Any
+from typing import Any, Optional
 from dateutil import parser, tz
 from datetime import datetime, timezone
 import json
@@ -47,7 +47,7 @@ class TournamentView(View):
         return JsonResponse(model_to_dict(tournament), status=201)
 
     @staticmethod
-    def is_valid_tournament(json_request: Dict[str, Any]) -> Tuple[bool, list[str]] | Tuple[bool, None]:
+    def is_valid_tournament(json_request: dict[str, Any]) -> tuple[bool, Optional[list[str]]]:
         errors = []
         name = json_request.get('name')
         max_players = json_request.get('max-players')
@@ -73,7 +73,7 @@ class TournamentView(View):
         return True, None
 
     @staticmethod
-    def is_valid_name(name: Any) -> tuple[bool, list[str]] | tuple[bool, None]:
+    def is_valid_name(name: Any) -> tuple[bool, Optional[list[str]]]:
         errors = []
 
         if name is None:
@@ -90,7 +90,7 @@ class TournamentView(View):
         return True, None
 
     @staticmethod
-    def is_valid_max_players(max_players: Any) -> tuple[bool, str | None]:
+    def is_valid_max_players(max_players: Any) -> tuple[bool, Optional[str]]:
         if max_players is None:
             return True, None
         if not isinstance(max_players, int):
@@ -102,7 +102,7 @@ class TournamentView(View):
         return True, None
 
     @staticmethod
-    def is_valid_deadline(registration_deadline: str) -> tuple[bool, str | None]:
+    def is_valid_deadline(registration_deadline: str) -> tuple[bool, Optional[str]]:
         if registration_deadline is None:
             return True, None
 
@@ -117,7 +117,7 @@ class TournamentView(View):
         return True, None
 
     @staticmethod
-    def is_valid_private(is_private: Any) -> tuple[bool, str | None]:
+    def is_valid_private(is_private: Any) -> tuple[bool, Optional[str]]:
         if is_private is None:
             return False, 'Missing is-private field'
         elif not isinstance(is_private, bool):
