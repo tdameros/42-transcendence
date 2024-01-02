@@ -21,8 +21,8 @@
         );
 
         queueSocket.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            console.log(data);
+            const json = JSON.parse(e.data);
+            console.log(json);
         }
 
         button.onclick = (e) => {
