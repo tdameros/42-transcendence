@@ -1,8 +1,12 @@
+import datetime
 import json
 import asyncio
+from time import time
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+
+from matchmaking import settings
 
 
 class QueueConsumer(AsyncWebsocketConsumer):
@@ -38,6 +42,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
             'channel_name': self.channel_name,
             'user_id': text_data_json.get('user_id'),
             'elo': text_data_json.get('elo'),
+            'timestamp': time(),
         })
         print(f'task_started: {self.task_started}')
         if len(self.queue) == 1:
@@ -50,7 +55,8 @@ class QueueConsumer(AsyncWebsocketConsumer):
     async def match_found(self, event):
         await self.send(text_data=json.dumps(event['message']))
 
-    async def send_match_notification(self, player1, player2):
+    @staticmethod
+    async def send_match_notification(player1, player2):
         channel_layer = get_channel_layer()
         await channel_layer.send(player1['channel_name'], {
             'type': 'match.found',
@@ -64,10 +70,38 @@ class QueueConsumer(AsyncWebsocketConsumer):
 
     async def matchmaking(self):
         while len(self.queue) > 0:
-            if len(self.queue) >= 2:
-                player1 = self.queue.pop()
-                player2 = self.queue.pop()
-                await self.send_match_notification(player1, player2)
-            # print(f'counter: {self.counter}')
-            self.counter += 1
+            for player in self.queue:
+                opponent = self.search_opponent(player)
+                if opponent is not None:
+                    self.queue.remove(player)
+                    self.queue.remove(opponent)
+                    await self.send_match_notification(player, opponent)
             await asyncio.sleep(2)
+
+    def search_opponent(self, player):
+        match_found = False
+        elo_threshold = self.get_elo_threshold(player)
+        for opponent in self.queue:
+            if opponent == player:
+                continue
+            if self.elo_gap(player, opponent) < elo_threshold:
+                if not match_found:
+                    match_found = True
+                    closest_opponent = opponent
+                else:
+                    if self.elo_gap(player, opponent) < self.elo_gap(player, closest_opponent):
+                        closest_opponent = opponent
+        return closest_opponent if match_found else None
+
+    @staticmethod
+    def get_elo_threshold(player):
+        elapsed_time = time() - player.get('timestamp')
+        queue_time = elapsed_time / settings.QUEUE_MAX_TIME
+        queue_time = max(queue_time, 1)
+        elo_threshold = settings.ELO_MAX_THRESHOLD * queue_time
+
+        return elo_threshold
+
+    @staticmethod
+    def elo_gap(player1, player2):
+        return abs(player1.get('elo') - player2.get('elo'))
