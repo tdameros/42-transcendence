@@ -9,11 +9,22 @@
 </head>
 <body>
     <h1>Matchmaking</h1>
-    <button class="matchmaking">Find Match</button>
+    <form id="matchmaking">
+        <label for="uuid">UUID:</label>
+        <input type="text" id="uuid" name="uuid" required>
+        <br>
+        <label for="elo">Elo:</label>
+        <input type="text" id="elo" name="elo" required>
+        <br>
+        <button type="submit">Find match</button>
+        <button type="button" id="randomize">Randomize</button>
+    </form>
     <script>
-        let user_id = 0;
+        const form = document.querySelector('#matchmaking');
+        const randomize = document.querySelector('#randomize');
+        const uuid_input = document.querySelector('#uuid');
+        const elo_input = document.querySelector('#elo');
 
-        const button = document.querySelector('.matchmaking');
         const queueSocket = new WebSocket(
             'ws://'
             + window.location.host
@@ -25,13 +36,20 @@
             console.log(json);
         }
 
-        button.onclick = (e) => {
+        form.onsubmit = (e) => {
+            e.preventDefault();
             queueSocket.send(JSON.stringify({
-                    'user_id': user_id,
-                    'elo': 500 + user_id * 100,
+                    'user_id': uuid_input.value,
+                    'elo': parseInt(elo_input.value, 10),
                 }
             ));
-            ++user_id;
+            uuid_input.value = ''
+            elo_input.value = ''
+        }
+
+        randomize.onclick = (e) => {
+            uuid_input.value = Math.floor(Math.random() * 100000)
+            elo_input.value = Math.floor(Math.random() * 3000)
         }
 
     </script>
