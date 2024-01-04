@@ -18,9 +18,6 @@ class QueueConsumer(AsyncWebsocketConsumer):
             'type': 'message',
             'data': 'connection established',
         }))
-        print('current queue:')
-        for item in self.queue:
-            print(item)
 
     async def disconnect(self, close_code):
         for user in self.queue:
@@ -29,25 +26,37 @@ class QueueConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        message_type = text_data_json.get('type')
 
-        print('message: ', text_data_json)
+        print('received: ', text_data_json)
+        if message_type == 'matchmaking.join':
+            await self.matchmaking_join(text_data_json)
+        if message_type == 'matchmaking.start':
+            await self.matchmaking_start(text_data_json)
+        if message_type == 'matchmaking.info':
+            await self.matchmaking_info(text_data_json)
+
+    async def match_found(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    async def matchmaking_join(self, json_message):
+        data = json_message.get('data')
+        self.queue.append({
+            'user_id': data.get('user_id'),
+            'elo': data.get('elo'),
+            'channel_name': self.channel_name,
+            'timestamp': time(),
+        })
         await self.send(text_data=json.dumps({
             'type': 'message',
             'data': 'in queue',
         }))
-        self.queue.append({
-            'channel_name': self.channel_name,
-            'user_id': text_data_json.get('user_id'),
-            'elo': text_data_json.get('elo'),
-            'timestamp': time(),
-        })
-        if len(self.queue) == 1:
-            asyncio.ensure_future(self.matchmaking())
-        for user in self.queue:
-            print(user)
 
-    async def match_found(self, event):
-        await self.send(text_data=json.dumps(event))
+    async def matchmaking_start(self, json_message):
+        asyncio.ensure_future(self.matchmaking())
+
+    async def matchmaking_info(self, json_message):
+        await self.send(json.dumps(self.queue))
 
     @staticmethod
     async def send_match_notification(player1, player2):
@@ -62,6 +71,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 'elo': player2.get('elo'),
             }
         ]
+
         await channel_layer.send(player1['channel_name'], {
             'type': 'match.found',
             'data': json.dumps(data),
@@ -90,19 +100,22 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 continue
             if self.elo_gap(player, opponent) < elo_threshold:
                 if not match_found:
-                    match_found = True
                     closest_opponent = opponent
-                else:
-                    if self.elo_gap(player, opponent) < self.elo_gap(player, closest_opponent):
-                        closest_opponent = opponent
+                    match_found = True
+                elif self.elo_gap(player, opponent) < self.elo_gap(player, closest_opponent):
+                    closest_opponent = opponent
         return closest_opponent if match_found else None
 
     @staticmethod
     def get_elo_threshold(player):
         elapsed_time = time() - player.get('timestamp')
+        print(f'elapsed: {elapsed_time}')
         queue_time = elapsed_time / settings.QUEUE_MAX_TIME
-        queue_time = max(queue_time, 1)
+        print(f'queue_time: {queue_time}')
+        queue_time = min(queue_time, 1)
+        print(f'queue_time: {queue_time}')
         elo_threshold = settings.ELO_MAX_THRESHOLD * queue_time
+        print(f'elo_threshold: {elo_threshold}')
 
         return elo_threshold
 

@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 QUEUE_MAX_TIME = 60
 ELO_MIN_THRESHOLD = 200
-ELO_MAX_THRESHOLD = 3000
+ELO_MAX_THRESHOLD = 10000
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
