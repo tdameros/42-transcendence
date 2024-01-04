@@ -10,17 +10,13 @@ from matchmaking import settings
 
 
 class QueueConsumer(AsyncWebsocketConsumer):
-    counter = 0
-    task_started = False
     queue = []
 
     async def connect(self):
         await self.accept()
         await self.send(text_data=json.dumps({
-            'message': 'connection established',
-        }))
-        await self.send(text_data=json.dumps({
-            'queue': self.queue,
+            'type': 'message',
+            'data': 'connection established',
         }))
         print('current queue:')
         for item in self.queue:
@@ -36,7 +32,8 @@ class QueueConsumer(AsyncWebsocketConsumer):
 
         print('message: ', text_data_json)
         await self.send(text_data=json.dumps({
-            'message': 'in queue',
+            'type': 'message',
+            'data': 'in queue',
         }))
         self.queue.append({
             'channel_name': self.channel_name,
@@ -44,29 +41,36 @@ class QueueConsumer(AsyncWebsocketConsumer):
             'elo': text_data_json.get('elo'),
             'timestamp': time(),
         })
-        print(f'task_started: {self.task_started}')
         if len(self.queue) == 1:
             asyncio.ensure_future(self.matchmaking())
-            self.task_started = True
-        print(f'task_started: {self.task_started}')
         for user in self.queue:
             print(user)
 
     async def match_found(self, event):
-        await self.send(text_data=json.dumps(event['message']))
+        await self.send(text_data=json.dumps(event))
 
     @staticmethod
     async def send_match_notification(player1, player2):
         channel_layer = get_channel_layer()
+        data = [
+            {
+                'user_id': player1.get('user_id'),
+                'elo': player1.get('elo'),
+            },
+            {
+                'user_id': player2.get('user_id'),
+                'elo': player2.get('elo'),
+            }
+        ]
         await channel_layer.send(player1['channel_name'], {
             'type': 'match.found',
-            'message': f"match found: {player1['user_id']} vs {player2['user_id']}",
+            'data': json.dumps(data),
         })
         await channel_layer.send(player2['channel_name'], {
             'type': 'match.found',
-            'message': f"match found: {player1['user_id']} vs {player2['user_id']}",
+            'data': json.dumps(data),
         })
-        print(f"match found: {player1['user_id']} vs {player2['user_id']}")
+        print(f'match found: {data}')
 
     async def matchmaking(self):
         while len(self.queue) > 0:
