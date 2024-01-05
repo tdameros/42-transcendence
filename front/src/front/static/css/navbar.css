@@ -1,0 +1,18 @@
+nav {
+    box-shadow: rgba(0, 82, 224, 0.1) 0px 6px 12px 0px;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+.navbar-brand {
+    font-family: 'JetBrains Mono Bold', monospace;
+}
+
+.nav-link {
+    font-family: 'JetBrains Mono Light', monospace;
+}
