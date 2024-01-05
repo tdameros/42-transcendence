@@ -58,7 +58,7 @@ async def start_background_task(app):
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     # web.run_app(app, port=4242)
-    web.run_app(app, host='localhost', port=0)
-    # TODO on error do
-    # print(error)
-    # sys.stdout.flush()
+    try:
+        web.run_app(app, host='localhost', port=0)
+    except Exception as e:
+        print(f"Error: {e}")

@@ -9,11 +9,13 @@ class Game(object):
     def create_server(self):
         """ Can Raise Exception """
 
-        process = subprocess.Popen(['python3', '-m', 'src.game_server'],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-        # TODO handle errors when the command doesn't work
+        try:
+            process = subprocess.Popen(['python3', '-m', 'src.game_server'],
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE,
+                                       universal_newlines=True)
+        except Exception as e:
+            raise Exception(f"Failed to run command to start new game server: {e}")
 
         while process.poll() is None:
             line = process.stdout.readline()
@@ -23,8 +25,7 @@ class Game(object):
         for line in remaining_output.splitlines():
             if self.parse_subprocess_line(line):
                 return
-        raise Exception('Error creating game server: Undefined Error')
-        # TODO handle errors when the server fails starting
+        raise Exception(f'Error creating game server: undefined error')
 
     def parse_subprocess_line(self, line):
         """ Can Raise Exception """
