@@ -1,20 +1,19 @@
 import asyncio
-from typing import *
 
-from Player import Player
 from Game import Game
+from Player import Player
 
 
 class Server(object):
     def __init__(self, sio):
-        # Dict[sid, Player]
-        self._players: Dict[str, Player] = {}
+        # dict[sid, Player]
+        self._players: dict[str, Player] = {}
 
-        self._players_without_a_game: List[Player] = []
+        self._players_without_a_game: list[Player] = []
 
         self._next_game_id: int = 1
-        # Dict[game_id, Game]
-        self._games: Dict[int, Game] = {}
+        # dict[game_id, Game]
+        self._games: dict[int, Game] = {}
 
         self.sio = sio
 

@@ -1,7 +1,7 @@
-from aiohttp import web
-import socketio
 from urllib.parse import parse_qs
 
+import socketio
+from aiohttp import web
 from Server import Server
 
 sio = socketio.AsyncServer(cors_allowed_origins=["http://localhost:5173"])

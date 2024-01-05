@@ -1,13 +1,9 @@
-import asyncio
-import sys
-from aiohttp import web
-import socketio
-import subprocess
 import os
-import socket
-from typing import AnyStr
-from urllib.parse import unquote
-import json
+import subprocess
+import sys
+
+import socketio
+from aiohttp import web
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()

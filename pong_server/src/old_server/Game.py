@@ -1,15 +1,13 @@
-from typing import *
-
-from Player import Player
 from GameScene import GameScene
+from Player import Player
 
 
 class Game(object):
     def __init__(self, game_id: int):
         print(f"Creating game {game_id}")
         self._id: int = game_id
-        self._players_score: List[int] = []
-        self._players: List[Player] = []
+        self._players_score: list[int] = []
+        self._players: list[Player] = []
         self._room: str = f"game_room_{game_id}"
 
     def get_id(self) -> int:

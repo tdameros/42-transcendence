@@ -1,12 +1,10 @@
-from src.shared_code.emit import emit
-from src.shared_code.get_query_string import get_query_string
-from src.shared_code.get_json_web_token import get_json_web_token
+import socketio
+from aiohttp import web
 
 from src.redirection_server.Game import Game
-
-from typing import AnyStr
-from aiohttp import web
-import socketio
+from src.shared_code.emit import emit
+from src.shared_code.get_json_web_token import get_json_web_token
+from src.shared_code.get_query_string import get_query_string
 
 #      dict[GameID, Game]
 games: dict[str, Game] = {'game_1': Game(['player_1'])}

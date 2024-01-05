@@ -25,7 +25,7 @@ class Game(object):
         for line in remaining_output.splitlines():
             if self.parse_subprocess_line(line):
                 return
-        raise Exception(f'Error creating game server: undefined error')
+        raise Exception('Error creating game server: undefined error')
 
     def parse_subprocess_line(self, line):
         """ Can Raise Exception """

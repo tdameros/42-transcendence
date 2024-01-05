@@ -1,5 +1,5 @@
-from urllib.parse import unquote
 import json
+from urllib.parse import unquote
 
 
 def get_query_string(environ):

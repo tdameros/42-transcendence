@@ -1,5 +1,6 @@
-import numpy
 import random
+
+import numpy
 
 
 def vector_to_dict(vector: numpy.ndarray) -> dict:
