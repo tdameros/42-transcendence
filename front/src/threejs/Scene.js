@@ -9,9 +9,6 @@ export class Scene {
         this._balls = [];
         this._players = [];
 
-        const light = new THREE.AmbientLight(0xffffff, 0); // TODO maybe remove this?
-        this._threeJSScene.add(light);                     // TODO maybe remove this?
-
         this._loadBoards(boards);
         this._loadBalls(balls);
         this._loadPlayers(players);
