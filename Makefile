@@ -1,22 +1,57 @@
-DOCKER_COMPOSE_PATH = docker-compose.yaml
+DOCKER_COMPOSE_PATH		=	docker-compose.yaml
+DOCKER_COMPOSE			=	docker compose -f $(DOCKER_COMPOSE_PATH)
+DOCKER_COMPOSE_TIMEOUT	=	--timeout 1
+
+FRONT_DB_VOLUME_PATH			=	front/docker/volumes/db
+USER_MANAGEMENT_DB_VOLUME_PATH	=	user_management/docker/volumes/db
+MATCHMAKING_DB_VOLUME_PATH		=	matchmaking/docker/volumes/db
+TOURNAMENT_DB_VOLUME_PATH		=	tournament/docker/volumes/db
+
+DB_VOLUMES						=	$(FRONT_DB_VOLUME_PATH) \
+									$(USER_MANAGEMENT_DB_VOLUME_PATH) \
+									$(MATCHMAKING_DB_VOLUME_PATH) \
+									$(TOURNAMENT_DB_VOLUME_PATH)
 
 .PHONY: all
 all:
-	@mkdir -p src/front/docker/volumes/db/
-	@mkdir -p src/user_management/docker/volumes/db/
-	docker-compose -f $(DOCKER_COMPOSE_PATH) up -d --build #&& docker logs -f transcendence
+	$(MAKE) up
+
+.PHONY: up
+up: create_volume_path
+	$(DOCKER_COMPOSE) up --detach --build
+
+.PHONY: down
+down:
+	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
+
+.PHONY: start
+start:
+	$(DOCKER_COMPOSE) start
 
 .PHONY: stop
 stop:
-	docker-compose -f $(DOCKER_COMPOSE_PATH) kill
+	$(DOCKER_COMPOSE) stop $(DOCKER_COMPOSE_TIMEOUT)
+
+.PHONY: restart
+restart:
+	$(DOCKER_COMPOSE) restart $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: clean
-clean: stop
-	docker-compose -f $(DOCKER_COMPOSE_PATH) down -v
+clean:
+	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT) --volumes --rmi all
 
 .PHONY: fclean
 fclean: clean
+	$(MAKE) delete_volume_path
 
 .PHONY: re
 re: fclean
 	$(MAKE) all
+
+.PHONY: create_volume_path
+create_volume_path:
+	mkdir -p $(DB_VOLUMES)
+
+.PHONY: delete_volume_path
+delete_volume_path:
+	$(RM) -r $(DB_VOLUMES)

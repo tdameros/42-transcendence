@@ -1,0 +1,45 @@
+services:
+    matchmaking-nginx:
+        networks:
+            - transcendence
+            - matchmaking
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        ports:
+            - "5000:80"
+        depends_on:
+            - matchmaking
+        volumes:
+            - matchmaking_static_volume:/app/static
+            - matchmaking_media_volume:/app/media
+        restart: on-failure
+
+
+    matchmaking:
+        networks:
+            - matchmaking
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ matchmaking.wsgi:application -w 4 -b 0.0.0.0:8000"
+        volumes:
+            - matchmaking_code:/app/src/
+        depends_on:
+            - matchmaking-db
+        restart: on-failure
+
+
+    matchmaking-db:
+        networks:
+            - matchmaking
+        image: postgres:16.0-bookworm
+        environment:
+            POSTGRES_DB: mydatabase
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - matchmaking_postgres_volume:/var/lib/postgresql/data
+        restart: on-failure

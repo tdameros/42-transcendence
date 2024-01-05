@@ -1,0 +1,32 @@
+services:
+    front-nginx:
+        networks:
+            - transcendence
+            - front
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - front
+        volumes:
+            - front_code:/app/src/
+        restart: on-failure
+
+
+    front:
+        networks:
+            - front
+            - transcendence
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "python3 src/manage.py collectstatic --noinput &&
+                        gunicorn --chdir src/ front.wsgi:application -w 4 -b 0.0.0.0:8000"
+        volumes:
+            - front_code:/app/src/
+        expose:
+            - "8000"
+        restart: on-failure

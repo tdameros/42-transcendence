@@ -5,6 +5,7 @@
 volumes/
 
 # Django #
+staticfiles/
 *.log
 *.pot
 *.pyc
@@ -145,3 +146,6 @@ GitHub.sublime-settings
 
 # PyCharm #
 .idea/
+
+# MacOS #
+.DS_Store
