@@ -1,7 +1,7 @@
 import {Scene} from '../Scene';
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
-import {_RedirectionSocketIO} from './_RedirectionSocketIO';
+import {_RedirectionSocketIO} from './sockets/_RedirectionSocketIO';
 
 export class Engine {
     constructor() {

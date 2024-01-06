@@ -26,6 +26,18 @@
   >> sends a `scene` event (or indefinitely if the connection fails)  
 
 ## Events when connected to the game server:
+- ### `error`
+  >> Argument:
+  >> ```
+  >> error_message: str
+  >> ``` 
+  >
+  >> Prints error_message on `console.error`  
+  >> Disconnects from the server
+  >>
+  >> After this event is received the client will stop trying to connect to
+  >> the game server and the scene will remain the same
+
 - ### `debug`:
   >> Argument:
   >> ```
@@ -34,8 +46,18 @@
   >
   >> Prints debug_message on `console.warn`
 
-- ### `scene`:
-  > As this will likely change I will not write documentation yet
+    - ### `scene`:
+  >> Argument:
+  >> ```
+  >> {'balls': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>             'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>  'boards': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>              'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>  'players': [{'move_direction': float,
+  >>               'position': {'x': float, 'y': float, 'z': float}}, ...]}
+  >> ```
+  >
+  >>  Replaces current scene with received scene
 
 - ### `update_player_movement`:
   > As this will likely change I will not write documentation yet

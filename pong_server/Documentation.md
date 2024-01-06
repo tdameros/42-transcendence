@@ -31,5 +31,23 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
 # Game Server
 
 ## Events:
-- ### `connect`:  
-  > Will always accept the connection (for now)
+- ### `connect`:
+  >> Query string:
+  >> ```
+  >> {  
+  >>     'json_web_token': The client's Json Web Token,  
+  >> }
+  >> ```
+  >
+  >> On success:  
+  >>
+  >> Accepts the connection
+  >
+  >> On failure:
+  >>
+  >> Event `error` is sent to the client
+  >>
+  >> The client is expected to disconnect from the server when this event is received
+  >
+  > If the client fails to disconnect on his own after receiving `error`, they
+  > will be kicked from the server
