@@ -12,7 +12,10 @@ class Game(object):
         """ Can Raise Exception """
 
         try:
-            process = subprocess.Popen(['python3', '-m', 'src.game_server'],
+            command = ['python3', '-m', 'src.game_server']
+            for player in self._clients:
+                command.append(player)
+            process = subprocess.Popen(command,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
                                        universal_newlines=True)

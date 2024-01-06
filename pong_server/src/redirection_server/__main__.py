@@ -1,6 +1,5 @@
 import socketio
 from aiohttp import web
-
 from src.redirection_server.Game import Game
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
@@ -15,7 +14,7 @@ sio.attach(app)
 user_kicker = UserKicker(sio)
 
 #      dict[GameID, Game]
-games: dict[str, Game] = {'game_1': Game(['player_1'])}  # TODO get all games from server
+games: dict[str, Game] = {'game_1': Game(['player_1', 'player_2'])}  # TODO get all games from server
 
 
 def get_game_id(query_string) -> str:
