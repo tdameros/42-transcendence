@@ -1,45 +1,43 @@
+import datetime
+
 from src.shared_code.log import log
 
-TIME_TO_WAIT_FOR_SIDS_TO_DISCONNECT = 1
+WAIT_TIME_BEFORE_KICK = 10
+
+
+def enough_time_has_passed_to_kick_user(start_time: datetime.datetime):
+    delta_to_kick = datetime.timedelta(seconds=WAIT_TIME_BEFORE_KICK)
+    current_delta = datetime.datetime.now() - start_time
+    return current_delta >= delta_to_kick
 
 
 class UserKicker(object):
     def __init__(self, sio):
-        self._kick_queue = []
-        self._is_kick_queue_being_used = False
+        #                 list[list[sid, time_when_added_to_queue]]
+        self._kick_queue: list[list[str: datetime]] = []
         self._sio = sio
-        self._sid_being_kicked = ''
+        self._sid_being_kicked: str = ''
 
     async def add_sid_to_kick_queue(self, sid):
-        while self._is_kick_queue_being_used:
-            await self._sio.sleep(TIME_TO_WAIT_FOR_SIDS_TO_DISCONNECT)
-
-        self._is_kick_queue_being_used = True
-        self._kick_queue.append(sid)
-        self._is_kick_queue_being_used = False
+        self._kick_queue.append([sid, datetime.datetime.now()])
 
     async def remove_sid_from_kick_queue(self, sid):
         if sid == self._sid_being_kicked:
+            self._sid_being_kicked = ''
             return
 
         log(f'{sid} disconnected')
 
-        while self._is_kick_queue_being_used:
-            await self._sio.sleep(TIME_TO_WAIT_FOR_SIDS_TO_DISCONNECT)
-
-        self._is_kick_queue_being_used = True
-        self._kick_queue = [elem for elem in self._kick_queue if elem != sid]
-        self._is_kick_queue_being_used = False
+        self._kick_queue = [
+            elem for elem in self._kick_queue
+            if elem[0] != sid
+        ]
 
     async def kick_users(self):
-        while self._is_kick_queue_being_used:
-            await self._sio.sleep(TIME_TO_WAIT_FOR_SIDS_TO_DISCONNECT)
-
-        self._is_kick_queue_being_used = True
-        for sid in self._kick_queue:
+        while len(self._kick_queue) > 0:
+            if not enough_time_has_passed_to_kick_user(self._kick_queue[0][1]):
+                return
+            sid, timestamp = self._kick_queue.pop(0)
             log(f'Disconnecting {sid}, they did not disconnect themself')
             self._sid_being_kicked = sid
             await self._sio.disconnect(sid)
-        self._sid_being_kicked = ''
-        self._kick_queue.clear()
-        self._is_kick_queue_being_used = False
