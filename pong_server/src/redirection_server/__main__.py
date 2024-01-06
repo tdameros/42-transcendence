@@ -74,7 +74,6 @@ async def connect(sid, environ, auth):
         await emit(sio, 'error', sid, str(e))
 
     await user_kicker.add_sid_to_kick_queue(sid)
-    return True
 
 
 @sio.event

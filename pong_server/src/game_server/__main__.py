@@ -20,22 +20,35 @@ game: Game = Game()
 user_kicker = UserKicker(sio)
 
 
+async def add_user_to_game(user_id: str, sid: str):
+    if not game.is_user_part_of_game(user_id):
+        raise Exception("You are not part of this game")
+
+    previous_sid = game.get_user_sid(user_id)
+    if previous_sid is not None:
+        await sio.disconnect(previous_sid)
+
+    game.add_user(user_id, sid)
+
+
 @sio.event
 async def connect(sid, environ, auth):
     log(f'{sid} connected')
+
     try:
         query_string = get_query_string(environ)
         json_web_token = get_json_web_token(query_string)
+        await add_user_to_game(json_web_token['user_id'], sid)
         # TODO Handle success
     except Exception as e:
         await emit(sio, 'error', sid, str(e))
         await user_kicker.add_sid_to_kick_queue(sid)
 
-    return True
-
 
 @sio.event
 async def disconnect(sid):
+    game.remove_user(sid)
+
     await user_kicker.remove_sid_from_kick_queue(sid)
 
 
@@ -66,8 +79,8 @@ async def background_task():
         await user_kicker.kick_users()
 
 
-# The app arguments is not used but is required
-# for app.on_startup.append(start_background_task)
+# The app arguments is not used but is required by
+#   app.on_startup.append(start_background_task)
 async def start_background_task(app):
     sio.start_background_task(background_task)
 
@@ -75,7 +88,7 @@ async def start_background_task(app):
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     try:
-        game.read_argv()
+        game.init_game_from_argv()
         # web.run_app(app, port=4242)
         web.run_app(app, host='localhost', port=0)
     except Exception as e:
