@@ -1,6 +1,5 @@
 from tournament import settings
 
-
 BAD_JSON_FORMAT = 'Invalid JSON format in request body'
 
 MISSING_NAME = 'Missing name field'

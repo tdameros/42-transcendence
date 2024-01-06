@@ -1,6 +1,7 @@
-from tournament import settings
 import jwt
 import requests
+
+from tournament import settings
 
 
 def authenticate_request(request):

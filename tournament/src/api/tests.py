@@ -1,12 +1,12 @@
 import json
+from unittest.mock import patch
 
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from unittest.mock import patch
-from django.http import HttpRequest, HttpResponse
 
-from tournament import settings
 from api import error_message as error
+from tournament import settings
 
 
 class CreateTournamentTest(TestCase):

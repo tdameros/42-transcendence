@@ -1,18 +1,18 @@
-from django.http import JsonResponse, HttpRequest
+import json
+from datetime import datetime, timezone
+from typing import Any, Optional
+
+from dateutil import parser, tz
+from django.forms.models import model_to_dict
+from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.forms.models import model_to_dict
 
-from typing import Any, Optional
-from dateutil import parser, tz
-from datetime import datetime, timezone
-import json
-
-from api.models import Tournament
 from api import error_message as error
-from tournament.authenticate_request import authenticate_request
+from api.models import Tournament
 from tournament import settings
+from tournament.authenticate_request import authenticate_request
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -128,4 +128,3 @@ class TournamentView(View):
     @staticmethod
     def convert_to_utc_datetime(parsed_datetime: datetime) -> datetime:
         return parsed_datetime.astimezone(tz.tzutc())
-
