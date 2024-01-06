@@ -26,6 +26,18 @@
   >> sends a `scene` event (or indefinitely if the connection fails)  
 
 ## Events when connected to the game server:
+- ### `error`
+  >> Argument:
+  >> ```
+  >> error_message: str
+  >> ``` 
+  >
+  >> Prints error_message on `console.error`  
+  >> Disconnects from the server
+  >>
+  >> After this event is received the client will stop trying to connect to
+  >> the game server and the scene will remain the same
+
 - ### `debug`:
   >> Argument:
   >> ```

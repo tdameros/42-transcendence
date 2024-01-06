@@ -5,20 +5,36 @@ import sys
 import socketio
 from aiohttp import web
 
+from src.shared_code.UserKicker import UserKicker
+from src.shared_code.emit import emit
+from src.shared_code.get_json_web_token import get_json_web_token
+from src.shared_code.get_query_string import get_query_string
+from src.shared_code.log import log
+
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
 sio.attach(app)
 
+user_kicker = UserKicker(sio)
+
 
 @sio.event
 async def connect(sid, environ, auth):
-    print(f'{sid} connected')
+    log(f'{sid} connected')
+    try:
+        query_string = get_query_string(environ)
+        json_web_token = get_json_web_token(query_string)
+        # TODO Handle success
+    except Exception as e:
+        await emit(sio, 'error', sid, str(e))
+        await user_kicker.add_sid_to_kick_queue(sid)
+
     return True
 
 
 @sio.event
 async def disconnect(sid):
-    print(f'{sid} disconnected')
+    await user_kicker.remove_sid_from_kick_queue(sid)
 
 
 def get_server_uri():
@@ -36,13 +52,16 @@ def get_server_uri():
 async def background_task():
     await sio.sleep(0.1)
     """ The async sleep is here so that the server starts before
-            this function is executed """
+        this function is executed """
 
     print(f'uri: {get_server_uri()}')
+    """ Do not use log()! This should always be printed as the redirection
+        server will read it """
+
     sys.stdout.flush()
     while True:
         await sio.sleep(3)
-        # print('background task')
+        await user_kicker.kick_users()
 
 
 # The app arguments is not used but is required
@@ -53,8 +72,10 @@ async def start_background_task(app):
 
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
-    # web.run_app(app, port=4242)
     try:
+        # web.run_app(app, port=4242)
         web.run_app(app, host='localhost', port=0)
     except Exception as e:
         print(f"Error: {e}")
+        """ Do not use log()! This should always be printed as the redirection
+            server will read it """

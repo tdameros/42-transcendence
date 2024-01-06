@@ -6,11 +6,13 @@ on:
             - main
             - dev
             - basic-pong
+            - pong-game
     pull_request:
         branches:
             - main
             - dev
             - basic-pong
+            - pong-game
 
 jobs:
     build:

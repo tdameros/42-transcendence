@@ -1,5 +1,7 @@
 import subprocess
 
+from src.shared_code.log import log
+
 
 class Game(object):
     def __init__(self, clients: list[str]):
@@ -35,7 +37,7 @@ class Game(object):
 
         if line.startswith('uri: '):
             self._uri = line[len('uri: '):-1]
-            print(f'Created game server with uri {self._uri}')
+            log(f'Created game server with uri {self._uri}')
             return True
 
         if line.startswith('Error: '):
