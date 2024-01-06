@@ -2,11 +2,11 @@ import socketio
 from aiohttp import web
 
 from src.redirection_server.Game import Game
-from src.shared_code.UserKicker import UserKicker
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.log import log
+from src.shared_code.UserKicker import UserKicker
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
