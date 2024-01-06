@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import json
 
 from api.models import Tournament
+from api import error_message as error
 from tournament.authenticate_request import authenticate_request
 from tournament import settings
 
@@ -25,7 +26,7 @@ class TournamentView(View):
         try:
             json_request = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in request body']}, status=400)
+            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         valid_tournament, errors = TournamentView.is_valid_tournament(json_request)
         if not valid_tournament:
@@ -60,7 +61,7 @@ class TournamentView(View):
         valid_private, is_private_error = TournamentView.is_valid_private(is_private)
 
         if not valid_name:
-            errors.append(name_errors)
+            errors.extend(name_errors)
         if not valid_max_players:
             errors.append(max_players_error)
         if not valid_deadline:
@@ -77,13 +78,13 @@ class TournamentView(View):
         errors = []
 
         if name is None:
-            errors.append('Missing name field')
+            return False, [error.MISSING_NAME]
         if len(name) < settings.MIN_TOURNAMENT_NAME_LENGTH:
-            errors.append(f'Tournament name must contain at least {settings.MIN_TOURNAMENT_NAME_LENGTH} characters')
+            errors.append(error.NAME_TOO_SHORT)
         elif len(name) > settings.MAX_TOURNAMENT_NAME_LENGTH:
-            errors.append(f'Tournament name must contain less than {settings.MAX_TOURNAMENT_NAME_LENGTH} characters')
-        if not name.replace(' ', '').isalnum():
-            errors.append('Tournament name may only contain letters, numbers and spaces')
+            errors.append(error.NAME_TOO_LONG)
+        if len(name) and not name.replace(' ', '').isalnum():
+            errors.append(error.NAME_INVALID_CHAR)
 
         if errors:
             return False, errors
@@ -94,11 +95,11 @@ class TournamentView(View):
         if max_players is None:
             return True, None
         if not isinstance(max_players, int):
-            return False, 'Max players must be an integer'
+            return False, error.PLAYERS_NOT_INT
         if max_players > settings.MAX_PLAYERS:
-            return False, f'Tournament must contain less than {settings.MAX_PLAYERS} slots'
+            return False, error.TOO_MANY_SLOTS
         if max_players < settings.MIN_PLAYERS:
-            return False, f'Tournament must contain at least {settings.MIN_PLAYERS} slots'
+            return False, error.NOT_ENOUGH_SLOTS
         return True, None
 
     @staticmethod
@@ -109,19 +110,19 @@ class TournamentView(View):
         try:
             deadline_time = parser.isoparse(registration_deadline)
         except ValueError:
-            return False, 'Registration deadline not in ISO 8601 date and time format'
+            return False, error.NOT_ISO_8601
 
         deadline_time = TournamentView.convert_to_utc_datetime(deadline_time)
         if deadline_time < datetime.now(timezone.utc):
-            return False, 'Registration deadline has passed'
+            return False, error.DEADLINE_PASSED
         return True, None
 
     @staticmethod
     def is_valid_private(is_private: Any) -> tuple[bool, Optional[str]]:
         if is_private is None:
-            return False, 'Missing is-private field'
+            return False, error.MISSING_IS_PRIVATE
         elif not isinstance(is_private, bool):
-            return False, 'Is private must be a boolean'
+            return False, error.IS_PRIVATE_NOT_BOOL
         return True, None
 
     @staticmethod
