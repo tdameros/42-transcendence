@@ -13,6 +13,8 @@ this documentation details the different endpoints of each microservice.
 > #### Retrieve information from a specific template
 
 ## Front
+### [Components usage](../front/doc/front.md)
+> ### [/components](../front/doc/components.md)
 
 ## Matchmaking
 
@@ -40,4 +42,5 @@ this documentation details the different endpoints of each microservice.
 > ### [/user/signup](../user_management/doc/User_management.md#signup)
 > ### [/user/signin](../user_management/doc/User_management.md#signin)
 > ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
+> ### [/user/refresh-jwt](../user_management/doc/User_management.md#refresh-jwt)
 

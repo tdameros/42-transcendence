@@ -1,12 +1,6 @@
-from django.http import HttpResponse
-import requests
+from django.shortcuts import render
 
+# Create your views here.
 
-def hello(request):
-    try:
-        request = requests.get("http://user-management-nginx/api/")
-    except:
-        return HttpResponse("Failed to ping user microservice")
-    if not request.ok:
-        return HttpResponse("Failed to ping user microservice")
-    return HttpResponse(f"Ping user microservice result: {request.json()}")
+def home(request):
+    return render(request, "index.html")
