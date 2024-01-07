@@ -1,10 +1,8 @@
-import os
-import subprocess
-import sys
-
 import socketio
 from aiohttp import web
+from src.game_server import rooms
 from src.game_server.Game import Game
+from src.game_server.print_server_uri import print_server_uri
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
@@ -28,7 +26,7 @@ async def add_user_to_game(user_id: str, sid: str):
     if previous_sid is not None:
         await sio.disconnect(previous_sid)
 
-    game.add_user(user_id, sid)
+    await game.add_user(user_id, sid, sio)
 
 
 @sio.event
@@ -39,41 +37,28 @@ async def connect(sid, environ, auth):
         query_string = get_query_string(environ)
         json_web_token = get_json_web_token(query_string)
         await add_user_to_game(json_web_token['user_id'], sid)
-        # TODO Handle success
     except Exception as e:
         await emit(sio, 'error', sid, str(e))
-        await user_kicker.add_sid_to_kick_queue(sid)
+        user_kicker.add_sid_to_kick_queue(sid)
 
 
 @sio.event
 async def disconnect(sid):
-    game.remove_user(sid)
+    await game.remove_user(sid, sio)
 
-    await user_kicker.remove_sid_from_kick_queue(sid)
-
-
-def get_server_uri():
-    command = (f'lsof -a -p {os.getpid()} -i6'
-               f" | awk '{{print $9}}'"
-               f' | tail -n +2')
-    """ gets all open ipv6 sockets for current process
-                | gets the column with the uri of the socket
-                | removes the first line which only contains the name
-                  of the column """
-
-    return f"http://{subprocess.check_output(command, shell=True).decode()}"
+    user_kicker.remove_sid_from_kick_queue(sid)
 
 
 async def background_task():
-    await sio.sleep(0.1)
-    """ The async sleep is here so that the server starts before
-        this function is executed """
+    await print_server_uri(sio)
 
-    print(f'uri: {get_server_uri()}')
-    """ Do not use log()! This should always be printed as the redirection
-        server will read it """
+    while not game.have_all_players_joined():
+        # TODO Add a time out and make the players that don't join forfeit
+        #      their games
+        await sio.sleep(10)
 
-    sys.stdout.flush()
+    await emit(sio, 'scene', rooms.ALL_PLAYERS, game.get_scene().to_json())
+
     while True:
         await sio.sleep(3)
         await user_kicker.kick_users()

@@ -18,10 +18,10 @@ class UserKicker(object):
         self._sio = sio
         self._sid_being_kicked: str = ''
 
-    async def add_sid_to_kick_queue(self, sid):
+    def add_sid_to_kick_queue(self, sid):
         self._kick_queue.append([sid, datetime.datetime.now()])
 
-    async def remove_sid_from_kick_queue(self, sid):
+    def remove_sid_from_kick_queue(self, sid):
         if sid == self._sid_being_kicked:
             self._sid_being_kicked = ''
             return

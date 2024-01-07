@@ -39,8 +39,8 @@ export class _GameSocketIO {
         });
 
         this._socketIO.on('scene', (sceneData) => {
-            console.log('scene data received');
-            this._engine.stopAnimationLoop();
+            console.log('game scene received');
+            // this._engine.stopAnimationLoop();
             this._engine._scene = new Scene(sceneData['boards'],
                                             sceneData['balls'],
                                             sceneData['players']);

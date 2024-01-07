@@ -62,6 +62,7 @@ def create_game_server_if_needed(game: Game):
 @sio.event
 async def connect(sid, environ, auth):
     log(f'{sid} connected')
+
     try:
         query_string = get_query_string(environ)
         json_web_token = get_json_web_token(query_string)
@@ -73,12 +74,12 @@ async def connect(sid, environ, auth):
     except Exception as e:
         await emit(sio, 'error', sid, str(e))
 
-    await user_kicker.add_sid_to_kick_queue(sid)
+    user_kicker.add_sid_to_kick_queue(sid)
 
 
 @sio.event
 async def disconnect(sid):
-    await user_kicker.remove_sid_from_kick_queue(sid)
+    user_kicker.remove_sid_from_kick_queue(sid)
 
 
 # This function is for disconnecting clients that don't disconnect themselves
