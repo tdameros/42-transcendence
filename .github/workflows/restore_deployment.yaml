@@ -1,0 +1,35 @@
+name: Restore Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  restore-deployment:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pydo
+        pip install paramiko
+
+    - name: Restore
+      working-directory: .github/
+      env:
+        DO_API_KEY: ${{ secrets.DO_API_KEY }}
+        DO_IMAGE_ID: ${{ secrets.DO_IMAGE_ID }}
+        DO_DROPLET_ID: ${{ secrets.DO_DROPLET_ID }}
+        SSH_HOSTNAME: ${{ secrets.SSH_HOSTNAME }}
+        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        PROJECT_DIR_NAME: ${{ secrets.PROJECT_DIR_NAME }}
+      run: |
+        python restore_deployment.py
