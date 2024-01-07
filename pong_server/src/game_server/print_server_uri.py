@@ -12,7 +12,10 @@ def get_server_uri():
                 | removes the first line which only contains the name
                   of the column """
 
-    return f"http://{subprocess.check_output(command, shell=True).decode()}"
+    port: str = subprocess.check_output(command, shell=True).decode()
+    if len(port) == 0:
+        raise Exception('No open ipv6 sockets found')
+    return f'http://{port if port[-1] != '\n' else port[:-1]}'
 
 
 async def print_server_uri(sio):
