@@ -41,7 +41,7 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
   >
   >> On success:  
   >>
-  >> Not coded yet
+  >> Accepts the connection
   >
   >> On failure:
   >>

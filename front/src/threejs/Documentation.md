@@ -46,8 +46,18 @@
   >
   >> Prints debug_message on `console.warn`
 
-- ### `scene`:
-  > As this will likely change I will not write documentation yet
+    - ### `scene`:
+  >> Argument:
+  >> ```
+  >> {'balls': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>             'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>  'boards': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>              'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>  'players': [{'move_direction': float,
+  >>               'position': {'x': float, 'y': float, 'z': float}}, ...]}
+  >> ```
+  >
+  >>  Replaces current scene with received scene
 
 - ### `update_player_movement`:
   > As this will likely change I will not write documentation yet
