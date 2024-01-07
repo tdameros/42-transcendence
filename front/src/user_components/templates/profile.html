@@ -18,7 +18,10 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-<script src="{% static 'js/script.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script defer src="{% static 'js/script.js' %}"></script>
+<script defer src="{% static 'js/profile.js' %}"></script>
 
 <body class="bg-body-secondary">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -72,285 +75,344 @@
         </div>
     </div>
 </nav>
-<div id="content">
+<div id="content" class="container-fluid">
     <div class="profile-card card rounded">
         <div class="card-body p-0">
             <div class="banner">
                 <img src="{% static 'img/banner.jpg' %}" alt="Bannière"
                      class="banner img-fluid vh-10 rounded-top">
             </div>
-            <div class="profile-info">
+            <div class="profile-info d-flex align-items-center">
                 <div class="profile-img-container">
                     <img src="{% static 'img/tdameros.jpg' %}"
-                         class="profile-img">
+                         class="profile-img mr-2">
                 </div>
                 <h1 class="username">@tdameros</h1>
             </div>
         </div>
     </div>
-            <div class="card mt-5 m-3">
-                <div class="card-header border-bottom"><h5 class="mb-0">Latest
-                    games</h5></div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-nowrap">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col">Adversary</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Team</th>
-                            <th scope="col">Completion</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
-                                     class="avatar avatar-sm rounded-circle me-2">
-                                <a
-                                        class="text-heading font-semibold"
-                                        href="#">@Alevra
-                                    </a></td>
-                            <td>23-01-2022</td>
-                            <td><span class="badge badge-lg badge-dot"><i
-                                    class="bg-warning"></i>In progress</span>
-                            </td>
-                            <td>
-                                <div class="avatar-group"><a href="#"
-                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-1.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-3.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..."
-                                        src="/img/people/img-4.jpg"></a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center"><span
-                                        class="me-2">38%</span>
-                                    <div>
-                                        <div class="progress"
-                                             style="width:100px">
-                                            <div class="progress-bar bg-warning"
-                                                 role="progressbar"
-                                                 aria-valuenow="38"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100"
-                                                 style="width:38%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end"><a href="#"
-                                                    class="btn btn-sm btn-neutral">View</a>
-                                <button type="button"
-                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
-                                    <i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
-                                     class="avatar avatar-sm rounded-circle me-2">
-                                <a
-                                        class="text-heading font-semibold"
-                                        href="#">@vfries
-                                    </a></td>
-                            <td>23-01-2022</td>
-                            <td><span class="badge badge-lg badge-dot"><i
-                                    class="bg-success"></i>Done</span></td>
-                            <td>
-                                <div class="avatar-group"><a href="#"
-                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-1.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-3.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..."
-                                        src="/img/people/img-4.jpg"></a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center"><span
-                                        class="me-2">83%</span>
-                                    <div>
-                                        <div class="progress"
-                                             style="width:100px">
-                                            <div class="progress-bar bg-success"
-                                                 role="progressbar"
-                                                 aria-valuenow="83"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100"
-                                                 style="width:83%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end"><a href="#"
-                                                    class="btn btn-sm btn-neutral">View</a>
-                                <button type="button"
-                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
-                                    <i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
-                                     class="avatar avatar-sm rounded-circle me-2">
-                                <a
-                                        class="text-heading font-semibold"
-                                        href="#">@edelage
-                                </a></td>
-                            <td>23-01-2022</td>
-                            <td><span class="badge badge-lg badge-dot"><i
-                                    class="bg-danger"></i>Project at risk</span>
-                            </td>
-                            <td>
-                                <div class="avatar-group"><a href="#"
-                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-1.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-3.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..."
-                                        src="/img/people/img-4.jpg"></a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center"><span
-                                        class="me-2">4%</span>
-                                    <div>
-                                        <div class="progress"
-                                             style="width:100px">
-                                            <div class="progress-bar bg-danger"
-                                                 role="progressbar"
-                                                 aria-valuenow="4"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100"
-                                                 style="width:4%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end"><a href="#"
-                                                    class="btn btn-sm btn-neutral">View</a>
-                                <button type="button"
-                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
-                                    <i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
-                                     class="avatar avatar-sm rounded-circle me-2">
-                                <a
-                                        class="text-heading font-semibold"
-                                        href="#">@bajeanno</a></td>
-                            <td>23-01-2022</td>
-                            <td><span class="badge badge-lg badge-dot"><i
-                                    class="bg-warning"></i>In progress</span>
-                            </td>
-                            <td>
-                                <div class="avatar-group"><a href="#"
-                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-1.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-3.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..."
-                                        src="/img/people/img-4.jpg"></a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center"><span
-                                        class="me-2">10%</span>
-                                    <div>
-                                        <div class="progress"
-                                             style="width:100px">
-                                            <div class="progress-bar bg-primary"
-                                                 role="progressbar"
-                                                 aria-valuenow="10"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100"
-                                                 style="width:10%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end"><a href="#"
-                                                    class="btn btn-sm btn-neutral">View</a>
-                                <button type="button"
-                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
-                                    <i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img alt="..." src="https://clever.webpixels.io/img/people/img-2.jpg"
-                                     class="avatar avatar-sm rounded-circle me-2">
-                                <a
-                                        class="text-heading font-semibold"
-                                        href="#">@hferraud</a></td>
-                            <td>23-01-2022</td>
-                            <td><span class="badge badge-lg badge-dot"><i
-                                    class="bg-warning"></i>In progress</span>
-                            </td>
-                            <td>
-                                <div class="avatar-group"><a href="#"
-                                                             class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-1.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..." src="/img/people/img-3.jpg">
-                                </a><a
-                                        href="#"
-                                        class="avatar avatar-xs rounded-circle text-white border border-1 border-solid border-card"><img
-                                        alt="..."
-                                        src="/img/people/img-4.jpg"></a>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center"><span
-                                        class="me-2">83%</span>
-                                    <div>
-                                        <div class="progress"
-                                             style="width:100px">
-                                            <div class="progress-bar bg-success"
-                                                 role="progressbar"
-                                                 aria-valuenow="83"
-                                                 aria-valuemin="0"
-                                                 aria-valuemax="100"
-                                                 style="width:83%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end"><a href="#"
-                                                    class="btn btn-sm btn-neutral">View</a>
-                                <button type="button"
-                                        class="btn btn-sm btn-square btn-neutral text-danger-hover">
-                                    <i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card m-3">
+                <div class="card-body">
+                    <canvas id="eloChart" style="max-height: 400px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card m-3">
+                <div class="card-body">
+                    <canvas id="gameChart" style="max-height: 400px;"></canvas>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="card m-3">
+        <div class="card-header border-bottom"><h5 class="mb-0">Latest
+            games</h5></div>
+        <div class="table-responsive">
+            <table class="table table-hover table-nowrap mb-1">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">Adversary</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Win Rate</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="align-middle">
+                    <td><img alt="..."
+                             src="https://clever.webpixels.io/img/people/img-2.jpg"
+                             class="avatar avatar-sm rounded-circle me-2">
+                        <a
+                                class="text-heading font-semibold"
+                                href="#">@Alevra
+                        </a></td>
+                    <td>23-01-2022</td>
+                    <td>
+                    <span class="badge badge-lg badge-dot"><i
+                            class="bg-warning"></i>In progress</span>
+                    </td>
+                    <td>1 - 3</td>
+                    <td>
+                        <div class="d-flex align-items-center"><span
+                                class="me-2">38%</span>
+                            <div>
+                                <div class="progress"
+                                     style="width:100px">
+                                    <div class="progress-bar bg-warning"
+                                         role="progressbar"
+                                         aria-valuenow="38"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         style="width:38%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm ">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="align-middle">
+                    <td><img alt="..."
+                             src="https://clever.webpixels.io/img/people/img-2.jpg"
+                             class="avatar avatar-sm rounded-circle me-2">
+                        <a
+                                class="text-heading font-semibold"
+                                href="#">@vfries
+                        </a></td>
+                    <td>23-01-2022</td>
+                    <td><span class="badge badge-lg badge-dot"><i
+                            class="bg-success"></i>Win</span></td>
+                    <td>1 - 3</td>
+                    <td>
+                        <div class="d-flex align-items-center"><span
+                                class="me-2">83%</span>
+                            <div>
+                                <div class="progress"
+                                     style="width:100px">
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
+                                         aria-valuenow="83"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         style="width:83%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm ">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="align-middle">
+                    <td><img alt="..."
+                             src="https://clever.webpixels.io/img/people/img-2.jpg"
+                             class="avatar avatar-sm rounded-circle me-2">
+                        <a
+                                class="text-heading font-semibold"
+                                href="#">@edelage
+                        </a></td>
+                    <td>23-01-2022</td>
+                    <td><span class="badge badge-lg badge-dot"><i
+                            class="bg-danger"></i>Lose</span>
+                    </td>
+                    <td>6 - 4</td>
+                    <td>
+                        <div class="d-flex align-items-center"><span
+                                class="me-2">4%</span>
+                            <div>
+                                <div class="progress"
+                                     style="width:100px">
+                                    <div class="progress-bar bg-danger"
+                                         role="progressbar"
+                                         aria-valuenow="4"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         style="width:4%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm ">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="align-middle">
+                    <td><img alt="..."
+                             src="https://clever.webpixels.io/img/people/img-2.jpg"
+                             class="avatar avatar-sm rounded-circle me-2">
+                        <a
+                                class="text-heading font-semibold"
+                                href="#">@bajeanno</a></td>
+                    <td>23-01-2022</td>
+                    <td><span class="badge badge-lg badge-dot"><i
+                            class="bg-warning"></i>In progress</span>
+                    </td>
+                    <td>1 - 0</td>
+                    <td>
+                        <div class="d-flex align-items-center"><span
+                                class="me-2">10%</span>
+                            <div>
+                                <div class="progress"
+                                     style="width:100px">
+                                    <div class="progress-bar bg-primary"
+                                         role="progressbar"
+                                         aria-valuenow="10"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         style="width:10%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm ">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="align-middle">
+                    <td><img alt="..."
+                             src="https://clever.webpixels.io/img/people/img-2.jpg"
+                             class="avatar avatar-sm rounded-circle me-2">
+                        <a
+                                class="text-heading font-semibold"
+                                href="#">@hferraud</a></td>
+                    <td>23-01-2022</td>
+                    <td><span class="badge badge-lg badge-dot"><i
+                            class="bg-warning"></i>In progress</span>
+                    </td>
+                    <td>0 - 3</td>
+                    <td>
+                        <div class="d-flex align-items-center"><span
+                                class="me-2">83%</span>
+                            <div>
+                                <div class="progress"
+                                     style="width:100px">
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
+                                         aria-valuenow="83"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         style="width:83%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button"
+                                    class="btn btn-outline-secondary btn-sm ">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex align-items-center">
+            <ul class="pagination pagination-sm m-2">
+                <li class="page-item"><a class="page-link" href="#">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="sidebar">
+        <h3>Amis connectés</h3>
+        <!-- Cartes des amis connectés -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ami 1</h5>
+                <p class="card-text">Infos sur l'ami 1</p>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ami 2</h5>
+                <p class="card-text">Infos sur l'ami 2</p>
+            </div>
+        </div>
+        <!-- Ajoutez d'autres cartes pour les amis connectés au besoin -->
+    </div>
 </div>
 
+<!--</div>-->
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Sidebar Bootstrap</title>-->
+<!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--  <style>-->
+<!--    /* Styles pour la sidebar */-->
+<!--    .sidebar {-->
+<!--      position: fixed;-->
+<!--      top: 0;-->
+<!--      right: 0;-->
+<!--      height: 100%;-->
+<!--      width: 300px;-->
+<!--      padding: 20px;-->
+<!--      background-color: #f8f9fa;-->
+<!--      border-left: 1px solid #dee2e6;-->
+<!--      transition: all 0.3s; /* Ajout d'une transition pour une animation fluide */-->
+<!--    }-->
+
+<!--    /* Classe pour masquer la sidebar */-->
+<!--    .sidebar-hidden {-->
+<!--      width: 0;-->
+<!--      padding: 20px 0;-->
+<!--      overflow: hidden;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--  <div class="container-fluid">-->
+<!--    <div class="row">-->
+<!--      <div class="col-md-9">-->
+<!--        <h1>Contenu principal</h1>-->
+<!--        &lt;!&ndash; Votre contenu principal ici &ndash;&gt;-->
+<!--      </div>-->
+<!--      <div class="col-md-3">-->
+<!--        <div class="sidebar sidebar-hidden" id="sidebar"> &lt;!&ndash; Ajout d'un ID pour la sidebar &ndash;&gt;-->
+<!--          <h3>Amis connectés</h3>-->
+<!--          &lt;!&ndash; Cartes des amis connectés &ndash;&gt;-->
+<!--          <div class="card mb-3">-->
+<!--            <div class="card-body">-->
+<!--              <h5 class="card-title">Ami 1</h5>-->
+<!--              <p class="card-text">Infos sur l'ami 1</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="card mb-3">-->
+<!--            <div class="card-body">-->
+<!--              <h5 class="card-title">Ami 2</h5>-->
+<!--              <p class="card-text">Infos sur l'ami 2</p>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          &lt;!&ndash; Ajoutez d'autres cartes pour les amis connectés au besoin &ndash;&gt;-->
+<!--        </div>-->
+<!--        &lt;!&ndash; Bouton pour basculer la visibilité de la sidebar &ndash;&gt;-->
+<!--        <button onclick="toggleSidebar()">Toggle Sidebar</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--  <script>-->
+<!--    // Fonction pour basculer la visibilité de la sidebar-->
+<!--    function toggleSidebar() {-->
+<!--      const sidebar = document.getElementById('sidebar');-->
+<!--      sidebar.classList.toggle('sidebar-hidden');-->
+<!--    }-->
+<!--  </script>-->
+<!--</body>-->
+<!--</html>-->

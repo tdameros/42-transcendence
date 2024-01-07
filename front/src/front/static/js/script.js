@@ -54,7 +54,7 @@ function homeNav(event) {
 document.addEventListener('DOMContentLoaded', function () {
     const navbarBrandElement = document.querySelector('.navbar-brand');
     navbarBrandElement.addEventListener('click', homeNav);
-    history.pushState({'previousComponent': '/'}, null, HOST);
+    // history.pushState({'previousComponent': '/'}, null, HOST);
 });
 
 function logNav() {

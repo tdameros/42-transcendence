@@ -6,30 +6,56 @@
 }
 
 .profile-card {
-    height: 30vh;
+    /*height: 27vh;*/
     margin: 4rem 1rem 1rem;
 }
 
+.profile-info {
+    gap: 10px;
+    /*position: absolute;*/
+    /*top: calc(17vh - 15px); !* Ajuster la valeur pour décaler la photo verticalement *!*/
+    /*top: calc(17vh); !* Ajuster la valeur pour décaler la photo verticalement *!*/
+    /*top: -10px;*/
+    /*margin-left: 50px;*/
+    /*transform: translateY(-50%);*/
+    transform: translateY(-20%);
+}
+
 .profile-img-container {
-    position: absolute; /* Positionnement absolu pour chevaucher la photo sur la bannière */
-    top: calc(19vh - 75px); /* Ajuster la valeur pour décaler la photo verticalement */
-    left: 10%;
-    transform: translateX(-50%);
-    border: 3px solid white; /* Bordure blanche */
-    border-radius: 50%; /* Assure une forme ronde */
-    overflow: hidden; /* Cache le dépassement de la bordure */
-    margin-right: 20px; /* Espace entre l'image et le texte */
+    /*transform: translateY(-20%);*/
+    margin-left: 50px;
+    /*display: block;*/
+    /*position: absolute; !* Positionnement absolu pour chevaucher la photo sur la bannière *!*/
+    /*top: calc(19vh - 75px); !* Ajuster la valeur pour décaler la photo verticalement *!*/
+    /*left: 10%;*/
+    /*transform: translateX(-50%);*/
+    /*border: 3px solid white; !* Bordure blanche *!*/
+    /*border-radius: 50%; !* Assure une forme ronde *!*/
+    /*overflow: hidden; !* Cache le dépassement de la bordure *!*/
+    /*margin-right: 20px; !* Espace entre l'image et le texte *!*/
 }
 
 .profile-img {
-    width: 150px;
-    height: 150px;
+    /*width: 150px;*/
+    /*height: 150px;*/
+    width: 15vw;
+    height: 15vw;
+    max-width: 125px;
+    max-height: 125px;
     object-fit: cover;
     border-radius: 50%; /* Garder la forme ronde */
 }
 
+/*@media screen and (max-width: 767px) {*/
+/*    .profile-img {*/
+/*        width: 100px;*/
+/*        height: 100px;*/
+/*    }*/
+/*}*/
+
+
 .username {
-    margin-left: 230px;
+    /*margin-left: 17%;*/
     margin-top: 10px;
 }
 
@@ -39,12 +65,13 @@
 }
 
 .badge-dot {
-    color: #525f7f;
+    color: black;
     background: 0 0;
     align-items: center;
     padding: 0;
     font-weight: 400;
     display: inline-flex;
+    font-size: .85rem;
 }
 
 .badge-dot.badge-lg i {
@@ -61,26 +88,9 @@
     display: inline-block;
 }
 
-.btn-neutral {
-    --x-btn-color: #16192c;
-    --x-btn-bg: #fff;
-    --x-btn-border-color: #e7eaf0;
-    --x-btn-hover-color: #16192c;
-    --x-btn-hover-bg: #e7eaf0;
-    --x-btn-hover-border-color: #e7eaf0;
-    --x-btn-focus-shadow-rgb: 200,203,211;
-    --x-btn-active-color: #16192c;
-    --x-btn-active-bg: #e7eaf0;
-    --x-btn-active-border-color: #e7eaf0;
-    --x-btn-active-shadow: 0 0 0 0 transparent;
-    --x-btn-disabled-color: #000;
-    --x-btn-disabled-bg: #fff;
-    --x-btn-disabled-border-color: #e7eaf0;
-}
-
 .progress {
     --x-progress-height: .5rem;
-    --x-progress-font-size: .75rem;
+    --x-progress-font-size: .85rem;
     --x-progress-bg: #e7eaf0;
     --x-progress-border-radius: 50rem;
     --x-progress-box-shadow: 0 0 0 0 transparent;
@@ -94,4 +104,9 @@
     box-shadow: var(--x-progress-box-shadow);
     display: flex;
     overflow: hidden;
+}
+
+tbody {
+    font-size: .85rem;
+    font-weight: 400;
 }
