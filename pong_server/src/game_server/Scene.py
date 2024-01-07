@@ -18,9 +18,9 @@ class Scene(object):
 
     def to_json(self):
         return {
-            "boards": [board.to_json() for board in self._boards],
-            "balls": [ball.to_json() for ball in self._balls],
-            "players": [player.to_json() for player in self._players],
+            'boards': [board.to_json() for board in self._boards],
+            'balls': [ball.to_json() for ball in self._balls],
+            'players': [player.to_json() for player in self._players],
         }
 
     def set_player_movement(self, player_index, movement):

@@ -20,7 +20,7 @@ user_kicker = UserKicker(sio)
 
 async def add_user_to_game(user_id: str, sid: str):
     if not game.is_user_part_of_game(user_id):
-        raise Exception("You are not part of this game")
+        raise Exception('You are not part of this game')
 
     previous_sid = game.get_user_sid(user_id)
     if previous_sid is not None:
@@ -55,7 +55,7 @@ async def background_task():
     while not game.have_all_players_joined():
         # TODO Add a time out and make the players that don't join forfeit
         #      their games
-        await sio.sleep(10)
+        await sio.sleep(.3)
 
     await emit(sio, 'scene', rooms.ALL_PLAYERS, game.get_scene().to_json())
 
@@ -77,6 +77,6 @@ if __name__ == '__main__':
         # web.run_app(app, port=4242)
         web.run_app(app, host='localhost', port=0)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f'Error: {e}')
         """ Do not use log()! This should always be printed as the redirection
             server will read it """

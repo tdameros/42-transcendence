@@ -22,10 +22,10 @@ class Game(object):
             self._players_list.append(arg)
 
         if len(self._players_list) == 0:
-            raise Exception("Game is empty")
+            raise Exception('Game is empty')
         if len(self._players_list) % 2 == 1:
-            raise Exception(f"Game has an odd number of players "
-                            f"(number of players: {len(self._players_list)})")
+            raise Exception(f'Game has an odd number of players '
+                            f'(number of players: {len(self._players_list)})')
 
         self._scene = Scene(len(self._players_list))
 

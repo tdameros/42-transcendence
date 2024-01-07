@@ -4,7 +4,7 @@ import numpy
 
 
 def vector_to_dict(vector: numpy.ndarray) -> dict:
-    return {"x": vector[0], "y": vector[1], "z": vector[2]}
+    return {'x': vector[0], 'y': vector[1], 'z': vector[2]}
 
 
 class Player(object):
@@ -14,8 +14,8 @@ class Player(object):
 
     def to_json(self) -> dict:
         return {
-            "position": vector_to_dict(self._position),
-            "move_direction": 0.
+            'position': vector_to_dict(self._position),
+            'move_direction': 0.
         }
 
     def set_movement(self, movement):
@@ -29,8 +29,8 @@ class Board(object):
 
     def to_json(self) -> dict:
         return {
-            "position": vector_to_dict(self._position),
-            "move_direction": vector_to_dict(self._move_direction)
+            'position': vector_to_dict(self._position),
+            'move_direction': vector_to_dict(self._move_direction)
         }
 
 
@@ -52,6 +52,6 @@ class Ball(object):
 
     def to_json(self) -> dict:
         return {
-            "position": vector_to_dict(self._position),
-            "move_direction": vector_to_dict(self._move_direction)
+            'position': vector_to_dict(self._position),
+            'move_direction': vector_to_dict(self._move_direction)
         }
