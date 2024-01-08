@@ -11,6 +11,25 @@ Retrieve list of available public tournament
 <details>
  <summary><code>GET</code> <code><b>/tournament</b></code></summary>
 
+
+### Parameters
+
+#### Query
+
+> | name                | value type | description                                              | type      |
+> |---------------------|------------|----------------------------------------------------------|-----------|
+> | `page`              | Integer    | the current page                                         | Optional  |
+> | `page-size`         | Integer    | the number of items per page, defaults to 10, maximum 50 | Optional  |
+> | `display-private`   | none       | display private tournament                               | Optional  |
+> | `display-completed` | none       | display completed tournament                             | Optional  |
+
+#### Responses
+
+> | http code | content-type               | response                                     |
+> |-----------|----------------------------|----------------------------------------------|
+> | `200`     | `application/json`         | `{"public-tournaments": [tournament1, ...]}` |
+> | `401`     | `application/json`         | `{"errors":["AAA", ...]}`                    |
+
 </details>
 
 Create a new tournament
