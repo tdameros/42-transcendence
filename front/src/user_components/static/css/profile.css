@@ -7,7 +7,7 @@
 
 .profile-card {
     /*height: 27vh;*/
-    margin: 4rem 1rem 1rem;
+    margin: 4rem 0rem 0rem;
 }
 
 .profile-info {
@@ -29,9 +29,9 @@
     /*top: calc(19vh - 75px); !* Ajuster la valeur pour décaler la photo verticalement *!*/
     /*left: 10%;*/
     /*transform: translateX(-50%);*/
-    /*border: 3px solid white; !* Bordure blanche *!*/
-    /*border-radius: 50%; !* Assure une forme ronde *!*/
-    /*overflow: hidden; !* Cache le dépassement de la bordure *!*/
+    border: 3px solid white; /* Bordure blanche */
+    border-radius: 50%; /* Assure une forme ronde */
+    overflow: hidden; /* Cache le dépassement de la bordure */
     /*margin-right: 20px; !* Espace entre l'image et le texte *!*/
 }
 
@@ -109,4 +109,8 @@
 tbody {
     font-size: .85rem;
     font-weight: 400;
+}
+
+.card-header {
+    background-color: white;
 }

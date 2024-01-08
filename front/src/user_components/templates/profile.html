@@ -75,7 +75,7 @@
         </div>
     </div>
 </nav>
-<div id="content" class="container-fluid">
+<div id="content" class="m-3">
     <div class="profile-card card rounded">
         <div class="card-body p-0">
             <div class="banner">
@@ -91,29 +91,49 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row gx-3 gy-3 mb-3 mt-3">
+        <div class="col-xl-3 col-sm-6 ">
+            <div class="card"><div class="card-body"><div class="row"><div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Elo</span> <span class="h3 font-bold mb-0">1403</span></div><div class="col-auto"><div class="icon icon-shape bg-primary text-white text-lg rounded-circle"><i class="bi bi-people"></i></div></div></div><div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>23% </span><span class="text-nowrap text-xs text-muted">Since last week</span></div></div></div>
+        </div>
+        <div class="col-xl-3 col-sm-6 ">
+            <div class="card"><div class="card-body"><div class="row"><div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Win Rate</span> <span class="h3 font-bold mb-0">67%</span></div><div class="col-auto"><div class="icon icon-shape bg-primary text-white text-lg rounded-circle"><i class="bi bi-people"></i></div></div></div><div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>23% </span><span class="text-nowrap text-xs text-muted">Since last week</span></div></div></div>
+        </div>
+        <div class="col-xl-3 col-sm-6 ">
+            <div class="card"><div class="card-body"><div class="row"><div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Played Games</span> <span class="h3 font-bold mb-0">215</span></div><div class="col-auto"><div class="icon icon-shape bg-primary text-white text-lg rounded-circle"><i class="bi bi-people"></i></div></div></div><div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>23% </span><span class="text-nowrap text-xs text-muted">Since last week</span></div></div></div>
+        </div>
+        <div class="col-xl-3 col-sm-6 ">
+            <div class="card"><div class="card-body"><div class="row"><div class="col"><span class="h6 font-semibold text-muted text-sm d-block mb-2">Friends</span> <span class="h3 font-bold mb-0">12</span></div><div class="col-auto"><div class="icon icon-shape bg-primary text-white text-lg rounded-circle"><i class="bi bi-people"></i></div></div></div><div class="mt-2 mb-0 text-sm"><span class="badge badge-pill bg-soft-success text-success me-2"><i class="bi bi-arrow-up me-1"></i>23% </span><span class="text-nowrap text-xs text-muted">Since last week</span></div></div></div>
+        </div>
+    </div>
+
+    <div class="row gx-3 gy-3 mb-4 mt-3">
         <div class="col-md-6">
-            <div class="card m-3">
+            <div class="card">
+                <div class="card-header d-flex align-items-center"><h5
+                        class="mb-0">Elo History</h5></div>
                 <div class="card-body">
-                    <canvas id="eloChart" style="max-height: 400px;"></canvas>
+                    <canvas id="eloChart" style="height: 30vh;"></canvas>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card m-3">
+            <div class="card">
+                <div class="card-header d-flex align-items-center"><h5
+                        class="mb-0">Game Week History</h5></div>
                 <div class="card-body">
-                    <canvas id="gameChart" style="max-height: 400px;"></canvas>
+                    <canvas id="gameChart" style="height: 30vh;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card m-3">
+
+    <div class="card mb-3 mt-3">
         <div class="card-header border-bottom"><h5 class="mb-0">Latest
             games</h5></div>
         <div class="table-responsive">
             <table class="table table-hover table-nowrap mb-1">
-                <thead class="table-light">
+                <thead class="table table-header">
                 <tr>
                     <th scope="col">Adversary</th>
                     <th scope="col">Date</th>
@@ -317,32 +337,19 @@
         </div>
         <div class="d-flex align-items-center">
             <ul class="pagination pagination-sm m-2">
-                <li class="page-item"><a class="page-link" href="#">Previous</a>
+                <li class="page-item"><a class="page-link"
+                                         href="#">Previous</a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a>
+                </li>
                 <li class="page-item"><a class="page-link" href="#">Next</a>
                 </li>
             </ul>
         </div>
-    </div>
-    <div class="sidebar">
-        <h3>Amis connectés</h3>
-        <!-- Cartes des amis connectés -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Ami 1</h5>
-                <p class="card-text">Infos sur l'ami 1</p>
-            </div>
-        </div>
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Ami 2</h5>
-                <p class="card-text">Infos sur l'ami 2</p>
-            </div>
-        </div>
-        <!-- Ajoutez d'autres cartes pour les amis connectés au besoin -->
     </div>
 </div>
 
