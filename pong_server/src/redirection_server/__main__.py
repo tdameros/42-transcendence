@@ -2,6 +2,7 @@ import logging
 
 import socketio
 from aiohttp import web
+
 from src.redirection_server.Game import Game
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
@@ -15,8 +16,9 @@ sio.attach(app)
 
 user_kicker = UserKicker(sio)
 
+# TODO get all games from server
 #      dict[GameID, Game]
-games: dict[str, Game] = {'game_1': Game(['player_1', 'player_2'])}  # TODO get all games from server
+games: dict[str, Game] = {'game_1': Game(['player_1', 'player_2'])}
 
 
 def get_game_id(query_string) -> str:
@@ -26,9 +28,7 @@ def get_game_id(query_string) -> str:
     if not isinstance(game_id, str):
         raise Exception('game_id must be a string')
     if len(game_id) == 0:
-        raise Exception('game_id may not be an empty string')
-    if games.get(game_id) is None:
-        raise Exception(f'game {game_id} does not exist')
+        raise Exception('game_id must not be empty')
     return game_id
 
 
@@ -50,7 +50,7 @@ def get_newly_created_games():
 def get_game(game_id: str, user_id: str) -> Game:
     game = games.get(game_id)
     if game is None:
-        raise Exception(f'Game: {game_id} was not found')
+        raise Exception(f'Game {game_id} does not exist')
     if user_id not in game.get_clients():
         raise Exception(f'User {user_id} is not part of game {game_id}')
     return game

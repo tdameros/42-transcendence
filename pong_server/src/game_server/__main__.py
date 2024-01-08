@@ -2,6 +2,7 @@ import logging
 
 import socketio
 from aiohttp import web
+
 from src.game_server import rooms
 from src.game_server.Game import Game
 from src.game_server.print_server_uri import print_server_uri
