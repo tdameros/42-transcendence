@@ -39,10 +39,10 @@ Create a new tournament
 
 #### Responses
 
-> | http code | content-type       | response                            |
-> |-----------|--------------------|-------------------------------------|
-> | `201`     | `application/json` | `{"status": "Created"}`             |
-> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
+> | http code     | content-type       | response                               |
+> |---------------|--------------------|----------------------------------------|
+> | `201`         | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
+> | `400` / `401` | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
 errors can be combined
  
