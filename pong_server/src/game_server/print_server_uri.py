@@ -24,6 +24,6 @@ async def print_server_uri(sio):
         this function is executed """
 
     print(f'uri: {get_server_uri()}')
-    """ Do not use log()! This should always be printed as the redirection
+    """ Do not use logging()! This should always be printed as the redirection
         server will read it """
     sys.stdout.flush()

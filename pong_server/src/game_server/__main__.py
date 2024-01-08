@@ -1,3 +1,5 @@
+import logging
+
 import socketio
 from aiohttp import web
 from src.game_server import rooms
@@ -6,7 +8,7 @@ from src.game_server.print_server_uri import print_server_uri
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
-from src.shared_code.log import log
+from src.shared_code.setup_logging import setup_logging
 from src.shared_code.UserKicker import UserKicker
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
@@ -31,7 +33,7 @@ async def add_user_to_game(user_id: str, sid: str):
 
 @sio.event
 async def connect(sid, environ, auth):
-    log(f'{sid} connected')
+    logging.info(f'{sid} connected')
 
     try:
         query_string = get_query_string(environ)
@@ -73,10 +75,11 @@ async def start_background_task(app):
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     try:
+        setup_logging()
         game.init_game_from_argv()
         # web.run_app(app, port=4242)
-        web.run_app(app, host='localhost', port=0)
+        web.run_app(app, host='localhost', port=0, access_log=None)
     except Exception as e:
         print(f'Error: {e}')
-        """ Do not use log()! This should always be printed as the redirection
+        """ Do not use logging! This should always be printed as the redirection
             server will read it """

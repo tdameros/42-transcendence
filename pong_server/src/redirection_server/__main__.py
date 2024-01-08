@@ -1,10 +1,12 @@
+import logging
+
 import socketio
 from aiohttp import web
 from src.redirection_server.Game import Game
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
-from src.shared_code.log import log
+from src.shared_code.setup_logging import setup_logging
 from src.shared_code.UserKicker import UserKicker
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
@@ -61,7 +63,7 @@ def create_game_server_if_needed(game: Game):
 
 @sio.event
 async def connect(sid, environ, auth):
-    log(f'{sid} connected')
+    logging.info(f'{sid} connected')
 
     try:
         query_string = get_query_string(environ)
@@ -99,5 +101,6 @@ async def start_background_task(app):
 
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
+    setup_logging()
     # web.run_app(app, port=4242)
-    web.run_app(app, host='localhost', port=4242)
+    web.run_app(app, host='localhost', port=4242, access_log=None)

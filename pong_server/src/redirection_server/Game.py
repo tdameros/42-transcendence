@@ -1,8 +1,8 @@
+import logging
 import subprocess
 import threading
 
 import src.shared_code.settings as settings
-from src.shared_code.log import log
 
 
 class _GameServerLogger(threading.Thread):
@@ -12,18 +12,17 @@ class _GameServerLogger(threading.Thread):
         self._uri = server_uri
 
     def run(self):
-        log(f'\tServer({self._uri}) has started')
         while self._process.poll() is None:
-            line = self._process.stdout.readline()
+            line = self._process.stderr.readline()
             if len(line) > 0:
-                log(f'\tServer({self._uri}): '
-                    f'{line[:-1] if line[-1] == '\n' else line}')
+                print(f'\tServer({self._uri}): '
+                      f'{line[:-1] if line[-1] == '\n' else line}')
         remaining_output = self._process.communicate()[0]
         for line in remaining_output.splitlines():
             if len(line) > 0:
-                log(f'\tServer({self._uri}): '
-                    f'{line[:-1] if line[-1] == '\n' else line}')
-        log(f'\tServer({self._uri}) has stopped')
+                print(f'\tServer({self._uri}): '
+                      f'{line[:-1] if line[-1] == '\n' else line}')
+        logging.info(f'\tServer({self._uri}) has stopped')
 
 
 class Game(object):
@@ -42,13 +41,13 @@ class Game(object):
             if self._parse_subprocess_line(line):
                 self._start_game_server_logger(process, self._uri)
                 return
-            if settings.DEBUG:
+            if settings.LOG_LEVEL != settings.NO_LOGS:
                 output.append(line)
         remaining_output = process.communicate()[0]
         for line in remaining_output.splitlines():
             self._parse_subprocess_line(line)  # Will throw if the server
             #                                    printed an error message
-            if settings.DEBUG:
+            if settings.LOG_LEVEL != settings.NO_LOGS:
                 output.append(line)
 
         Game._print_program_output_on_error(output)
@@ -62,6 +61,7 @@ class Game(object):
                 command.append(player)
             return subprocess.Popen(command,
                                     stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
                                     universal_newlines=True)
         except Exception as e:
             raise Exception(f'Failed to run command to start new game '
@@ -75,7 +75,7 @@ class Game(object):
 
         if line.startswith('uri: '):
             self._uri = line[len('uri: '):-1]
-            log(f'Created game server with uri {self._uri}')
+            logging.info(f'Created game server with uri {self._uri}')
             return True
 
         if line.startswith('Error: '):
@@ -86,19 +86,19 @@ class Game(object):
 
     @staticmethod
     def _start_game_server_logger(process: subprocess.Popen, server_uri: str):
-        if not settings.DEBUG:
+        if settings.LOG_LEVEL == settings.NO_LOGS:
             return
         game_server_logger = _GameServerLogger(process, server_uri)
         game_server_logger.start()
 
     @staticmethod
     def _print_program_output_on_error(output: list[str]):
-        if not settings.DEBUG:
+        if settings.LOG_LEVEL == settings.NO_LOGS:
             return
-        log('\tError creating a new server, output:')
+        logging.error('\tError creating a new server, output:')
         for line in output:
             if len(line) > 0:
-                log(f'\t\t{line[:-1] if line[-1] == '\n' else line}')
+                logging.error(f'\t\t{line[:-1] if line[-1] == '\n' else line}')
 
     def was_server_created(self) -> bool:
         return self._uri is not None

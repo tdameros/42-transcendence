@@ -1,6 +1,5 @@
 import datetime
-
-from src.shared_code.log import log
+import logging
 
 WAIT_TIME_BEFORE_KICK = 10
 
@@ -26,7 +25,7 @@ class UserKicker(object):
             self._sid_being_kicked = ''
             return
 
-        log(f'{sid} disconnected')
+        logging.info(f'{sid} disconnected')
 
         self._kick_queue = [
             elem for elem in self._kick_queue
@@ -38,6 +37,7 @@ class UserKicker(object):
             if not enough_time_has_passed_to_kick_user(self._kick_queue[0][1]):
                 return
             sid, timestamp = self._kick_queue.pop(0)
-            log(f'Disconnecting {sid}, they did not disconnect themself')
+            logging.info(f'Disconnecting {sid}, they did not disconnect '
+                         f'themself')
             self._sid_being_kicked = sid
             await self._sio.disconnect(sid)
