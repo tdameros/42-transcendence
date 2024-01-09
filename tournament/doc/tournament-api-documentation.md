@@ -23,7 +23,7 @@ Retrieve list of available public tournament
 > | `display-private`   | none       | display private tournament                               | Optional  |
 > | `display-completed` | none       | display completed tournament                             | Optional  |
 
-#### Responses
+### Responses
 
 > | http code | content-type               | response                                     |
 > |-----------|----------------------------|----------------------------------------------|
@@ -56,7 +56,7 @@ Create a new tournament
 > }
 > ```
 
-#### Responses
+### Responses
 
 > | http code     | content-type       | response                               |
 > |---------------|--------------------|----------------------------------------|
@@ -95,10 +95,26 @@ errors can be combined
 
 </details>
 
+Delete a tournament
+
 <details>
  <summary><code>DELETE</code> <code><b>/tournament/{id}</b></code></summary>
 
-#### Delete a tournament
+### Parameters
+
+None
+
+### Responses
+
+> | http code                     | content-type       | response                                          |
+> |-------------------------------|--------------------|---------------------------------------------------|
+> | `201`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
+> | `400` / `401` / `403` / `404` | `application/json` | `{"error": "error message"}`                      |
+
+> error can be:
+> - tournament with id `{tournament_id}` does not exist
+> - you cannot delete `{tournament_name}` because you are not the owner of the tournament
+> - cannot delete `{tournament_name}`
 
 </details>
 

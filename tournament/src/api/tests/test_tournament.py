@@ -19,7 +19,7 @@ class CreateTournamentTest(TestCase):
 
         return response, body
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_tournament_creation(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -42,7 +42,7 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_tournament_different_timezone(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -65,7 +65,7 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_tournament_without_optional_info(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -104,19 +104,19 @@ class BadRequestCreateTournament(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_no_body(self, mock_get):
         expected_errors = [error.BAD_JSON_FORMAT]
 
         self.send_tournament_bad_request(mock_get, None, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_empty_body(self, mock_get):
         expected_errors = [error.MISSING_NAME, error.MISSING_IS_PRIVATE]
 
         self.send_tournament_bad_request(mock_get, {}, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_invalid_type(self, mock_get):
         expected_errors = [error.PLAYERS_NOT_INT, error.IS_PRIVATE_NOT_BOOL]
 
@@ -128,7 +128,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_invalid_iso_8601(self, mock_get):
         expected_errors = [error.NOT_ISO_8601]
 
@@ -140,7 +140,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_passed_deadline(self, mock_get):
         expected_errors = [error.DEADLINE_PASSED]
 
@@ -152,7 +152,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_name_too_long(self, mock_get):
         expected_errors = [error.NAME_TOO_LONG]
 
@@ -163,7 +163,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_name_too_short(self, mock_get):
         expected_errors = [error.NAME_TOO_SHORT]
 
@@ -174,7 +174,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_empty_name(self, mock_get):
         expected_errors = [error.NAME_TOO_SHORT]
 
@@ -185,7 +185,7 @@ class BadRequestCreateTournament(TestCase):
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
 
-    @patch('api.views.authenticate_request')
+    @patch('api.views.tournament_views.authenticate_request')
     def test_name_invalid_char(self, mock_get):
         expected_errors = [error.NAME_INVALID_CHAR]
 
