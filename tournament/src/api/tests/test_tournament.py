@@ -6,8 +6,141 @@ from django.test import TestCase
 from django.urls import reverse
 
 from api import error_message as error
+from api.models import Tournament
 from tournament import settings
 
+
+class GetTournamentTest(TestCase):
+    def setUp(self):
+        for i in range(1, 51):
+            Tournament.objects.create(name=f'Test{i}', admin_id=1)
+        for i in range(1, 26):
+            Tournament.objects.create(name=f'PrivateTest{i}', admin_id=1, is_private=True)
+        for i in range(1, 26):
+            Tournament.objects.create(name=f'FinishTest{i}', admin_id=1, status=2)
+        for i in range(1, 6):
+            Tournament.objects.create(name=f'PrivateFinishTest{i}', admin_id=1, is_private=True, status=2)
+
+    def get_tournaments(self, params: dict) -> tuple[HttpResponse, dict]:
+        url = reverse('tournament')
+
+        response = self.client.get(url, params)
+
+        body = json.loads(response.content.decode('utf-8'))
+
+        return response, body
+
+    def test_default(self):
+        response, body = self.get_tournaments({})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 5)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_2(self):
+        response, body = self.get_tournaments({'page': 2})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['page'], 2)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 5)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_size(self):
+        response, body = self.get_tournaments({'page-size': 20})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 20)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], 20)
+        self.assertEqual(body['nb-pages'], 3)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_size_too_high(self):
+        response, body = self.get_tournaments({'page-size': 100})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 50)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], 50)
+        self.assertEqual(body['nb-pages'], 1)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_too_high(self):
+        response, body = self.get_tournaments({'page': 6})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 10)
+        self.assertEqual(body['page'], 5)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 5)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_size_and_page(self):
+        response, body = self.get_tournaments({'page-size': 20, 'page': 3})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 10)
+        self.assertEqual(body['page'], 3)
+        self.assertEqual(body['page-size'], 20)
+        self.assertEqual(body['nb-pages'], 3)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_negative_params(self):
+        response, body = self.get_tournaments({'page-size': -20, 'page': -3})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 5)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_page_size_1(self):
+        response, body = self.get_tournaments({'page-size': 1})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 1)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], 1)
+        self.assertEqual(body['nb-pages'], 50)
+        self.assertEqual(body['nb-tournaments'], 50)
+
+    def test_display_private(self):
+        response, body = self.get_tournaments({'page': 8, 'display-private': True})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 5)
+        self.assertEqual(body['page'], 8)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 8)
+        self.assertEqual(body['nb-tournaments'], 75)
+
+    def test_display_completed(self):
+        response, body = self.get_tournaments({'page': 6, 'display-completed': True})
+
+        tournaments = Tournament.objects.filter(status=2)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['page'], 6)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 8)
+        self.assertEqual(body['nb-tournaments'], 75)
+
+    def test_display_private_and_completed(self):
+        response, body = self.get_tournaments({'page': 11, 'display-private': True, 'display-completed': True})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 5)
+        self.assertEqual(body['page'], 11)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 11)
+        self.assertEqual(body['nb-tournaments'], 105)
 
 class CreateTournamentTest(TestCase):
     def create_tournament(self, data: dict) -> tuple[HttpResponse, dict]:
