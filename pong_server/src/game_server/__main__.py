@@ -4,6 +4,7 @@ import socketio
 from aiohttp import web
 
 from src.game_server import rooms
+from src.game_server.Clock import Clock
 from src.game_server.Game import Game
 from src.game_server.print_server_uri import print_server_uri
 from src.shared_code.emit import emit
@@ -40,6 +41,8 @@ async def connect(sid, environ, auth):
         query_string = get_query_string(environ)
         json_web_token = get_json_web_token(query_string)
         await add_user_to_game(json_web_token['user_id'], sid)
+        if game.has_started:
+            await emit(sio, 'scene', sid, game.get_scene().to_json())
     except Exception as e:
         await emit(sio, 'error', sid, str(e))
         user_kicker.add_sid_to_kick_queue(sid)
@@ -61,9 +64,12 @@ async def background_task():
         await sio.sleep(.3)
 
     await emit(sio, 'scene', rooms.ALL_PLAYERS, game.get_scene().to_json())
+    game.has_started = True
 
+    clock = Clock()
     while True:
-        await sio.sleep(3)
+        game.get_scene().update(clock.get_delta())
+        await sio.sleep(0.1)
         await user_kicker.kick_users()
 
 

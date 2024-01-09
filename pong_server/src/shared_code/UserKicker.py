@@ -21,11 +21,11 @@ class UserKicker(object):
         self._kick_queue.append([sid, datetime.datetime.now()])
 
     def remove_sid_from_kick_queue(self, sid):
+        logging.info(f'{sid} disconnected')
+
         if sid == self._sid_being_kicked:
             self._sid_being_kicked = ''
             return
-
-        logging.info(f'{sid} disconnected')
 
         self._kick_queue = [
             elem for elem in self._kick_queue
@@ -37,7 +37,5 @@ class UserKicker(object):
             if not enough_time_has_passed_to_kick_user(self._kick_queue[0][1]):
                 return
             sid, timestamp = self._kick_queue.pop(0)
-            logging.info(f'Disconnecting {sid}, they did not disconnect '
-                         f'themself')
             self._sid_being_kicked = sid
             await self._sio.disconnect(sid)

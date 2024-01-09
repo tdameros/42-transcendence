@@ -25,3 +25,11 @@ class Scene(object):
 
     def set_player_movement(self, player_index, movement):
         self._players[player_index].set_movement(movement)
+
+    def update(self, time_delta: float):
+        for board in self._boards:
+            board.update_position(time_delta)
+        for ball in self._balls:
+            ball.update_position(time_delta)
+        for player in self._players:
+            player.update_position(time_delta)

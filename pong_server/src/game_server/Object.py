@@ -21,6 +21,9 @@ class Player(object):
     def set_movement(self, movement):
         self._move_direction = movement
 
+    def update_position(self, time_delta: float):
+        self._position += self._move_direction * time_delta
+
 
 class Board(object):
     def __init__(self, x: float, y: float, z: float):
@@ -32,6 +35,9 @@ class Board(object):
             'position': vector_to_dict(self._position),
             'move_direction': vector_to_dict(self._move_direction)
         }
+
+    def update_position(self, time_delta: float):
+        self._position += self._move_direction * time_delta
 
 
 class Ball(object):
@@ -55,3 +61,6 @@ class Ball(object):
             'position': vector_to_dict(self._position),
             'move_direction': vector_to_dict(self._move_direction)
         }
+
+    def update_position(self, time_delta: float):
+        self._position += self._move_direction * time_delta

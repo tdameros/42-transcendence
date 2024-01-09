@@ -18,7 +18,7 @@ user_kicker = UserKicker(sio)
 
 # TODO get all games from server
 #      dict[GameID, Game]
-games: dict[str, Game] = {'game_1': Game(['player_1', 'player_2'])}
+games: dict[str, Game] = {'game_1': Game(['0', '1'])}
 
 
 def get_game_id(query_string) -> str:
@@ -61,6 +61,9 @@ def create_game_server_if_needed(game: Game):
         game.create_server()
 
 
+i = 0  # TODO remove me
+
+
 @sio.event
 async def connect(sid, environ, auth):
     logging.info(f'{sid} connected')
@@ -72,7 +75,12 @@ async def connect(sid, environ, auth):
         update_game_database()
         game = get_game(game_id, json_web_token['user_id'])
         create_game_server_if_needed(game)
-        await emit(sio, 'game_server_uri', sid, game.get_uri())
+        global i  # TODO remove this line
+        # TODO send game.get_uri() instead of [game.get_uri(), str(i % 2)]
+        #      It is like this for now so that I can run test, the i % 2
+        #      serves as the client nickname for the game server
+        await emit(sio, 'game_server_uri', sid, [game.get_uri(), str(i % 2)])
+        i += 1  # TODO remove this line
     except Exception as e:
         await emit(sio, 'error', sid, str(e))
 

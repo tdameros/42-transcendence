@@ -10,10 +10,12 @@ export class _GameSocketIO {
     }
 
     _initGameSocketIO(uri) {
-        this._socketIO = io(uri, {
+        // TODO use uri not uri[0]. I currently do this because I need the
+        //      server to send me a user_id so that I can test properly
+        this._socketIO = io(uri[0], {
             query: JSON.stringify({
                 'json_web_token': {
-                    'user_id': 'player_1',
+                    'user_id': uri[1],
                 },
             }),
         });

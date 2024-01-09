@@ -14,7 +14,7 @@ export class _RedirectionSocketIO {
         this._socketIO = io('http://localhost:4242', { // TODO use real server address
             query: JSON.stringify({
                 'json_web_token': {
-                    'user_id': 'player_1', // TODO use client account primary key
+                    'user_id': '0', // TODO use client account primary key
                 },
                 'game_id': 'game_1',
             }),
@@ -45,7 +45,6 @@ export class _RedirectionSocketIO {
             }
 
             console.log('game_server_uri received: ', gameServerUri);
-            this._socketIO.disconnect();
             this._engine.setSocket(new gameSocketIOClass(this._engine, gameServerUri));
         });
 

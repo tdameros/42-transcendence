@@ -17,6 +17,8 @@ class Game(object):
 
         self._scene: Scene | None = None
 
+        self.has_started: bool = False
+
     def init_game_from_argv(self):
         for arg in sys.argv[1:]:
             self._players_list.append(arg)

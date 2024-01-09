@@ -15,14 +15,10 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
   >> On success:
   >> 
   >> Event `game_server_uri` is sent to the client  
-  >>
-  >> The client is expected to disconnect from the server when this event is received
   >
   >> On failure:
   >>
   >> Event `error` is sent to the client
-  >>
-  >> The client is expected to disconnect from the server when this event is received
   >
   > If the client fails to disconnect on his own after receiving `error` or
   > `game_server_uri`, they will be kicked from the server
@@ -46,8 +42,6 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
   >> On failure:
   >>
   >> Event `error` is sent to the client
-  >>
-  >> The client is expected to disconnect from the server when this event is received
   >
   > If the client fails to disconnect on his own after receiving `error`, they
   > will be kicked from the server

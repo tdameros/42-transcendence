@@ -10,5 +10,4 @@ export async function _errorEvent(socket, message) {
 
     console.error('Server error message: ', message);
     socket._engine.setSocket(null);
-    socket._socketIO.disconnect();
 }
