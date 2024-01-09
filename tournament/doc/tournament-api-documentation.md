@@ -82,6 +82,25 @@ errors can be combined
 
 </details>
 
+Delete all tournaments created by the user
+
+<details>
+ <summary><code>DELETE</code> <code><b>/tournament</b></code></summary>
+
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                                                            |
+> |-----------|--------------------|---------------------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "tournaments created by this user have been deleted"}` |
+> | `401`     | `application/json` | `{"error": "error message"}`                                        |
+
+
+</details>
+
 --------------------------------------------------------------------------------
 
 ## `/tournament/{id}`
@@ -108,7 +127,7 @@ None
 
 > | http code                     | content-type       | response                                          |
 > |-------------------------------|--------------------|---------------------------------------------------|
-> | `201`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
+> | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
 > | `400` / `401` / `403` / `404` | `application/json` | `{"error": "error message"}`                      |
 
 > error can be:

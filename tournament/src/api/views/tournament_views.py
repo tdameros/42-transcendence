@@ -81,6 +81,24 @@ class TournamentView(View):
         return JsonResponse(model_to_dict(tournament), status=201)
 
     @staticmethod
+    def delete(request: HttpRequest) -> JsonResponse:
+        # TODO uncomment this line when jwt will be implemented
+        # user, authenticate_errors = authenticate_request(request)
+        # if user is None:
+        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user = {'id': 2}
+
+        user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+
+        if user_tournaments:
+            try:
+                user_tournaments.delete()
+            except:
+                return JsonResponse({'error': 'cannot delete tournaments'}, status=500)
+
+        return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
+
+    @staticmethod
     def is_valid_tournament(json_request: dict[str, Any]) -> tuple[bool, Optional[list[str]]]:
         errors = []
         name = json_request.get('name')

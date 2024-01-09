@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from tournament.authenticate_request import authenticate_request
 
 from api.models import Tournament
 
@@ -11,7 +12,10 @@ from api.models import Tournament
 class ManageTournamentView(View):
     @staticmethod
     def delete(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO replace this line by `user-management` request when jwt will be implemented
+        # TODO uncomment this line when jwt will be implemented
+        # user, authenticate_errors = authenticate_request(request)
+        # if user is None:
+        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
         user = {'id': 1}
 
         try:
