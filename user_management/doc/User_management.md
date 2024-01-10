@@ -196,7 +196,7 @@ will return 200 if successful and send a 12 characters code to the user's email
 all fields are mandatory
 > ``` javascript
 > {
->     "username": "..."
+>     "email": "..."
 > }
 > ```
 
@@ -210,8 +210,8 @@ all fields are mandatory
 
 
 > errors can be :
-> - No username provided
-> - Username can not be empty
+> - No email provided
+> - Email can not be empty
 > - Username not found
 > - Invalid JSON format in the request body : decode error
 > - An unexpected error occurred
