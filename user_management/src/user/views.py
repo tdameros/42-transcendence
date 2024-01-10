@@ -206,14 +206,14 @@ class ForgotPasswordView(View):
                                     status=400)
 
             try:
-                username = json_request['username']
+                user_email = json_request['email']
             except KeyError:
-                return JsonResponse(data={'errors': 'No username provided'}, status=400)
+                return JsonResponse(data={'errors': 'No email provided'}, status=400)
 
-            if username is None:
-                return JsonResponse(data={'errors': 'Username can not be empty'}, status=400)
+            if user_email is None:
+                return JsonResponse(data={'errors': 'Email can not be empty'}, status=400)
 
-            user = User.objects.filter(username=username).first()
+            user = User.objects.filter(email=user_email).first()
             if user is None:
                 return JsonResponse(data={'errors': 'Username not found'}, status=400)
 
@@ -229,16 +229,15 @@ class ForgotPasswordView(View):
 
             user.save()
 
-            email = user.email
             subject = "Did you forgot you're password?"
             message = ('Here is your 12 characters code : ' + str(random_code) + '\n'
                                                                            '\nCopy-paste this code to renew the '
                                                                            'account access!\n\n')
 
             from_email = 'perfectpongproplayer@gmail.com'
-            recipient_list = [email]
+            recipient_list = [user_email]
             send_mail(subject, message, from_email, recipient_list)
-            return JsonResponse(data={'ok': 'Email sent', 'email': anonymize_email(email),
+            return JsonResponse(data={'ok': 'Email sent', 'email': anonymize_email(user_email),
                                       'expires': user.forgotPasswordCodeExpiration}, status=200)
 
         except Exception as e:
@@ -266,18 +265,18 @@ class CheckForgotPasswordCodeView(View):
                 return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
 
             try:
-                username = json_request['username']
+                user_email = json_request['email']
                 code_provided = json_request['code']
             except KeyError as e:
                 return JsonResponse(data={'errors': f'Mandatory value missing : {e}'}, status=400)
 
-            if username is None:
-                return JsonResponse(data={'errors': 'Username empty'}, status=400)
+            if user_email is None:
+                return JsonResponse(data={'errors': 'Email empty'}, status=400)
 
             if code_provided is None or code_provided == '':
                 return JsonResponse(data={'errors': 'Code empty'}, status=400)
 
-            user = User.objects.filter(username=username).first()
+            user = User.objects.filter(email=user_email).first()
             if user is None:
                 return JsonResponse(data={'errors': 'Username not found'}, status=400)
 
@@ -308,14 +307,14 @@ class ForgotPasswordChangePasswordView(View):
                     return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
 
                 try:
-                    username = json_request['username']
+                    user_email = json_request['email']
                     code_provided = json_request['code']
                     new_password = json_request['new_password']
                 except KeyError as e:
                     return JsonResponse(data={'errors': f'Mandatory value missing : {e}'}, status=400)
 
-                if username is None:
-                    return JsonResponse(data={'errors': 'Username empty'}, status=400)
+                if user_email is None:
+                    return JsonResponse(data={'errors': 'Email empty'}, status=400)
 
                 if code_provided is None or code_provided == '':
                     return JsonResponse(data={'errors': 'Code empty'}, status=400)
@@ -325,7 +324,7 @@ class ForgotPasswordChangePasswordView(View):
                 if not valid_password:
                     return JsonResponse(data={'errors': password_errors}, status=400)
 
-                user = User.objects.filter(username=username).first()
+                user = User.objects.filter(email=user_email).first()
                 if user is None:
                     return JsonResponse(data={'errors': 'Username not found'}, status=400)
 

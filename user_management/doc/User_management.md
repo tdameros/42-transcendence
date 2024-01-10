@@ -233,7 +233,7 @@ will return 200 if successful
 all fields are mandatory
 > ``` javascript
 > {
->     "username": "...",
+>     "email": "...",
 >     "code": "..."
 > }
 > ```
@@ -249,9 +249,9 @@ all fields are mandatory
 > errors details are optional
 
 > errors can be :
-> - Mandatory value missing : 'username'
+> - Mandatory value missing : 'email'
 > - Mandatory value missing : 'code'
-> - Username empty
+> - Email empty
 > - Code empty
 > - Username not found
 > - Invalid code
@@ -277,9 +277,9 @@ revoke the code given by email
 all fields are mandatory
 > ``` javascript
 > {
->     "username": "...",
+>     "email": "...",
 >     "code": "..."
->     "password": "..."
+>     "new_password": "..."
 > }
 > ```
 
@@ -297,7 +297,7 @@ all fields are mandatory
 > - Mandatory value missing : 'username'
 > - Mandatory value missing : 'code'
 > - Mandatory value missing : 'password'
-> - Username empty
+> - Email empty
 > - Code empty
 > - Username not found
 > - Invalid code
