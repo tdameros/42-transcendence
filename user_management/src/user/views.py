@@ -2,12 +2,11 @@ import json
 import random
 import string
 from datetime import datetime, timedelta
-from django.utils import timezone
 
 from django.conf import settings
 from django.core.mail import send_mail
-
 from django.http import JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -203,7 +202,7 @@ class ForgotPasswordView(View):
             try:
                 json_request = json.loads(request.body.decode('utf-8'))
             except json.JSONDecodeError:
-                    return JsonResponse(data={'errors': ['Invalid JSON format in the request body : decode error']},
+                return JsonResponse(data={'errors': ['Invalid JSON format in the request body : decode error']},
                                     status=400)
 
             try:
@@ -232,8 +231,8 @@ class ForgotPasswordView(View):
 
             subject = "Did you forgot you're password?"
             message = ('Here is your 12 characters code : ' + str(random_code) + '\n'
-                                                                           '\nCopy-paste this code to renew the '
-                                                                           'account access!\n\n')
+                                                                                 '\nCopy-paste this code to renew the '
+                                                                                 'account access!\n\n')
 
             from_email = 'perfectpongproplayer@gmail.com'
             recipient_list = [user_email]
@@ -286,11 +285,11 @@ class CheckForgotPasswordCodeView(View):
                 return JsonResponse(data={'errors': 'Invalid code',
                                           'errors details': f'Code provided : {code_provided}'}, status=400)
             if timezone.now() > user.forgotPasswordCodeExpiration:
-                return JsonResponse(data=
-                                    {'errors': 'Code expired',
-                                     'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
-                                     f', current time is : {timezone.now()}'},
-                                    status=400)
+                return JsonResponse(
+                    data={'errors': 'Code expired',
+                          'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
+                                            f', current time is : {timezone.now()}'},
+                    status=400)
             return JsonResponse(data={'ok': 'ok'}, status=200)
 
         except Exception as e:
@@ -299,51 +298,50 @@ class CheckForgotPasswordCodeView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ForgotPasswordChangePasswordView(View):
-        @staticmethod
-        def post(request):
+    @staticmethod
+    def post(request):
+        try:
             try:
-                try:
-                    json_request = json.loads(request.body.decode('utf-8'))
-                except json.JSONDecodeError:
-                    return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
+                json_request = json.loads(request.body.decode('utf-8'))
+            except json.JSONDecodeError:
+                return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
 
-                try:
-                    user_email = json_request['email']
-                    code_provided = json_request['code']
-                    new_password = json_request['new_password']
-                except KeyError as e:
-                    return JsonResponse(data={'errors': f'Mandatory value missing : {e}'}, status=400)
+            try:
+                user_email = json_request['email']
+                code_provided = json_request['code']
+                new_password = json_request['new_password']
+            except KeyError as e:
+                return JsonResponse(data={'errors': f'Mandatory value missing : {e}'}, status=400)
 
-                if user_email is None:
-                    return JsonResponse(data={'errors': 'Email empty'}, status=400)
+            if user_email is None:
+                return JsonResponse(data={'errors': 'Email empty'}, status=400)
 
-                if code_provided is None or code_provided == '':
-                    return JsonResponse(data={'errors': 'Code empty'}, status=400)
+            if code_provided is None or code_provided == '':
+                return JsonResponse(data={'errors': 'Code empty'}, status=400)
 
-                valid_password, password_errors = SignUpView.is_valid_password(new_password)
+            valid_password, password_errors = SignUpView.is_valid_password(new_password)
 
-                if not valid_password:
-                    return JsonResponse(data={'errors': password_errors}, status=400)
+            if not valid_password:
+                return JsonResponse(data={'errors': password_errors}, status=400)
 
-                user = User.objects.filter(email=user_email).first()
-                if user is None:
-                    return JsonResponse(data={'errors': 'Username not found'}, status=400)
+            user = User.objects.filter(email=user_email).first()
+            if user is None:
+                return JsonResponse(data={'errors': 'Username not found'}, status=400)
 
-                user_code = user.forgotPasswordCode
-                if code_provided != user_code:
-                    return JsonResponse(data={'errors': 'Invalid code',
-                                              'errors details': f'Code provided : {code_provided}'}, status=400)
-                if timezone.now() > user.forgotPasswordCodeExpiration:
-                    return JsonResponse(data=
-                                        {'errors': 'Code expired',
-                                         'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
-                                                           f', current time is : {timezone.now()}'},
-                                        status=400)
-                user.password = new_password
-                user.forgotPasswordCodeExpiration = None
-                user.forgotPasswordCode = None
-                user.save()
-                return JsonResponse(data={'ok': 'ok'}, status=200)
+            user_code = user.forgotPasswordCode
+            if code_provided != user_code:
+                return JsonResponse(data={'errors': 'Invalid code',
+                                          'errors details': f'Code provided : {code_provided}'}, status=400)
+            if timezone.now() > user.forgotPasswordCodeExpiration:
+                return JsonResponse(data={'errors': 'Code expired',
+                                          'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
+                                                            f', current time is : {timezone.now()}'},
+                                    status=400)
+            user.password = new_password
+            user.forgotPasswordCodeExpiration = None
+            user.forgotPasswordCode = None
+            user.save()
+            return JsonResponse(data={'ok': 'ok'}, status=200)
 
-            except Exception as e:
-                return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
