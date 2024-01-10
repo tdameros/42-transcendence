@@ -180,3 +180,81 @@ all fields are mandatory
 > - An unexpected error occurred
 </details>
 
+
+## `forgot-password/send-code`
+
+### Send a code to the user's email
+
+will return 200 if successful and send a 12 characters code to the user's email
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "username": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                            |
+> |-----------|--------------------|-----------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent","email": "************ra@gmail.com", "expires": "2024-01-10T11:20:43.253"}}`                    |
+> | `400`     | `application/json` | `{"errors": "AAA"}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+> errors can be :
+> - No username provided
+> - Username can not be empty
+> - Username not found
+> - Invalid JSON format in the request body : decode error
+> - An unexpected error occurred
+
+</details>
+
+## `forgot-password/check-code`
+
+### Send a code to the user's email
+
+will return 200 if successful and a refresh token
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/check-code/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "username": "...",
+>     "code": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"refresh_token": "eyJhbG ..."}`                    |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> errors details are optional
+
+> errors can be :
+> - Mandatory value missing : 'username'
+> - Mandatory value missing : 'code'
+> - Username empty
+> - Code empty
+> - Username not found
+> - Invalid code
+> - Code expired
+
+</details>

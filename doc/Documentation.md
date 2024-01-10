@@ -25,4 +25,6 @@ this documentation details the different endpoints of each microservice.
 > ### [/user/signin](../user_management/doc/User_management.md#signin)
 > ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
 > ### [/user/refresh-jwt](../user_management/doc/User_management.md#refresh-jwt)
+> ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#forgot-passwordsend-code)
+> ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#forgot-passwordcheck-code)
 
