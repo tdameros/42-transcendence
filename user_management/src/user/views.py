@@ -291,10 +291,59 @@ class CheckForgotPasswordCodeView(View):
                                      'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
                                      f', current time is : {timezone.now()}'},
                                     status=400)
-            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
-            if success is False:
-                return JsonResponse(data={'errors': errors}, status=400)
-            return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+            return JsonResponse(data={'ok': 'ok'}, status=200)
 
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ForgotPasswordChangePasswordView(View):
+        @staticmethod
+        def post(request):
+            try:
+                try:
+                    json_request = json.loads(request.body.decode('utf-8'))
+                except json.JSONDecodeError:
+                    return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
+
+                try:
+                    username = json_request['username']
+                    code_provided = json_request['code']
+                    new_password = json_request['new_password']
+                except KeyError as e:
+                    return JsonResponse(data={'errors': f'Mandatory value missing : {e}'}, status=400)
+
+                if username is None:
+                    return JsonResponse(data={'errors': 'Username empty'}, status=400)
+
+                if code_provided is None or code_provided == '':
+                    return JsonResponse(data={'errors': 'Code empty'}, status=400)
+
+                valid_password, password_errors = SignUpView.is_valid_password(new_password)
+
+                if not valid_password:
+                    return JsonResponse(data={'errors': password_errors}, status=400)
+
+                user = User.objects.filter(username=username).first()
+                if user is None:
+                    return JsonResponse(data={'errors': 'Username not found'}, status=400)
+
+                user_code = user.forgotPasswordCode
+                if code_provided != user_code:
+                    return JsonResponse(data={'errors': 'Invalid code',
+                                              'errors details': f'Code provided : {code_provided}'}, status=400)
+                if timezone.now() > user.forgotPasswordCodeExpiration:
+                    return JsonResponse(data=
+                                        {'errors': 'Code expired',
+                                         'errors details': f'Code valid until : {user.forgotPasswordCodeExpiration}'
+                                                           f', current time is : {timezone.now()}'},
+                                        status=400)
+                user.password = new_password
+                user.forgotPasswordCodeExpiration = None
+                user.forgotPasswordCode = None
+                user.save()
+                return JsonResponse(data={'ok': 'ok'}, status=200)
+
+            except Exception as e:
+                return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)

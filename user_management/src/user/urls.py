@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import SignUpView, SignInView, IsUsernameTakenView, RefreshJWT, ForgotPasswordView, \
-    CheckForgotPasswordCodeView
+    CheckForgotPasswordCodeView, ForgotPasswordChangePasswordView
 
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
@@ -9,4 +9,6 @@ urlpatterns = [
     path('username-exist/', IsUsernameTakenView.as_view(), name='username-exist'),
     path('forgot-password/send-code/', ForgotPasswordView.as_view(), name='forgot-password-send-code'),
     path('forgot-password/check-code/', CheckForgotPasswordCodeView.as_view(), name='forgot-password-check-code'),
+    path('forgot-password/change-password/', ForgotPasswordChangePasswordView.as_view(),
+         name='forgot-password-change-password'),
 ]

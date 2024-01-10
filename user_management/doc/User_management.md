@@ -220,9 +220,9 @@ all fields are mandatory
 
 ## `forgot-password/check-code`
 
-### Send a code to the user's email
+### Verify the code sent by email
 
-will return 200 if successful and a refresh token
+will return 200 if successful
 
 <details>
  <summary><code>POST</code><code><b>/user/forgot-password/check-code/</b></code></summary>
@@ -242,7 +242,7 @@ all fields are mandatory
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"refresh_token": "eyJhbG ..."}`                    |
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
@@ -256,5 +256,53 @@ all fields are mandatory
 > - Username not found
 > - Invalid code
 > - Code expired
+
+</details>
+
+
+## `forgot-password/change-password`
+
+### Change the password of the user with the given code
+
+will return 200 if successful,
+change the user password,
+revoke the code given by email
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/change-password/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "username": "...",
+>     "code": "..."
+>     "password": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> errors details are optional
+
+> errors can be :
+> - Mandatory value missing : 'username'
+> - Mandatory value missing : 'code'
+> - Mandatory value missing : 'password'
+> - Username empty
+> - Code empty
+> - Username not found
+> - Invalid code
+> - Code expired
+> - (all the errors from the is_valid_password function in the sign_up route)
+
 
 </details>
