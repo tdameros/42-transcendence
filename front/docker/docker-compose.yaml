@@ -12,8 +12,7 @@ services:
         depends_on:
             - front
         volumes:
-            - front_static_volume:/app/static
-            - front_media_volume:/app/media
+            - front_code:/app/src/
         restart: on-failure
 
 
@@ -24,26 +23,10 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: sh -c "python3 src/manage.py makemigrations &&
-                        python3 src/manage.py migrate &&
+        command: sh -c "python3 src/manage.py collectstatic --noinput &&
                         gunicorn --chdir src/ front.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
             - front_code:/app/src/
         expose:
             - "8000"
-        depends_on:
-            - front-db
-        restart: on-failure
-
-
-    front-db:
-        networks:
-            - front
-        image: postgres:16.0-bookworm
-        environment:
-            POSTGRES_DB: mydatabase
-            POSTGRES_USER: myuser
-            POSTGRES_PASSWORD: mypassword
-        volumes:
-            - front_postgres_volume:/var/lib/postgresql/data
         restart: on-failure

@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from django.conf import settings
 from django.core.mail import send_mail
+
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -75,7 +76,7 @@ class SignUpView(View):
         if len(email) > settings.EMAIL_MAX_LENGTH:
             return False, f'Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}'
         if any(char in '!#$%^&*()=' for char in email):
-            return False, f'Invalid character in email address'
+            return False, 'Invalid character in email address'
         if '@' not in email:
             return False, 'Email missing @'
         if '.' not in email:

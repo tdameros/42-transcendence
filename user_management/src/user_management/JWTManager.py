@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
 
-from django.conf import settings
-from user.models import User
 import jwt
+from django.conf import settings
+
+from user.models import User
 
 
 def user_exist(user_id: int) -> bool:
     if (user_id is None
             or user_id == ''
-            or type(user_id) != int
+            or not isinstance(user_id, int)
             or user_id < 0):
         return False
     return User.objects.filter(id=user_id).exists()

@@ -1,4 +1,5 @@
 import json
+import pathlib
 import random
 from datetime import datetime, timedelta
 
@@ -8,6 +9,8 @@ from django.urls import reverse
 
 from user_management import settings
 from user_management.JWTManager import JWTManager
+
+APP_DIR = pathlib.Path(__file__).resolve().parent
 
 
 class TestsSignup(TestCase):
@@ -276,7 +279,7 @@ class TestsRefreshJWT(TestCase):
             'token_type': 'refresh'
         }
         bad_signature_token = jwt.encode(valid_payload,
-                                         open('./test_resources/invalid_key.pub').read(),
+                                         open(APP_DIR / './test_resources/invalid_key.pub').read(),
                                          'RS256')
         # 3 Empty payload
         payload = {}
@@ -320,7 +323,6 @@ class TestsRefreshJWT(TestCase):
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
             except Exception as e:
                 print(e)
-            error_message = result.json()['errors']
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])

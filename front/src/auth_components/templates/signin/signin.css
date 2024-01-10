@@ -1,0 +1,56 @@
+.active {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+#login {
+    height: 100vh;
+}
+
+.login-card {
+    width: 550px;
+}
+
+#github-btn {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+#github-btn:hover {
+    background-color: #252525;
+    color: #ffffff;
+}
+
+#intra-btn {
+    background-color: #ffffff;
+    color: #000000;"
+}
+
+
+#intra-btn:hover {
+    background-color: #f6f6f6;
+    color: #000000;"
+}
+
+.form-group mb-4 {
+    display: flex;
+    align-items: center;
+}
+
+#password-feedback {
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+.eye-box:hover {
+    background: #efefef;
+    color: #2d2d2d;
+}
+
+.invalid-feedback p {
+    margin: 0;
+}
+
+#forgot-password, #dont-have-account {
+    font-size: 13px;
+    color: rgb(13, 110, 253);
+}
