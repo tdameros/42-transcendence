@@ -22,6 +22,7 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=json_request['password'])
+            user.save()
             success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
