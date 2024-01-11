@@ -157,10 +157,31 @@ None
 
 ### Manage players of a tournament
 
+Retrieve the list of players for a tournament
+
 <details>
  <summary><code>GET</code> <code><b>/tournament/{id}/players</b></code></summary>
 
-#### Retrieve the lis of players for a tournament
+### Responses
+
+#### Body
+
+> ```javascript
+>   {
+>       "max-players": 16,
+>       "players": [
+>           {
+>               "nickname": "Player",
+>               "user_id": 2
+>           }     
+>       ] 
+>   }
+> ```
+
+> | http code | content-type       | response                                          |
+> |-----------|--------------------|---------------------------------------------------|
+> | `200`     | `application/json` | `{"players": [{"nickname": "Player", ...}, ...]}` |
+> | `404`     | `application/json` | `{"error": "AAA"}                                 |
 
 </details>
 
