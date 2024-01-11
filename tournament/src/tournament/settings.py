@@ -28,6 +28,9 @@ MIN_PLAYERS = 2
 DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 50
 
+MIN_NICKNAME_LENGTH = 3
+MAX_NICKNAME_LENGTH = 14
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
 

@@ -185,10 +185,29 @@ Retrieve the list of players for a tournament
 
 </details>
 
+Add a player to a specific tournament
+
 <details>
  <summary><code>POST</code> <code><b>/tournament/{id}/players</b></code></summary>
 
-#### Add a player to a specific tournament
+### Parameters
+
+#### Body
+
+- Nickname for the tournament
+
+> ```javascript
+> {
+>     "nickname": "Player"
+> }
+> ```
+
+### Responses
+
+> | http code              | content-type       | response                                        |
+> |------------------------|--------------------|-------------------------------------------------|
+> | `201`                  | `application/json` | `{"id": 1, "nickname": "Player", "user_id": 2}` |
+> | `400` / `403` / `404`  | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`             |
 
 </details>
 

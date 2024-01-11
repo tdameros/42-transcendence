@@ -17,7 +17,7 @@ class Tournament(models.Model):
 
 
 class Player(models.Model):
-    nickname = models.CharField(max_length=settings.MAX_TOURNAMENT_NAME_LENGTH)
+    nickname = models.CharField(max_length=settings.MAX_NICKNAME_LENGTH)
     user_id = models.IntegerField()
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='players')
 
