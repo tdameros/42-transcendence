@@ -4,17 +4,15 @@ import socketio
 from aiohttp import web
 
 from src.redirection_server.Game import Game
-from src.shared_code.emit import emit
+from src.redirection_server.RefuseConnection import RefuseConnection
+from src.redirection_server.SendURI import SendURI
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.setup_logging import setup_logging
-from src.shared_code.UserKicker import UserKicker
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
 sio.attach(app)
-
-user_kicker = UserKicker(sio)
 
 # TODO get all games from server
 #      dict[GameID, Game]
@@ -65,7 +63,7 @@ i = 0  # TODO remove me
 
 
 @sio.event
-async def connect(sid, environ, auth):
+def connect(sid, environ, auth):
     logging.info(f'{sid} connected')
 
     try:
@@ -75,21 +73,19 @@ async def connect(sid, environ, auth):
         update_game_database()
         game = get_game(game_id, json_web_token['user_id'])
         create_game_server_if_needed(game)
-        global i  # TODO remove this line
-        # TODO send game.get_uri() instead of [game.get_uri(), str(i % 2)]
-        #      It is like this for now so that I can run test, the i % 2
-        #      serves as the client nickname for the game server
-        await emit(sio, 'game_server_uri', sid, [game.get_uri(), str(i % 2)])
-        i += 1  # TODO remove this line
     except Exception as e:
-        await emit(sio, 'error', sid, str(e))
-
-    user_kicker.add_sid_to_kick_queue(sid)
+        raise RefuseConnection(str(e))
+    global i  # TODO remove this line
+    i += 1  # TODO remove this line
+    # TODO send game.get_uri() instead of [game.get_uri(), str(i % 2)]
+    #      It is like this for now so that I can run test, the i % 2
+    #      serves as the client nickname for the game server
+    raise SendURI([game.get_uri(), str(i % 2)])
 
 
 @sio.event
-async def disconnect(sid):
-    user_kicker.remove_sid_from_kick_queue(sid)
+def disconnect(sid):
+    pass
 
 
 # This function is for disconnecting clients that don't disconnect themselves
@@ -98,7 +94,7 @@ async def disconnect(sid):
 async def background_task():
     while True:
         await sio.sleep(3)
-        await user_kicker.kick_users()
+        # TODO check for ghost games
 
 
 # The app arguments is not used but is required by

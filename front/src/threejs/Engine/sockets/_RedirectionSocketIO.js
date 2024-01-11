@@ -20,30 +20,17 @@ export class _RedirectionSocketIO {
             }),
         });
 
-        this._socketIO.on('connect', () => {
-            console.log('connection to redirection server established');
-        });
+        this._socketIO.on('connect_error', (arg_string) => {
+            const arg = JSON.parse(arg_string.message)
 
-        this._socketIO.on('connect_error', (error) => {
-            console.error('Connection error:', error);
-        });
+            console.log(arg)
 
-        this._socketIO.on('disconnect', () => {
-            console.log('disconnected from redirection server');
-        });
-
-        this._socketIO.on('error', async (message) => {
-            await _errorEvent(this, message)
-        });
-
-        this._socketIO.on('game_server_uri', async (gameServerUri) => {
-            try {
-                await _waitForConnection(this._socketIO);
-            } catch (e) {
-                console.error('_RedirectionSocket game_server_uri event: ', e);
-                return;
+            if (arg.hasOwnProperty('error')) {
+                console.error('Connection error:', arg['error']);
+                return ;
             }
 
+            const gameServerUri = arg['game_server_uri']
             console.log('game_server_uri received: ', gameServerUri);
             this._engine.setSocket(new gameSocketIOClass(this._engine, gameServerUri));
         });

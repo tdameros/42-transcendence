@@ -3,6 +3,7 @@ import logging
 import socketio
 from aiohttp import web
 
+from socketio.exceptions import ConnectionRefusedError
 from src.game_server import rooms
 from src.game_server.Clock import Clock
 from src.game_server.Game import Game
@@ -11,15 +12,12 @@ from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.setup_logging import setup_logging
-from src.shared_code.UserKicker import UserKicker
 
 sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
 sio.attach(app)
 
 game: Game = Game()
-
-user_kicker = UserKicker(sio)
 
 
 async def add_user_to_game(user_id: str, sid: str):
@@ -44,15 +42,12 @@ async def connect(sid, environ, auth):
         if game.has_started:
             await emit(sio, 'scene', sid, game.get_scene().to_json())
     except Exception as e:
-        await emit(sio, 'error', sid, str(e))
-        user_kicker.add_sid_to_kick_queue(sid)
+        raise ConnectionRefusedError(str(e))
 
 
 @sio.event
 async def disconnect(sid):
     await game.remove_user(sid, sio)
-
-    user_kicker.remove_sid_from_kick_queue(sid)
 
 
 async def background_task():
@@ -70,7 +65,6 @@ async def background_task():
     while True:
         game.get_scene().update(clock.get_delta())
         await sio.sleep(0.1)
-        await user_kicker.kick_users()
 
 
 # The app arguments is not used but is required by

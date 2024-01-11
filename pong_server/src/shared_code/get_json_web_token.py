@@ -16,6 +16,7 @@ def check_json_web_token_errors(json_web_token):
     # TODO check signature
 
     if json_web_token.get('user_id') is None:
-        # TODO Remove this if as if the signature is correct, 'user_id' must exist
+        # TODO Remove this if as if the signature is correct, 'user_id'
+        #      must exist
         return 'user_id field was not found in json_web_token'
     return None
