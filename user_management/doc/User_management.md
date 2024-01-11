@@ -180,3 +180,30 @@ all fields are mandatory
 > - An unexpected error occurred
 </details>
 
+
+## `user/{user_id}`
+### Get user non-sensitive information
+
+will return a user object when successful
+Might be extended to return more information in the future, if needed
+
+<details>
+ <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {user_id}
+> 
+> NB : user_id must be an integer
+> 
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"username": "..."}`                                |
+> | `404`     | `application/json` | `{"errors": ["User not found"]}`                     |
+> | `400`     | `application/json` | `{'errors': ['User id must be an integer']}`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+> 
+

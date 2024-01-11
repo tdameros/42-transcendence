@@ -326,3 +326,19 @@ class TestsRefreshJWT(TestCase):
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])
+
+
+class UserId(TestCase):
+
+        def test_user_id(self):
+            data_preparation = {
+                'username': 'Aurel303',
+                'email': 'alevra@gmail.com',
+                'password': 'Validpass42*',
+            }
+            url = reverse('signup')
+            self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+            url = reverse('user-id', args=[1]) # 1 is the user_id
+            result = self.client.get(url)
+            self.assertEqual(result.status_code, 200)
+            self.assertTrue('username' in result.json())
