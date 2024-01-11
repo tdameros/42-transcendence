@@ -37,6 +37,7 @@ class TournamentPlayersView(View):
 
         response_data = {
             'max-players': tournament.max_players,
+            'nb-players': len(players),
             'players': players_data
         }
 
@@ -47,7 +48,7 @@ class TournamentPlayersView(View):
         # user, authenticate_errors = authenticate_request(request)
         # if user is None:
         #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 1}
+        user = {'id': 2}
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
