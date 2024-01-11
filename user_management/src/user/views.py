@@ -217,10 +217,6 @@ class ForgotPasswordView(View):
             if user is None:
                 return JsonResponse(data={'errors': 'Username not found'}, status=400)
 
-        except Exception as e:
-            return JsonResponse(data={'errors': f'An unexpected error occurred : {e}'}, status=500)
-
-        try:
             random_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
 
             user.forgotPasswordCode = random_code
