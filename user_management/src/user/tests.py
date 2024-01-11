@@ -222,14 +222,14 @@ class TestsUsernameExist(TestCase):
 
     def test_username_exist(self):
         data_preparation = {
-            'username': 'Aurel303',
+            'username': 'Burel305',
             'email': 'a@a.fr',
             'password': 'Validpass42*',
         }
         url = reverse('signup')
         self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data_username_exist = {
-            'username': 'Aurel303'
+            'username': 'Burel305'
         }
         url = reverse('username-exist')
         result = self.client.post(url, json.dumps(data_username_exist), content_type='application/json')
@@ -326,3 +326,32 @@ class TestsRefreshJWT(TestCase):
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])
+
+
+class TestsEmailExist(TestCase):
+
+    def test_email_exist(self):
+        data_preparation = {
+            'username': 'Aurel305',
+            'email': 'a@a.fr',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        data_email_exist = {
+            'email': 'a@a.fr'
+        }
+        url = reverse('email-exist')
+        result = self.client.post(url, json.dumps(data_email_exist), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('is_taken' in result.json())
+        self.assertTrue(result.json()['is_taken'])
+
+        data_email_not_exist = {
+            'email': 'a@afwefwe.fr'
+        }
+        url = reverse('email-exist')
+        result = self.client.post(url, json.dumps(data_email_not_exist), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('is_taken' in result.json())
+        self.assertFalse(result.json()['is_taken'])
