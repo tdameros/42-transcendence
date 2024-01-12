@@ -140,14 +140,14 @@ will return a boolean
 
 </details>
 
-## `refresh-jwt`
+## `refresh-access-jwt`
 
 ### Trade a valid refresh token for an access token
 
 will return an access token when successful
 
 <details>
- <summary><code>POST</code><code><b>/user/refresh-jwt/</b></code></summary>
+ <summary><code>POST</code><code><b>/user/refresh-access-jwt/</b></code></summary>
 
 ### Parameters
 
@@ -179,4 +179,31 @@ all fields are mandatory
 > - Invalid JSON format in the request body
 > - An unexpected error occurred
 </details>
+
+
+## `user/{user_id}`
+### Get user non-sensitive information
+
+will return a user object when successful
+Might be extended to return more information in the future, if needed
+
+<details>
+ <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {user_id}
+> 
+> NB : user_id must be an integer
+> 
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"username": "..."}`                                |
+> | `404`     | `application/json` | `{"errors": ["User not found"]}`                     |
+> | `400`     | `application/json` | `{'errors': ['User id must be an integer']}`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+> 
 

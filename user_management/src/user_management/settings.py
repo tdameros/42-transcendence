@@ -127,39 +127,41 @@ WSGI_APPLICATION = 'user_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# #SQLite 3 for local development
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# PostgreSQL for production
-
-if 'GITHUB_ACTIONS' in os.environ:
+# #SQLite 3 for debugs and tests
+DEBUG = False
+if DEBUG:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-
-            'NAME': os.environ.get('DB_NAME'),
-            'USER': os.environ.get('DB_USER'),
-            'PASSWORD': os.environ.get('DB_PASSWORD'),
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'mydatabase',
-            'USER': 'myuser',
-            'PASSWORD': 'mypassword',
-            'HOST': 'user-management-db',
-            'PORT': '5432',
+    # PostgreSQL for GitHub Actions
+    if 'GITHUB_ACTIONS' in os.environ:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+
+                'NAME': os.environ.get('DB_NAME'),
+                'USER': os.environ.get('DB_USER'),
+                'PASSWORD': os.environ.get('DB_PASSWORD'),
+                'HOST': 'localhost',
+                'PORT': '5432',
+            }
         }
-    }
+    # PostgreSQL for production
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'mydatabase',
+                'USER': 'myuser',
+                'PASSWORD': 'mypassword',
+                'HOST': 'user-management-db',
+                'PORT': '5432',
+            }
+        }
 
 
 # Password validation
