@@ -260,7 +260,7 @@ class TestsRefreshJWT(TestCase):
         data = {
             'refresh_token': refresh_token.json()['refresh_token']
         }
-        url = reverse('refresh-jwt')
+        url = reverse('refresh-access-jwt')
         print('Testing valid refresh token')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 200)
@@ -315,7 +315,7 @@ class TestsRefreshJWT(TestCase):
 
         for error in errors:
             print(f'\nTesting {error[0]}')
-            url = reverse('refresh-jwt')
+            url = reverse('refresh-access-jwt')
             try:
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
             except Exception as e:

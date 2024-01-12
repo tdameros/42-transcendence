@@ -46,4 +46,3 @@ this documentation details the different endpoints of each microservice.
 > ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#forgot-passwordsend-code)
 > ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#forgot-passwordcheck-code)
 > ### [/user/forgot-password/change-password](../user_management/doc/User_management.md#forgot-passwordchange-password)
-
