@@ -40,7 +40,12 @@ this documentation details the different endpoints of each microservice.
 
 ## User Management
 > ### [/user/signup](../user_management/doc/User_management.md#signup)
+
 > ### [/user/signin](../user_management/doc/User_management.md#signin)
+
 > ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
+
 > ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#refresh-access-jwt)
+
+> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser_id)
 
