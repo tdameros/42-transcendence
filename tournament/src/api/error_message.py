@@ -19,5 +19,5 @@ IS_PRIVATE_NOT_BOOL = 'Is private must be a boolean'
 
 MISSING_NICKNAME = 'Missing nickname field'
 NICKNAME_TOO_SHORT = f'nickname must contain at least {settings.MIN_NICKNAME_LENGTH} characters'
-NICKNAME_TOO_LONG = f'Tournament name must contain less than {settings.MAX_NICKNAME_LENGTH} characters'
-NICKNAME_INVALID_CHAR = 'nickname may only contain alphanumeric characters'
+NICKNAME_TOO_LONG = f'nickname must contain less than {settings.MAX_NICKNAME_LENGTH} characters'
+NICKNAME_INVALID_CHAR = 'nickname may only contain letters, numbers and spaces'

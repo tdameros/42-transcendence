@@ -48,7 +48,7 @@ class TournamentPlayersView(View):
         # user, authenticate_errors = authenticate_request(request)
         # if user is None:
         #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 2}
+        user = {'id': 1}
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
@@ -72,7 +72,7 @@ class TournamentPlayersView(View):
         can_join, error_data = TournamentPlayersView.player_can_join_tournament(player, tournament)
 
         if not can_join:
-            return JsonResponse({'errors': error_data[0]}, status=error_data[1])
+            return JsonResponse({'errors': [error_data[0]]}, status=error_data[1])
 
         try:
             player.save()
@@ -88,10 +88,10 @@ class TournamentPlayersView(View):
         if nickname is None:
             return False, [error.MISSING_NICKNAME]
         if len(nickname) < settings.MIN_NICKNAME_LENGTH:
-            errors.append(error.NAME_TOO_SHORT)
+            errors.append(error.NICKNAME_TOO_SHORT)
         elif len(nickname) > settings.MAX_NICKNAME_LENGTH:
             errors.append(error.NICKNAME_TOO_LONG)
-        if len(nickname) and not nickname.isalnum():
+        if len(nickname) and not nickname.replace(' ', '').isalnum():
             errors.append(error.NICKNAME_INVALID_CHAR)
 
         if errors:
