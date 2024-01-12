@@ -194,7 +194,7 @@ class RefreshJWT(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class ForgotPasswordView(View):
+class ForgotPasswordSendCodeView(View):
     @staticmethod
     def post(request):
         try:
@@ -225,12 +225,12 @@ class ForgotPasswordView(View):
 
             user.save()
 
-            subject = "Did you forgot you're password?"
+            subject = "Did you forgot your password?"
             message = ('Here is your 12 characters code : ' + str(random_code) + '\n'
                                                                                  '\nCopy-paste this code to renew the '
                                                                                  'account access!\n\n')
 
-            from_email = 'perfectpongproplayer@gmail.com'
+            from_email = settings.EMAIL_HOST_USER
             recipient_list = [user_email]
             send_mail(subject, message, from_email, recipient_list)
             return JsonResponse(data={'ok': 'Email sent', 'email': anonymize_email(user_email),
@@ -251,7 +251,7 @@ def anonymize_email(email):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class CheckForgotPasswordCodeView(View):
+class ForgotPasswordCheckCodeView(View):
     @staticmethod
     def post(request):
         try:
