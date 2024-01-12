@@ -175,10 +175,34 @@ None
 
 </details>
 
+Update tournament settings
+
 <details>
  <summary><code>PATCH</code> <code><b>/tournament/{id}/update-settings</b></code></summary>
 
-#### Update tournament settings
+### Parameters
+
+#### Body
+
+- Tournament name must be between 3 and 20 characters and can only contain alnum and space (optional)
+- Players must be between 2 and 16 (optional)
+- Registration deadline (optional)
+- A boolean that specifies if tournament is private (optional)
+
+> ```javascript
+> {
+>   "name": "World Championship",
+>   "max-players": 16,
+>   "registration-deadline": "2024-02-17T10:53",
+>   "is-private": true
+> }
+
+### Responses
+
+> | http code      | content-type       | response                               |
+> |----------------|--------------------|----------------------------------------|
+> | `200`          | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
+> | `400` / `403`  | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
 </details>
 
