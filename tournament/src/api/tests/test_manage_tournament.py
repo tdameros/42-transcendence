@@ -60,10 +60,10 @@ class GetTournamentTest(TestCase):
         ])
 
     def test_get_tournament_not_found(self):
-        response, body = self.get_tournament(4)
+        response, body = self.get_tournament(50)
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(body['error'], 'tournament with id `4` does not exist')
+        self.assertEqual(body['error'], 'tournament with id `50` does not exist')
 
     def test_get_tournament_no_player(self):
         response, body = self.get_tournament(2)

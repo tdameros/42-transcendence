@@ -116,6 +116,17 @@ class TournamentPlayersView(View):
             elif player.nickname == new_player.nickname:
                 return False, [f'nickname `{player.nickname}` already taken', 400]
 
+        try:
+            user_already_in_tournament = Tournament.objects.filter(
+                players__user_id=new_player.user_id,
+                status__in=[Tournament.CREATED, Tournament.IN_PROGRESS]
+            ).exists()
+        except Exception as e:
+            return False, [f'An unexpected error occurred : {e}', 500]
+
+        if user_already_in_tournament:
+            return False, ['You are already registered for another tournament', 403]
+
         if tournament.max_players <= len(tournament_players):
             return False, ['This tournament is fully booked', 403]
 

@@ -150,3 +150,14 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['The registration phase is over'])
 
+    def test_already_register_to_another_tournament(self):
+        tournament_id = 2
+        body = json.dumps({'nickname': 'player 4'})
+
+        Player.objects.create(nickname=f'player 1', user_id=1, tournament_id=3)
+
+        response, body = self.post_tournament_players(tournament_id, body)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], ['You are already registered for another tournament'])
+
