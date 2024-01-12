@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import (ForgotPasswordCheckCodeView,
-                    ForgotPasswordChangePasswordView, ForgotPasswordSendCodeView,
+from .views import (ForgotPasswordChangePasswordView,
+                    ForgotPasswordCheckCodeView, ForgotPasswordSendCodeView,
                     IsUsernameTakenView, RefreshJWT, SignInView, SignUpView)
 
 urlpatterns = [
