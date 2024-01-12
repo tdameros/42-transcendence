@@ -2,9 +2,8 @@ import random
 
 import numpy
 
-
-def vector_to_dict(vector: numpy.ndarray) -> dict:
-    return {'x': vector[0], 'y': vector[1], 'z': vector[2]}
+from src.game_server import settings
+from src.game_server.vector_to_dict import vector_to_dict
 
 
 class Player(object):
@@ -19,10 +18,24 @@ class Player(object):
         }
 
     def set_movement(self, movement):
-        self._move_direction = movement
+        if movement == 'up':
+            self._move_direction = settings.PLAYER_MOVE_SPEED
+        elif movement == 'down':
+            self._move_direction = -settings.PLAYER_MOVE_SPEED
+        else:
+            self._move_direction = 0.
+
+    def get_movement(self):
+        return self._move_direction
 
     def update_position(self, time_delta: float):
         self._position += self._move_direction * time_delta
+
+    def set_position(self, position):
+        self._position = position
+
+    def get_position(self):
+        return self._position
 
 
 class Board(object):

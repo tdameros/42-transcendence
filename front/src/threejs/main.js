@@ -14,11 +14,11 @@ function main() {
 
     const engine = new Engine();
 
-    displayBaseScene(engine);
+    displayScene(engine);
     engine.connectToServer();
 }
 
-function displayBaseScene(engine) {
+function displayScene(engine) {
     let clock = new THREE.Clock();
 
     engine.setAnimationLoop(() => {

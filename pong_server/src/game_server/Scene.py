@@ -1,3 +1,4 @@
+from src.game_server import settings
 from src.game_server.Object import Ball, Board, Player
 
 
@@ -21,10 +22,20 @@ class Scene(object):
             'boards': [board.to_json() for board in self._boards],
             'balls': [ball.to_json() for ball in self._balls],
             'players': [player.to_json() for player in self._players],
+            'player_move_speed': settings.PLAYER_MOVE_SPEED
         }
 
-    def set_player_movement(self, player_index, movement):
-        self._players[player_index].set_movement(movement)
+    def set_player_movement(self, player_index, direction):
+        self._players[player_index].set_movement(direction)
+
+    def get_player_movement(self, player_index):
+        return self._players[player_index].get_movement()
+
+    def set_player_position(self, player_index, position):
+        self._players[player_index].set_position(position)
+
+    def get_player_position(self, player_index):
+        return self._players[player_index].get_position()
 
     def update(self, time_delta: float):
         for board in self._boards:

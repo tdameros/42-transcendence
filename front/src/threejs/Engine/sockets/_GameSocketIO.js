@@ -1,5 +1,4 @@
 import {Scene} from '../../Scene';
-import {_errorEvent} from './_errorEvent'
 
 import {io} from 'socket.io-client';
 
@@ -33,23 +32,33 @@ export class _GameSocketIO {
         });
 
         this._socketIO.on('error', async (message) => {
-            await _errorEvent(this, message)
+            console.error('Server error message: ', message);
         });
 
         this._socketIO.on('debug', (message) => {
-            console.warn('Server debug message: ', message);
+            console.log('Server debug message: ', message);
         });
 
-        this._socketIO.on('scene', (sceneData) => {
+        this._socketIO.on('scene', (data) => {
             console.log('game scene received');
             // this._engine.stopAnimationLoop();
-            this._engine._scene = new Scene(sceneData['boards'],
-                                            sceneData['balls'],
-                                            sceneData['players']);
+            const scene = data['scene'];
+            this._engine.setScene(new Scene(scene['boards'],
+                                            scene['balls'],
+                                            scene['players'],
+                                            scene['player_move_speed'],
+                                            data['player_index']));
+            this._engine.startListeningForKeyHooks();
         });
 
-        this._socketIO.on('update_player_movement', (data) => {
-            this._engine._scene.updatePlayerMovement(data);
+        this._socketIO.on('update_player', (data) => {
+            const player_index = data['player_index']
+            this._engine.getScene()
+                        .updateOtherPlayerMovement(player_index,
+                                                   data['direction']);
+            this._engine.getScene()
+                        .updateOtherPlayerPosition(player_index,
+                                                   data['position'])
         });
 
         this._socketIO.connect();

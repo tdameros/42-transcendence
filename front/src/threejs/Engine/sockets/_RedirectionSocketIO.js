@@ -1,6 +1,4 @@
 import {_GameSocketIO} from './_GameSocketIO';
-import {_errorEvent} from "./_errorEvent";
-import {_waitForConnection} from "./_waitForConnection";
 
 import {io} from 'socket.io-client';
 

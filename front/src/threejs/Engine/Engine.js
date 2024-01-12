@@ -45,6 +45,10 @@ export class Engine {
         return this._scene;
     }
 
+    setScene(newScene) {
+        this._scene = newScene;
+    }
+
     setAnimationLoop(loopFunction) {
         this._threeJS.setAnimationLoop(loopFunction);
     }
@@ -55,5 +59,13 @@ export class Engine {
 
     setSocket(socket) {
         this._socket = socket;
+    }
+
+    startListeningForKeyHooks() {
+        this._keyHookHandler.startListeningForKeyHooks()
+    }
+
+    stopListeningForKeyHooks() {
+        this._keyHookHandler.stopListeningForKeyHooks()
     }
 }

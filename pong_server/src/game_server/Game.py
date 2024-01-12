@@ -2,6 +2,8 @@ import sys
 
 import src.game_server.rooms as rooms
 from src.game_server.Scene import Scene
+from src.game_server.vector_to_dict import vector_to_dict
+from src.shared_code.emit import emit
 
 
 class Game(object):
@@ -14,6 +16,9 @@ class Game(object):
 
         #              dict[user_id: sid]
         self._sid_map: dict[str: str] = {}
+
+        #                       dict[user_id, index]
+        self._player_index_map: dict[str: int] = {}
 
         self._scene: Scene | None = None
 
@@ -31,6 +36,9 @@ class Game(object):
 
         self._scene = Scene(len(self._players_list))
 
+    def get_player_list(self):
+        return self._players_list
+
     def is_user_part_of_game(self, user_id: str) -> bool:
         return user_id in self._players_list
 
@@ -40,12 +48,14 @@ class Game(object):
     async def add_user(self, user_id: str, sid: str, sio):
         self._player_map[sid] = user_id
         self._sid_map[user_id] = sid
+        self._player_index_map[sid] = self._players_list.index(user_id)
         await sio.enter_room(sid, rooms.ALL_PLAYERS)
 
     async def remove_user(self, sid: str, sio):
         user_id = self._player_map.pop(sid)
         if user_id is not None:
             del self._sid_map[user_id]
+        del self._player_index_map[sid]
         await sio.leave_room(sid, rooms.ALL_PLAYERS)
 
     def have_all_players_joined(self) -> bool:
@@ -53,3 +63,22 @@ class Game(object):
 
     def get_scene(self):
         return self._scene
+
+    def get_player_index(self, sid: str) -> int:
+        return self._player_index_map[sid]
+
+    async def set_player_movement_and_position(self,
+                                               sio,
+                                               skip_sid,
+                                               player_index,
+                                               direction,
+                                               player_position):
+        self._scene.set_player_movement(player_index, direction)
+        self._scene.set_player_position(player_index, player_position)
+        await emit(sio, 'update_player', rooms.ALL_PLAYERS,
+                   {
+                       'player_index': player_index,
+                       'direction': direction,
+                       'position': vector_to_dict(player_position)
+                   },
+                   skip_sid)

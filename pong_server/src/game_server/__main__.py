@@ -2,12 +2,13 @@ import logging
 
 import socketio
 from aiohttp import web
-
 from socketio.exceptions import ConnectionRefusedError
-from src.game_server import rooms
+
 from src.game_server.Clock import Clock
 from src.game_server.Game import Game
 from src.game_server.print_server_uri import print_server_uri
+from src.game_server.update_player_movement_and_position import \
+    update_player_movement_and_position
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
@@ -40,7 +41,9 @@ async def connect(sid, environ, auth):
         json_web_token = get_json_web_token(query_string)
         await add_user_to_game(json_web_token['user_id'], sid)
         if game.has_started:
-            await emit(sio, 'scene', sid, game.get_scene().to_json())
+            await emit(sio, 'scene', sid,
+                       {'scene': game.get_scene().to_json(),
+                        'player_index': game.get_player_index(sid)})
     except Exception as e:
         raise ConnectionRefusedError(str(e))
 
@@ -50,16 +53,53 @@ async def disconnect(sid):
     await game.remove_user(sid, sio)
 
 
-async def background_task():
-    await print_server_uri(sio)
+@sio.event
+async def player_moves_up(sid, client_player_position):
+    await update_player_movement_and_position(sio,
+                                              sid,
+                                              game,
+                                              client_player_position,
+                                              'up')
 
+
+@sio.event
+async def player_moves_down(sid, client_player_position):
+    await update_player_movement_and_position(sio,
+                                              sid,
+                                              game,
+                                              client_player_position,
+                                              'down')
+
+
+@sio.event
+async def player_stopped_moving(sid, client_player_position):
+    await update_player_movement_and_position(sio,
+                                              sid,
+                                              game,
+                                              client_player_position,
+                                              'none')
+
+
+async def wait_for_all_players_to_join():
     while not game.have_all_players_joined():
         # TODO Add a time out and make the players that don't join forfeit
         #      their games
         await sio.sleep(.3)
 
-    await emit(sio, 'scene', rooms.ALL_PLAYERS, game.get_scene().to_json())
+    scene = game.get_scene().to_json()
+    for player in game.get_player_list():
+        player_sid = game.get_user_sid(player)
+        if player_sid is not None:
+            await emit(sio, 'scene', player_sid,
+                       {'scene': scene,
+                        'player_index': game.get_player_index(player_sid)})
     game.has_started = True
+
+
+async def background_task():
+    await print_server_uri(sio)
+
+    await wait_for_all_players_to_join()
 
     clock = Clock()
     while True:

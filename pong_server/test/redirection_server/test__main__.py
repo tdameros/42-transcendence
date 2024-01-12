@@ -1,7 +1,4 @@
-import asyncio
-import json
 import unittest
-from test.test_utils.FakeSio import EmittedEvent, FakeSio
 
 import src.redirection_server.__main__ as main
 from src.redirection_server.Game import Game
