@@ -140,8 +140,6 @@ will return a boolean
 
 </details>
 
-
-
 ## `email-exist`
 
 ### Check if email is already taken
@@ -182,15 +180,14 @@ will return a boolean
 </details>
 
 
-
-## `refresh-jwt`
+## `refresh-access-jwt`
 
 ### Trade a valid refresh token for an access token
 
 will return an access token when successful
 
 <details>
- <summary><code>POST</code><code><b>/user/refresh-jwt/</b></code></summary>
+ <summary><code>POST</code><code><b>/user/refresh-access-jwt/</b></code></summary>
 
 ### Parameters
 
