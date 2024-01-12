@@ -26,4 +26,3 @@ class Match(models.Model):
     player_1 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='player_1')
     player_2 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='player_2')
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='matches')
-

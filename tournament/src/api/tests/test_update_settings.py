@@ -3,8 +3,8 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from api.models import Tournament, Player
 from api import error_message as error
+from api.models import Player, Tournament
 
 
 class PatchTournamentTest(TestCase):

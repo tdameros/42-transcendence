@@ -123,7 +123,7 @@ class GetTournamentTest(TestCase):
     def test_display_completed(self):
         response, body = self.get_tournaments({'page': 6, 'display-completed': True})
 
-        tournaments = Tournament.objects.filter(status=2)
+        Tournament.objects.filter(status=2)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(body['tournaments']), settings.DEFAULT_PAGE_SIZE)
@@ -141,6 +141,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
         self.assertEqual(body['nb-pages'], 11)
         self.assertEqual(body['nb-tournaments'], 105)
+
 
 class CreateTournamentTest(TestCase):
     def create_tournament(self, data: dict) -> tuple[HttpResponse, dict]:

@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from api.models import Tournament, Player
+from api.models import Player, Tournament
 
 
 class GetTournamentTest(TestCase):

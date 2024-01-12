@@ -20,7 +20,10 @@ class TournamentView(View):
     @staticmethod
     def get(request: HttpRequest) -> JsonResponse:
         filter_params = TournamentView.get_filter_params(request)
-        tournaments = Tournament.objects.filter(**filter_params)
+        try:
+            tournaments = Tournament.objects.filter(**filter_params)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
         nb_tournaments = len(tournaments)
 
         page, page_size, nb_pages = TournamentView.get_page_params(request, nb_tournaments)
@@ -88,13 +91,16 @@ class TournamentView(View):
         #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
         user = {'id': 2}
 
-        user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+        try:
+            user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
         if user_tournaments:
             try:
                 user_tournaments.delete()
-            except:
-                return JsonResponse({'error': 'cannot delete tournaments'}, status=500)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
 
         return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
 

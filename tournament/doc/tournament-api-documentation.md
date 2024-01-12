@@ -63,26 +63,9 @@ Create a new tournament
 > | `201`         | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
 > | `400` / `401` | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
-errors can be combined
- 
-> errors can be:
-> - Missing name field
-> - Tournament name must contain at least 3 characters
-> - Tournament name must contain less than 20 characters
-> - Tournament name may only contain letters, numbers and spaces
-> - Max players must be an integer
-> - Tournament must contain less than 16 slots
-> - Tournament must contain at least 2 slots
-> - Registration deadline not in ISO 8601 date and time format
-> - Registration deadline has passed
-> - Missing is-private field
-> - Is private must be a boolean
-> - Missing Authorization header
-> - Invalid JSON format in request body
-
 </details>
 
-Delete all tournaments created by the user
+Delete all tournaments created by the user (with status `created`)
 
 <details>
  <summary><code>DELETE</code> <code><b>/tournament</b></code></summary>
@@ -160,11 +143,6 @@ None
 > |-------------------------------|--------------------|---------------------------------------------------|
 > | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
 > | `400` / `401` / `403` / `404` | `application/json` | `{"error": "error message"}`                      |
-
-> error can be:
-> - tournament with id `{tournament_id}` does not exist
-> - you cannot delete `{tournament_name}` because you are not the owner of the tournament
-> - cannot delete `{tournament_name}`
 
 </details>
 

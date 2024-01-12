@@ -1,11 +1,10 @@
 import json
 
-from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
-from api.models import Tournament, Player
 from api import error_message as error
+from api.models import Player, Tournament
 
 
 class GetTournamentPlayers(TestCase):
@@ -55,16 +54,16 @@ class GetTournamentPlayers(TestCase):
 
 class PostTournamentPlayers(TestCase):
     def setUp(self):
-        full_tournament = Tournament.objects.create(name=f'tournament full', admin_id=1, max_players=16)
-        tournament = Tournament.objects.create(name=f'tournament', admin_id=1, max_players=16)
+        full_tournament = Tournament.objects.create(name='tournament full', admin_id=1, max_players=16)
+        tournament = Tournament.objects.create(name='tournament', admin_id=1, max_players=16)
         Tournament.objects.create(
-            name=f'deadline passed',
+            name='deadline passed',
             admin_id=1,
             max_players=16,
             registration_deadline='2021-01-01 00:00:00+00:00')
         for i in range(1, 17):
             Player.objects.create(nickname=f'player {i}', user_id=(i + 4), tournament=full_tournament)
-        Player.objects.create(nickname=f'player 1', user_id=4, tournament=tournament)
+        Player.objects.create(nickname='player 1', user_id=4, tournament=tournament)
 
     def post_tournament_players(self, tournament_id, body):
         url = reverse('tournament-players', args=(tournament_id,))
@@ -125,7 +124,7 @@ class PostTournamentPlayers(TestCase):
         tournament_id = 2
         body = json.dumps({'nickname': 'player 2'})
 
-        Player.objects.create(nickname=f'player 1', user_id=1, tournament_id=tournament_id)
+        Player.objects.create(nickname='player 1', user_id=1, tournament_id=tournament_id)
 
         response, body = self.post_tournament_players(tournament_id, body)
 
@@ -154,10 +153,9 @@ class PostTournamentPlayers(TestCase):
         tournament_id = 2
         body = json.dumps({'nickname': 'player 4'})
 
-        Player.objects.create(nickname=f'player 1', user_id=1, tournament_id=3)
+        Player.objects.create(nickname='player 1', user_id=1, tournament_id=3)
 
         response, body = self.post_tournament_players(tournament_id, body)
 
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['You are already registered for another tournament'])
-

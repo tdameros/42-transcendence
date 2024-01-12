@@ -1,16 +1,16 @@
 import json
-from typing import Optional
 from datetime import datetime, timezone
+from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.forms.models import model_to_dict
 
-from api.models import Tournament, Player
 from api import error_message as error
+from api.models import Player, Tournament
 from tournament import settings
 
 
@@ -27,6 +27,8 @@ class TournamentPlayersView(View):
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
             return JsonResponse({'error': f'tournament with id `{tournament_id}` does not exist'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
         players = tournament.players.all()
 
@@ -99,7 +101,8 @@ class TournamentPlayersView(View):
         return True, None
 
     @staticmethod
-    def player_can_join_tournament(new_player: Player, tournament: Tournament) -> tuple[bool, Optional[list[str | int]]]:
+    def player_can_join_tournament(new_player: Player, tournament: Tournament)\
+            -> tuple[bool, Optional[list[str | int]]]:
         try:
             tournament_players = tournament.players.all()
         except Exception as e:

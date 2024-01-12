@@ -1,8 +1,9 @@
 from django.urls import path
 
-from api.views.tournament_views import TournamentView
-from api.views.manage_tournament_views import ManageTournamentView, UpdateSettingsView
+from api.views.manage_tournament_views import ManageTournamentView
 from api.views.tournament_players_views import TournamentPlayersView
+from api.views.tournament_views import TournamentView
+from api.views.update_settings_views import UpdateSettingsView
 
 urlpatterns = [
     path('', TournamentView.as_view(), name='tournament'),
