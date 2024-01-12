@@ -3,7 +3,91 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from api.models import Tournament
+from api.models import Tournament, Player
+
+
+class GetTournamentTest(TestCase):
+    def setUp(self):
+        Tournament.objects.create(id=1, name='Test1', admin_id=1)
+        Tournament.objects.create(id=2, name='Test2', admin_id=2)
+        Tournament.objects.create(id=3, name='Test3', admin_id=3, registration_deadline='2020-01-01T00:00:00Z')
+        Tournament.objects.create(id=4, name='finished', status=Tournament.FINISHED, admin_id=4)
+
+        for i in range(1, 14):
+            Player.objects.create(nickname=f'Player{i}', user_id=i, tournament_id=1)
+        for i in range(1, 3):
+            Player.objects.create(nickname=f'Player{i}', user_id=i, tournament_id=3)
+
+    def get_tournament(self, tournament_id: int):
+        url = reverse('manage-tournament', args=[tournament_id])
+        response = self.client.get(url)
+
+        body = json.loads(response.content.decode('utf-8'))
+
+        return response, body
+
+    def test_get_tournament(self):
+        response, body = self.get_tournament(1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 1)
+        self.assertEqual(body['name'], 'Test1')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['nb-players'], 13)
+        self.assertEqual(body['is-private'], False)
+        self.assertEqual(body['status'], 'Created')
+        self.assertEqual(body['players'], [{
+            'nickname': f'Player{i}',
+            'user-id': i
+        } for i in range(1, 14)])
+
+    def test_get_tournament_with_deadline(self):
+        response, body = self.get_tournament(3)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 3)
+        self.assertEqual(body['name'], 'Test3')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['nb-players'], 2)
+        self.assertEqual(body['is-private'], False)
+        self.assertEqual(body['status'], 'Created')
+        self.assertEqual(body['registration-deadline'], '2020-01-01T00:00:00Z')
+        self.assertEqual(body['players'], [
+            {
+                'nickname': f'Player{i}',
+                'user-id': i
+            } for i in range(1, 3)
+        ])
+
+    def test_get_tournament_not_found(self):
+        response, body = self.get_tournament(4)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['error'], 'tournament with id `4` does not exist')
+
+    def test_get_tournament_no_player(self):
+        response, body = self.get_tournament(2)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 2)
+        self.assertEqual(body['name'], 'Test2')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['nb-players'], 0)
+        self.assertEqual(body['is-private'], False)
+        self.assertEqual(body['status'], 'Created')
+        self.assertEqual(body['players'], [])
+
+    def test_get_tournament_finished(self):
+        response, body = self.get_tournament(4)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 4)
+        self.assertEqual(body['name'], 'finished')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['nb-players'], 0)
+        self.assertEqual(body['is-private'], False)
+        self.assertEqual(body['status'], 'Finished')
+        self.assertEqual(body['players'], [])
 
 
 class DeleteTournamentTest(TestCase):

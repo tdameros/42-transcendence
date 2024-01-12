@@ -107,10 +107,41 @@ None
 
 ### Manage a tournament
 
+Retrieve details of specific tournament
+
 <details>
  <summary><code>GET</code> <code><b>/tournament/{id}</b></code></summary>
 
-#### Retrieve details of specific tournament
+### Parameters
+
+None
+
+### Responses
+
+Body
+
+> ```javascript
+> {
+>       "id": 1,
+>       "name": "Tournament",
+>       "max-players": 16,
+>       "nb-players": 1,
+>       "players": [
+>          {
+>             "nickname": "Player",
+>             "user_id": 2
+>           }
+>       ],
+>       "registration-deadline": "2024-02-17T10:53",
+>       "is-private": true,
+>       "status": "created",
+>       "admin": "edelage",
+> 
+
+> | http code | content-type       | response                                          |
+> |-----------|--------------------|---------------------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "name": "Tournament", ...}`            |
+> | `404`     | `application/json` | `{"error": "error message"}`                      |
 
 </details>
 
