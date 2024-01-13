@@ -17,6 +17,8 @@ this documentation details the different endpoints of each microservice.
 > ### [/components](../front/doc/components.md)
 
 ## Matchmaking
+### [Events sent by the client](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-client)
+### [Events sent by the server](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-server)
 
 ## Game
 
