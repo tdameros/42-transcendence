@@ -32,14 +32,6 @@ services:
         extends:
             file: matchmaking/docker/docker-compose.yaml
             service: matchmaking
-    matchmaking-db:
-        extends:
-            file: matchmaking/docker/docker-compose.yaml
-            service: matchmaking-db
-    matchmaking-nginx:
-        extends:
-            file: matchmaking/docker/docker-compose.yaml
-            service: matchmaking-nginx
 
     # Tournament
     tournament:
@@ -67,9 +59,6 @@ networks:
         driver: bridge
 
     user_management:
-        driver: bridge
-
-    matchmaking:
         driver: bridge
 
     tournament:
@@ -105,20 +94,12 @@ volumes:
     user_management_media_volume:
 
     # Matchmaking
-    matchmaking_postgres_volume:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: matchmaking/docker/volumes/db/
     matchmaking_code:
         driver: local
         driver_opts:
             type: none
             o: bind
             device: matchmaking/src/
-    matchmaking_static_volume:
-    matchmaking_media_volume:
 
     # Tournament
     tournament_postgres_volume:
