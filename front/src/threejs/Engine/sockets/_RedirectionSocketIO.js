@@ -3,13 +3,16 @@ import {_GameSocketIO} from './_GameSocketIO';
 import {io} from 'socket.io-client';
 
 export class _RedirectionSocketIO {
+    #engine;
+    #socketIO;
+
     constructor(engine, gameSocketIOClass = _GameSocketIO) {
-        this._engine = engine;
-        this._initRedirectionSocketIO(gameSocketIOClass);
+        this.#engine = engine;
+        this.#initRedirectionSocketIO(gameSocketIOClass);
     }
 
-    _initRedirectionSocketIO(gameSocketIOClass) {
-        this._socketIO = io('http://localhost:4242', { // TODO use real server address
+    #initRedirectionSocketIO(gameSocketIOClass) {
+        this.#socketIO = io('http://localhost:4242', { // TODO use real server address
             query: JSON.stringify({
                 'json_web_token': {
                     'user_id': '0', // TODO use client account primary key
@@ -18,7 +21,7 @@ export class _RedirectionSocketIO {
             }),
         });
 
-        this._socketIO.on('connect_error', (arg_string) => {
+        this.#socketIO.on('connect_error', (arg_string) => {
             const arg = JSON.parse(arg_string.message)
 
             console.log(arg)
@@ -30,13 +33,13 @@ export class _RedirectionSocketIO {
 
             const gameServerUri = arg['game_server_uri']
             console.log('game_server_uri received: ', gameServerUri);
-            this._engine.setSocket(new gameSocketIOClass(this._engine, gameServerUri));
+            this.#engine.socket = new gameSocketIOClass(this.#engine, gameServerUri);
         });
 
-        this._socketIO.connect();
+        this.#socketIO.connect();
     }
 
     emit(event, data) {
-        this._socketIO.emit(event, data);
+        this.#socketIO.emit(event, data);
     }
 }

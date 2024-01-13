@@ -3,27 +3,30 @@ import {Scene} from "./Scene";
 import {jsonToVector3} from "./Engine/jsonToVector3";
 
 export class Player {
+    #playerObject;
+    #direction;
+
     constructor(player, direction) {
-        this._playerObject = player;
-        this._direction = direction;
+        this.#playerObject = player;
+        this.#direction = direction;
     }
 
     updatePosition(time_ratio) {
-        const movement = this._direction * time_ratio;
-        this._playerObject.position.y += movement;
+        const movement = this.#direction * time_ratio;
+        this.#playerObject.position.y += movement;
     }
 
     updateDirection(y) {
-        this._direction = y;
+        this.#direction = y;
     }
 
-    getPosition() {
-        return this._playerObject.position;
+    get position() {
+        return this.#playerObject.position;
     }
 
-    setPosition(position) {
-        this._playerObject.position.set(position['x'],
-                                        position['y'],
-                                        position['z']);
+    set position(position) {
+        this.#playerObject.position.set(position.x,
+                                        position.y,
+                                        position.z);
     }
 }

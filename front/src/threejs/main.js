@@ -23,7 +23,7 @@ function displayScene(engine) {
 
     engine.setAnimationLoop(() => {
         const delta = clock.getDelta();
-        engine.getScene().updateObjectsPositions(delta);
+        engine.scene.updateObjectsPositions(delta);
 
         engine.renderFrame();
     });

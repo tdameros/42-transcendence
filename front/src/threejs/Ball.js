@@ -1,24 +1,28 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 export class Ball {
+    #ball;
+    #light;
+    #direction;
+
     constructor(ball, light, jsonDirection) {
-        this._ball = ball;
-        this._light = light;
-        this._direction = new THREE.Vector3(jsonDirection["x"],
-                                            jsonDirection["y"],
-                                            jsonDirection["z"]);
+        this.#ball = ball;
+        this.#light = light;
+        this.#direction = new THREE.Vector3(jsonDirection['x'],
+                                            jsonDirection['y'],
+                                            jsonDirection['z']);
     }
 
     updatePosition(time_ratio) {
-        const movement = new THREE.Vector3().copy(this._direction)
+        const movement = new THREE.Vector3().copy(this.#direction)
                                             .multiplyScalar(time_ratio);
-        this._ball.position.add(movement);
-        this._light.position.add(movement);
+        this.#ball.position.add(movement);
+        this.#light.position.add(movement);
     }
 
     updateDirection(jsonDirection) {
-        this._direction = new THREE.Vector3(jsonDirection["x"],
-                                            jsonDirection["y"],
-                                            jsonDirection["z"]);
+        this.#direction = new THREE.Vector3(jsonDirection['x'],
+                                            jsonDirection['y'],
+                                            jsonDirection['z']);
     }
 }

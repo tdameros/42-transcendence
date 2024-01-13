@@ -2,60 +2,64 @@ import * as THREE from 'three';
 import {RectAreaLightUniformsLib} from 'three/addons';
 
 export class _ThreeJS {
+    #renderer;
+    #camera;
+    #defaultCameraDirection;
+
     constructor() {
-        this._initRenderer();
-        this._initCamera();
+        this.#initRenderer();
+        this.#initCamera();
         window.addEventListener('resize', () => {
-            this._onWindowResize();
+            this.#onWindowResize();
         }, false);
     }
 
-    _initRenderer() {
-        this._renderer = new THREE.WebGLRenderer({antialias: true});
+    #initRenderer() {
+        this.#renderer = new THREE.WebGLRenderer({antialias: true});
 
-        this._renderer.shadowMap.enabled = true;
-        this._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.#renderer.shadowMap.enabled = true;
+        this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        this._renderer.setPixelRatio(window.devicePixelRatio);
-        this._renderer.setSize(window.innerWidth, window.innerHeight);
+        this.#renderer.setPixelRatio(window.devicePixelRatio);
+        this.#renderer.setSize(window.innerWidth, window.innerHeight);
 
-        document.body.appendChild(this._renderer.domElement);
+        document.body.appendChild(this.#renderer.domElement);
         RectAreaLightUniformsLib.init();
     }
 
-    _initCamera() {
-        this._camera = new THREE.PerspectiveCamera(90,
+    #initCamera() {
+        this.#camera = new THREE.PerspectiveCamera(90,
             window.innerWidth / window.innerHeight,
             0.1,
             1000);
 
-        this._camera.position.set(0., 0., 50.);
-        this._defaultCameraDirection = new THREE.Vector3(0., 0., -1.);
-        this._camera.lookAt(this._defaultCameraDirection.x,
-                            this._defaultCameraDirection.y,
-                            this._defaultCameraDirection.z);
+        this.#camera.position.set(0., 0., 50.);
+        this.#defaultCameraDirection = new THREE.Vector3(0., 0., -1.);
+        this.#camera.lookAt(this.#defaultCameraDirection.x,
+                            this.#defaultCameraDirection.y,
+                            this.#defaultCameraDirection.z);
     }
 
-    _onWindowResize() {
-        this._renderer.setSize(window.innerWidth, window.innerHeight);
+    #onWindowResize() {
+        this.#renderer.setSize(window.innerWidth, window.innerHeight);
 
-        this._camera.aspect = window.innerWidth / window.innerHeight;
-        this._camera.updateProjectionMatrix();
+        this.#camera.aspect = window.innerWidth / window.innerHeight;
+        this.#camera.updateProjectionMatrix();
     }
 
     setCameraPosition(position) {
-        this._camera.position.set(position.x, position.y, position.z);
+        this.#camera.position.set(position.x, position.y, position.z);
     }
 
     setAnimationLoop(loopFunction) {
-        this._renderer.setAnimationLoop(loopFunction);
+        this.#renderer.setAnimationLoop(loopFunction);
     }
 
     stopAnimationLoop() {
-        this._renderer.setAnimationLoop(null);
+        this.#renderer.setAnimationLoop(null);
     }
 
     renderFrame(scene) {
-        this._renderer.render(scene, this._camera);
+        this.#renderer.render(scene, this.#camera);
     }
 }

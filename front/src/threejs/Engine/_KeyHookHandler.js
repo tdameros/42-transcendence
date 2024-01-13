@@ -1,21 +1,22 @@
 export class _KeyHookHandler {
-    constructor(engine) {
-        this._engine = engine;
+    #engine;
+    #upKeyIsPressed = false;
+    #downKeyIsPressed = false;
+    #serverKnownMovement = 'none';
 
-        this._upKeyIsPressed = false;
-        this._downKeyIsPressed = false;
-        this._serverKnownMovement = 'none';
+    constructor(engine) {
+        this.#engine = engine;
     }
 
     startListeningForKeyHooks() {
         window.addEventListener('keydown', async () => {
-            await this._onKeyPress(event)
+            await this.#onKeyPress(event)
         }, false);
         window.addEventListener('keyup', async () => {
-            await this._onKeyRelease(event);
+            await this.#onKeyRelease(event);
         }, false);
         window.addEventListener('blur', async () => {
-            await this._onFocusLoss();
+            await this.#onFocusLoss();
         }, false);
     }
 
@@ -25,101 +26,101 @@ export class _KeyHookHandler {
         window.addEventListener('blur', async () => {}, false);
     }
 
-    async _onKeyPress(event) {
+    async #onKeyPress(event) {
         switch (event.key) {
             case 'w':
-                await this._pressUpKey();
+                await this.#pressUpKey();
                 return;
             case 's':
-                await this._pressDownKey();
+                await this.#pressDownKey();
                 return;
             default:
                 return;
         }
     }
 
-    async _pressUpKey() {
-        if (this._downKeyIsPressed) {
-            await this._stopMoving()
+    async #pressUpKey() {
+        if (this.#downKeyIsPressed) {
+            await this.#stopMoving()
         } else {
-            await this._moveUp()
+            await this.#moveUp()
         }
-        this._upKeyIsPressed = true;
+        this.#upKeyIsPressed = true;
     }
 
-    async _pressDownKey() {
-        if (this._upKeyIsPressed) {
-            await this._stopMoving()
+    async #pressDownKey() {
+        if (this.#upKeyIsPressed) {
+            await this.#stopMoving()
         } else {
-            await this._moveDown()
+            await this.#moveDown()
         }
-        this._downKeyIsPressed = true;
+        this.#downKeyIsPressed = true;
     }
 
-    async _onKeyRelease(event) {
+    async #onKeyRelease(event) {
         switch (event.key) {
             case 'w':
-                await this._releaseUpKey();
+                await this.#releaseUpKey();
                 return;
             case 's':
-                await this._releaseDownKey();
+                await this.#releaseDownKey();
                 return;
             default:
                 return;
         }
     }
 
-    async _releaseUpKey() {
-        if (this._downKeyIsPressed) {
-            await this._moveDown()
+    async #releaseUpKey() {
+        if (this.#downKeyIsPressed) {
+            await this.#moveDown()
         } else {
-            await this._stopMoving()
+            await this.#stopMoving()
         }
-        this._upKeyIsPressed = false;
+        this.#upKeyIsPressed = false;
     }
 
-    async _releaseDownKey() {
-        if (this._upKeyIsPressed) {
-            await this._moveUp()
+    async #releaseDownKey() {
+        if (this.#upKeyIsPressed) {
+            await this.#moveUp()
         } else {
-            await this._stopMoving()
+            await this.#stopMoving()
         }
-        this._downKeyIsPressed = false;
+        this.#downKeyIsPressed = false;
     }
 
-    async _onFocusLoss() {
-        await this._stopMoving()
-        this._upKeyIsPressed = false;
-        this._downKeyIsPressed = false;
+    async #onFocusLoss() {
+        await this.#stopMoving()
+        this.#upKeyIsPressed = false;
+        this.#downKeyIsPressed = false;
     }
 
-    async _stopMoving() {
-        if (this._serverKnownMovement !== 'none') {
-            await this._engine.emit('player_stopped_moving',
-                                    this._engine.getScene()
+    async #stopMoving() {
+        if (this.#serverKnownMovement !== 'none') {
+            await this.#engine.emit('player_stopped_moving',
+                                    this.#engine.scene
                                                 .getCurrentPlayerPositionAsArray());
-            this._serverKnownMovement = 'none';
-            this._engine.getScene().currentPlayerStopsMoving();
-        }
-    }
-
-    async _moveUp() {
-        if (this._serverKnownMovement !== 'up') {
-            await this._engine.emit('player_moves_up',
-                                    this._engine.getScene()
-                                                .getCurrentPlayerPositionAsArray());
-            this._serverKnownMovement = 'up'
-            this._engine.getScene().currentPlayerMovesUp();
+            this.#serverKnownMovement = 'none';
+            this.#engine.scene.currentPlayerStopsMoving();
         }
     }
 
-    async _moveDown() {
-        if (this._serverKnownMovement !== 'down') {
-            await this._engine.emit('player_moves_down',
-                                    this._engine.getScene()
+    async #moveUp() {
+        if (this.#serverKnownMovement !== 'up') {
+            await this.#engine.emit('player_moves_up',
+                                    this.#engine.scene
                                                 .getCurrentPlayerPositionAsArray());
-            this._serverKnownMovement = 'down'
-            this._engine.getScene().currentPlayerMovesDown();
+            this.#serverKnownMovement = 'up'
+            this.#engine.scene.currentPlayerMovesUp();
+        }
+    }
+
+    async #moveDown() {
+        if (this.#serverKnownMovement !== 'down') {
+            await this.#engine.emit('player_moves_down',
+                                    this.#engine.scene
+                                                .getCurrentPlayerPositionAsArray());
+            this.#serverKnownMovement = 'down'
+            this.#engine.scene.currentPlayerMovesDown();
         }
     }
 }
