@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -27,7 +28,10 @@ class PatchTournamentTest(TestCase):
 
         return response, body
 
-    def test_patch_tournament(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_tournament(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(1, {'name': 'new name', 'max-players': 8, 'is-private': True})
 
         self.assertEqual(response.status_code, 200)
@@ -36,7 +40,10 @@ class PatchTournamentTest(TestCase):
         self.assertEqual(body['max-players'], 8)
         self.assertEqual(body['is-private'], True)
 
-    def test_patch_tournament_name(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_tournament_name(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(1, {'name': 'new name'})
 
         self.assertEqual(response.status_code, 200)
@@ -46,7 +53,10 @@ class PatchTournamentTest(TestCase):
         self.assertEqual(body['is-private'], False)
         self.assertEqual(body['status'], 'Created')
 
-    def test_patch_tournament_max_players(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_tournament_max_players(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(1, {'max-players': 8})
 
         self.assertEqual(response.status_code, 200)
@@ -56,32 +66,47 @@ class PatchTournamentTest(TestCase):
         self.assertEqual(body['is-private'], False)
         self.assertEqual(body['status'], 'Created')
 
-    def test_patch_max_players_too_short(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_max_players_too_short(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(6, {'max-players': 2})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'],
                          ['You cannot set the max players to 2 because there are already 8 players registered'])
 
-    def test_patch_name_too_long(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_name_too_long(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(1, {'name': 'a' * 40})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.NAME_TOO_LONG])
 
-    def test_patch_invalid_name(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_invalid_name(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(1, {'name': 'a!fdasfdas'})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.NAME_INVALID_CHAR])
 
-    def test_patch_passed_deadline(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_passed_deadline(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(3, {'registration-deadline': '2020-01-01T00:00:00Z'})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.DEADLINE_PASSED])
 
-    def test_patch_deadline(self):
+    @patch('api.views.update_settings_views.authenticate_request')
+    def test_patch_deadline(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.patch_tournament(3, {'registration-deadline': '2029-01-01T00:00:00Z'})
 
         self.assertEqual(response.status_code, 200)

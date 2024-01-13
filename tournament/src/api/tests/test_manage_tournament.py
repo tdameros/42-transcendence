@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -26,7 +27,10 @@ class GetTournamentTest(TestCase):
 
         return response, body
 
-    def test_get_tournament(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_get_tournament(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.get_tournament(1)
 
         self.assertEqual(response.status_code, 200)
@@ -41,7 +45,10 @@ class GetTournamentTest(TestCase):
             'user-id': i
         } for i in range(1, 14)])
 
-    def test_get_tournament_with_deadline(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_get_tournament_with_deadline(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.get_tournament(3)
 
         self.assertEqual(response.status_code, 200)
@@ -59,13 +66,19 @@ class GetTournamentTest(TestCase):
             } for i in range(1, 3)
         ])
 
-    def test_get_tournament_not_found(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_get_tournament_not_found(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.get_tournament(50)
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['error'], 'tournament with id `50` does not exist')
 
-    def test_get_tournament_no_player(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_get_tournament_no_player(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.get_tournament(2)
 
         self.assertEqual(response.status_code, 200)
@@ -77,7 +90,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['status'], 'Created')
         self.assertEqual(body['players'], [])
 
-    def test_get_tournament_finished(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_get_tournament_finished(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         response, body = self.get_tournament(4)
 
         self.assertEqual(response.status_code, 200)
@@ -95,7 +111,10 @@ class DeleteTournamentTest(TestCase):
         Tournament.objects.create(id=1, name='Test1', admin_id=1)
         Tournament.objects.create(id=2, name='Test2', admin_id=2)
 
-    def test_delete_tournament(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_delete_tournament(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         url = reverse('manage-tournament', args=[1])
         response = self.client.delete(url)
 
@@ -105,7 +124,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 1)
         self.assertEqual(body['message'], 'tournament `Test1` successfully deleted')
 
-    def test_delete_tournament_not_found(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_delete_tournament_not_found(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         url = reverse('manage-tournament', args=[3])
         response = self.client.delete(url)
 
@@ -115,7 +137,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 2)
         self.assertEqual(body['error'], 'tournament with id `3` does not exist')
 
-    def test_delete_tournament_not_owner(self):
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_delete_tournament_not_owner(self, mock_authenticate_request):
+        user = {'id': 1, 'username': 'admin'}
+        mock_authenticate_request.return_value = (user, None)
         url = reverse('manage-tournament', args=[2])
         response = self.client.delete(url)
 

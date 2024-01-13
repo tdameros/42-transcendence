@@ -1,3 +1,5 @@
+import json
+
 import jwt
 import requests
 
@@ -16,11 +18,10 @@ def authenticate_request(request):
     if user_id is None:
         return None, errors
     user = get_user(user_id, encoded_jwt, errors)
-    # TODO: remove the following line when GET /user/{user_id}/ endpoint is done
+    if user is None:
+        return None, errors
     user['id'] = user_id
-    if user is not None:
-        return user, None
-    return None, errors
+    return user, None
 
 
 def decode_jwt(encoded_jwt, errors):
@@ -36,12 +37,14 @@ def decode_jwt(encoded_jwt, errors):
 def get_user(user_id, encoded_jwt, errors):
     headers = {'Authorization': encoded_jwt}
     try:
-        response = requests.get(f'http://user-management-nginx/user/{user_id}/', headers=headers)
+        response = requests.get(f'http://127.0.0.1:8001/user/{user_id}/', headers=headers)
+
         if response.status_code == 200:
-            return response.json()
-        errors.append('Error in user-management service')
-        # TODO: return errors from response.body
-        # errors.append(json_body['errors'])
+            return json.loads(response.text)
+
+        body = json.loads(response.body.decode('utf-8'))
+
+        errors.extend(body['errors'])
         return None
     except Exception as e:
         errors.append(str(e))

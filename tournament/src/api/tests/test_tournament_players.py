@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -9,8 +10,8 @@ from api.models import Player, Tournament
 
 class GetTournamentPlayers(TestCase):
     def setUp(self):
-        tournament = Tournament.objects.create(name=f'tournament {1}', admin_id=1, max_players=16)
-        Tournament.objects.create(name=f'tournament {1}', admin_id=1, max_players=16)
+        tournament = Tournament.objects.create(id=1, name=f'tournament {1}', admin_id=1, max_players=16)
+        Tournament.objects.create(id=2, name=f'tournament {1}', admin_id=1, max_players=16)
         for i in range(1, 16):
             Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament)
 
@@ -23,7 +24,10 @@ class GetTournamentPlayers(TestCase):
 
         return response, body
 
-    def test_get_tournament_players(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_get_tournament_players(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 1
 
         response, body = self.get_tournament_players(tournament_id)
@@ -33,7 +37,10 @@ class GetTournamentPlayers(TestCase):
         self.assertEqual(body['nb-players'], 15)
         self.assertEqual(len(body['players']), 15)
 
-    def test_invalid_tournament(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_invalid_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 10
 
         response, body = self.get_tournament_players(tournament_id)
@@ -41,7 +48,10 @@ class GetTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['error'], f'tournament with id `{tournament_id}` does not exist')
 
-    def test_no_players(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_no_players(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
 
         response, body = self.get_tournament_players(tournament_id)
@@ -54,9 +64,10 @@ class GetTournamentPlayers(TestCase):
 
 class PostTournamentPlayers(TestCase):
     def setUp(self):
-        full_tournament = Tournament.objects.create(name='tournament full', admin_id=1, max_players=16)
-        tournament = Tournament.objects.create(name='tournament', admin_id=1, max_players=16)
+        full_tournament = Tournament.objects.create(id=1, name='tournament full', admin_id=1, max_players=16)
+        tournament = Tournament.objects.create(id=2, name='tournament', admin_id=1, max_players=16)
         Tournament.objects.create(
+            id=3,
             name='deadline passed',
             admin_id=1,
             max_players=16,
@@ -74,7 +85,10 @@ class PostTournamentPlayers(TestCase):
 
         return response, body
 
-    def test_post_tournament_players(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_post_tournament_players(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'player 4'})
 
@@ -84,7 +98,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(body['nickname'], 'player 4')
         self.assertEqual(body['user_id'], 1)
 
-    def test_post_tournament_players_full(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_post_tournament_players_full(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 1
         body = json.dumps({'nickname': 'player'})
 
@@ -93,7 +110,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['This tournament is fully booked'])
 
-    def test_nickname_too_long(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_nickname_too_long(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'a' * 17})
 
@@ -102,7 +122,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.NICKNAME_TOO_LONG])
 
-    def test_nickname_too_short(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_nickname_too_short(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'a'})
 
@@ -111,7 +134,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.NICKNAME_TOO_SHORT])
 
-    def test_nickname_already_use(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_nickname_already_use(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'player 1'})
 
@@ -120,7 +146,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], ['nickname `player 1` already taken'])
 
-    def test_player_already_in_tournament(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_player_already_in_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'player 2'})
 
@@ -131,7 +160,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['You are already registered as `player 1` for the tournament'])
 
-    def test_invalid_tournament(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_invalid_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 50
         body = json.dumps({'nickname': 'player 1'})
 
@@ -140,7 +172,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['errors'], [f'tournament with id `{tournament_id}` does not exist'])
 
-    def test_deadline_passed(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_deadline_passed(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 3
         body = json.dumps({'nickname': 'player 1'})
 
@@ -149,7 +184,10 @@ class PostTournamentPlayers(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['The registration phase is over'])
 
-    def test_already_register_to_another_tournament(self):
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_already_register_to_another_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'player 4'})
 

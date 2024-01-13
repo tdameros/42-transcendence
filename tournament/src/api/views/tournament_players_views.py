@@ -12,16 +12,16 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Player, Tournament
 from tournament import settings
+from tournament.authenticate_request import authenticate_request
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class TournamentPlayersView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -46,11 +46,9 @@ class TournamentPlayersView(View):
         return JsonResponse(response_data, status=200)
 
     def post(self, request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 1}
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             json_request = json.loads(request.body.decode('utf8'))

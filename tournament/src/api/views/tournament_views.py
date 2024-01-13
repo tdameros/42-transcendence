@@ -19,6 +19,10 @@ from tournament.authenticate_request import authenticate_request
 class TournamentView(View):
     @staticmethod
     def get(request: HttpRequest) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
         filter_params = TournamentView.get_filter_params(request)
         try:
             tournaments = Tournament.objects.filter(**filter_params)
@@ -30,7 +34,6 @@ class TournamentView(View):
 
         page_tournaments = tournaments[page_size * (page - 1): page_size * page]
 
-        # TODO change admin-id by admin username
         tournaments_data = [{
             'id': tournament.id,
             'name': tournament.name,
@@ -38,7 +41,7 @@ class TournamentView(View):
             'registration-deadline': tournament.registration_deadline,
             'is-private': tournament.is_private,
             'status': TournamentView.status_to_string(tournament.status),
-            'admin-id': tournament.admin_id
+            'admin': user['username']
         } for tournament in page_tournaments]
 
         response_data = {
@@ -53,11 +56,9 @@ class TournamentView(View):
 
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 1}
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
@@ -85,11 +86,9 @@ class TournamentView(View):
 
     @staticmethod
     def delete(request: HttpRequest) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 2}
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)

@@ -13,10 +13,9 @@ from tournament.authenticate_request import authenticate_request
 class ManageTournamentView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -41,8 +40,8 @@ class ManageTournamentView(View):
             } for player in tournament_players],
             'is-private': tournament.is_private,
             'status': TournamentView.status_to_string(tournament.status),
+            'admin': user['username']
         }
-        # TODO add admin username
 
         if tournament.registration_deadline is not None:
             tournament_data['registration-deadline'] = tournament.registration_deadline
@@ -51,11 +50,9 @@ class ManageTournamentView(View):
 
     @staticmethod
     def delete(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 1}
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)

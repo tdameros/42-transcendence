@@ -17,11 +17,9 @@ from tournament.authenticate_request import authenticate_request
 class UpdateSettingsView(View):
     @staticmethod
     def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO uncomment this line when jwt will be implemented
-        # user, authenticate_errors = authenticate_request(request)
-        # if user is None:
-        #     return JsonResponse(data={'errors': authenticate_errors}, status=401)
-        user = {'id': 1}
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
             body = json.loads(request.body.decode('utf8'))

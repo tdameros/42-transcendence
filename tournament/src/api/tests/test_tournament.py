@@ -30,7 +30,10 @@ class GetTournamentTest(TestCase):
 
         return response, body
 
-    def test_default(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_default(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({})
 
         self.assertEqual(response.status_code, 200)
@@ -40,7 +43,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_2(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_2(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page': 2})
 
         self.assertEqual(response.status_code, 200)
@@ -50,7 +56,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_size(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_size(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page-size': 20})
 
         self.assertEqual(response.status_code, 200)
@@ -60,7 +69,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 3)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_size_too_high(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_size_too_high(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page-size': 100})
 
         self.assertEqual(response.status_code, 200)
@@ -70,7 +82,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 1)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_too_high(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_too_high(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page': 6})
 
         self.assertEqual(response.status_code, 200)
@@ -80,7 +95,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_size_and_page(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_size_and_page(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page-size': 20, 'page': 3})
 
         self.assertEqual(response.status_code, 200)
@@ -90,7 +108,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 3)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_negative_params(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_negative_params(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page-size': -20, 'page': -3})
 
         self.assertEqual(response.status_code, 200)
@@ -100,7 +121,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_page_size_1(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_page_size_1(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page-size': 1})
 
         self.assertEqual(response.status_code, 200)
@@ -110,7 +134,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 50)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    def test_display_private(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_display_private(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page': 8, 'display-private': True})
 
         self.assertEqual(response.status_code, 200)
@@ -120,7 +147,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 8)
         self.assertEqual(body['nb-tournaments'], 75)
 
-    def test_display_completed(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_display_completed(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page': 6, 'display-completed': True})
 
         Tournament.objects.filter(status=2)
@@ -132,7 +162,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 8)
         self.assertEqual(body['nb-tournaments'], 75)
 
-    def test_display_private_and_completed(self):
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_display_private_and_completed(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
         response, body = self.get_tournaments({'page': 11, 'display-private': True, 'display-completed': True})
 
         self.assertEqual(response.status_code, 200)
