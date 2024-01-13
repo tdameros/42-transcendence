@@ -122,7 +122,7 @@ class Matchmaking:
         self.queue.append(player)
 
     async def queue_info(self, sid, data):
-        await self.sio.emit('queue-info', json.dumps(self.queue), room=sid)
+        await self.sio.emit('queue_info', json.dumps(self.queue), room=sid)
 
 
 if __name__ == '__main__':
