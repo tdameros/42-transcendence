@@ -34,7 +34,7 @@ def decode_jwt(token: str) -> Optional[dict]:
 def get_user(user_id: int, token: str) -> Optional[dict]:
     headers = {'Authorization': token}
     try:
-        response = requests.get(f'http://user-management-nginx/user/{user_id}/', headers=headers)
+        response = requests.get(f'{settings.USER_MANAGEMENT_USER_ENDPOINT}{user_id}', headers=headers)
         if response.status_code == 200:
             return response.json()
         return None
