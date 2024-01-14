@@ -94,12 +94,10 @@ class Matchmaking:
 
     async def connect(self, sid, environ, auth):
         logging.debug(f'New connection: {sid}')
-        token = auth.get('token')
-        if token is None:
-            return False
-        user = authenticate_user(token)
+        user, errors = authenticate_user(auth)
         if user is None:
-            return False
+            logging.debug(str(errors))
+            raise socketio.exceptions.ConnectionRefusedError(str(errors))
         logging.debug(f'Authenticated user: {user}')
         return True
 

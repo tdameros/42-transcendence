@@ -27,12 +27,20 @@
     const info = document.querySelector('#matchmaking-info');
     const uuid_input = document.querySelector('#uuid');
     const elo_input = document.querySelector('#elo');
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Im11cnVyb2FoaCJ9.Ee6x_C9lmp3MPwidPgpLDdumwBEl-llfhXpUZMYigkw';
+    const access_token = 'access_token'
 
     const sio = io('http://localhost:3000', {
         auth: {
-            token: token,
+            token: access_token,
         }
+    });
+
+    sio.on('connect', () => {
+        console.log('connected');
+    });
+
+    sio.on('connect_error', (err) => {
+        console.log(err.message);
     });
 
     sio.on('match', (data) => {

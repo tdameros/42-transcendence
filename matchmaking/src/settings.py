@@ -1,7 +1,7 @@
 import logging
 
 LOG_LEVEL = logging.INFO
-VALID_TOKEN = 'django-insecure-+gclvi)@4qpx*8x3*d)x5f25bbi$n#eor*l@8_)$s-wo-stl@b'
+ACCESS_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
 DECODE_ALGORITHM = 'HS256'
 USER_MANAGEMENT_URL = 'http://user-management-nginx/'
 USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
