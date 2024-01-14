@@ -1,3 +1,6 @@
+import json
+from typing import Any, Optional
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
@@ -7,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
 from tournament.authenticate_request import authenticate_request
+from api import error_message as error
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -75,3 +79,110 @@ class ManageTournamentView(View):
             return JsonResponse({'error': str(e)}, status=500)
 
         return JsonResponse({'message': f'tournament `{tournament_name}` successfully deleted'}, status=200)
+
+    @staticmethod
+    def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            body = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+            tournament_players = tournament.players.all()
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        manage_errors = ManageTournamentView.check_manage_permissions(user, tournament)
+        if manage_errors is not None:
+            return JsonResponse(data={'errors': manage_errors}, status=403)
+
+        update_errors = ManageTournamentView.update_tournament_settings(body, tournament, tournament_players)
+        if update_errors:
+            return JsonResponse(data={'errors': update_errors}, status=400)
+
+        try:
+            tournament.save()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        tournament_data = ManageTournamentView.get_tournament_data(tournament)
+        return JsonResponse(tournament_data, status=200)
+
+    @staticmethod
+    def check_manage_permissions(user: dict, tournament: Tournament) -> Optional[list[str]]:
+        if tournament.status != Tournament.CREATED:
+            return ['The tournament has already started, so you cannot update the settings']
+
+        if tournament.admin_id != user['id']:
+            return ['You are not the owner of the tournament, so you cannot update the settings']
+
+        return None
+
+    @staticmethod
+    def update_tournament_settings(body: dict, tournament: Tournament, tournament_players) -> Optional[list[str]]:
+        update_errors = []
+
+        new_name = body.get('name')
+        if new_name is not None:
+            valid_new_name, new_name_errors = TournamentView.is_valid_name(new_name)
+            if not valid_new_name:
+                update_errors.extend(new_name_errors)
+            else:
+                tournament.name = new_name
+
+        new_max_players = body.get('max-players')
+        if new_max_players is not None:
+            valid_new_max_players, new_max_players_errors = ManageTournamentView.is_valid_max_players(
+                new_max_players, tournament_players)
+            if not valid_new_max_players:
+                update_errors.extend(new_max_players_errors)
+            else:
+                tournament.max_players = new_max_players
+
+        new_registration_deadline = body.get('registration-deadline')
+        if new_registration_deadline is not None:
+            valid_registration_deadline, registration_deadline_error = TournamentView.is_valid_deadline(
+                new_registration_deadline)
+            if not valid_registration_deadline:
+                update_errors.append(registration_deadline_error)
+            else:
+                tournament.registration_deadline = new_registration_deadline
+
+        new_is_private = body.get('is-private')
+        if new_is_private is not None:
+            valid_is_private, is_private_error = TournamentView.is_valid_private(new_is_private)
+            if not valid_is_private:
+                update_errors.append(is_private_error)
+            else:
+                tournament.is_private = new_is_private
+
+        return update_errors
+
+    @staticmethod
+    def is_valid_max_players(new_max_players: Any, tournament_players: Any) -> tuple[bool, Optional[list[str]]]:
+        valid_max_players, max_players_error = TournamentView.is_valid_max_players(new_max_players)
+        if not valid_max_players:
+            return False, max_players_error
+        elif len(tournament_players) > new_max_players:
+            return False, [f'You cannot set the max players to {new_max_players} because there are already '
+                           f'{len(tournament_players)} players registered']
+        return True, None
+
+    @staticmethod
+    def get_tournament_data(tournament: Tournament) -> dict[str, Any]:
+        tournament_data = {
+            'id': tournament.id,
+            'name': tournament.name,
+            'max-players': tournament.max_players,
+            'is-private': tournament.is_private,
+            'registration-deadline': tournament.registration_deadline,
+            'status': TournamentView.status_to_string(tournament.status),
+        }
+        return tournament_data

@@ -146,17 +146,10 @@ None
 
 </details>
 
-<details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/start</b></code></summary>
-
-#### Start a tournament
-
-</details>
-
 Update tournament settings
 
 <details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/update-settings</b></code></summary>
+ <summary><code>PATCH</code> <code><b>/tournament/{id}</b></code></summary>
 
 ### Parameters
 
@@ -181,6 +174,13 @@ Update tournament settings
 > |----------------|--------------------|----------------------------------------|
 > | `200`          | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
 > | `400` / `403`  | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
+
+</details>
+
+<details>
+ <summary><code>PATCH</code> <code><b>/tournament/{id}/start</b></code></summary>
+
+#### Start a tournament
 
 </details>
 
