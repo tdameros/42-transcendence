@@ -86,7 +86,7 @@ class TournamentPlayersView(View):
         errors = []
 
         if nickname is None:
-            return False, [error.MISSING_NICKNAME]
+            return False, [error.NICKNAME_MISSING]
         if len(nickname) < settings.MIN_NICKNAME_LENGTH:
             errors.append(error.NICKNAME_TOO_SHORT)
         elif len(nickname) > settings.MAX_NICKNAME_LENGTH:

@@ -7,10 +7,10 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
 from tournament.authenticate_request import authenticate_request
-from api import error_message as error
 
 
 @method_decorator(csrf_exempt, name='dispatch')

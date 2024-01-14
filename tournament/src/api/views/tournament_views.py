@@ -134,7 +134,7 @@ class TournamentView(View):
         errors = []
 
         if name is None:
-            return False, [error.MISSING_NAME]
+            return False, [error.NAME_MISSING]
         if len(name) < settings.MIN_TOURNAMENT_NAME_LENGTH:
             errors.append(error.NAME_TOO_SHORT)
         elif len(name) > settings.MAX_TOURNAMENT_NAME_LENGTH:
@@ -176,7 +176,7 @@ class TournamentView(View):
     @staticmethod
     def is_valid_private(is_private: Any) -> tuple[bool, Optional[str]]:
         if is_private is None:
-            return False, error.MISSING_IS_PRIVATE
+            return False, error.IS_PRIVATE_MISSING
         elif not isinstance(is_private, bool):
             return False, error.IS_PRIVATE_NOT_BOOL
         return True, None
@@ -202,6 +202,8 @@ class TournamentView(View):
         last_page = nb_tournaments // page_size
         if nb_tournaments % page_size != 0:
             last_page += 1
+        if nb_tournaments == 0:
+            last_page = 1
 
         try:
             page = int(page)

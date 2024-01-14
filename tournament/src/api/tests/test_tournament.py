@@ -175,6 +175,22 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 11)
         self.assertEqual(body['nb-tournaments'], 105)
 
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_no_tournament(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+
+        Tournament.objects.all().delete()
+
+        response, body = self.get_tournaments({})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(body['tournaments']), 0)
+        self.assertEqual(body['page'], 1)
+        self.assertEqual(body['page-size'], settings.DEFAULT_PAGE_SIZE)
+        self.assertEqual(body['nb-pages'], 1)
+        self.assertEqual(body['nb-tournaments'], 0)
+
 
 class CreateTournamentTest(TestCase):
     def create_tournament(self, data: dict) -> tuple[HttpResponse, dict]:
@@ -279,7 +295,7 @@ class BadRequestCreateTournament(TestCase):
 
     @patch('api.views.tournament_views.authenticate_request')
     def test_empty_body(self, mock_get):
-        expected_errors = [error.MISSING_NAME, error.MISSING_IS_PRIVATE]
+        expected_errors = [error.NAME_MISSING, error.IS_PRIVATE_MISSING]
 
         self.send_tournament_bad_request(mock_get, {}, expected_errors)
 
