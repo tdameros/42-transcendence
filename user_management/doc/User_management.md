@@ -283,6 +283,23 @@ all fields are mandatory
 > }
 > ```
 
+=======
+## `user/{user_id}`
+### Get user non-sensitive information
+
+will return a user object when successful
+Might be extended to return more information in the future, if needed
+
+<details>
+ <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {user_id}
+> 
+> NB : user_id must be an integer
+> 
 #### Responses
 
 > | http code | content-type       | response                                             |

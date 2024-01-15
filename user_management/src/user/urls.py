@@ -4,6 +4,7 @@ from .views import (ForgotPasswordChangePasswordView,
                     ForgotPasswordCheckCodeView, ForgotPasswordSendCodeView,
                     IsUsernameTakenView, RefreshJWT, SignInView, SignUpView)
 
+
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('signin/', SignInView.as_view(), name='signin'),
@@ -13,4 +14,5 @@ urlpatterns = [
     path('forgot-password/check-code/',  ForgotPasswordCheckCodeView.as_view(), name='forgot-password-check-code'),
     path('forgot-password/change-password/', ForgotPasswordChangePasswordView.as_view(),
          name='forgot-password-change-password'),
+    path('<str:user_id>/', UserIdView.as_view(), name='user-id')
 ]

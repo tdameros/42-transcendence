@@ -339,5 +339,15 @@ class ForgotPasswordChangePasswordView(View):
             user.save()
             return JsonResponse(data={'ok': 'ok'}, status=200)
 
+class UserIdView(View):
+    @staticmethod
+    def get(request, user_id):
+        if not user_id.isnumeric():
+            return JsonResponse(data={'errors': ['User id must be an integer']}, status=400)
+        try:
+            user = User.objects.filter(id=user_id).first()
+            if user is None:
+                return JsonResponse(data={'errors': ['User not found']}, status=404)
+            return JsonResponse(data={'username': user.username}, status=200)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
