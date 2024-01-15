@@ -1,4 +1,4 @@
-# Redirection Server
+# Redirection Server (deprecated)
 
 Whenever you see 'Event `event_name` is sent to the client', you can find details for the event in PROJECT/front/src/threejs/Documentation.md
 
@@ -15,14 +15,10 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
   >> On success:
   >> 
   >> Event `game_server_uri` is sent to the client  
-  >>
-  >> The client is expected to disconnect from the server when this event is received
   >
   >> On failure:
   >>
   >> Event `error` is sent to the client
-  >>
-  >> The client is expected to disconnect from the server when this event is received
   >
   > If the client fails to disconnect on his own after receiving `error` or
   > `game_server_uri`, they will be kicked from the server
@@ -31,5 +27,20 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
 # Game Server
 
 ## Events:
-- ### `connect`:  
-  > Will always accept the connection (for now)
+- ### `connect`:
+  >> Query string:
+  >> ```
+  >> {  
+  >>     'json_web_token': The client's Json Web Token
+  >> }
+  >> ```
+  >
+  >> On success:  
+  >>
+  >> Accepts the connection  
+  >> Event `scene` is sent to the client if the game has started
+  >
+  >> On failure:
+  >>
+  >> The connection is refused and an error message is sent to be received by
+  >> the connect_error event on the client

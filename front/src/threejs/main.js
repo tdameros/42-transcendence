@@ -14,16 +14,16 @@ function main() {
 
     const engine = new Engine();
 
-    displayBaseScene(engine);
+    displayScene(engine);
     engine.connectToServer();
 }
 
-function displayBaseScene(engine) {
+function displayScene(engine) {
     let clock = new THREE.Clock();
 
     engine.setAnimationLoop(() => {
         const delta = clock.getDelta();
-        engine.getScene().updateObjectsPositions(delta);
+        engine.scene.updateObjectsPositions(delta);
 
         engine.renderFrame();
     });

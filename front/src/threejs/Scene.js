@@ -1,131 +1,167 @@
 import * as THREE from "three";
 import {Ball} from "./Ball";
 import {Player} from "./Player";
+import {jsonToVector3} from "./Engine/jsonToVector3";
 
 export class Scene {
-    constructor(boards, balls, players) {
-        this._threeJSScene = new THREE.Scene();
-        this._boards = [];
-        this._balls = [];
-        this._players = [];
+    #threeJSScene;
+    #boards = [];
+    #balls = [];
+    #players = [];
+    #players_speed;
+    #current_player_index;
 
-        this._loadBoards(boards);
-        this._loadBalls(balls);
-        this._loadPlayers(players);
+    constructor(boards, balls, players, players_speed, current_player_index) {
+        this.#threeJSScene = new THREE.Scene();
+        this.#players_speed = players_speed;
+        this.#current_player_index = current_player_index;
+
+        this.#loadBoards(boards);
+        this.#loadBalls(balls);
+        this.#loadPlayers(players);
     }
 
-    _loadBoards(boards) {
+    #loadBoards(boards) {
         for (let jsonBoard of boards) {
-            const position = Scene.jsonToVector3(jsonBoard["position"]);
-            let board = this._addBoard(position);
-            this._boards.push(board);
+            const position = jsonToVector3(jsonBoard["position"]);
+            let board = this.#addBoard(position);
+            this.#boards.push(board);
         }
     }
 
-    _addBoard(position) {
+    #addBoard(position) {
         let board = new THREE.Mesh(new THREE.PlaneGeometry(40, 27.5),
                                    new THREE.MeshStandardMaterial({color: 0x222277}));
         board.position.set(position.x, position.y, position.z);
         board.castShadow = false;
         board.receiveShadow = true;
-        this._threeJSScene.add(board);
+        this.#threeJSScene.add(board);
         return board;
     }
 
-    _loadBalls(balls) {
+    #loadBalls(balls) {
         for (let jsonBall of balls) {
-            const position = Scene.jsonToVector3(jsonBall["position"]);
-            let ball = this._addBall(position);
-            let light = this._addBallLight(position);
+            const position = jsonToVector3(jsonBall["position"]);
+            let ball = this.#addBall(position);
+            let light = this.#addBallLight(position);
 
-            this._balls.push(new Ball(ball, light, jsonBall["move_direction"]));
+            this.#balls.push(new Ball(ball, light, jsonBall["move_direction"]));
         }
     }
 
-    _addBall(position) {
+    #addBall(position) {
         let ball = new THREE.Mesh(new THREE.SphereGeometry(1., 10, 10),
                                   new THREE.MeshStandardMaterial({color: 0xFFFFFF,
                                                                   emissive: 0xFFFFFF}));
         ball.position.set(position.x, position.y, position.z);
         ball.castShadow = false;
         ball.receiveShadow = false;
-        this._threeJSScene.add(ball);
+        this.#threeJSScene.add(ball);
         return ball;
     }
 
-    _addBallLight(position) {
+    #addBallLight(position) {
         let light = new THREE.PointLight(0xFFFFFF, 500.0, 25);
         light.position.set(position.x, position.y, position.z);
         light.castShadow = true;
-        this._threeJSScene.add(light);
+        this.#threeJSScene.add(light);
         return light;
     }
 
-    _loadPlayers(players) {
+    #loadPlayers(players) {
         let i = 0;
         for (let jsonPlayer of players) {
-            const position = Scene.jsonToVector3(jsonPlayer["position"]);
-            const color = i % 2 === 0 ? new THREE.Color(0x00ff00) : new THREE.Color(0xff0000);
-            const matchBoardPosition = this._boards.at(i / 2).position;
-            let player = this._addPlayer(position, color);
-            let light = this._addPlayerLight(position, color, i, matchBoardPosition);
+            const playerObject = this.#createPlayer(jsonPlayer, i);
 
-            this._players.push(new Player(player,
-                                          light,
-                                          jsonPlayer["move_direction"],
-                                          matchBoardPosition));
+            this.#threeJSScene.add(playerObject);
+            this.#players.push(new Player(playerObject,
+                                          jsonPlayer["move_direction"]));
             i++;
         }
     }
 
-    _addPlayer(position, color) {
+    #createPlayer(jsonPlayer, i) {
+        const group = new THREE.Group();
+
+        const color = i % 2 === 0 ? new THREE.Color(0x00ff00) : new THREE.Color(0xff0000);
+        const player = this.#createPlayerBox(color);
+        const light = this.#createPlayerLight(color, i);
+
+        group.add(player)
+        group.add(light)
+
+        const position = jsonToVector3(jsonPlayer["position"]);
+        group.position.set(position.x, position.y, position.z)
+
+        return group;
+    }
+
+    #createPlayerBox(color) {
         let player = new THREE.Mesh(new THREE.BoxGeometry(1, 5, 1),
                                     new THREE.MeshStandardMaterial({color: color,
                                                                     emissive: color}));
-        player.position.set(position.x, position.y, position.z);
+        player.position.set(0., 0., 0.);
         player.castShadow = true;
         player.receiveShadow = false;
-        this._threeJSScene.add(player);
         return player;
     }
 
-    _addPlayerLight(position, color, i, matchBoardPosition) {
+    #createPlayerLight(color, i) {
         let light = new THREE.RectAreaLight(color, 100, 1, 5);
+
+        const stupidHighNumber = 999999999999999.;
         if (i % 2 === 0) {
-            light.position.set(position.x + 0.5, position.y, position.z);
+            light.position.set(0.5, 0., 0.);
+            light.lookAt(stupidHighNumber, 0., 0.);
         } else {
-            light.position.set(position.x - 0.5, position.y, position.z);
+            light.position.set(-0.5, 0., 0.);
+            light.lookAt(-stupidHighNumber, 0., 0.);
         }
-
-        light.lookAt(matchBoardPosition.x,
-            matchBoardPosition.y,
-            matchBoardPosition.z + position.z);
-        this._threeJSScene.add(light);
-
         return light;
     }
 
-    static jsonToVector3(dictionary) {
-        return new THREE.Vector3(dictionary["x"],
-                                 dictionary["y"],
-                                 dictionary["z"]);
-    }
-
     updateObjectsPositions(time_ratio) {
-        for (let player of this._players) {
+        for (let player of this.#players) {
             player.updatePosition(time_ratio);
         }
 
-        for (let ball of this._balls) {
+        for (let ball of this.#balls) {
             ball.updatePosition(time_ratio);
         }
     }
 
-    updatePlayerMovement(data) {
-        this._players[data["player_index"]].updateDirection(data["move_direction"]);
+    updateOtherPlayerMovement(player_index, direction) {
+        if (direction === 'up')
+            this.#players[player_index].updateDirection(this.#players_speed);
+        else if (direction === 'down')
+            this.#players[player_index].updateDirection(-this.#players_speed);
+        else
+            this.#players[player_index].updateDirection(0.);
     }
 
-    getThreeJSScene() {
-        return this._threeJSScene;
+    updateOtherPlayerPosition(player_index, player_position_json) {
+        this.#players[player_index].position = jsonToVector3(player_position_json);
+    }
+
+    currentPlayerMovesUp() {
+        this.#players[this.#current_player_index].updateDirection(this.#players_speed);
+    }
+
+    currentPlayerMovesDown() {
+        this.#players[this.#current_player_index].updateDirection(-this.#players_speed);
+    }
+
+    currentPlayerStopsMoving() {
+        this.#players[this.#current_player_index].updateDirection(0.);
+    }
+
+    getCurrentPlayerPositionAsArray() {
+        const position = this.#players[this.#current_player_index].position;
+
+        return [position.x, position.y, position.z];
+    }
+
+    get threeJSScene() {
+        return this.#threeJSScene;
     }
 }

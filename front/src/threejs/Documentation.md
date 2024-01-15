@@ -1,6 +1,6 @@
 # Pong Client
 
-## Events when connected to the redirection server:
+## Events when connected to the redirection server: (deprecated)
 - ### `error`:
   >> Argument:  
   >> ```
@@ -26,6 +26,14 @@
   >> sends a `scene` event (or indefinitely if the connection fails)  
 
 ## Events when connected to the game server:
+- ### `error`
+  >> Argument:
+  >> ```
+  >> error_message: str
+  >> ``` 
+  >
+  >> Prints error_message on `console.error`  
+
 - ### `debug`:
   >> Argument:
   >> ```
@@ -35,7 +43,30 @@
   >> Prints debug_message on `console.warn`
 
 - ### `scene`:
-  > As this will likely change I will not write documentation yet
+  >> Argument:
+  >> ```
+  >> {
+  >>   'scene': {'balls': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>                        'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>             'boards': [{'move_direction': {'x': float, 'y': float, 'z': float},
+  >>                         'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>             'players': [{'move_direction': float,
+  >>                          'position': {'x': float, 'y': float, 'z': float}}, ...],
+  >>             'player_move_speed': float},
+  >>   'player_index': int
+  >> }
+  >> ```
+  >
+  >>  Replaces current scene with received scene
 
-- ### `update_player_movement`:
-  > As this will likely change I will not write documentation yet
+- ### `update_player`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'player_index': int,
+  >>     'direction': 'up' | 'down' | 'none'
+  >>     'position': {'x': float, 'y': float, 'z': float}
+  >> }
+  >> ```
+  >
+  >> Updates the position and direction of the player at index player_index 

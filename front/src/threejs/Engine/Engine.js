@@ -1,17 +1,22 @@
 import {Scene} from '../Scene';
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
-import {_RedirectionSocketIO} from './_RedirectionSocketIO';
+import {_RedirectionSocketIO} from './sockets/_RedirectionSocketIO';
 
 export class Engine {
+    #threeJS;
+    #keyHookHandler;
+    #socket;
+    #scene
+
     constructor() {
-        this._threeJS = new _ThreeJS(this);
-        this._keyHookHandler = new _KeyHookHandler(this);
-        this._createDefaultScene();
-        this._socket = null;
+        this.#threeJS = new _ThreeJS(this);
+        this.#keyHookHandler = new _KeyHookHandler(this);
+        this.#createDefaultScene();
+        this.#socket = null;
     }
 
-    _createDefaultScene() {
+    #createDefaultScene() {
         const boards = [];
         const balls = [
             {
@@ -21,39 +26,51 @@ export class Engine {
         ];
         const players = [];
 
-        this._scene = new Scene(boards, balls, players);
+        this.#scene = new Scene(boards, balls, players);
     }
 
     connectToServer() {
-        this._socket = new _RedirectionSocketIO(this);
+        this.#socket = new _RedirectionSocketIO(this);
     }
 
     renderFrame() {
-        this._threeJS.renderFrame(this._scene.getThreeJSScene());
+        this.#threeJS.renderFrame(this.#scene.threeJSScene);
     }
 
     emit(event, data) {
-        if (this._socket === null) {
+        if (this.#socket === null) {
             console.log('Error: Socket is null: Failed to send event(', event, '): ', data);
             return;
         }
 
-        this._socket.emit(event, data);
+        this.#socket.emit(event, data);
     }
 
-    getScene() {
-        return this._scene;
+    get scene() {
+        return this.#scene;
+    }
+
+    set scene(newScene) {
+        this.#scene = newScene;
     }
 
     setAnimationLoop(loopFunction) {
-        this._threeJS.setAnimationLoop(loopFunction);
+        this.#threeJS.setAnimationLoop(loopFunction);
     }
 
     stopAnimationLoop() {
-        this._threeJS.stopAnimationLoop();
+        this.#threeJS.stopAnimationLoop();
     }
 
-    setSocket(socket) {
-        this._socket = socket;
+    set socket(socket) {
+        this.#socket = socket;
+    }
+
+    startListeningForKeyHooks() {
+        this.#keyHookHandler.startListeningForKeyHooks()
+    }
+
+    stopListeningForKeyHooks() {
+        this.#keyHookHandler.stopListeningForKeyHooks()
     }
 }
