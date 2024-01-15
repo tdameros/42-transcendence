@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Matchmaking</title>
+</head>
+<body>
+<h1>Matchmaking</h1>
+<form id="matchmaking">
+    <label for="uuid">UUID:</label>
+    <input type="text" id="uuid" name="uuid" required>
+    <br>
+    <label for="elo">Elo:</label>
+    <input type="text" id="elo" name="elo" required>
+    <br>
+    <button type="submit">Find match</button>
+    <button type="button" id="randomize">Randomize</button>
+</form>
+<button type="button" id="matchmaking-info">Queue info</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const form = document.querySelector('#matchmaking');
+    const randomize = document.querySelector('#randomize');
+    const info = document.querySelector('#matchmaking-info');
+    const uuid_input = document.querySelector('#uuid');
+    const elo_input = document.querySelector('#elo');
+    const access_token = 'access_token'
+
+    const sio = io('http://localhost:3000', {
+        auth: {
+            token: access_token,
+        }
+    });
+
+    sio.on('connect', () => {
+        console.log('connected');
+    });
+
+    sio.on('connect_error', (err) => {
+        console.log(err.message);
+    });
+
+    sio.on('match', (data) => {
+        const json = JSON.parse(data);
+        console.log(json);
+    });
+
+    sio.on('queue_info', (data) => {
+        const json = JSON.parse(data);
+        console.log(json);
+    });
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        sio.emit('queue_join',
+            {
+                'user_id': uuid_input.value,
+                'elo': parseInt(elo_input.value, 10),
+            }
+        );
+        uuid_input.value = ''
+        elo_input.value = ''
+    }
+
+    randomize.onclick = (e) => {
+        uuid_input.value = Math.floor(Math.random() * 100000)
+        elo_input.value = Math.floor(Math.random() * 10000)
+    }
+    info.onclick = (e) => {
+        sio.emit('queue_info', {})
+    }
+
+</script>
+</body>
+</html>
