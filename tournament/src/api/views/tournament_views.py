@@ -18,6 +18,43 @@ from tournament.authenticate_request import authenticate_request
 @method_decorator(csrf_exempt, name='dispatch')
 class TournamentView(View):
     @staticmethod
+    def get(request: HttpRequest) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        filter_params = TournamentView.get_filter_params(request)
+        try:
+            tournaments = Tournament.objects.filter(**filter_params)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        nb_tournaments = len(tournaments)
+
+        page, page_size, nb_pages = TournamentView.get_page_params(request, nb_tournaments)
+
+        page_tournaments = tournaments[page_size * (page - 1): page_size * page]
+
+        tournaments_data = [{
+            'id': tournament.id,
+            'name': tournament.name,
+            'max-players': tournament.max_players,
+            'registration-deadline': tournament.registration_deadline,
+            'is-private': tournament.is_private,
+            'status': TournamentView.status_to_string(tournament.status),
+            'admin': user['username']
+        } for tournament in page_tournaments]
+
+        response_data = {
+            'page': page,
+            'page-size': page_size,
+            'nb-pages': nb_pages,
+            'nb-tournaments': nb_tournaments,
+            'tournaments': tournaments_data
+        }
+
+        return JsonResponse(response_data, status=200)
+
+    @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
         user, authenticate_errors = authenticate_request(request)
         if user is None:
@@ -46,6 +83,25 @@ class TournamentView(View):
             tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
         tournament.save()
         return JsonResponse(model_to_dict(tournament), status=201)
+
+    @staticmethod
+    def delete(request: HttpRequest) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+        if user_tournaments:
+            try:
+                user_tournaments.delete()
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+
+        return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
 
     @staticmethod
     def is_valid_tournament(json_request: dict[str, Any]) -> tuple[bool, Optional[list[str]]]:
@@ -78,7 +134,7 @@ class TournamentView(View):
         errors = []
 
         if name is None:
-            return False, [error.MISSING_NAME]
+            return False, [error.NAME_MISSING]
         if len(name) < settings.MIN_TOURNAMENT_NAME_LENGTH:
             errors.append(error.NAME_TOO_SHORT)
         elif len(name) > settings.MAX_TOURNAMENT_NAME_LENGTH:
@@ -120,7 +176,7 @@ class TournamentView(View):
     @staticmethod
     def is_valid_private(is_private: Any) -> tuple[bool, Optional[str]]:
         if is_private is None:
-            return False, error.MISSING_IS_PRIVATE
+            return False, error.IS_PRIVATE_MISSING
         elif not isinstance(is_private, bool):
             return False, error.IS_PRIVATE_NOT_BOOL
         return True, None
@@ -128,3 +184,51 @@ class TournamentView(View):
     @staticmethod
     def convert_to_utc_datetime(parsed_datetime: datetime) -> datetime:
         return parsed_datetime.astimezone(tz.tzutc())
+
+    @staticmethod
+    def get_page_params(request: HttpRequest, nb_tournaments: int) -> tuple[int, int, int]:
+        page = request.GET.get('page', 1)
+        page_size = request.GET.get('page-size', settings.DEFAULT_PAGE_SIZE)
+
+        try:
+            page_size = int(page_size)
+            if page_size > settings.MAX_PAGE_SIZE:
+                page_size = settings.MAX_PAGE_SIZE
+            elif page_size <= 0:
+                raise ValueError
+        except ValueError:
+            page_size = settings.DEFAULT_PAGE_SIZE
+
+        last_page = nb_tournaments // page_size
+        if nb_tournaments % page_size != 0:
+            last_page += 1
+        if nb_tournaments == 0:
+            last_page = 1
+
+        try:
+            page = int(page)
+            if page > last_page:
+                page = last_page
+            elif page <= 0:
+                raise ValueError
+        except ValueError:
+            page = 1
+
+        return page, page_size, last_page
+
+    @staticmethod
+    def get_filter_params(request: HttpRequest) -> dict:
+        filter_params = {}
+
+        if 'display-private' not in request.GET:
+            filter_params['is_private'] = False
+        if 'display-completed' not in request.GET:
+            filter_params['status__in'] = [Tournament.CREATED, Tournament.IN_PROGRESS]
+
+        return filter_params
+
+    @staticmethod
+    def status_to_string(status: int) -> str:
+        status_string = ['Created', 'In progress', 'Finished']
+
+        return status_string[status]
