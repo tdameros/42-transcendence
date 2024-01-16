@@ -219,3 +219,146 @@ all fields are mandatory
 > - An unexpected error occurred
 </details>
 
+
+## `forgot-password/send-code`
+
+### Send a code to the user's email
+
+will return 200 if successful and send a 12 characters code to the user's email
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "email": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                            |
+> |-----------|--------------------|-----------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent","email": "************ra@gmail.com", "expires": "2024-01-10T11:20:43.253"}}`                    |
+> | `400`     | `application/json` | `{"errors": "AAA"}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+> errors can be :
+> - No email provided
+> - Email can not be empty
+> - Username not found
+> - Invalid JSON format in the request body : decode error
+> - An unexpected error occurred
+
+</details>
+
+## `forgot-password/check-code`
+
+### Verify the code sent by email
+
+will return 200 if successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/check-code/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "email": "...",
+>     "code": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> errors details are optional
+
+> errors can be :
+> - Mandatory value missing : 'email'
+> - Mandatory value missing : 'code'
+> - Email empty
+> - Code empty
+> - Username not found
+> - Invalid code
+> - Code expired
+
+</details>
+
+
+## `forgot-password/change-password`
+
+### Change the password of the user with the given code
+
+will return 200 if successful,
+change the user password,
+revoke the code given by email
+
+<details>
+ <summary><code>POST</code><code><b>/user/forgot-password/change-password/</b></code></summary>
+
+### Parameters
+
+#### Body
+all fields are mandatory
+> ``` javascript
+> {
+>     "email": "...",
+>     "code": "..."
+>     "new_password": "..."
+> }
+> ```
+
+=======
+## `user/{user_id}`
+### Get user non-sensitive information
+
+will return a user object when successful
+Might be extended to return more information in the future, if needed
+
+<details>
+ <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {user_id}
+> 
+> NB : user_id must be an integer
+> 
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> errors details are optional
+
+> errors can be :
+> - Mandatory value missing : 'username'
+> - Mandatory value missing : 'code'
+> - Mandatory value missing : 'password'
+> - Email empty
+> - Code empty
+> - Username not found
+> - Invalid code
+> - Code expired
+> - (all the errors from the is_valid_password function in the sign_up route)
+
+
+</details>

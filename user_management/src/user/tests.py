@@ -1,5 +1,4 @@
 import json
-import pathlib
 import random
 from datetime import datetime, timedelta
 
@@ -7,10 +6,9 @@ import jwt
 from django.test import TestCase
 from django.urls import reverse
 
+from user.models import User
 from user_management import settings
 from user_management.JWTManager import JWTManager
-
-APP_DIR = pathlib.Path(__file__).resolve().parent
 
 
 class TestsSignup(TestCase):
@@ -200,7 +198,7 @@ class TestsSignin(TestCase):
             'password': 'Validpass42*',
         }
         url = reverse('signup')
-        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data = {
             'username': 'aurelien123',
             'password': 'Validpass42*',
@@ -279,7 +277,7 @@ class TestsRefreshJWT(TestCase):
             'token_type': 'refresh'
         }
         bad_signature_token = jwt.encode(valid_payload,
-                                         open(APP_DIR / './test_resources/invalid_key.pub').read(),
+                                         open(f'{settings.BASE_DIR}/user/test_resources/invalid_key.pub').read(),
                                          'RS256')
         # 3 Empty payload
         payload = {}
@@ -323,6 +321,7 @@ class TestsRefreshJWT(TestCase):
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
             except Exception as e:
                 print(e)
+            result.json()['errors']
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])
@@ -355,3 +354,20 @@ class TestsEmailExist(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('is_taken' in result.json())
         self.assertFalse(result.json()['is_taken'])
+
+
+class UserId(TestCase):
+
+    def test_user_id(self):
+        data_preparation = {
+            'username': 'Aurel303',
+            'email': 'alevra@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.all().first()
+        url = reverse('user-id', args=[user.id])
+        result = self.client.get(url)
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('username' in result.json())
