@@ -174,7 +174,7 @@ class IsEmailTakenView(View):
             json_request = json.loads(request.body.decode('utf-8'))
             user_email = json_request.get('email')
             if user_email is None:
-                return JsonResponse(data={'is_taken': True}, status=400)
+                return JsonResponse(data={'errors': ['Empty email']}, status=400)
             users = User.objects.filter(email=user_email)
             if users.exists():
                 return JsonResponse(data={'is_taken': True}, status=200)

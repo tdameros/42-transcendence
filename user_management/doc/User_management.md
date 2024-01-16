@@ -164,7 +164,7 @@ will return a boolean
 > | http code | content-type             | response                                             |
 > |-----------|--------------------------|------------------------------------------------------|
 > | `200`     | `application/json`       | `{"is_taken": false}`                                |
-> | `200`     | `application/json`       | `{"is_taken": true}`              n                  |
+> | `200`     | `application/json`       | `{"is_taken": true}`                                 |
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
 
@@ -172,10 +172,9 @@ will return a boolean
 > errors can be combined
 
 > errors can be :
+> - Empty email
 > - Invalid JSON format in the request body
 > - An unexpected error occurred
-> 
-> NB : An empty email is considered as not taken
 
 </details>
 
