@@ -40,7 +40,6 @@ class TestsSignup(TestCase):
         expected_status = 201
         name = 'Valid Username'
         long_username = 'a' * settings.USERNAME_MAX_LENGTH
-        email = 'alevra@asdf.fr'
         valid_usernames = [
             'Aurel', 'aurel', 'aa',
             'AA', 'aurelien', 'aurel42',
@@ -48,6 +47,7 @@ class TestsSignup(TestCase):
         ]
         for username in valid_usernames:
             print(f'\nTesting {name} with username {username}')
+            email = 'c' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -60,7 +60,6 @@ class TestsSignup(TestCase):
         has_refresh_token = False
         expected_status = 400
         name = 'Invalid Username'
-        email = 'alevra@student.42lyon.fr'
         long_username = 'a' * (settings.USERNAME_MAX_LENGTH + 1)
         invalid_usernames = [
             (None, 'Username empty'),
@@ -73,6 +72,7 @@ class TestsSignup(TestCase):
         for invalid_username in invalid_usernames:
             username = invalid_username[0]
             expected_errors = [invalid_username[1]]
+            email = 'b' + random.randint(0, 100000).__str__() + '@a.fr'
             print(f'\nTesting {name} with username \'{username}\'')
             self.run_signup_test(name,
                                  username,
@@ -135,7 +135,6 @@ class TestsSignup(TestCase):
         has_refresh_token = True
         expected_status = 201
         name = 'Valid Password'
-        email = 'alevra@student.42lyon.fr'
         valid_passwords = [
             'Validpass42*', 'a' * (settings.PASSWORD_MAX_LENGTH - 3) + 'A1*',
                             'a' * (settings.PASSWORD_MIN_LENGTH - 3) + 'A1*'
@@ -143,6 +142,7 @@ class TestsSignup(TestCase):
         for password in valid_passwords:
             username = 'Aurel' + str(random.randint(0, 100000))
             print(f'\nTesting {name} with password {password}')
+            email = 'a' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -321,7 +321,6 @@ class TestsRefreshJWT(TestCase):
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
             except Exception as e:
                 print(e)
-            result.json()['errors']
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])
