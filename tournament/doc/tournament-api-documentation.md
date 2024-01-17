@@ -230,6 +230,7 @@ Add a player to a specific tournament
 #### Body
 
 - Nickname for the tournament
+- The tournament password (if tournament is private)
 
 > ```javascript
 > {
