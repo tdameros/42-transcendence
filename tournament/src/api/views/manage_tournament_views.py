@@ -1,6 +1,7 @@
 import json
 from typing import Any, Optional
 
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
@@ -155,6 +156,9 @@ class ManageTournamentView(View):
             else:
                 tournament.registration_deadline = new_registration_deadline
 
+        new_password = body.get('password')
+        valid_password, password_error = TournamentView.is_valid_password(new_password)
+
         new_is_private = body.get('is-private')
         if new_is_private is not None:
             valid_is_private, is_private_error = TournamentView.is_valid_private(new_is_private)
@@ -162,6 +166,12 @@ class ManageTournamentView(View):
                 update_errors.append(is_private_error)
             else:
                 tournament.is_private = new_is_private
+
+        if tournament.is_private and (tournament.password is None or new_password is not None):
+            if not valid_password:
+                update_errors.append(password_error)
+            else:
+                tournament.password = make_password(new_password)
 
         return update_errors
 
