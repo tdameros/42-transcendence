@@ -24,14 +24,14 @@ class ManageTournamentView(View):
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'error': f'tournament with id `{tournament_id}` does not exist'}, status=404)
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         try:
             tournament_players = tournament.players.all()
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         tournament_data = {
             'id': tournament.id,
@@ -61,22 +61,22 @@ class ManageTournamentView(View):
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'error': f'tournament with id `{tournament_id}` does not exist'}, status=404)
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         tournament_name = tournament.name
         tournament_admin = tournament.admin_id
 
         if tournament_admin != user['id']:
             return JsonResponse({
-                'error': f'you cannot delete `{tournament_name}` because you are not the owner of the tournament'
+                'errors': [f'you cannot delete `{tournament_name}` because you are not the owner of the tournament']
             }, status=403)
 
         try:
             tournament.delete()
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': f'tournament `{tournament_name}` successfully deleted'}, status=200)
 

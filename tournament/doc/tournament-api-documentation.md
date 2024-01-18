@@ -79,7 +79,7 @@ None
 > | http code | content-type       | response                                                            |
 > |-----------|--------------------|---------------------------------------------------------------------|
 > | `200`     | `application/json` | `{"message": "tournaments created by this user have been deleted"}` |
-> | `401`     | `application/json` | `{"error": "error message"}`                                        |
+> | `401`     | `application/json` | `{"errors": ["error message", ...]}`                                |
 
 
 </details>
@@ -121,10 +121,10 @@ Body
 >       "admin": "edelage",
 > 
 
-> | http code | content-type       | response                                          |
-> |-----------|--------------------|---------------------------------------------------|
-> | `200`     | `application/json` | `{"id": 1, "name": "Tournament", ...}`            |
-> | `404`     | `application/json` | `{"error": "error message"}`                      |
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
+> | `404`     | `application/json` | `{"errors": ["error message", ...]}`   |
 
 </details>
 
@@ -139,10 +139,10 @@ None
 
 ### Responses
 
-> | http code                     | content-type       | response                                          |
-> |-------------------------------|--------------------|---------------------------------------------------|
-> | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
-> | `400` / `401` / `403` / `404` | `application/json` | `{"error": "error message"}`                      |
+> | http code                     | content-type       | response                                         |
+> |-------------------------------|--------------------|--------------------------------------------------|
+> | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}` |
+> | `400` / `401` / `403` / `404` | `application/json` | `{"errors": ["error message", ...]}`             |
 
 </details>
 
@@ -214,7 +214,7 @@ Retrieve the list of players for a tournament
 > | http code | content-type       | response                                          |
 > |-----------|--------------------|---------------------------------------------------|
 > | `200`     | `application/json` | `{"players": [{"nickname": "Player", ...}, ...]}` |
-> | `404`     | `application/json` | `{"error": "AAA"}                                 |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`                        |
 
 </details>
 
