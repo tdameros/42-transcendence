@@ -46,7 +46,7 @@ class GetTournamentPlayers(TestCase):
         response, body = self.get_tournament_players(tournament_id)
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(body['error'], f'tournament with id `{tournament_id}` does not exist')
+        self.assertEqual(body['errors'], [f'tournament with id `{tournament_id}` does not exist'])
 
     @patch('api.views.tournament_players_views.authenticate_request')
     def test_no_players(self, mock_authenticate_request):
