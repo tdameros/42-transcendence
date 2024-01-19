@@ -40,7 +40,8 @@ all fields are mandatory
 > - Username empty
 > - Username already taken
 > - Username length {len(username)} > 20
-> - 
+
+> - Email {email} already taken
 > - Email empty
 > - Email length {len(email)} > 50
 > - Email missing @
