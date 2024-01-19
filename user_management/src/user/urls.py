@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (ForgotPasswordChangePasswordView,
+from .views import (EmailExistView, ForgotPasswordChangePasswordView,
                     ForgotPasswordCheckCodeView, ForgotPasswordSendCodeView,
                     IsUsernameTakenView, RefreshJWT, SearchUsernameView,
                     SignInView, SignUpView, UserIdView)
