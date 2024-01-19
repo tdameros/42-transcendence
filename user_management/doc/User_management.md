@@ -362,3 +362,40 @@ Might be extended to return more information in the future, if needed
 
 
 </details>
+
+## `search-username`
+
+### Search for a username
+
+will return a list of usernames that contains the searched username
+
+<details>
+ <summary><code>POST</code><code><b>/search-username/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+> ``` javascript
+>   
+> {
+>    "username": "Aurel"
+> }
+> ```
+> 
+> NB : An empty username will return an error "Username not found"
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"usernames": ["Aurel", "Aurel2", "Aurel3"]}`       |
+> | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> 
+> errors can be :
+> - Invalid JSON format in the request body
+> - An unexpected error occurred
+> - No username found
+</details>
