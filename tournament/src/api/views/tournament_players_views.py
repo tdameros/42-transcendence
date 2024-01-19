@@ -26,9 +26,9 @@ class TournamentPlayersView(View):
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'error': f'tournament with id `{tournament_id}` does not exist'}, status=404)
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         players = tournament.players.all()
 

@@ -93,13 +93,13 @@ class TournamentView(View):
         try:
             user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         if user_tournaments:
             try:
                 user_tournaments.delete()
             except Exception as e:
-                return JsonResponse({'error': str(e)}, status=500)
+                return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
 
