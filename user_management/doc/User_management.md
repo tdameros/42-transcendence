@@ -322,7 +322,8 @@ all fields are mandatory
 > }
 > ```
 
-=======
+</details>
+
 ## `user/{user_id}`
 ### Get user non-sensitive information
 
