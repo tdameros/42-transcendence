@@ -140,6 +140,45 @@ will return a boolean
 
 </details>
 
+## `email-exist`
+
+### Check if email is already taken
+
+will return a boolean
+
+<details>
+ <summary><code>POST</code> <code><b>/user/email-exist/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+> ``` javascript
+> {
+>     "email": "..."
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type             | response                                             |
+> |-----------|--------------------------|------------------------------------------------------|
+> | `200`     | `application/json`       | `{"is_taken": false}`                                |
+> | `200`     | `application/json`       | `{"is_taken": true}`                                 |
+> | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
+> | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
+
+> 
+> errors can be combined
+
+> errors can be :
+> - Empty email
+> - Invalid JSON format in the request body
+> - An unexpected error occurred
+
+</details>
+
+
 ## `refresh-access-jwt`
 
 ### Trade a valid refresh token for an access token
