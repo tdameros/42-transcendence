@@ -10,7 +10,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
-from api.models import Tournament
+from api.models import Player, Tournament
+from api.views.tournament_players_views import TournamentPlayersView
 from tournament import settings
 from tournament.authenticate_request import authenticate_request
 
@@ -81,7 +82,19 @@ class TournamentView(View):
         if json_request.get('registration-deadline') is not None:
             registration_deadline = parser.isoparse(registration_deadline)
             tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
-        tournament.save()
+        try:
+            tournament.save()
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+        try:
+            register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user['id'])
+            if register_admin_errors is not None:
+                tournament.delete()
+                return JsonResponse({'errors': register_admin_errors}, status=400)
+        except Exception as e:
+            tournament.delete()
+            return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse(model_to_dict(tournament), status=201)
 
     @staticmethod
@@ -184,6 +197,20 @@ class TournamentView(View):
     @staticmethod
     def convert_to_utc_datetime(parsed_datetime: datetime) -> datetime:
         return parsed_datetime.astimezone(tz.tzutc())
+
+    @staticmethod
+    def register_admin_as_player(json_request, tournament: Tournament, user_id: int) -> Optional[list[str]]:
+        admin_nickname = json_request.get('nickname')
+        if admin_nickname is not None:
+            valid_nickname, nickname_errors = TournamentPlayersView.is_valid_nickname(admin_nickname)
+            if not valid_nickname:
+                return nickname_errors
+            Player.objects.create(
+                nickname=admin_nickname,
+                user_id=user_id,
+                tournament=tournament
+            )
+        return None
 
     @staticmethod
     def get_page_params(request: HttpRequest, nb_tournaments: int) -> tuple[int, int, int]:

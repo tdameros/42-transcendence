@@ -216,6 +216,8 @@ class CreateTournamentTest(TestCase):
 
         response, body = self.create_tournament(data)
 
+        players = Tournament.objects.get(id=body['id']).players.all()
+
         if response.status_code != 201:
             print(body)
         self.assertEqual(response.status_code, 201)
@@ -224,6 +226,33 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(body['registration_deadline'], data['registration-deadline'])
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
+        self.assertEqual(len(players), 0)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_create_tournament_auto_subscribe(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        data = {
+            'name': 'World Championship',
+            'max-players': 16,
+            'is-private': False,
+            'nickname': 'test'
+        }
+
+        response, body = self.create_tournament(data)
+
+        players = Tournament.objects.get(id=body['id']).players.all()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(body['name'], data['name'])
+        self.assertEqual(body['max_players'], data['max-players'])
+        self.assertEqual(body['registration_deadline'], None)
+        self.assertEqual(body['is_private'], data['is-private'])
+        self.assertEqual(body['admin_id'], 1)
+        self.assertEqual(len(players), 1)
+        self.assertEqual(players[0].nickname, data['nickname'])
+        self.assertEqual(players[0].user_id, user['id'])
 
     @patch('api.views.tournament_views.authenticate_request')
     def test_tournament_different_timezone(self, mock_get):
@@ -378,3 +407,19 @@ class BadRequestCreateTournament(TestCase):
         }
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_invalid_nickname(self, mock_get):
+        expected_errors = [error.NICKNAME_TOO_SHORT]
+
+        data = {
+            'name': 'test',
+            'is-private': False,
+            'nickname': 'a'
+        }
+
+        self.send_tournament_bad_request(mock_get, data, expected_errors)
+
+        tournaments = Tournament.objects.all()
+
+        self.assertEqual(len(tournaments), 0)
