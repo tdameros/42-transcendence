@@ -321,7 +321,6 @@ class TestsRefreshJWT(TestCase):
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
             except Exception as e:
                 print(e)
-            result.json()['errors']
             self.assertEqual(result.status_code, 400)
             self.assertTrue('errors' in result.json())
             self.assertEqual(result.json()['errors'], [error[0]])
@@ -342,3 +341,52 @@ class UserId(TestCase):
         result = self.client.get(url)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('username' in result.json())
+
+
+class TestsSearchUsername(TestCase):
+
+    def test_search_username(self):
+        for i in range(1, 20):
+            data_preparation = {
+                'username': f'Felix{i}',
+                'email': f'felix{i}@gmail.com',
+                'password': 'Validpass42*',
+            }
+            url = reverse('signup')
+            self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        data = {
+            'username': 'Felix'
+        }
+        url = reverse('search')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 10)
+        self.assertEqual(result.json()['users'][0], 'Felix1')
+        self.assertEqual(result.json()['users'][9], 'Felix10')
+        data = {
+            'username': 'Felix1'
+        }
+        url = reverse('search')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 10)
+        self.assertEqual(result.json()['users'][0], 'Felix1')
+        data = {
+            'username': 'Felix2'
+        }
+        url = reverse('search')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 1)
+        self.assertEqual(result.json()['users'][0], 'Felix2')
+        data = {
+            'username': 'Felix111'
+        }
+        url = reverse('search')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 0)

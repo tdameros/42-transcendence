@@ -332,6 +332,24 @@ class ForgotPasswordChangePasswordView(View):
         return JsonResponse(data={'ok': 'ok'}, status=200)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class SearchUsernameView(View):
+    @staticmethod
+    def post(request):
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+            search_query = json_request.get('username')
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        if search_query is None or search_query == '':
+            return JsonResponse(data={'errors': ['Username not found']}, status=400)
+        matching_users = User.objects.filter(username__icontains=search_query)[:settings.MAX_USERNAME_SEARCH_RESULTS]
+        if matching_users.exists():
+            return JsonResponse(data={'users': [user.username for user in matching_users]}, status=200)
+        return JsonResponse(data={'users': []}, status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class UserIdView(View):
     @staticmethod
     def get(request, user_id):
@@ -343,4 +361,4 @@ class UserIdView(View):
                 return JsonResponse(data={'errors': ['User not found']}, status=404)
             return JsonResponse(data={'username': user.username}, status=200)
         except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)\
