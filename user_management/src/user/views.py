@@ -63,6 +63,8 @@ class SignUpView(View):
             return False, f'Username length {len(username)} < {settings.USERNAME_MIN_LENGTH}'
         if len(username) > settings.USERNAME_MAX_LENGTH:
             return False, f'Username length {len(username)} > {settings.USERNAME_MAX_LENGTH}'
+        if not username.isalnum():
+            return False, 'Username must be alphanumeric'
         users = User.objects.filter(username=username)
         if users.exists():
             return False, f'Username {username} already taken'

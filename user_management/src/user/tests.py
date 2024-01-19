@@ -43,7 +43,7 @@ class TestsSignup(TestCase):
         valid_usernames = [
             'Aurel', 'aurel', 'aa',
             'AA', 'aurelien', 'aurel42',
-            'aurel_42', 'aurel-42', long_username
+            'aurelx42', 'aurelh42', long_username
         ]
         for username in valid_usernames:
             print(f'\nTesting {name} with username {username}')
