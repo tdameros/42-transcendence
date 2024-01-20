@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 from django.urls import reverse
 
@@ -16,6 +17,7 @@ class PatchTournamentTest(TestCase):
         Tournament.objects.create(id=4, name='in_progress', status=Tournament.IN_PROGRESS, admin_id=1)
         Tournament.objects.create(id=5, name='finished', status=Tournament.FINISHED, admin_id=1)
         Tournament.objects.create(id=6, name='8players', max_players=14, admin_id=1)
+        Tournament.objects.create(id=7, name='private', is_private=True, password=make_password('test'), admin_id=1)
 
         for i in range(1, 9):
             Player.objects.create(nickname=f'Player{i}', user_id=i, tournament_id=6)
@@ -32,13 +34,42 @@ class PatchTournamentTest(TestCase):
     def test_patch_tournament(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (user, None)
-        response, body = self.patch_tournament(1, {'name': 'new name', 'max-players': 8, 'is-private': True})
+        response, body = self.patch_tournament(1, {
+                                                   'name': 'new name',
+                                                   'max-players': 8,
+                                                   'is-private': True,
+                                                   'password': 'test'
+                                                   })
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['id'], 1)
         self.assertEqual(body['name'], 'new name')
         self.assertEqual(body['max-players'], 8)
         self.assertEqual(body['is-private'], True)
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_change_password(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+        response, body = self.patch_tournament(7, {'password': 'test2'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 7)
+        self.assertEqual(body['name'], 'private')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['is-private'], True)
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_private_to_public(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+        response, body = self.patch_tournament(7, {'is-private': False})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 7)
+        self.assertEqual(body['name'], 'private')
+        self.assertEqual(body['max-players'], 16)
+        self.assertEqual(body['is-private'], False)
 
     @patch('api.views.manage_tournament_views.authenticate_request')
     def test_patch_tournament_name(self, mock_authenticate_request):
@@ -116,3 +147,30 @@ class PatchTournamentTest(TestCase):
         self.assertEqual(body['is-private'], False)
         self.assertEqual(body['status'], 'Created')
         self.assertEqual(body['registration-deadline'], '2029-01-01T00:00:00Z')
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_patch_no_password(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+        response, body = self.patch_tournament(1, {'is-private': True})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.PASSWORD_MISSING])
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_patch_password_too_short(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+        response, body = self.patch_tournament(1, {'is-private': True, 'password': 'a'})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.PASSWORD_TOO_SHORT])
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_patch_password_too_long(self, mock_get):
+        user = {'id': 1, 'username': 'admin'}
+        mock_get.return_value = (user, None)
+        response, body = self.patch_tournament(1, {'is-private': True, 'password': 'a' * 40})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.PASSWORD_TOO_LONG])

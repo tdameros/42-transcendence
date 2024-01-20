@@ -47,14 +47,16 @@ Create a new tournament
 - Registration deadline (optional)
 - Nickname for the tournament (optional)
 - A boolean that specifies if tournament is private
+- A password for the tournament (if is-private is true)
 
 > ```javascript
 > {
 >     "name": "World Championship",
 >     "max-players": 16,
 >     "registration-deadline": "2024-02-17T10:53",
->     "nickname": "Player",
->     "is-private": true
+>     "is-private": true,
+>     "password": "Password1%"
+>     "nickname": "Player"
 > }
 > ```
 
@@ -81,7 +83,7 @@ None
 > | http code | content-type       | response                                                            |
 > |-----------|--------------------|---------------------------------------------------------------------|
 > | `200`     | `application/json` | `{"message": "tournaments created by this user have been deleted"}` |
-> | `401`     | `application/json` | `{"error": "error message"}`                                        |
+> | `401`     | `application/json` | `{"errors": ["error message", ...]}`                                |
 
 
 </details>
@@ -123,10 +125,10 @@ Body
 >       "admin": "edelage",
 > 
 
-> | http code | content-type       | response                                          |
-> |-----------|--------------------|---------------------------------------------------|
-> | `200`     | `application/json` | `{"id": 1, "name": "Tournament", ...}`            |
-> | `404`     | `application/json` | `{"error": "error message"}`                      |
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "name": "Tournament", ...}` |
+> | `404`     | `application/json` | `{"errors": ["error message", ...]}`   |
 
 </details>
 
@@ -141,10 +143,10 @@ None
 
 ### Responses
 
-> | http code                     | content-type       | response                                          |
-> |-------------------------------|--------------------|---------------------------------------------------|
-> | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}`  |
-> | `400` / `401` / `403` / `404` | `application/json` | `{"error": "error message"}`                      |
+> | http code                     | content-type       | response                                         |
+> |-------------------------------|--------------------|--------------------------------------------------|
+> | `200`                         | `application/json` | `{"message": "tournament successfully deleted"}` |
+> | `400` / `401` / `403` / `404` | `application/json` | `{"errors": ["error message", ...]}`             |
 
 </details>
 
@@ -161,13 +163,15 @@ Update tournament settings
 - Players must be between 2 and 16 (optional)
 - Registration deadline (optional)
 - A boolean that specifies if tournament is private (optional)
+- A password for the tournament (optional)
 
 > ```javascript
 > {
 >   "name": "World Championship",
 >   "max-players": 16,
 >   "registration-deadline": "2024-02-17T10:53",
->   "is-private": true
+>   "is-private": true,
+>   "password": "Password1%"
 > }
 
 ### Responses
@@ -216,7 +220,7 @@ Retrieve the list of players for a tournament
 > | http code | content-type       | response                                          |
 > |-----------|--------------------|---------------------------------------------------|
 > | `200`     | `application/json` | `{"players": [{"nickname": "Player", ...}, ...]}` |
-> | `404`     | `application/json` | `{"error": "AAA"}                                 |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`                        |
 
 </details>
 
@@ -230,6 +234,7 @@ Add a player to a specific tournament
 #### Body
 
 - Nickname for the tournament
+- The tournament password (if tournament is private)
 
 > ```javascript
 > {

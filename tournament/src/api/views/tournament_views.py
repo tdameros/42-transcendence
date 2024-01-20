@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 from dateutil import parser, tz
+from django.contrib.auth.hashers import make_password
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
@@ -70,11 +71,16 @@ class TournamentView(View):
         if not valid_tournament:
             return JsonResponse(data={'errors': errors}, status=400)
 
+        is_private = json_request['is-private']
         tournament = Tournament(
             name=json_request['name'],
-            is_private=json_request['is-private'],
+            is_private=is_private,
             admin_id=user['id']
         )
+
+        if is_private:
+            tournament.password = make_password(json_request['password'])
+
         max_players = json_request.get('max-players')
         if max_players is not None:
             tournament.max_players = max_players
@@ -95,10 +101,11 @@ class TournamentView(View):
         except Exception as e:
             tournament.delete()
             return JsonResponse({'errors': [str(e)]}, status=500)
-        return JsonResponse(model_to_dict(tournament), status=201)
+        return JsonResponse(model_to_dict(tournament, exclude=['password']), status=201)
 
     @staticmethod
     def delete(request: HttpRequest) -> JsonResponse:
+        # TODO: authorize this endpoint only for auth microservice
         user, authenticate_errors = authenticate_request(request)
         if user is None:
             return JsonResponse(data={'errors': authenticate_errors}, status=401)
@@ -106,13 +113,13 @@ class TournamentView(View):
         try:
             user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         if user_tournaments:
             try:
                 user_tournaments.delete()
             except Exception as e:
-                return JsonResponse({'error': str(e)}, status=500)
+                return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
 
@@ -123,11 +130,13 @@ class TournamentView(View):
         max_players = json_request.get('max-players')
         registration_deadline = json_request.get('registration-deadline')
         is_private = json_request.get('is-private')
+        password = json_request.get('password')
 
         valid_name, name_errors = TournamentView.is_valid_name(name)
         valid_max_players, max_players_error = TournamentView.is_valid_max_players(max_players)
         valid_deadline, deadline_error = TournamentView.is_valid_deadline(registration_deadline)
         valid_private, is_private_error = TournamentView.is_valid_private(is_private)
+        valid_password, password_error = TournamentView.is_valid_password(password)
 
         if not valid_name:
             errors.extend(name_errors)
@@ -137,6 +146,8 @@ class TournamentView(View):
             errors.append(deadline_error)
         if not valid_private:
             errors.append(is_private_error)
+        if valid_private and is_private and not valid_password:
+            errors.append(password_error)
 
         if errors:
             return False, errors
@@ -192,6 +203,18 @@ class TournamentView(View):
             return False, error.IS_PRIVATE_MISSING
         elif not isinstance(is_private, bool):
             return False, error.IS_PRIVATE_NOT_BOOL
+        return True, None
+
+    @staticmethod
+    def is_valid_password(password: Any) -> tuple[bool, Optional[str]]:
+        if password is None:
+            return False, error.PASSWORD_MISSING
+        if not isinstance(password, str):
+            return False, error.PASSWORD_NOT_STRING
+        if len(password) < settings.PASSWORD_MIN_LENGTH:
+            return False, error.PASSWORD_TOO_SHORT
+        if len(password) > settings.PASSWORD_MAX_LENGTH:
+            return False, error.PASSWORD_TOO_LONG
         return True, None
 
     @staticmethod

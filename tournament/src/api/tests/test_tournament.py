@@ -211,7 +211,31 @@ class CreateTournamentTest(TestCase):
             'name': 'World Championship',
             'max-players': 16,
             'registration-deadline': '2027-02-17T10:53:00Z',
-            'is-private': True
+            'is-private': False
+        }
+
+        response, body = self.create_tournament(data)
+
+        if response.status_code != 201:
+            print(body)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(body['name'], data['name'])
+        self.assertEqual(body['max_players'], data['max-players'])
+        self.assertEqual(body['registration_deadline'], data['registration-deadline'])
+        self.assertEqual(body['is_private'], data['is-private'])
+        self.assertEqual(body['admin_id'], 1)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_private_tournament_creation(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        data = {
+            'name': 'World Championship',
+            'max-players': 16,
+            'registration-deadline': '2027-02-17T10:53:00Z',
+            'is-private': True,
+            'password': 'test'
         }
 
         response, body = self.create_tournament(data)
@@ -263,7 +287,7 @@ class CreateTournamentTest(TestCase):
             'name': 'World Championship',
             'max-players': 16,
             'registration-deadline': '2027-01-06T07:38:51-07:00',
-            'is-private': True
+            'is-private': False
         }
 
         response, body = self.create_tournament(data)
@@ -284,7 +308,7 @@ class CreateTournamentTest(TestCase):
 
         data = {
             'name': 'World Championship',
-            'is-private': True
+            'is-private': False
         }
 
         response, body = self.create_tournament(data)
@@ -327,6 +351,41 @@ class BadRequestCreateTournament(TestCase):
         expected_errors = [error.NAME_MISSING, error.IS_PRIVATE_MISSING]
 
         self.send_tournament_bad_request(mock_get, {}, expected_errors)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_no_password(self, mock_get):
+        expected_errors = [error.PASSWORD_MISSING]
+
+        data = {
+            'name': 'Test',
+            'is-private': True
+        }
+
+        self.send_tournament_bad_request(mock_get, data, expected_errors)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_password_too_short(self, mock_get):
+        expected_errors = [error.PASSWORD_TOO_SHORT]
+
+        data = {
+            'name': 'Test',
+            'is-private': True,
+            'password': 't'
+        }
+
+        self.send_tournament_bad_request(mock_get, data, expected_errors)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_password_too_long(self, mock_get):
+        expected_errors = [error.PASSWORD_TOO_LONG]
+
+        data = {
+            'name': 'Test',
+            'is-private': True,
+            'password': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        }
+
+        self.send_tournament_bad_request(mock_get, data, expected_errors)
 
     @patch('api.views.tournament_views.authenticate_request')
     def test_invalid_type(self, mock_get):

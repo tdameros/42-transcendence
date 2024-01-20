@@ -35,6 +35,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
 EMAIL_HOST_PASSWORD = 'jkabrqwookxrnfzv'
+MAX_USERNAME_SEARCH_RESULTS = 10
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'

@@ -73,7 +73,7 @@ class GetTournamentTest(TestCase):
         response, body = self.get_tournament(50)
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(body['error'], 'tournament with id `50` does not exist')
+        self.assertEqual(body['errors'], ['tournament with id `50` does not exist'])
 
     @patch('api.views.manage_tournament_views.authenticate_request')
     def test_get_tournament_no_player(self, mock_authenticate_request):
@@ -135,7 +135,7 @@ class DeleteTournamentTest(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(Tournament.objects.count(), 2)
-        self.assertEqual(body['error'], 'tournament with id `3` does not exist')
+        self.assertEqual(body['errors'], ['tournament with id `3` does not exist'])
 
     @patch('api.views.manage_tournament_views.authenticate_request')
     def test_delete_tournament_not_owner(self, mock_authenticate_request):
@@ -148,4 +148,4 @@ class DeleteTournamentTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertEqual(Tournament.objects.count(), 2)
-        self.assertEqual(body['error'], 'you cannot delete `Test2` because you are not the owner of the tournament')
+        self.assertEqual(body['errors'], ['you cannot delete `Test2` because you are not the owner of the tournament'])
