@@ -40,6 +40,7 @@ all fields are mandatory
 > - Username empty
 > - Username already taken
 > - Username length {len(username)} > 20
+> - Username must be alphanumeric
 
 > - Email {email} already taken
 > - Email empty
