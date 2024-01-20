@@ -29,7 +29,7 @@ class TournamentView(View):
         try:
             tournaments = Tournament.objects.filter(**filter_params)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
         nb_tournaments = len(tournaments)
 
         page, page_size, nb_pages = TournamentView.get_page_params(request, nb_tournaments)
@@ -91,7 +91,7 @@ class TournamentView(View):
         try:
             tournament.save()
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         try:
             register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user['id'])
