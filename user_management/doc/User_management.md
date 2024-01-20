@@ -41,7 +41,8 @@ all fields are mandatory
 > - Username already taken
 > - Username length {len(username)} > 20
 > - Username must be alphanumeric
-> - 
+
+> - Email {email} already taken
 > - Email empty
 > - Email length {len(email)} > 50
 > - Email missing @
@@ -195,7 +196,7 @@ will return an access token when successful
 all fields are mandatory
 > ``` javascript
 > {
->     "refresh_jwt": "234235sfs3r2.."
+>     "refresh_token": "234235sfs3r2.."
 > }
 > ```
 

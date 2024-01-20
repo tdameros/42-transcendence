@@ -74,6 +74,9 @@ class SignUpView(View):
     def is_valid_email(email):
         if email is None or email == '':
             return False, 'Email empty'
+        users = User.objects.filter(email=email)
+        if users.exists():
+            return False, f'Email {email} already taken'
         if len(email) > settings.EMAIL_MAX_LENGTH:
             return False, f'Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}'
         if any(char in '!#$%^&*()=' for char in email):

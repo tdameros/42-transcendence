@@ -17,6 +17,12 @@ DEADLINE_PASSED = 'Registration deadline has passed'
 IS_PRIVATE_MISSING = 'Missing is-private field'
 IS_PRIVATE_NOT_BOOL = 'Is-private must be a boolean'
 
+PASSWORD_MISSING = 'Missing password field'
+PASSWORD_NOT_STRING = 'Password must be a string'
+PASSWORD_TOO_SHORT = f'Password must contain at least {settings.PASSWORD_MIN_LENGTH} characters'
+PASSWORD_TOO_LONG = f'Password must contain less than {settings.PASSWORD_MAX_LENGTH} characters'
+PASSWORD_NOT_MATCH = 'Password does not match'
+
 NICKNAME_MISSING = 'Missing nickname field'
 NICKNAME_TOO_SHORT = f'Nickname must contain at least {settings.MIN_NICKNAME_LENGTH} characters'
 NICKNAME_TOO_LONG = f'Nickname must contain less than {settings.MAX_NICKNAME_LENGTH} characters'
