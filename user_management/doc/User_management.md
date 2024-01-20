@@ -195,7 +195,7 @@ will return an access token when successful
 all fields are mandatory
 > ``` javascript
 > {
->     "refresh_jwt": "234235sfs3r2.."
+>     "refresh_token": "234235sfs3r2.."
 > }
 > ```
 
