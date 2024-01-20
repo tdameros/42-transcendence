@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 from django.urls import reverse
 
@@ -71,7 +72,16 @@ class PostTournamentPlayers(TestCase):
             name='deadline passed',
             admin_id=1,
             max_players=16,
-            registration_deadline='2021-01-01 00:00:00+00:00')
+            registration_deadline='2021-01-01 00:00:00+00:00'
+        )
+        Tournament.objects.create(
+            id=4,
+            name='private',
+            admin_id=1,
+            max_players=16,
+            is_private=True,
+            password=make_password('pass')
+        )
         for i in range(1, 17):
             Player.objects.create(nickname=f'player {i}', user_id=(i + 4), tournament=full_tournament)
         Player.objects.create(nickname='player 1', user_id=4, tournament=tournament)
@@ -91,6 +101,19 @@ class PostTournamentPlayers(TestCase):
         mock_authenticate_request.return_value = (user, None)
         tournament_id = 2
         body = json.dumps({'nickname': 'player 4'})
+
+        response, body = self.post_tournament_players(tournament_id, body)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(body['nickname'], 'player 4')
+        self.assertEqual(body['user_id'], 1)
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_join_private_tournament(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+        tournament_id = 4
+        body = json.dumps({'nickname': 'player 4', 'password': 'pass'})
 
         response, body = self.post_tournament_players(tournament_id, body)
 
@@ -197,3 +220,27 @@ class PostTournamentPlayers(TestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], ['You are already registered for another tournament'])
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_join_invalid_password(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+        tournament_id = 4
+        body = json.dumps({'nickname': 'player 4', 'password': 'wrong'})
+
+        response, body = self.post_tournament_players(tournament_id, body)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], [error.PASSWORD_NOT_MATCH])
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_join_private_no_password(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+        tournament_id = 4
+        body = json.dumps({'nickname': 'player 4'})
+
+        response, body = self.post_tournament_players(tournament_id, body)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.PASSWORD_MISSING])

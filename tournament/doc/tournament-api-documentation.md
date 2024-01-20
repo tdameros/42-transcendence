@@ -46,13 +46,15 @@ Create a new tournament
 - Players must be between 2 and 16 (optional, default = 16 players)
 - Registration deadline (optional)
 - A boolean that specifies if tournament is private
+- A password for the tournament (if is-private is true)
 
 > ```javascript
 > {
 >     "name": "World Championship",
 >     "max-players": 16,
 >     "registration-deadline": "2024-02-17T10:53",
->     "is-private": true
+>     "is-private": true,
+>     "password": "Password1%"
 > }
 > ```
 
@@ -159,13 +161,15 @@ Update tournament settings
 - Players must be between 2 and 16 (optional)
 - Registration deadline (optional)
 - A boolean that specifies if tournament is private (optional)
+- A password for the tournament (optional)
 
 > ```javascript
 > {
 >   "name": "World Championship",
 >   "max-players": 16,
 >   "registration-deadline": "2024-02-17T10:53",
->   "is-private": true
+>   "is-private": true,
+>   "password": "Password1%"
 > }
 
 ### Responses
@@ -228,6 +232,7 @@ Add a player to a specific tournament
 #### Body
 
 - Nickname for the tournament
+- The tournament password (if tournament is private)
 
 > ```javascript
 > {

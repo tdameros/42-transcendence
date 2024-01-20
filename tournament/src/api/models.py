@@ -14,6 +14,7 @@ class Tournament(models.Model):
     is_private = models.BooleanField(default=False)
     status = models.IntegerField(default=CREATED)
     admin_id = models.BigIntegerField(default=0)
+    password = models.CharField(max_length=settings.HASH_PASSWORD_MAX_LENGTH, blank=True, null=True)
 
 
 class Player(models.Model):
