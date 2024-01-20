@@ -59,3 +59,4 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/{user_id}](../user_management/doc/User_management.md#useruser_id)
 
+> ### [/search-username/](../user_management/doc/User_management.md#search-username)
