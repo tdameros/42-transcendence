@@ -99,7 +99,10 @@ class TournamentView(View):
                 tournament.delete()
                 return JsonResponse({'errors': register_admin_errors}, status=400)
         except Exception as e:
-            tournament.delete()
+            try:
+                tournament.delete()
+            except Exception as e:
+                return JsonResponse({'errors': [str(e)]}, status=500)
             return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse(model_to_dict(tournament, exclude=['password']), status=201)
 
