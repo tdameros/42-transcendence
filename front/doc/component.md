@@ -9,7 +9,7 @@ This class is an abstract class, and must not be instantiated.
 
 --------------------------------------------------------------------------------
 
-# Redefined Methods
+# Methods to be redefined
 
 ## render
 
@@ -28,7 +28,7 @@ render() {
 
 ## style
 
-Returns the CSS content to be rendered inside the component.
+Returns the specific CSS content to be rendered inside the component.
 
 ```javascript
 style() {
