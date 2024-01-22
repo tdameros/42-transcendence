@@ -285,9 +285,27 @@ Add a player to a specific tournament
 
 </details>
 
-<details>
- <summary><code>POST</code> <code><b>/tournament/{id}/matches/regenerate</b></code></summary>
+Generate matches for a tournament
 
-#### Regenerates matches for a tournament
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/matches/generate</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- Randomly generate matches (optional, default = false)
+
+> ```javascript
+> {
+>   "random": true
+> }
+
+### Responses
+
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"nb-matches": 14, "matches": [...]}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`             |
 
 </details>
