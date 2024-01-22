@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from api import error_message as error
-from api.models import Tournament
+from api.models import Player, Tournament
 from tournament import settings
 
 
@@ -294,7 +294,7 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(body['admin_id'], 1)
 
 
-class BadRequestCreateTournament(TestCase):
+class BadRequestCreateTournamentTest(TestCase):
     def send_tournament_bad_request(self, mock_get, data, expected_errors):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -437,3 +437,68 @@ class BadRequestCreateTournament(TestCase):
         }
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)
+
+
+class DeleteTournamentsTest(TestCase):
+    def setUp(self):
+        for i in range(1, 10):
+            Tournament.objects.create(name=f'Test{i}', admin_id=1)
+        Tournament.objects.create(name='Finished', admin_id=1, status=2)
+        Tournament.objects.create(name='In Progress', admin_id=1, status=1)
+
+        tournament_finished = Tournament.objects.create(name='Finished admin 2', admin_id=2, status=2)
+        tournament_in_progress = Tournament.objects.create(name='In progress admin 2', admin_id=2, status=1)
+        tournament_created = Tournament.objects.create(name='Created admin 2', admin_id=2, status=0)
+
+        Player.objects.create(nickname='Test', user_id=1, tournament=tournament_finished)
+        Player.objects.create(nickname='Test', user_id=1, tournament=tournament_in_progress)
+        Player.objects.create(nickname='Test', user_id=1, tournament=tournament_created)
+
+    def delete_tournament(self) -> tuple[HttpResponse, dict]:
+        url = reverse('tournament')
+
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf-8'))
+
+        return response, body
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_delete_tournament(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        tournament_created = Tournament.objects.get(name='Created admin 2')
+        players_created = Player.objects.filter(tournament=tournament_created)
+        self.assertEqual(len(players_created), 1)
+
+        response, body = self.delete_tournament()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], 'Tournaments created by this user have been deleted')
+
+        tournaments = Tournament.objects.filter(admin_id=1)
+
+        self.assertEqual(len(tournaments), 2)
+
+        tournament_finished = Tournament.objects.get(name='Finished admin 2')
+        tournament_in_progress = Tournament.objects.get(name='In progress admin 2')
+        tournament_created = Tournament.objects.get(name='Created admin 2')
+
+        players_finished = Player.objects.filter(tournament=tournament_finished)
+        players_in_progress = Player.objects.filter(tournament=tournament_in_progress)
+        players_created = Player.objects.filter(tournament=tournament_created)
+
+        self.assertEqual(len(players_finished), 1)
+        self.assertEqual(len(players_in_progress), 1)
+        self.assertEqual(len(players_created), 0)
+
+    @patch('api.views.tournament_views.authenticate_request')
+    def test_delete_no_tournament(self, mock_get):
+        user = {'id': 3}
+        mock_get.return_value = (user, None)
+
+        response, body = self.delete_tournament()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], 'No tournament created by this user')
