@@ -130,7 +130,7 @@ else:
                 'NAME': 'mydatabase',
                 'USER': 'myuser',
                 'PASSWORD': 'mypassword',
-                'HOST': 'user-management-db',
+                'HOST': 'tournament-db',
                 'PORT': '5432',
             }
         }
