@@ -27,3 +27,7 @@ NICKNAME_MISSING = 'Missing nickname field'
 NICKNAME_TOO_SHORT = f'Nickname must contain at least {settings.MIN_NICKNAME_LENGTH} characters'
 NICKNAME_TOO_LONG = f'Nickname must contain less than {settings.MAX_NICKNAME_LENGTH} characters'
 NICKNAME_INVALID_CHAR = 'Nickname may only contain letters, numbers and spaces'
+
+NOT_OWNER = 'You are not the owner of this tournament'
+ALREADY_STARTED = 'Tournament has already started'
+NOT_ENOUGH_PLAYERS = 'Not enough players to start tournament'
