@@ -9,6 +9,8 @@ services:
         expose:
             - "80"
             - "443"
+        ports:
+            - "6002:80"
         depends_on:
             - user-management
         volumes:

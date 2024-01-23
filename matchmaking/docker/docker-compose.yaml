@@ -10,4 +10,6 @@ services:
             - matchmaking_code:/app/src/
         expose:
             - "3000"
+        ports:
+            - "6000:3000"
         restart: on-failure
