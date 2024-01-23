@@ -1,6 +1,38 @@
-{% extends 'component.html' %}
+import {Component} from "./Component.js";
+import {Cookies} from "../Cookies.js";
+import {InputValidator} from "../utils/InputValidator.js";
+import {BootstrapUtils} from "../utils/BootstrapUtils.js";
 
-{% block html %}
+export class Signin extends Component {
+  constructor() {
+    super();
+  }
+
+  signin() {
+    Cookies.add('jwt', 'jwt');
+    window.router.navigate('/');
+  }
+
+  postRender() {
+    super.addComponentEventListener(this.querySelector('#forgot-password'), 'click', () => {
+      window.router.navigate('/reset-password/');
+    });
+    super.addComponentEventListener(this.querySelector('#dont-have-account'), 'click', () => {
+      window.router.navigate('/signup/');
+    });
+    super.addComponentEventListener(this.querySelector('#signin-btn'), 'click', (event) => {
+      event.preventDefault();
+      this.signin();
+    });
+    super.addComponentEventListener(this.querySelector('#signin-form'), 'submit', (event) => {
+      event.preventDefault();
+      this.signin();
+    });
+  }
+
+  render() {
+    return (`
+<navbar-component disable-padding-top="true"></navbar-component>
 <div id="login"
      class="d-flex justify-content-center align-items-center rounded-3">
     <div class="login-card card m-3">
@@ -10,7 +42,7 @@
                 <div class="form-group mb-4">
                     <input type="email" class="form-control" id="email"
                            placeholder="Email">
-                    <div class="invalid-feedback">
+                    <div id="email-feedback" class="invalid-feedback">
                         Please enter a valid email.
                     </div>
                 </div>
@@ -77,7 +109,7 @@
                                             inkscape:window-maximized="0"
                                             inkscape:current-layer="Calque_1"/>
                         <g id="g3" transform="translate(-229.2,-372.70002)">
-	                        <polygon
+\t                        <polygon
                                     points="229.2,443.9 279.9,443.9 279.9,469.3 305.2,469.3 305.2,423.4 254.6,423.4 305.2,372.7 279.9,372.7 229.2,423.4 "
                                     id="polygon5"/>
                             <polygon
@@ -97,4 +129,70 @@
         </div>
     </div>
 </div>
-{% endblock %}
+    `);
+  }
+  style() {
+    return (`
+      <style>
+.active {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+#login {
+    height: 100vh;
+}
+
+.login-card {
+    width: 550px;
+}
+
+#github-btn {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+#github-btn:hover {
+    background-color: #252525;
+    color: #ffffff;
+}
+
+#intra-btn {
+    background-color: #ffffff;
+    color: #000000;"
+}
+
+
+#intra-btn:hover {
+    background-color: #f6f6f6;
+    color: #000000;"
+}
+
+.form-group mb-4 {
+    display: flex;
+    align-items: center;
+}
+
+#password-feedback {
+    white-space: pre-line;
+    word-wrap: break-word;
+}
+
+.eye-box:hover {
+    background: #efefef;
+    color: #2d2d2d;
+}
+
+.invalid-feedback p {
+    margin: 0;
+}
+
+#forgot-password, #dont-have-account {
+    font-size: 13px;
+    color: rgb(13, 110, 253);
+}
+      </style>
+    `);
+  }
+}
+
+export default { Signin };
