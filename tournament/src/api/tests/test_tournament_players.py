@@ -244,3 +244,101 @@ class PostTournamentPlayers(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.PASSWORD_MISSING])
+
+
+class DeleteTournamentPlayers(TestCase):
+    def setUp(self):
+        tournament = Tournament.objects.create(id=1, name='tournament', admin_id=1, max_players=16)
+        Tournament.objects.create(id=2, name='tournament', admin_id=1, max_players=16)
+        Player.objects.create(nickname='player 1', user_id=1, tournament=tournament)
+        Player.objects.create(nickname='player 2', user_id=2, tournament=tournament)
+
+        finished_tournament = Tournament.objects.create(id=3, name='tournament', admin_id=1, status=2)
+        Player.objects.create(nickname='player 1', user_id=1, tournament=finished_tournament)
+
+        in_progress_tournament = Tournament.objects.create(id=4, name='tournament', admin_id=1, status=1)
+        Player.objects.create(nickname='player 1', user_id=1, tournament=in_progress_tournament)
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_tournament_player(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 1
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], 'You left the tournament `tournament`')
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_not_admin(self, mock_authenticate_request):
+        user = {'id': 2}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 1
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], 'You left the tournament `tournament`')
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_tournament_not_found(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 10
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], [f'tournament with id `{tournament_id}` does not exist'])
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_not_registered(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 2
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], ['You are not registered for this tournament'])
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_finished_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 3
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], [error.CANT_LEAVE])
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_delete_in_progress_tournament(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+        tournament_id = 4
+
+        url = reverse('tournament-players', args=(tournament_id,))
+        response = self.client.delete(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], [error.CANT_LEAVE])

@@ -27,3 +27,6 @@ NICKNAME_MISSING = 'Missing nickname field'
 NICKNAME_TOO_SHORT = f'Nickname must contain at least {settings.MIN_NICKNAME_LENGTH} characters'
 NICKNAME_TOO_LONG = f'Nickname must contain less than {settings.MAX_NICKNAME_LENGTH} characters'
 NICKNAME_INVALID_CHAR = 'Nickname may only contain letters, numbers and spaces'
+
+NOT_REGISTERED = 'You are not registered for this tournament'
+CANT_LEAVE = 'You can not leave this tournament'
