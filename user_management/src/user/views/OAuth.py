@@ -99,8 +99,6 @@ class OAuthCallback(View):
     def get(self, request, auth_service):
         code = request.GET.get('code')
         state = request.GET.get('state')
-        print(f"Received code: {code}")
-        print(f"Received state: {state}")
         self.set_params(auth_service)
         self.check_and_update_state(code, state)
         access_token = self.get_access_token(code, state, auth_service)
@@ -193,7 +191,6 @@ class OAuthCallback(View):
             print(f"Error: {response.status_code}, {response.text}")
             return None
         access_token = response.json()['access_token']
-        print(f"Received access token: {access_token}")
 
         return access_token
 
