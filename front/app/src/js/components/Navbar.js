@@ -79,12 +79,14 @@ export class Navbar extends Component {
                         ${this.generateNavLink('tournaments')}
                     </li>
                 </ul>
-                <div class="d-flex">
+                <div class="d-flex mb-2 mb-lg-0">
                     <theme-button-component></theme-button-component>
                     <form class="d-flex" role="search">
                         <input class="form-control ms-2 me-2" type="search"
                                placeholder="Search" aria-label="Search">
                     </form>
+                </div>
+                <div class="d-flex">
                     ${this.logNavPart()}
                 </div>
             </div>
@@ -97,12 +99,12 @@ export class Navbar extends Component {
     return (`
       <div id="log-part"  class="d-flex align-items-center">
           <a class="mx-2">
-              <i class="fas fa-bell text-dark-emphasis"></i>
+            <i class="bi bi-bell-fill text-dark-emphasis"></i>
           </a>
           <div class="dropdown mx-2">
               <span class="dropdown-toggle" id="dropdownMenuLink"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                  <img id="nav-profile-img" src="/static/img/tdameros.jpg" alt="profile image"
+                  <img id="nav-profile-img" src="/img/tdameros.jpg" alt="profile image"
                        class="rounded-circle"
                        style="width: 40px; height: 40px;">
                   <span id="nav-username">@username</span>
