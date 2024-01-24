@@ -45,6 +45,7 @@ Create a new tournament
 - Tournament name must be between 3 and 20 characters and can only contain alnum and space
 - Players must be between 2 and 16 (optional, default = 16 players)
 - Registration deadline (optional)
+- Nickname for the tournament (optional)
 - A boolean that specifies if tournament is private
 - A password for the tournament (if is-private is true)
 
@@ -55,6 +56,7 @@ Create a new tournament
 >     "registration-deadline": "2024-02-17T10:53",
 >     "is-private": true,
 >     "password": "Password1%"
+>     "nickname": "Player"
 > }
 > ```
 
