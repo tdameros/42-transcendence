@@ -124,3 +124,11 @@ volumes:
             type: none
             o: bind
             device: pong_server/src/
+
+    # Common code
+    common_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: common
