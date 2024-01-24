@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
-import settings
+import common.src.settings as settings
 
 
 class JWTManager:
@@ -46,8 +46,8 @@ class JWTManager:
 
 class UserAccessJWTDecoder:
     JWT_MANAGER = JWTManager(None,
-                             settings.REFRESH_PUBLIC_KEY,
-                             settings.REFRESH_ALGRORITHM,
+                             settings.ACCESS_PUBLIC_KEY,
+                             settings.ACCESS_ALGORITHM,
                              None)
 
     @staticmethod

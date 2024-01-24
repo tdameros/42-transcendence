@@ -1,8 +1,8 @@
-from django.conf import settings
-from user.models import User
-
 import common.src.settings as common_settings
 from common.src.jwt_managers import JWTManager, UserAccessJWTDecoder
+from django.conf import settings
+
+from user.models import User
 
 
 def user_exist(user_id: int) -> bool:
@@ -26,7 +26,7 @@ class UserRefreshJWTManager:
 
         if not user_exist(user_id):
             return False, None, ['User does not exist']
-        return UserRefreshJWTManager.JWT_MANAGER.generate_token({'user_id': user_id})  # Common
+        return UserRefreshJWTManager.JWT_MANAGER.generate_token({'user_id': user_id, 'token_type': 'refresh'})  # Common
 
     @staticmethod
     def authenticate(encoded_jwt: str) -> (bool, int | None, list[str] | None):
@@ -46,9 +46,9 @@ class UserRefreshJWTManager:
 
 class UserAccessJWTManager:
     # Never provide the public key as we must use common.UserAccessJWTDecoder to decode
-    JWT_MANAGER = JWTManager(settings.ACCESS_KEY,
+    JWT_MANAGER = JWTManager(settings.ACCESS_PRIVATE_KEY,
                              None,
-                             common_settings.REFRESH_ALGRORITHM,
+                             common_settings.ACCESS_ALGORITHM,
                              settings.ACCESS_EXPIRATION_MINUTES)
 
     @staticmethod
@@ -57,7 +57,7 @@ class UserAccessJWTManager:
 
         if not user_exist(user_id):
             return False, None, ['User does not exist']
-        return UserAccessJWTManager.JWT_MANAGER.generate_token({'user_id': user_id})  # Common
+        return UserAccessJWTManager.JWT_MANAGER.generate_token({'user_id': user_id, 'token_type': 'access'})  # Common
 
     @staticmethod
     def authenticate(encoded_jwt: str) -> (bool, str | None, list[str]):

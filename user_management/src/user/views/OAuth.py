@@ -9,7 +9,7 @@ from django.views import View
 
 from user.models import PendingOAuth, User
 from user_management import settings
-from user_management.JWTManager import JWTManager
+from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (download_image_from_url,
                                    generate_random_string)
 
@@ -112,7 +112,7 @@ class OAuthCallback(View):
         if not user:
             return JsonResponse(data={'errors': ['Failed to create or get user']}, status=400)
 
-        success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+        success, refresh_token, errors = UserRefreshJWTManager.generate_token(user.id)
         if not success:
             return JsonResponse(data={'errors': errors}, status=400)
 
