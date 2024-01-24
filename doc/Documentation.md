@@ -57,6 +57,10 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#refresh-access-jwt)
 
-> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser_id)
+> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser-id)
 
 > ### [/search-username/](../user_management/doc/User_management.md#search-username)
+
+> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#oauthoauth-service)
+
+> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)

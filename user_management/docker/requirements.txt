@@ -7,10 +7,12 @@ Django==4.2.7
 gunicorn==21.2.0
 idna==3.4
 packaging==23.2
+pillow==10.2.0
 psycopg==3.1.12
 psycopg-binary==3.1.12
 pycparser==2.21
 PyJWT==2.8.0
+python-dotenv==1.0.0
 requests==2.31.0
 sqlparse==0.4.4
 typing_extensions==4.8.0
