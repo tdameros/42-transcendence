@@ -5,8 +5,9 @@ from user.views.OAuth import BaseOAuth, OAuthCallback
 from user.views.views import (ForgotPasswordChangePasswordView,
                               ForgotPasswordCheckCodeView,
                               ForgotPasswordSendCodeView, IsEmailTakenView,
-                              IsUsernameTakenView, RefreshJWT, SignInView,
-                              SignUpView, UserIdView, SearchUsernameView)
+                              IsUsernameTakenView, RefreshJWT,
+                              SearchUsernameView, SignInView, SignUpView,
+                              UserIdView)
 from user_management import settings
 
 urlpatterns = [
