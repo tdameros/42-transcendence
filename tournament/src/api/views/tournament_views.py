@@ -107,16 +107,19 @@ class TournamentView(View):
 
         try:
             user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+            nb_tournaments = len(user_tournaments)
+            if user_tournaments:
+                user_tournaments.delete()
+
+            player = Player.objects.filter(user_id=user['id'], tournament__status=Tournament.CREATED)
+            if player:
+                player.delete()
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        if user_tournaments:
-            try:
-                user_tournaments.delete()
-            except Exception as e:
-                return JsonResponse({'errors': [str(e)]}, status=500)
-
-        return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
+        if nb_tournaments == 0:
+            return JsonResponse({'message': 'No tournament created by this user'}, status=200)
+        return JsonResponse({'message': 'Tournaments created by this user have been deleted'}, status=200)
 
     @staticmethod
     def is_valid_tournament(json_request: dict[str, Any]) -> tuple[bool, Optional[list[str]]]:

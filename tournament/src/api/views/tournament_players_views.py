@@ -85,6 +85,36 @@ class TournamentPlayersView(View):
         return JsonResponse(model_to_dict(player), status=201)
 
     @staticmethod
+    def delete(request: HttpRequest, tournament_id: int):
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        try:
+            player = tournament.players.get(user_id=user['id'])
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [error.NOT_REGISTERED]}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if tournament.status != Tournament.CREATED:
+            return JsonResponse({'errors': [error.CANT_LEAVE]}, status=403)
+
+        try:
+            player.delete()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': f'You left the tournament `{tournament.name}`'}, status=200)
+
+    @staticmethod
     def is_valid_nickname(nickname: str) -> tuple[bool, Optional[list[str]]]:
         errors = []
 
