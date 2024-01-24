@@ -1,7 +1,105 @@
-{% extends 'component.html' %}
+import {Component} from "./Component.js";
+import {InputValidator} from "../utils/InputValidator.js";
+import {BootstrapUtils} from "../utils/BootstrapUtils.js";
 
-{% block html %}
-<div id="login"
+export class Signup extends Component {
+  constructor() {
+    super();
+    this.passwordHiden = true;
+    this.confirmPasswordHiden = true;
+  }
+
+  #usernameHandler() {
+    const {validity, missingRequirements } = InputValidator.isValidUsername(this.username.value);
+    if (validity) {
+      BootstrapUtils.setValidInput(this.username);
+    } else {
+      BootstrapUtils.setInvalidInput(this.username);
+      this.usernameFeedback.innerHTML = missingRequirements[0];
+    }
+  }
+
+  #emailHandler() {
+    const {validity, missingRequirements } = InputValidator.isValidEmail(this.email.value);
+    if (validity) {
+      BootstrapUtils.setValidInput(this.email);
+    } else {
+      BootstrapUtils.setInvalidInput(this.email);
+      this.emailFeedback.innerHTML = missingRequirements[0];
+    }
+  }
+  #passwordHandler() {
+    const {validity, missingRequirements } = InputValidator.isValidSecurePassword(this.password.value);
+    if (validity) {
+      BootstrapUtils.setValidInput(this.password);
+    } else {
+      BootstrapUtils.setInvalidInput(this.password);
+      this.passwordFeeback.innerHTML = missingRequirements[0];
+    }
+    if (this.confirmPassword.value.length !== 0) {
+      this.#confirmPasswordHandler();
+    }
+  }
+
+  #confirmPasswordHandler() {
+    if (this.confirmPassword.value === this.password.value) {
+      BootstrapUtils.setValidInput(this.confirmPassword);
+    } else {
+      BootstrapUtils.setInvalidInput(this.confirmPassword);
+    }
+  }
+
+  #togglePasswordVisibility() {
+    if (this.passwordHiden) {
+      this.password.setAttribute('type', 'text');
+    } else {
+      this.password.setAttribute('type', 'password');
+    }
+    this.passwordEyeIcon.children[0].classList.toggle('fa-eye-slash');
+    this.passwordEyeIcon.children[0].classList.toggle('fa-eye');
+    this.passwordHiden = !this.passwordHiden;
+  }
+
+  #toggleConfirmPasswordVisibility() {
+    if (this.confirmPasswordHiden) {
+      this.confirmPassword.setAttribute('type', 'text');
+    } else {
+      this.confirmPassword.setAttribute('type', 'password');
+    }
+    this.confirmPasswordEyeIcon.children[0].classList.toggle('fa-eye-slash');
+    this.confirmPasswordEyeIcon.children[0].classList.toggle('fa-eye');
+    this.confirmPasswordHiden = !this.confirmPasswordHiden;
+  }
+
+  postRender() {
+    this.username = this.querySelector('#username');
+    this.usernameFeedback = this.querySelector('#username-feedback');
+    super.addComponentEventListener(this.username, 'input', this.#usernameHandler);
+
+    this.email = this.querySelector('#email');
+    this.emailFeedback = this.querySelector('#email-feedback');
+    super.addComponentEventListener(this.email, 'input', this.#emailHandler);
+
+    this.password = this.querySelector('#password');
+    this.passwordEyeIcon = this.querySelector('#password-eye');
+    this.passwordFeeback = this.querySelector('#password-feedback');
+    super.addComponentEventListener(this.password, 'input', this.#passwordHandler);
+    super.addComponentEventListener(this.passwordEyeIcon, 'click', this.#togglePasswordVisibility);
+
+    this.confirmPassword = this.querySelector('#confirm-password');
+    this.confirmPasswordEyeIcon = this.querySelector('#confirm-password-eye');
+    super.addComponentEventListener(this.confirmPassword, 'input', this.#confirmPasswordHandler);
+    super.addComponentEventListener(this.confirmPasswordEyeIcon, 'click', this.#toggleConfirmPasswordVisibility);
+
+    super.addComponentEventListener(this.querySelector('#have-account'), 'click', () =>
+      window.router.navigate('/signin/')
+    );
+  }
+
+  render() {
+    return (`
+      <navbar-component disable-padding-top="true"></navbar-component>
+      <div id="login"
      class="d-flex justify-content-center align-items-center rounded-3">
     <div class="login-card card m-3">
         <div class="card-body m-2">
@@ -11,15 +109,15 @@
                     <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
                         <input type="text" class="form-control" id="username" placeholder="Username">
-                        <div class="invalid-feedback">
-                            Please choose a username.
+                        <div id="username-feedback" class="invalid-feedback">
+                            Invalid username.
                         </div>
                     </div>
                 </div>
                 <div class="form-group mb-4">
                     <input type="email" class="form-control" id="email"
                            placeholder="Email">
-                    <div class="invalid-feedback">
+                    <div id="email-feedback" class="invalid-feedback">
                         Please enter a valid email.
                     </div>
                 </div>
@@ -31,7 +129,7 @@
                             <span class="fa fa-fw fa-eye field-icon"></span>
                         </span>
                         <div id="password-feedback" class="invalid-feedback">
-                            Invalid Password
+                            Invalid password.
                         </div>
                     </div>
                 </div>
@@ -104,7 +202,7 @@
                                             inkscape:window-maximized="0"
                                             inkscape:current-layer="Calque_1"/>
                         <g id="g3" transform="translate(-229.2,-372.70002)">
-	                        <polygon
+\t                        <polygon
                                     points="229.2,443.9 279.9,443.9 279.9,469.3 305.2,469.3 305.2,423.4 254.6,423.4 305.2,372.7 279.9,372.7 229.2,423.4 "
                                     id="polygon5"/>
                             <polygon
@@ -124,4 +222,70 @@
         </div>
     </div>
 </div>
-{% endblock %}
+    `);
+  }
+  style() {
+    return (`
+      <style>
+      .active {
+          font-family: 'JetBrains Mono', monospace;
+      }
+      
+      #login {
+          height: 100vh;
+      }
+      
+      .login-card {
+          width: 550px;
+      }
+      
+      #github-btn {
+          background-color: #000000;
+          color: #ffffff;
+      }
+      
+      #github-btn:hover {
+          background-color: #252525;
+          color: #ffffff;
+      }
+      
+      #intra-btn {
+          background-color: #ffffff;
+          color: #000000;"
+      }
+      
+      
+      #intra-btn:hover {
+          background-color: #f6f6f6;
+          color: #000000;"
+      }
+      
+      .form-group mb-4 {
+          display: flex;
+          align-items: center;
+      }
+      
+      #password-feedback {
+          white-space: pre-line;
+          word-wrap: break-word;
+      }
+      
+      .eye-box:hover {
+          background: #efefef;
+          color: #2d2d2d;
+      }
+      
+      .invalid-feedback p {
+          margin: 0;
+      }
+      
+      #have-account {
+          font-size: 13px;
+          color: var(--bs-primary);
+      }
+      </style>
+    `);
+  }
+}
+
+export default { Signup };

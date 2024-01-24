@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 from typing import Optional
 
+from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, JsonResponse
@@ -45,7 +46,8 @@ class TournamentPlayersView(View):
 
         return JsonResponse(response_data, status=200)
 
-    def post(self, request: HttpRequest, tournament_id: int) -> JsonResponse:
+    @staticmethod
+    def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
         user, authenticate_errors = authenticate_request(request)
         if user is None:
             return JsonResponse(data={'errors': authenticate_errors}, status=401)
@@ -69,7 +71,8 @@ class TournamentPlayersView(View):
 
         player = Player(nickname=user_nickname, user_id=user['id'], tournament=tournament)
 
-        can_join, error_data = TournamentPlayersView.player_can_join_tournament(player, tournament)
+        password = json_request.get('password')
+        can_join, error_data = TournamentPlayersView.player_can_join_tournament(player, password, tournament)
 
         if not can_join:
             return JsonResponse({'errors': [error_data[0]]}, status=error_data[1])
@@ -80,6 +83,36 @@ class TournamentPlayersView(View):
             return JsonResponse({'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
         return JsonResponse(model_to_dict(player), status=201)
+
+    @staticmethod
+    def delete(request: HttpRequest, tournament_id: int):
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        try:
+            player = tournament.players.get(user_id=user['id'])
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [error.NOT_REGISTERED]}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if tournament.status != Tournament.CREATED:
+            return JsonResponse({'errors': [error.CANT_LEAVE]}, status=403)
+
+        try:
+            player.delete()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': f'You left the tournament `{tournament.name}`'}, status=200)
 
     @staticmethod
     def is_valid_nickname(nickname: str) -> tuple[bool, Optional[list[str]]]:
@@ -99,7 +132,7 @@ class TournamentPlayersView(View):
         return True, None
 
     @staticmethod
-    def player_can_join_tournament(new_player: Player, tournament: Tournament)\
+    def player_can_join_tournament(new_player: Player, password: Optional[str], tournament: Tournament)\
             -> tuple[bool, Optional[list[str | int]]]:
         try:
             tournament_players = tournament.players.all()
@@ -110,6 +143,11 @@ class TournamentPlayersView(View):
                 tournament.registration_deadline is not None
                 and tournament.registration_deadline < datetime.now(timezone.utc)):
             return False, ['The registration phase is over', 403]
+
+        if tournament.is_private and password is None:
+            return False, [error.PASSWORD_MISSING, 400]
+        if tournament.is_private and not check_password(password, tournament.password):
+            return False, [error.PASSWORD_NOT_MATCH, 403]
 
         for player in tournament_players:
             if player.user_id == new_player.user_id:

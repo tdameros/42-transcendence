@@ -6,7 +6,7 @@ from user.views.views import (ForgotPasswordChangePasswordView,
                               ForgotPasswordCheckCodeView,
                               ForgotPasswordSendCodeView, IsEmailTakenView,
                               IsUsernameTakenView, RefreshJWT, SignInView,
-                              SignUpView, UserIdView)
+                              SignUpView, UserIdView, SearchUsernameView)
 from user_management import settings
 
 urlpatterns = [
@@ -19,6 +19,7 @@ urlpatterns = [
     path('forgot-password/check-code/',  ForgotPasswordCheckCodeView.as_view(), name='forgot-password-check-code'),
     path('forgot-password/change-password/', ForgotPasswordChangePasswordView.as_view(),
          name='forgot-password-change-password'),
+    path('search-username/', SearchUsernameView.as_view(), name='search-username'),
     path('oauth/<str:auth_service>', BaseOAuth.as_view(), name='oauth'),
     path('oauth/callback/<str:auth_service>', OAuthCallback.as_view(), name='oauth-callback'),
     path('<str:user_id>/', UserIdView.as_view(), name='user-id')
