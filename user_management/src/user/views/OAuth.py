@@ -102,8 +102,8 @@ class OAuthCallback(View):
         code = request.GET.get('code')
         state = request.GET.get('state')
         self.set_params(auth_service)
-        self.check_and_update_state(code, state)
-        access_token = self.get_access_token(code, state, auth_service)
+        self.check_and_update_state(state)
+        access_token = self.get_access_token(code)
         if not access_token:
             return JsonResponse(data={'errors': ['Failed to retrieve access token']}, status=400)
 
@@ -165,7 +165,7 @@ class OAuthCallback(View):
             return login, avatar_url, email
 
     @staticmethod
-    def check_and_update_state(code, state):
+    def check_and_update_state(state):
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
         pending_oauth = PendingOAuth.objects.filter(hashed_state=hashed_state).first()
         if pending_oauth is None:
@@ -173,7 +173,7 @@ class OAuthCallback(View):
         pending_oauth.delete()
         PendingOAuth.objects.filter(created_at__lte=timezone.now() - timedelta(minutes=5)).delete()
 
-    def get_access_token(self, code, state, auth_service):
+    def get_access_token(self, code):
         payload = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
@@ -192,6 +192,3 @@ class OAuthCallback(View):
         access_token = response.json()['access_token']
 
         return access_token
-
-
-

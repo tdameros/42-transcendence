@@ -25,7 +25,7 @@ def download_image_from_url(url, model_instance):
             random_suffixes = generate_random_string(10)
             model_instance.avatar.delete()
             model_instance.avatar.save(f'{model_instance.id}_{random_suffixes}.png', File(img_file), save=True)
-        except Exception as e:
+        except Exception:
             return False
         return True
     else:
