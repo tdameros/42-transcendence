@@ -1,7 +1,8 @@
-import {Scene} from '../Scene';
+import {Scene} from '../Scene/Scene';
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {_RedirectionSocketIO} from './sockets/_RedirectionSocketIO';
+import {LoadingScreenScene} from "../Scene/LoadingScreenScene";
 
 export class Engine {
     #threeJS;
@@ -12,21 +13,8 @@ export class Engine {
     constructor() {
         this.#threeJS = new _ThreeJS(this);
         this.#keyHookHandler = new _KeyHookHandler(this);
-        this.#createDefaultScene();
+        this.#scene = new LoadingScreenScene();
         this.#socket = null;
-    }
-
-    #createDefaultScene() {
-        const boards = [];
-        const balls = [
-            {
-                'position': {x: 0., y: 0., z: 0.5},
-                'move_direction': {x: 1., y: 0., z: 0.}
-            }
-        ];
-        const players = [];
-
-        this.#scene = new Scene(boards, balls, players);
     }
 
     connectToServer() {

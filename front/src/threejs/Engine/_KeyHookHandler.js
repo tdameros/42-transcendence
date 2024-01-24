@@ -96,31 +96,40 @@ export class _KeyHookHandler {
 
     async #stopMoving() {
         if (this.#serverKnownMovement !== 'none') {
-            await this.#engine.emit('player_stopped_moving',
-                                    this.#engine.scene
-                                                .getCurrentPlayerPositionAsArray());
+            const scene = this.#engine.scene;
+            const arg = {
+                'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+                'direction': 'none'
+            }
+            await this.#engine.emit('update_player', arg);
             this.#serverKnownMovement = 'none';
-            this.#engine.scene.currentPlayerStopsMoving();
+            this.#engine.scene.setCurrentPlayerPaddleDirection('none');
         }
     }
 
     async #moveUp() {
         if (this.#serverKnownMovement !== 'up') {
-            await this.#engine.emit('player_moves_up',
-                                    this.#engine.scene
-                                                .getCurrentPlayerPositionAsArray());
+            const scene = this.#engine.scene;
+            const arg = {
+                'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+                'direction': 'up'
+            }
+            await this.#engine.emit('update_player', arg);
             this.#serverKnownMovement = 'up'
-            this.#engine.scene.currentPlayerMovesUp();
+            this.#engine.scene.setCurrentPlayerPaddleDirection('up');
         }
     }
 
     async #moveDown() {
         if (this.#serverKnownMovement !== 'down') {
-            await this.#engine.emit('player_moves_down',
-                                    this.#engine.scene
-                                                .getCurrentPlayerPositionAsArray());
+            const scene = this.#engine.scene;
+            const arg = {
+                'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+                'direction': 'down'
+            }
+            await this.#engine.emit('update_player', arg);
             this.#serverKnownMovement = 'down'
-            this.#engine.scene.currentPlayerMovesDown();
+            this.#engine.scene.setCurrentPlayerPaddleDirection('down');
         }
     }
 }

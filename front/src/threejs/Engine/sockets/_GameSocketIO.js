@@ -1,4 +1,4 @@
-import {Scene} from '../../Scene';
+import {Scene} from '../../Scene/Scene';
 
 import {io} from 'socket.io-client';
 
@@ -45,23 +45,19 @@ export class _GameSocketIO {
         this.#socketIO.on('scene', (data) => {
             console.log('game scene received');
             // this.#engine.stopAnimationLoop();
-            const scene = data['scene'];
-            this.#engine.scene = new Scene(scene['boards'],
-                                           scene['balls'],
-                                           scene['players'],
-                                           scene['player_move_speed'],
-                                           data['player_index']);
+            this.#engine.scene = new Scene(data['scene']['matches'],
+                                           data['player_location']);
             this.#engine.startListeningForKeyHooks();
         });
 
         this.#socketIO.on('update_player', (data) => {
-            const player_index = data['player_index']
+            const playerLocation = data['player_location']
             this.#engine.scene
-                        .updateOtherPlayerMovement(player_index,
-                                                   data['direction']);
+                        .setPlayerPaddleDirection(playerLocation,
+                                                  data['direction']);
             this.#engine.scene
-                        .updateOtherPlayerPosition(player_index,
-                                                   data['position'])
+                        .setPlayerPaddlePosition(playerLocation,
+                                                 data['position'])
         });
 
         this.#socketIO.connect();

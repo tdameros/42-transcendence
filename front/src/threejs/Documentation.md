@@ -46,14 +46,40 @@
   >> Argument:
   >> ```
   >> {
-  >>   'scene': {'balls': [{'move_direction': {'x': float, 'y': float, 'z': float},
-  >>                        'position': {'x': float, 'y': float, 'z': float}}, ...],
-  >>             'boards': [{'move_direction': {'x': float, 'y': float, 'z': float},
-  >>                         'position': {'x': float, 'y': float, 'z': float}}, ...],
-  >>             'players': [{'move_direction': float,
-  >>                          'position': {'x': float, 'y': float, 'z': float}}, ...],
-  >>             'player_move_speed': float},
-  >>   'player_index': int
+  >>     'scene': {
+  >>         'matches': [
+  >>             {
+  >>                 'position': {'x': float, 'y': float, 'z': float},
+  >>                 'players': [
+  >>                     {
+  >>                         'position': {'x': float, 'y': float, 'z': float},
+  >>                         'move_speed': float,
+  >>                         'board': {
+  >>                             'size': {'x': float, 'y': float, 'z': float}
+  >>                         },
+  >>                         'paddle': {
+  >>                             'size': {'x': float, 'y': float, 'z': float},
+  >>                             'position': {'x': float, 'y': float, 'z': float},
+  >>                             'movement': {'x': float, 'y': float, 'z': float},
+  >>                             'move_speed': float
+  >>                         }
+  >>                     },
+  >>                     ... (Should have 2 players)
+  >>                 ],
+  >>                 'ball': {
+  >>                     'position': {'x': float, 'y': float, 'z': float},
+  >>                     'movement': {'x': float, 'y': float, 'z': float},
+  >>                     'radius': float
+  >>                 }
+  >>             }
+  >>         ]
+  >>     },
+  >> 
+  >>     'player_location': { // Location of current client
+  >>         'is_in_a_match': bool,
+  >>         'match_index': int,
+  >>         'player_index': int
+  >>     }
   >> }
   >> ```
   >
@@ -63,8 +89,12 @@
   >> Argument:
   >> ```
   >> {
-  >>     'player_index': int,
-  >>     'direction': 'up' | 'down' | 'none'
+  >>     'player_location': {
+  >>         'is_in_a_match': bool,
+  >>         'match_index': int,
+  >>         'player_index': int
+  >>     },
+  >>     'direction': str ('up' | 'down' | 'none'),
   >>     'position': {'x': float, 'y': float, 'z': float}
   >> }
   >> ```
