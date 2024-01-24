@@ -139,7 +139,6 @@ class OAuthCallback(View):
             }
             response = requests.get(github_user_profile_url, headers=headers)
             if response.status_code != 200:
-                print(f"Error: {response.status_code}, {response.text}")
                 return None
             user_profile = response.json()
             login = user_profile['login']
@@ -156,7 +155,6 @@ class OAuthCallback(View):
             }
             response = requests.get(ft_api_user_profile_url, headers=headers)
             if response.status_code != 200:
-                print(f"Error: {response.status_code}, {response.text}")
                 return None
             user_profile = response.json()
             login = user_profile['login']
@@ -188,7 +186,6 @@ class OAuthCallback(View):
 
         response = requests.post(self.access_token_url, data=payload, headers=headers)
         if response.status_code != 200:
-            print(f"Error: {response.status_code}, {response.text}")
             return None
         access_token = response.json()['access_token']
 
