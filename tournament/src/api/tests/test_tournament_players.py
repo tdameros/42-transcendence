@@ -342,3 +342,37 @@ class DeleteTournamentPlayers(TestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertEqual(body['errors'], [error.CANT_LEAVE])
+
+
+class AnonymizePlayer(TestCase):
+    def setUp(self):
+        tournament = Tournament.objects.create(id=1, name='tournament', admin_id=1, max_players=16)
+        second_tournament = Tournament.objects.create(id=2, name='tournament', admin_id=1, max_players=16)
+        for i in range(0, 16):
+            Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=tournament)
+        for i in range(0, 16):
+            Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=second_tournament)
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_anonymize_player(self, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (user, None)
+
+        url = reverse('player')
+        response = self.client.post(url)
+
+        players = Player.objects.filter(user_id=user['id'])
+
+        self.assertEqual(response.status_code, 200)
+        for player in players:
+            self.assertEqual(player.nickname, 'deleted_user')
+
+    @patch('api.views.tournament_players_views.authenticate_request')
+    def test_no_player_to_anonymize(self, mock_authenticate_request):
+        user = {'id': 50}
+        mock_authenticate_request.return_value = (user, None)
+
+        url = reverse('player')
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)

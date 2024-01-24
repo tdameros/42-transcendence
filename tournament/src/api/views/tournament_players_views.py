@@ -170,3 +170,29 @@ class TournamentPlayersView(View):
             return False, ['This tournament is fully booked', 403]
 
         return True, None
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AnonymizePlayerView(View):
+    @staticmethod
+    def post(request: HttpRequest) -> JsonResponse:
+        user, authenticate_request_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_request_errors}, status=401)
+
+        try:
+            players = Player.objects.filter(user_id=user['id'])
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if not players.exists():
+            return JsonResponse({'message': 'Your nickname has been anonymized'}, status=200)
+        for player in players:
+            player.nickname = 'deleted_user'
+
+        try:
+            Player.objects.bulk_update(players, ['nickname'])
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': 'Your nickname has been anonymized'}, status=200)
