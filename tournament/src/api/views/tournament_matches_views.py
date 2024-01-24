@@ -4,15 +4,15 @@ import random
 from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.views import View
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from api.models import Tournament, Player, Match
-from tournament.authenticate_request import authenticate_request
-from tournament import settings
 from api import error_message as error
+from api.models import Match, Player, Tournament
+from tournament import settings
+from tournament.authenticate_request import authenticate_request
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -120,7 +120,6 @@ class GenerateMatchesView(View):
             player.elo = GenerateMatchesView.get_elo(player)
             player.save()
 
-
     @staticmethod
     def get_elo(player: Player) -> int:
         # TODO: Get elo from user stats microservice
@@ -148,6 +147,9 @@ class GenerateMatchesView(View):
                 'player_2': match.player_2.nickname if match.player_2 is not None else None
             } for match in matches
         ]
-        data = {'matches': matches_data}
+        data = {
+            'nb-matches': len(matches),
+            'matches': matches_data
+        }
 
         return data
