@@ -88,12 +88,12 @@ class OAuthCallback(View):
         if auth_service == 'github':
             self.access_token_url = settings.GITHUB_ACCESS_TOKEN_URL
             self.client_id = settings.GITHUB_CLIENT_ID
-            self.client_secret = settings.GITHUB_CLIENT_SECRET.replace("'", "")
+            self.client_secret = settings.GITHUB_CLIENT_SECRET
             self.redirect_uri = settings.GITHUB_REDIRECT_URI
         elif auth_service == '42api':
             self.access_token_url = settings.FT_API_ACCESS_TOKEN_URL
             self.client_id = settings.FT_API_CLIENT_ID
-            self.client_secret = settings.FT_API_CLIENT_SECRET.replace("'", "")
+            self.client_secret = settings.FT_API_CLIENT_SECRET
             self.redirect_uri = settings.FT_API_REDIRECT_URI
 
     def get(self, request, auth_service):
