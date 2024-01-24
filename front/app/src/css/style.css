@@ -1,20 +1,20 @@
 @font-face {
     font-family: 'JetBrains Mono';
-    src: url('/static/fonts/JetBrainsMono-Regular.woff2') format('truetype');
+    src: url('/fonts/JetBrainsMono-Regular.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'JetBrains Mono Bold';
-    src: url('/static/fonts/JetBrainsMono-Bold.woff2') format('truetype');
+    src: url('/fonts/JetBrainsMono-Bold.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'JetBrains Mono Light';
-    src: url('/static/fonts/JetBrainsMono-Light.woff2') format('truetype');
+    src: url('/fonts/JetBrainsMono-Light.woff2') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

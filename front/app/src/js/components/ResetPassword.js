@@ -14,7 +14,7 @@ export class ResetPassword extends Component {
             <h2 class="card-title text-center m-5">Reset password</h2>
             <form>
                 <div class="d-flex justify-content-center mb-4">
-                    <i id="email-icon" class="fa fa-envelope fa-5x"></i>
+                    <i class="bi bi-envelope-at-fill" style="font-size: 7rem;"></i>
                 </div>
                 <div class="form-group mb-4">
                     <input type="email" class="form-control" id="email"

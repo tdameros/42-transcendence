@@ -55,8 +55,8 @@ export class Signup extends Component {
     } else {
       this.password.setAttribute('type', 'password');
     }
-    this.passwordEyeIcon.children[0].classList.toggle('fa-eye-slash');
-    this.passwordEyeIcon.children[0].classList.toggle('fa-eye');
+    this.passwordEyeIcon.children[0].classList.toggle('bi-eye-fill');
+    this.passwordEyeIcon.children[0].classList.toggle('bi-eye-slash-fill');
     this.passwordHiden = !this.passwordHiden;
   }
 
@@ -66,8 +66,8 @@ export class Signup extends Component {
     } else {
       this.confirmPassword.setAttribute('type', 'password');
     }
-    this.confirmPasswordEyeIcon.children[0].classList.toggle('fa-eye-slash');
-    this.confirmPasswordEyeIcon.children[0].classList.toggle('fa-eye');
+    this.confirmPasswordEyeIcon.children[0].classList.toggle('bi-eye-fill');
+    this.confirmPasswordEyeIcon.children[0].classList.toggle('bi-eye-slash-fill');
     this.confirmPasswordHiden = !this.confirmPasswordHiden;
   }
 
@@ -126,7 +126,7 @@ export class Signup extends Component {
                         <input type="password" class="form-control" id="password"
                                placeholder="Password">
                         <span  id="password-eye" class="input-group-text eye-box">
-                            <span class="fa fa-fw fa-eye field-icon"></span>
+                            <i class="bi bi-eye-fill"></i>
                         </span>
                         <div id="password-feedback" class="invalid-feedback">
                             Invalid password.
@@ -138,7 +138,7 @@ export class Signup extends Component {
                         <input type="password" class="form-control"
                                id="confirm-password" placeholder="Confirm Password">
                         <span id="confirm-password-eye" class="input-group-text eye-box">
-                                <span class="fa fa-fw fa-eye field-icon"></span>
+                            <i class="bi bi-eye-fill"></i>
                         </span>
                         <div class="invalid-feedback">
                             Passwords do not match.

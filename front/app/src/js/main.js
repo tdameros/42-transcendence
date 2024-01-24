@@ -1,3 +1,9 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import '../css/style.css';
+
+import * as bootstrap from 'bootstrap'
+
 import { Router, Route } from './Router.js';
 import { Home } from "./components/Home.js";
 import { Navbar } from "./components/Navbar.js";
@@ -9,6 +15,7 @@ import {ThemeButton} from "./components/ThemeButton.js";
 import {Signin} from "./components/Signin.js";
 import {Signup} from "./components/Signup.js";
 import {ResetPassword} from "./components/ResetPassword.js";
+
 
 Theme.init();
 

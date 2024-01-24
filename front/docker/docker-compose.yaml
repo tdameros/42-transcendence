@@ -1,4 +1,5 @@
 services:
+
     front-nginx:
         networks:
             - transcendence
@@ -7,26 +8,18 @@ services:
             context: nginx
             dockerfile: Dockerfile
         ports:
-            - "80:80"
             - "443:443"
         depends_on:
-            - front
+            - front-vite
         volumes:
-            - front_code:/app/src/
-        restart: on-failure
+            - front_dist:/transcendence/
 
-
-    front:
+    front-vite:
+        image: node:21-bookworm
         networks:
             - front
-            - transcendence
-        build:
-            context: .
-            dockerfile: Dockerfile
-        command: sh -c "python3 src/manage.py collectstatic --noinput &&
-                        gunicorn --chdir src/ front.wsgi:application -w 4 -b 0.0.0.0:8000"
+        working_dir: /app
         volumes:
-            - front_code:/app/src/
-        expose:
-            - "8000"
+            - front_code:/app
+        command: sh -c "npm install && npm run build"
         restart: on-failure
