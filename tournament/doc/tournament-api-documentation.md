@@ -253,6 +253,27 @@ Add a player to a specific tournament
 
 --------------------------------------------------------------------------------
 
+## `/tournament/player`
+
+Anonymizes a user's nicknames
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/player/anonymize</b></code></summary>
+
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                                        |
+> |-----------|--------------------|-------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "player successfully anonymized"}` |
+
+</details>
+
+--------------------------------------------------------------------------------
+
 ## `/tournament/{id}/matches`
 
 ### Manage matches of a tournament
