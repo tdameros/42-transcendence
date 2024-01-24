@@ -8,7 +8,7 @@ NAME_TOO_LONG = f'Tournament name must contain less than {settings.MAX_TOURNAMEN
 NAME_INVALID_CHAR = 'Tournament name may only contain letters, numbers and spaces'
 
 PLAYERS_NOT_INT = 'Tournament name may only contain letters, numbers and spaces'
-TOO_MANY_SLOTS = f'Tournament must contain less than {settings.MAX_PLAYERS} slots'
+TOO_MANY_SLOTS = f'Tournament must contain less or equal than {settings.MAX_PLAYERS} slots'
 NOT_ENOUGH_SLOTS = f'Tournament must contain at least {settings.MIN_PLAYERS} slots'
 
 NOT_ISO_8601 = 'Registration deadline not in ISO 8601 date and time format'
