@@ -43,7 +43,7 @@ class BaseOAuth(View, ABC):
 
     @abstractmethod
     def handle_auth(self, request):
-        raise NotImplementedError("Subclasses must implement this method")
+        pass
 
 
 class GitHubOAuth(BaseOAuth):
