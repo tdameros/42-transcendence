@@ -39,6 +39,11 @@ jobs:
         pip install isort
         pip install -r user_management/docker/requirements.txt
 
+    - name: Copy common
+      working-directory: user_management/src/
+      run: |
+        cp -r ../../common .
+
     - name: Run PEP8 check
       working-directory: user_management/src/
       run: |
