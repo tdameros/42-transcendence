@@ -13,11 +13,17 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
@@ -35,6 +41,23 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
 EMAIL_HOST_PASSWORD = 'jkabrqwookxrnfzv'
+
+# OAuth
+OAUTH_STATE_MAX_LENGTH = 32
+
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
+GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
+GITHUB_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/github'
+GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
+GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
+
+FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
+FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize'
+FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token'
+FT_API_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/42api'
+FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
+FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'

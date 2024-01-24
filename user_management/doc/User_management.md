@@ -322,8 +322,10 @@ all fields are mandatory
 > }
 > ```
 
-=======
-## `user/{user_id}`
+</details>
+
+
+## `user/{user-id}`
 ### Get user non-sensitive information
 
 will return a user object when successful
@@ -360,5 +362,62 @@ Might be extended to return more information in the future, if needed
 > - Code expired
 > - (all the errors from the is_valid_password function in the sign_up route)
 
+
+</details>
+
+
+## `oauth/{oauth-service}`
+### Initiate OAuth authentication for the specified service
+
+This endpoint initiates the OAuth authentication process for the specified authentication service.
+It returns a redirection URL to the OAuth service's authorization endpoint.
+<details>
+ <summary><code>GET</code><code><b>/oauth/{auth_service}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {auth_service}
+> 
+> NB: `auth_service` must be one of the following values: 'github', 'local-test', '42api'
+> 
+#### Responses
+
+> | http code | content-type       | response                                                                                                               |
+> |-----------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+> | `200`     | `application/json` | `{"redirection_url": "https://oauth-service.com/authorize?client_id=XXX&redirect_uri=YYY&state=ZZZ&scope=user:email"}` |
+> | `400`     | `application/json` | `{"errors": ["Unknown auth service"]}`                                                                                 |
+
+</details>
+
+## `oauth/callback/{auth-service}`
+### OAuth Callback for the specified service
+
+This endpoint handles the callback after successful OAuth authentication and retrieves the user's information.
+
+<details>
+ <summary><code>GET</code><code><b>/oauth/callback/{auth_service}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+ {auth_service}
+> 
+> NB: `auth_service` must be one of the following values: 'github', '42api'
+> 
+#### In the Query Parameters (mandatory)
+- `code`: Authorization code obtained from the OAuth service
+- `state`: State parameter to prevent CSRF attacks
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `201`     | `application/json` | `{"refresh_token": "XXXXX"}`                         |
+> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`    |
+> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                      |
+> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`       |
+> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}` |
+> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`       |
 
 </details>
