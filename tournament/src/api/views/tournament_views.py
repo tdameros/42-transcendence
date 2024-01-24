@@ -90,19 +90,11 @@ class TournamentView(View):
             tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
         try:
             tournament.save()
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
-
-        try:
             register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user['id'])
             if register_admin_errors is not None:
                 tournament.delete()
                 return JsonResponse({'errors': register_admin_errors}, status=400)
         except Exception as e:
-            try:
-                tournament.delete()
-            except Exception as e:
-                return JsonResponse({'errors': [str(e)]}, status=500)
             return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse(model_to_dict(tournament, exclude=['password']), status=201)
 
