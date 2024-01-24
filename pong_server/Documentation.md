@@ -44,3 +44,24 @@ Whenever you see 'Event `event_name` is sent to the client', you can find detail
   >>
   >> The connection is refused and an error message is sent to be received by
   >> the connect_error event on the client
+
+- ### `update_player`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'client_player_position': float[3],
+  >>     'direction': str ('up' | 'down' | 'none')
+  >> }
+  >> ``` 
+  >
+  >> Position is bad (due to latency or cheating):
+  >>
+  >> The position on server side is sent to all clients as well as the new direction
+  >
+  >> Position is OK:
+  >>
+  >> Server side position is set to the client side position  
+  >> The position sent by the client as well as the new direction is sent to all clients
+  >> except the client that sent the update player event
+  >
+  > The new position and direction are sent using the client `update_player` event
