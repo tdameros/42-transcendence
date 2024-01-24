@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from datetime import timedelta
 from hashlib import sha256
 
@@ -24,7 +25,7 @@ class OAuthFactory:
             return None
 
 
-class BaseOAuth(View):
+class BaseOAuth(View, ABC):
     @staticmethod
     def get(request, auth_service):
         oauth_handler = OAuthFactory.create_oauth_handler(auth_service)
@@ -40,6 +41,7 @@ class BaseOAuth(View):
         PendingOAuth.objects.create(hashed_state=hashed_state)
         return state
 
+    @abstractmethod
     def handle_auth(self, request):
         raise NotImplementedError("Subclasses must implement this method")
 
