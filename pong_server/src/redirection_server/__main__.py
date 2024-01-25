@@ -14,9 +14,13 @@ sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
 app = web.Application()
 sio.attach(app)
 
+number_of_test_players = 2  # TODO remove this
+
 # TODO get all games from server
 #      dict[GameID, Game]
-games: dict[str, Game] = {'game_1': Game(['0', '1'])}
+games: dict[str, Game] = {
+    'game_1': Game([str(nb) for nb in range(number_of_test_players)])
+}
 
 
 def get_game_id(query_string) -> str:
@@ -77,10 +81,11 @@ def connect(sid, environ, auth):
         raise RefuseConnection(str(e))
     global i  # TODO remove this line
     i += 1  # TODO remove this line
-    # TODO send game.get_uri() instead of [game.get_uri(), str(i % 2)]
-    #      It is like this for now so that I can run test, the i % 2
+    # TODO send game.get_uri() instead of
+    #      [game.get_uri(), str(i % number_of_test_players)]
+    #      It is like this for now so that I can run test, the i % number_of_test_players
     #      serves as the client nickname for the game server
-    raise SendURI([game.get_uri(), str(i % 2)])
+    raise SendURI([game.get_uri(), str(i % number_of_test_players)])
 
 
 @sio.event
