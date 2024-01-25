@@ -16,7 +16,7 @@ class JWTManager:
         self.algorithm = algorithm
         self.expiration_time_minutes = expiration_time_minutes
 
-    def generate_token(self, payload_arg: dict) -> (bool, str | None, list[str] | None):
+    def generate_jwt(self, payload_arg: dict) -> (bool, str | None, list[str] | None):
         """ returns: Success, jwt, [error messages] """
 
         now = datetime.now(timezone.utc)

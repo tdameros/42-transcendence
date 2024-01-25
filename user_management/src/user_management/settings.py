@@ -148,7 +148,7 @@ WSGI_APPLICATION = 'user_management.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # #SQLite 3 for debugs and tests
-DEBUG = True
+DEBUG = False
 if DEBUG:
     DATABASES = {
         'default': {

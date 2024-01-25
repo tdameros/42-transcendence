@@ -112,7 +112,7 @@ class OAuthCallback(View):
         if not user:
             return JsonResponse(data={'errors': ['Failed to create or get user']}, status=400)
 
-        success, refresh_token, errors = UserRefreshJWTManager.generate_token(user.id)
+        success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
         if not success:
             return JsonResponse(data={'errors': errors}, status=400)
 

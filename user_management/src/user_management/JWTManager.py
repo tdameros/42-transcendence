@@ -21,12 +21,12 @@ class UserRefreshJWTManager:
                              settings.REFRESH_EXPIRATION_MINUTES)
 
     @staticmethod
-    def generate_token(user_id: int) -> (bool, str | None, list[str] | None):
+    def generate_jwt(user_id: int) -> (bool, str | None, list[str] | None):
         """ returns: Success, jwt, [error messages] """
 
         if not user_exist(user_id):
             return False, None, ['User does not exist']
-        return UserRefreshJWTManager.JWT_MANAGER.generate_token({'user_id': user_id, 'token_type': 'refresh'})  # Common
+        return UserRefreshJWTManager.JWT_MANAGER.generate_jwt({'user_id': user_id, 'token_type': 'refresh'})  # Common
 
     @staticmethod
     def authenticate(encoded_jwt: str) -> (bool, int | None, list[str] | None):
@@ -52,12 +52,12 @@ class UserAccessJWTManager:
                              settings.ACCESS_EXPIRATION_MINUTES)
 
     @staticmethod
-    def generate_token(user_id: int) -> (bool, str | None, list[str] | None):
+    def generate_jwt(user_id: int) -> (bool, str | None, list[str] | None):
         """ returns: Success, jwt, [error messages] """
 
         if not user_exist(user_id):
             return False, None, ['User does not exist']
-        return UserAccessJWTManager.JWT_MANAGER.generate_token({'user_id': user_id, 'token_type': 'access'})  # Common
+        return UserAccessJWTManager.JWT_MANAGER.generate_jwt({'user_id': user_id, 'token_type': 'access'})  # Common
 
     @staticmethod
     def authenticate(encoded_jwt: str) -> (bool, str | None, list[str]):

@@ -28,7 +28,7 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=json_request['password'])
-            success, refresh_token, errors = UserRefreshJWTManager.generate_token(user.id)
+            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'refresh_token': refresh_token}, status=201)
@@ -127,7 +127,7 @@ class SignInView(View):
             if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
             user = User.objects.filter(username=json_request['username']).first()
-            success, refresh_token, errors = UserRefreshJWTManager.generate_token(user.id)
+            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'refresh_token': refresh_token}, status=200)
@@ -208,7 +208,7 @@ class RefreshJWT(View):
             success, user_id, errors = UserRefreshJWTManager.authenticate(refresh_token)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
-            success, access_token, errors = UserAccessJWTManager.generate_token(user_id)
+            success, access_token, errors = UserAccessJWTManager.generate_jwt(user_id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'access_token': access_token}, status=200)

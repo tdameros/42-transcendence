@@ -268,7 +268,7 @@ class TestsRefreshJWT(TestCase):
         self.assertTrue('access_token' in result.json())
         print('Testing invalids refresh tokens ... :')
         # 1 Refresh token not found
-        valid_access_token = UserAccessJWTManager.generate_token(1)[1]
+        valid_access_token = UserAccessJWTManager.generate_jwt(1)[1]
 
         # 2 Invalid token
         valid_payload = {
