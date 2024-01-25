@@ -1,8 +1,11 @@
 export class Router {
+  #routes;
+  #app;
+
   constructor(app, routes= [] ) {
-    this.routes = []
-    Object.assign(this.routes, routes);
-    this.app = app;
+    this.#routes = [];
+    Object.assign(this.#routes, routes);
+    this.#app = app;
     window.addEventListener('popstate', (event) => {
       this.#loadRoute(document.location.pathname);
     });
@@ -10,7 +13,7 @@ export class Router {
   }
 
   addRoute(path, customElement) {
-    this.routes.push(new Route(path, customElement));
+    this.#routes.push(new Route(path, customElement));
   }
 
   navigate(newPath) {
@@ -23,7 +26,7 @@ export class Router {
 
   #findMatchingRoute(path) {
     let defaultRoute = null;
-    for (const route of this.routes) {
+    for (const route of this.#routes) {
       const parametersValues = path.match(route.pathRegex);
       if (parametersValues) {
         parametersValues.shift();
@@ -37,15 +40,16 @@ export class Router {
   }
 
   #loadRoute(path) {
-    const {route , parametersValues} = this.#findMatchingRoute(path);
+    const {route, parametersValues} = this.#findMatchingRoute(path);
     if (route === null) {
       console.error(`Route not found`);
       return null;
     }
     const customElement = document.createElement(route.customElement);
-    Router.#setParametersInElement(customElement, route.pathParameters, parametersValues);
-    this.app.innerHTML = '';
-    this.app.appendChild(customElement);
+    Router.#setParametersInElement(customElement, route.pathParameters,
+        parametersValues);
+    this.#app.innerHTML = '';
+    this.#app.appendChild(customElement);
     return customElement;
   }
 
@@ -70,7 +74,7 @@ export class Route {
     if (matchParameters === null) {
       this.pathParameters = [];
     } else {
-      this.pathParameters = matchParameters.map(param => param.slice(1));
+      this.pathParameters = matchParameters.map((param) => param.slice(1));
     }
   }
 
@@ -78,7 +82,6 @@ export class Route {
     const parsedPath = this.path.replace(/:[a-zA-Z]+/g, '([a-zA-Z0-9-]+)');
     this.pathRegex = new RegExp(`^${parsedPath}$`);
   }
-
 }
 
-export default { Router, Route };
+export default {Router, Route};
