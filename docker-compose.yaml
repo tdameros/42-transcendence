@@ -27,6 +27,20 @@ services:
             file: user_management/docker/docker-compose.yaml
             service: user-management-nginx
 
+    #User stats
+    user-stats:
+        extends:
+            file: user_stats/docker/docker-compose.yaml
+            service: user-stats
+    user-stats-db:
+        extends:
+            file: user_stats/docker/docker-compose.yaml
+            service: user-stats-db
+    user-stats-nginx:
+        extends:
+            file: user_stats/docker/docker-compose.yaml
+            service: user-stats-nginx
+
     # Matchmaking
     matchmaking:
         extends:
@@ -69,6 +83,9 @@ networks:
     user_management:
         driver: bridge
 
+    user_stats:
+        driver: bridge
+
     matchmaking:
         driver: bridge
 
@@ -103,6 +120,22 @@ volumes:
             device: user_management/src/
     user_management_static_volume:
     user_management_media_volume:
+
+    # User stats
+    user_stats_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: user_stats/docker/volumes/db/
+    user_stats_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: user_stats/src/
+    user_stats_static_volume:
+    user_stats_media_volume:
 
     # Matchmaking
     matchmaking_postgres_volume:
