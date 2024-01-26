@@ -49,3 +49,11 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/{user_id}](../user_management/doc/User_management.md#useruser_id)
 
+## User Stats 
+> ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
+
+> ### [/user/{id}/match/](../user_stats/doc/user-stats-documentation.md#useridgames)
+
+> ### [/user/{id}/progress/](../user_stats/doc/user-stats-documentation.md#useridprogress)
+ 
+> ### [/user/{id}/graph/](../user_stats/doc/user-stats-documentation.md#useridgraph)
