@@ -18,7 +18,8 @@ class GenerateTournamentMatches(TestCase):
         for i in range(0, 5):
             Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament_not_full)
 
-        Match.objects.create(player1_id=1, player2_id=2, tournament=tournament)
+        players = tournament.players.all()
+        Match.objects.create(player_1=players[0], player_2=players[1], tournament=tournament, match_id=1)
 
     def generate_matches(self, tournament_id, is_random):
         url = reverse('generate-matches', args=(tournament_id,))
