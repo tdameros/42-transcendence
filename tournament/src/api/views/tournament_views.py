@@ -90,19 +90,11 @@ class TournamentView(View):
             tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
         try:
             tournament.save()
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
-
-        try:
             register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user['id'])
             if register_admin_errors is not None:
                 tournament.delete()
                 return JsonResponse({'errors': register_admin_errors}, status=400)
         except Exception as e:
-            try:
-                tournament.delete()
-            except Exception as e:
-                return JsonResponse({'errors': [str(e)]}, status=500)
             return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse(model_to_dict(tournament, exclude=['password']), status=201)
 
@@ -115,16 +107,19 @@ class TournamentView(View):
 
         try:
             user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+            nb_tournaments = len(user_tournaments)
+            if user_tournaments:
+                user_tournaments.delete()
+
+            player = Player.objects.filter(user_id=user['id'], tournament__status=Tournament.CREATED)
+            if player:
+                player.delete()
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        if user_tournaments:
-            try:
-                user_tournaments.delete()
-            except Exception as e:
-                return JsonResponse({'errors': [str(e)]}, status=500)
-
-        return JsonResponse({'message': 'tournaments created by this user have been deleted'}, status=200)
+        if nb_tournaments == 0:
+            return JsonResponse({'message': 'No tournament created by this user'}, status=200)
+        return JsonResponse({'message': 'Tournaments created by this user have been deleted'}, status=200)
 
     @staticmethod
     def is_valid_tournament(json_request: dict[str, Any]) -> tuple[bool, Optional[list[str]]]:

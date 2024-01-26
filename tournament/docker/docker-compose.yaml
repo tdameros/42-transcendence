@@ -9,6 +9,8 @@ services:
         expose:
             - "80"
             - "443"
+        ports:
+            - "6001:80"
         depends_on:
             - tournament
         volumes:
