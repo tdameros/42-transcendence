@@ -25,6 +25,12 @@ class MatchUtils:
                 'user_id': match.player_2.user_id,
                 'nickname': match.player_2.nickname
             } if match.player_2 is not None else None,
+            'player_1_score': match.player_1_score,
+            'player_2_score': match.player_2_score,
+            'winner': {
+                'user_id': match.winner.user_id,
+                'nickname': match.winner.nickname
+            } if match.winner is not None else None
         }
 
     @staticmethod

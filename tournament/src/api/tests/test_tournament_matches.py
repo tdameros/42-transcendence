@@ -5,6 +5,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from api.models import Match, Player, Tournament
+from tournament import settings
+from api import error_message as error
 
 
 class GenerateTournamentMatches(TestCase):
@@ -190,6 +192,8 @@ class UpdateMatchTest(TestCase):
         for i in range(0, 4):
             Match.objects.create(player_1=players[i], player_2=players[i + 4], tournament=tournament, match_id=i + 1)
 
+        Match.objects.create(player_1=players[0], player_2=players[4], tournament=tournament, match_id=5, status=Match.FINISHED)
+
     def update_match(self, tournament_id, match_id, body):
         url = reverse('manage-match', args=(tournament_id, match_id))
         response = self.client.patch(url, body, content_type='application/json')
@@ -274,3 +278,77 @@ class UpdateMatchTest(TestCase):
         self.assertEqual(body['status'], 'Not played')
         self.assertEqual(body['player_1']['nickname'], 'player 1')
         self.assertEqual(body['player_2']['nickname'], 'player 5')
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_update_player_1_score(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 1, {'player_1_score': 2})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 1)
+        self.assertEqual(body['status'], 'Not played')
+        self.assertEqual(body['player_1']['nickname'], 'player 0')
+        self.assertEqual(body['player_2']['nickname'], 'player 4')
+        self.assertEqual(body['player_1_score'], 2)
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_update_player_2_score(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 1, {'player_2_score': 2})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 1)
+        self.assertEqual(body['status'], 'Not played')
+        self.assertEqual(body['player_1']['nickname'], 'player 0')
+        self.assertEqual(body['player_2']['nickname'], 'player 4')
+        self.assertEqual(body['player_2_score'], 2)
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_too_high_score(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 1,
+                                           {'player_1_score': settings.MATCH_POINT_TO_WIN + 1})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.MATCH_PLAYER_SCORE_INVALID])
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_update_winner(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 1, {'winner': 1})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['id'], 1)
+        self.assertEqual(body['status'], 'Finished')
+        self.assertEqual(body['player_1']['nickname'], 'player 0')
+        self.assertEqual(body['player_2']['nickname'], 'player 4')
+        self.assertEqual(body['winner']['nickname'], 'player 0')
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_update_finished_match(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 5, {'status': Match.IN_PROGRESS})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.MATCH_FINISHED])
+
+    @patch('api.views.matches_views.authenticate_request')
+    def test_invalid_winner(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.update_match(1, 1, {'winner': 50})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error.MATCH_WINNER_NOT_EXIST])
+

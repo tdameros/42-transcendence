@@ -84,9 +84,15 @@ class ManageMatchesView(View):
     def update_match(body: dict, match: Match) -> list[str]:
         update_errors = []
 
+        if match.status == Match.FINISHED:
+            return [error.MATCH_FINISHED]
+
         new_match_status_error = ManageMatchesView.update_match_status(body, match)
         new_player_1_error = ManageMatchesView.update_player_1(body, match)
+        new_player_1_score_error = ManageMatchesView.update_player_1_score(body, match)
         new_player_2_error = ManageMatchesView.update_player_2(body, match)
+        new_player_2_score_error = ManageMatchesView.update_player_2_score(body, match)
+        new_winner_error = ManageMatchesView.update_winner(body, match)
 
         if new_match_status_error is not None:
             update_errors.append(new_match_status_error)
@@ -94,6 +100,12 @@ class ManageMatchesView(View):
             update_errors.append(new_player_1_error)
         if new_player_2_error is not None:
             update_errors.append(new_player_2_error)
+        if new_player_1_score_error is not None:
+            update_errors.append(new_player_1_score_error)
+        if new_player_2_score_error is not None:
+            update_errors.append(new_player_2_score_error)
+        if new_winner_error is not None:
+            update_errors.append(new_winner_error)
 
         return update_errors
 
@@ -121,6 +133,28 @@ class ManageMatchesView(View):
         return None
 
     @staticmethod
+    def update_player_1_score(body: dict, match: Match) -> Optional[str]:
+        new_player_1_score = body.get('player_1_score')
+        if new_player_1_score is not None:
+            if not isinstance(new_player_1_score, int):
+                return error.MATCH_PLAYER_SCORE_NOT_INT
+            if new_player_1_score < 0 or new_player_1_score > settings.MATCH_POINT_TO_WIN:
+                return error.MATCH_PLAYER_SCORE_INVALID
+            match.player_1_score = new_player_1_score
+        return None
+
+    @staticmethod
+    def update_player_2_score(body: dict, match: Match) -> Optional[str]:
+        new_player_2_score = body.get('player_2_score')
+        if new_player_2_score is not None:
+            if not isinstance(new_player_2_score, int):
+                return error.MATCH_PLAYER_SCORE_NOT_INT
+            if new_player_2_score < 0 or new_player_2_score > settings.MATCH_POINT_TO_WIN:
+                return error.MATCH_PLAYER_SCORE_INVALID
+            match.player_2_score = new_player_2_score
+        return None
+
+    @staticmethod
     def update_player_2(body: dict, match: Match) -> Optional[str]:
         new_player_2 = body.get('player_2')
         if new_player_2 is not None:
@@ -130,4 +164,17 @@ class ManageMatchesView(View):
                 match.player_2 = Player.objects.get(id=new_player_2)
             except ObjectDoesNotExist:
                 return error.MATCH_PLAYER_NOT_EXIST
+        return None
+
+    @staticmethod
+    def update_winner(body: dict, match: Match) -> Optional[str]:
+        new_winner = body.get('winner')
+        if new_winner is not None:
+            if not isinstance(new_winner, int):
+                return error.MATCH_WINNER_NOT_INT
+            try:
+                match.winner = Player.objects.get(id=new_winner)
+            except ObjectDoesNotExist:
+                return error.MATCH_WINNER_NOT_EXIST
+            match.status = Match.FINISHED
         return None
