@@ -34,3 +34,8 @@ CANT_LEAVE = 'You can not leave this tournament'
 NOT_OWNER = 'You are not the owner of this tournament'
 ALREADY_STARTED = 'Tournament has already started'
 NOT_ENOUGH_PLAYERS = 'Not enough players to start tournament'
+
+MATCH_STATUS_INVALID = 'Invalid match status'
+MATCH_STATUS_NOT_INT = 'Match status must be an integer'
+MATCH_PLAYER_NOT_INT = 'Match player must be an integer'
+MATCH_PLAYER_NOT_EXIST = 'Match player does not exist'

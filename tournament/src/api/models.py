@@ -25,7 +25,14 @@ class Player(models.Model):
 
 
 class Match(models.Model):
+    NOT_PLAYED = 0
+    IN_PROGRESS = 1
+    FINISHED = 2
+
     player_1 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='player_1')
     player_2 = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, related_name='player_2')
+
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='matches')
+
     match_id = models.IntegerField()
+    status = models.IntegerField(default=NOT_PLAYED)
