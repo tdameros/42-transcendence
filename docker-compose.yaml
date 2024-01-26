@@ -4,14 +4,15 @@ name: transcendence
 
 services:
     # Front
-    front:
-        extends:
-            file: front/docker/docker-compose.yaml
-            service: front
     front-nginx:
         extends:
             file: front/docker/docker-compose.yaml
             service: front-nginx
+
+    front-vite:
+        extends:
+            file: front/docker/docker-compose.yaml
+            service: front-vite
 
     # User management
     user-management:
@@ -46,14 +47,6 @@ services:
         extends:
             file: matchmaking/docker/docker-compose.yaml
             service: matchmaking
-    matchmaking-db:
-        extends:
-            file: matchmaking/docker/docker-compose.yaml
-            service: matchmaking-db
-    matchmaking-nginx:
-        extends:
-            file: matchmaking/docker/docker-compose.yaml
-            service: matchmaking-nginx
 
     # Tournament
     tournament:
@@ -86,9 +79,6 @@ networks:
     user_stats:
         driver: bridge
 
-    matchmaking:
-        driver: bridge
-
     tournament:
         driver: bridge
 
@@ -103,7 +93,14 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: front/src/
+            device: front/app/
+
+    front_dist:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: front/app/dist/
 
     # User management
     user_management_postgres_volume:
@@ -138,20 +135,12 @@ volumes:
     user_stats_media_volume:
 
     # Matchmaking
-    matchmaking_postgres_volume:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: matchmaking/docker/volumes/db/
     matchmaking_code:
         driver: local
         driver_opts:
             type: none
             o: bind
             device: matchmaking/src/
-    matchmaking_static_volume:
-    matchmaking_media_volume:
 
     # Tournament
     tournament_postgres_volume:
@@ -176,3 +165,11 @@ volumes:
             type: none
             o: bind
             device: pong_server/src/
+
+    # Common code
+    common_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: common

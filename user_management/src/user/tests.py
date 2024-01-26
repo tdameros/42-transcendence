@@ -1,5 +1,4 @@
 import json
-import pathlib
 import random
 from datetime import datetime, timedelta
 
@@ -9,9 +8,7 @@ from django.urls import reverse
 
 from user.models import User
 from user_management import settings
-from user_management.JWTManager import JWTManager
-
-APP_DIR = pathlib.Path(__file__).resolve().parent
+from user_management.JWTManager import UserAccessJWTManager
 
 
 class TestsSignup(TestCase):
@@ -43,14 +40,14 @@ class TestsSignup(TestCase):
         expected_status = 201
         name = 'Valid Username'
         long_username = 'a' * settings.USERNAME_MAX_LENGTH
-        email = 'alevra@asdf.fr'
         valid_usernames = [
             'Aurel', 'aurel', 'aa',
             'AA', 'aurelien', 'aurel42',
-            'aurel_42', 'aurel-42', long_username
+            'aurelx42', 'aurelh42', long_username
         ]
         for username in valid_usernames:
             print(f'\nTesting {name} with username {username}')
+            email = 'c' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -63,7 +60,6 @@ class TestsSignup(TestCase):
         has_refresh_token = False
         expected_status = 400
         name = 'Invalid Username'
-        email = 'alevra@student.42lyon.fr'
         long_username = 'a' * (settings.USERNAME_MAX_LENGTH + 1)
         invalid_usernames = [
             (None, 'Username empty'),
@@ -76,6 +72,7 @@ class TestsSignup(TestCase):
         for invalid_username in invalid_usernames:
             username = invalid_username[0]
             expected_errors = [invalid_username[1]]
+            email = 'b' + random.randint(0, 100000).__str__() + '@a.fr'
             print(f'\nTesting {name} with username \'{username}\'')
             self.run_signup_test(name,
                                  username,
@@ -138,7 +135,6 @@ class TestsSignup(TestCase):
         has_refresh_token = True
         expected_status = 201
         name = 'Valid Password'
-        email = 'alevra@student.42lyon.fr'
         valid_passwords = [
             'Validpass42*', 'a' * (settings.PASSWORD_MAX_LENGTH - 3) + 'A1*',
                             'a' * (settings.PASSWORD_MIN_LENGTH - 3) + 'A1*'
@@ -146,6 +142,7 @@ class TestsSignup(TestCase):
         for password in valid_passwords:
             username = 'Aurel' + str(random.randint(0, 100000))
             print(f'\nTesting {name} with password {password}')
+            email = 'a' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -201,7 +198,7 @@ class TestsSignin(TestCase):
             'password': 'Validpass42*',
         }
         url = reverse('signup')
-        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data = {
             'username': 'aurelien123',
             'password': 'Validpass42*',
@@ -223,14 +220,14 @@ class TestsUsernameExist(TestCase):
 
     def test_username_exist(self):
         data_preparation = {
-            'username': 'Aurel303',
+            'username': 'Burel305',
             'email': 'a@a.fr',
             'password': 'Validpass42*',
         }
         url = reverse('signup')
         self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data_username_exist = {
-            'username': 'Aurel303'
+            'username': 'Burel305'
         }
         url = reverse('username-exist')
         result = self.client.post(url, json.dumps(data_username_exist), content_type='application/json')
@@ -259,10 +256,10 @@ class TestsRefreshJWT(TestCase):
         }
         url = reverse('signup')
         print('Creating user...')
-        refresh_token = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         print('User created')
         data = {
-            'refresh_token': refresh_token.json()['refresh_token']
+            'refresh_token': result.json()['refresh_token']
         }
         url = reverse('refresh-access-jwt')
         print('Testing valid refresh token')
@@ -271,7 +268,7 @@ class TestsRefreshJWT(TestCase):
         self.assertTrue('access_token' in result.json())
         print('Testing invalids refresh tokens ... :')
         # 1 Refresh token not found
-        valid_access_token = JWTManager('access').generate_token(1)[1]
+        valid_access_token = UserAccessJWTManager.generate_jwt(1)[1]
 
         # 2 Invalid token
         valid_payload = {
@@ -280,11 +277,11 @@ class TestsRefreshJWT(TestCase):
             'token_type': 'refresh'
         }
         bad_signature_token = jwt.encode(valid_payload,
-                                         open(APP_DIR / './test_resources/invalid_key.pub').read(),
-                                         'RS256')
+                                         "INVALID_KEY",
+                                         'HS256')
         # 3 Empty payload
         payload = {}
-        empty_payload = jwt.encode(payload, settings.REFRESH_PRIVATE_KEY, 'RS256')
+        empty_payload = jwt.encode(payload, settings.REFRESH_KEY, 'HS256')
 
         # 4 Token expired
         payload_expired = {
@@ -292,14 +289,14 @@ class TestsRefreshJWT(TestCase):
             'exp': datetime.utcnow(),
             'token_type': 'refresh'
         }
-        expired_token = jwt.encode(payload_expired, settings.REFRESH_PRIVATE_KEY, 'RS256')
+        expired_token = jwt.encode(payload_expired, settings.REFRESH_KEY, 'HS256')
 
         # 5 No user_id in payload
         payload_no_user_id = {
             'exp': datetime.utcnow() + timedelta(minutes=100),
             'token_type': 'refresh'
         }
-        token_no_user_id = jwt.encode(payload_no_user_id, settings.REFRESH_PRIVATE_KEY, 'RS256')
+        token_no_user_id = jwt.encode(payload_no_user_id, settings.REFRESH_KEY, 'HS256')
 
         # 6 User does not exist
         payload_user_not_exist = {
@@ -307,11 +304,11 @@ class TestsRefreshJWT(TestCase):
             'exp': datetime.utcnow() + timedelta(minutes=100),
             'token_type': 'refresh'
         }
-        token_user_not_exist = jwt.encode(payload_user_not_exist, settings.REFRESH_PRIVATE_KEY, 'RS256')
+        token_user_not_exist = jwt.encode(payload_user_not_exist, settings.REFRESH_KEY, 'HS256')
 
         errors = [('Refresh token not found', {'access_token': valid_access_token}),
                   ('Signature verification failed', {'refresh_token': bad_signature_token}),
-                  ('Empty payload', {'refresh_token': empty_payload}),
+                  ('No expiration date found', {'refresh_token': empty_payload}),
                   ('Signature has expired', {'refresh_token': expired_token}),
                   ('No user_id in payload', {'refresh_token': token_no_user_id}),
                   ('User does not exist', {'refresh_token': token_user_not_exist})
@@ -329,6 +326,35 @@ class TestsRefreshJWT(TestCase):
             self.assertEqual(result.json()['errors'], [error[0]])
 
 
+class TestsEmailExist(TestCase):
+
+    def test_email_exist(self):
+        data_preparation = {
+            'username': 'Aurel305',
+            'email': 'a@a.fr',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        data_email_exist = {
+            'email': 'a@a.fr'
+        }
+        url = reverse('email-exist')
+        result = self.client.post(url, json.dumps(data_email_exist), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('is_taken' in result.json())
+        self.assertTrue(result.json()['is_taken'])
+
+        data_email_not_exist = {
+            'email': 'a@afwefwe.fr'
+        }
+        url = reverse('email-exist')
+        result = self.client.post(url, json.dumps(data_email_not_exist), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('is_taken' in result.json())
+        self.assertFalse(result.json()['is_taken'])
+
+
 class UserId(TestCase):
 
     def test_user_id(self):
@@ -344,3 +370,52 @@ class UserId(TestCase):
         result = self.client.get(url)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('username' in result.json())
+
+
+class TestsSearchUsername(TestCase):
+
+    def test_search_username(self):
+        for i in range(1, 20):
+            data_preparation = {
+                'username': f'Felix{i}',
+                'email': f'felix{i}@gmail.com',
+                'password': 'Validpass42*',
+            }
+            url = reverse('signup')
+            self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        data = {
+            'username': 'Felix'
+        }
+        url = reverse('search-username')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 10)
+        self.assertEqual(result.json()['users'][0], 'Felix1')
+        self.assertEqual(result.json()['users'][9], 'Felix10')
+        data = {
+            'username': 'Felix1'
+        }
+        url = reverse('search-username')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 10)
+        self.assertEqual(result.json()['users'][0], 'Felix1')
+        data = {
+            'username': 'Felix2'
+        }
+        url = reverse('search-username')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 1)
+        self.assertEqual(result.json()['users'][0], 'Felix2')
+        data = {
+            'username': 'Felix111'
+        }
+        url = reverse('search-username')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('users' in result.json())
+        self.assertEqual(len(result.json()['users']), 0)

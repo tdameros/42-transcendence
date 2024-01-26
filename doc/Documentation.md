@@ -17,6 +17,8 @@ this documentation details the different endpoints of each microservice.
 > ### [/components](../front/doc/components.md)
 
 ## Matchmaking
+### [Events sent by the client](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-client)
+### [Events sent by the server](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-server)
 
 ## Game
 
@@ -45,9 +47,23 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
 
+> ### [/user/email-exist](../user_management/doc/User_management.md#email-exist)
+> 
+> ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#forgot-passwordsend-code)
+
+> ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#forgot-passwordcheck-code)
+
+> ### [/user/forgot-password/change-password](../user_management/doc/User_management.md#forgot-passwordchange-password)
+
 > ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#refresh-access-jwt)
 
-> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser_id)
+> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser-id)
+
+> ### [/search-username/](../user_management/doc/User_management.md#search-username)
+
+> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#oauthoauth-service)
+
+> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)
 
 ## User Stats 
 > ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
