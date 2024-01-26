@@ -30,7 +30,7 @@ class GenerateTournamentMatches(TestCase):
 
         return response, body
 
-    @patch('api.views.tournament_matches_views.authenticate_request')
+    @patch('api.views.generate_matches_views.authenticate_request')
     def test_full_tournament(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -48,7 +48,7 @@ class GenerateTournamentMatches(TestCase):
         self.assertEqual(len(body['matches']), 4)
         self.assertEqual(len(matches), 4)
 
-    @patch('api.views.tournament_matches_views.authenticate_request')
+    @patch('api.views.generate_matches_views.authenticate_request')
     def test_tournament_not_full(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
@@ -63,7 +63,7 @@ class GenerateTournamentMatches(TestCase):
         self.assertEqual(body['nb-matches'], 4)
         self.assertEqual(len(body['matches']), 4)
 
-    @patch('api.views.tournament_matches_views.authenticate_request')
+    @patch('api.views.generate_matches_views.authenticate_request')
     def test_tournament_does_not_exist(self, mock_get):
         user = {'id': 1}
         mock_get.return_value = (user, None)
