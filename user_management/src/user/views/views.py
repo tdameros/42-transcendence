@@ -12,7 +12,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
-from user_management.JWTManager import JWTManager
+from user_management.JWTManager import (UserAccessJWTManager,
+                                        UserRefreshJWTManager)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -27,7 +28,7 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=json_request['password'])
-            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'refresh_token': refresh_token}, status=201)
@@ -126,7 +127,7 @@ class SignInView(View):
             if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
             user = User.objects.filter(username=json_request['username']).first()
-            success, refresh_token, errors = JWTManager('refresh').generate_token(user.id)
+            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'refresh_token': refresh_token}, status=200)
@@ -204,10 +205,10 @@ class RefreshJWT(View):
             refresh_token = json_request.get('refresh_token')
             if refresh_token is None:
                 return JsonResponse(data={'errors': ['Refresh token not found']}, status=400)
-            success, errors, user_id = JWTManager('refresh').is_authentic_and_valid_request(refresh_token)
+            success, user_id, errors = UserRefreshJWTManager.authenticate(refresh_token)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
-            success, access_token, errors = JWTManager('access').generate_token(user_id)
+            success, access_token, errors = UserAccessJWTManager.generate_jwt(user_id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'access_token': access_token}, status=200)
