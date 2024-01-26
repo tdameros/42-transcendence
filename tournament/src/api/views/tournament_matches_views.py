@@ -31,7 +31,7 @@ class GenerateMatchesView(View):
         try:
             tournament = Tournament.objects.get(id=tournament_id)
             players = list(tournament.players.all())
-            GenerateMatchesView.set_players_elo(players)
+            # GenerateMatchesView.set_players_elo(players)
             tournament.matches.all().delete()
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
@@ -56,8 +56,8 @@ class GenerateMatchesView(View):
     def sort_players(players: list[Player], is_random: any) -> list[Player]:
         if isinstance(is_random, bool) and is_random:
             random.shuffle(players)
-        else:
-            players.sort(key=lambda x: x.elo, reverse=True)
+        # else:
+        #     players.sort(key=lambda x: x.elo, reverse=True)
         return players
 
     @staticmethod
