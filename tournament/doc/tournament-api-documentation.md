@@ -278,31 +278,106 @@ None
 
 ### Manage matches of a tournament
 
+Retrieve the list of matches for a tournament
+
 <details>
  <summary><code>GET</code> <code><b>/tournament/{id}/matches</b></code></summary>
 
-#### Retrieve the list of matches for a tournament
+### Parameters
+
+None
+
+### Responses
+
+> Example:
+> ```javascript
+> {
+>  "nb-matches": 14,
+>   "matches": [
+>       {
+>           "id": 1,
+>           "status": "Finished",
+>           "player1": "Player1",
+>           "player2": "Player2",
+>           "player_1_score": 2,
+>           "player_2_score": 1,
+>           "winner": "Player1"
+>       },
+>       {
+>           ...
+>       }
+> ]
+> }
+> ```
 
 </details>
+
+Retrieve details of a match
 
 <details>
  <summary><code>GET</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
 
-#### Retrieve details of a match for a tournament
+### Parameters
+
+None
+
+### Responses
+
+> Example:
+> ```javascript
+> {
+>   "id": 1,
+>   "status": "Finished",
+>   "player1": "Player1",
+>   "player2": "Player2",
+>   "player_1_score": 2,
+>   "player_2_score": 1,
+>   "winner": "Player1"
+> }
+> ```
+
+> | http code | content-type       | response                                   |
+> |-----------|--------------------|--------------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}`  |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`                 |
 
 </details>
 
-<details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}/start</b></code></summary>
-
-#### Start a match
-
-</details>
+Update the score of a match for a tournament
 
 <details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}/end</b></code></summary>
+ <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
 
-#### End a match
+### Parameters
+
+#### Body
+
+All fields are optional
+
+- The status of the match
+- The first player
+- The second player
+- The score of the first player
+- The score of the second player
+- The winner of the match
+
+> ```javascript
+> {
+>    "status": 1,
+>    "player1": "Player1",
+>    "player2": "Player2",
+>    "score1": 2,
+>    "score2": 1,
+>    "winner": "Player1"
+> }
+> ```
+
+### Responses
+
+> | http code | content-type       | response                                  |
+> |-----------|--------------------|-------------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`       |
 
 </details>
 
