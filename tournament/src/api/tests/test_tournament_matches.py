@@ -9,8 +9,8 @@ from api.models import Match, Player, Tournament
 
 class GenerateTournamentMatches(TestCase):
     def setUp(self):
-        tournament = Tournament.objects.create(name='tournament 1', admin_id=1, max_players=8)
-        tournament_not_full = Tournament.objects.create(name='tournament 2', admin_id=1, max_players=8)
+        tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
+        tournament_not_full = Tournament.objects.create(id=2, name='tournament 2', admin_id=1, max_players=8)
 
         for i in range(0, 8):
             Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament)
@@ -41,6 +41,8 @@ class GenerateTournamentMatches(TestCase):
 
         matches = Match.objects.filter(tournament_id=tournament_id)
 
+        if response.status_code != 200:
+            print(body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['nb-matches'], 4)
         self.assertEqual(len(body['matches']), 4)
@@ -55,6 +57,8 @@ class GenerateTournamentMatches(TestCase):
 
         response, body = self.generate_matches(tournament_id, True)
 
+        if response.status_code != 200:
+            print(body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['nb-matches'], 4)
         self.assertEqual(len(body['matches']), 4)
