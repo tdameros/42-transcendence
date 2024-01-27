@@ -79,6 +79,16 @@ class GenerateMatchesView(View):
                     match_id=i
                 )
             )
+        nb_matches_first_round = len(matches)
+        for i in range(0, nb_matches_first_round - 1):
+            matches.append(
+                Match(
+                    player_1=None,
+                    player_2=None,
+                    tournament=tournament,
+                    match_id=i + nb_matches_first_round
+                )
+            )
         return matches
 
     @staticmethod

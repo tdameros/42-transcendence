@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from api import error_message as error
 from api.models import Player, Tournament
+from tournament import settings
 
 
 class PatchTournamentTest(TestCase):
@@ -101,11 +102,12 @@ class PatchTournamentTest(TestCase):
     def test_patch_max_players_too_short(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (user, None)
-        response, body = self.patch_tournament(6, {'max-players': 2})
+        response, body = self.patch_tournament(6, {'max-players': settings.MIN_PLAYERS})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'],
-                         ['You cannot set the max players to 2 because there are already 8 players registered'])
+                         [f'You cannot set the max players to {settings.MIN_PLAYERS} '
+                          'because there are already 8 players registered'])
 
     @patch('api.views.manage_tournament_views.authenticate_request')
     def test_patch_name_too_long(self, mock_authenticate_request):

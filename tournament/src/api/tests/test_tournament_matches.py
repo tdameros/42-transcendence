@@ -46,9 +46,9 @@ class GenerateTournamentMatches(TestCase):
         if response.status_code != 200:
             print(body)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(body['nb-matches'], 4)
-        self.assertEqual(len(body['matches']), 4)
-        self.assertEqual(len(matches), 4)
+        self.assertEqual(body['nb-matches'], 7)
+        self.assertEqual(len(body['matches']), 7)
+        self.assertEqual(len(matches), 7)
 
     @patch('api.views.generate_matches_views.authenticate_request')
     def test_tournament_not_full(self, mock_get):
@@ -62,8 +62,8 @@ class GenerateTournamentMatches(TestCase):
         if response.status_code != 200:
             print(body)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(body['nb-matches'], 4)
-        self.assertEqual(len(body['matches']), 4)
+        self.assertEqual(body['nb-matches'], 7)
+        self.assertEqual(len(body['matches']), 7)
 
     @patch('api.views.generate_matches_views.authenticate_request')
     def test_tournament_does_not_exist(self, mock_get):

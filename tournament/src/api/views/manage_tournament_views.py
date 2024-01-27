@@ -131,21 +131,21 @@ class ManageTournamentView(View):
         update_errors = []
 
         new_name_errors = ManageTournamentView.update_tournament_name(body, tournament)
-        new_max_players_errors = ManageTournamentView.update_max_players(body, tournament, tournament_players)
-        new_deadline_errors = ManageTournamentView.update_registration_deadline(body, tournament)
-        new_is_private_errors = ManageTournamentView.update_is_private(body, tournament)
-        new_password_errors = ManageTournamentView.update_password(body, tournament)
+        new_max_players_error = ManageTournamentView.update_max_players(body, tournament, tournament_players)
+        new_deadline_error = ManageTournamentView.update_registration_deadline(body, tournament)
+        new_is_private_error = ManageTournamentView.update_is_private(body, tournament)
+        new_password_error = ManageTournamentView.update_password(body, tournament)
 
         if new_name_errors is not None:
             update_errors.extend(new_name_errors)
-        if new_max_players_errors is not None:
-            update_errors.extend(new_max_players_errors)
-        if new_deadline_errors is not None:
-            update_errors.extend(new_deadline_errors)
-        if new_is_private_errors is not None:
-            update_errors.extend(new_is_private_errors)
-        if new_password_errors is not None:
-            update_errors.extend(new_password_errors)
+        if new_max_players_error is not None:
+            update_errors.append(new_max_players_error)
+        if new_deadline_error is not None:
+            update_errors.append(new_deadline_error)
+        if new_is_private_error is not None:
+            update_errors.append(new_is_private_error)
+        if new_password_error is not None:
+            update_errors.append(new_password_error)
 
         return update_errors
 
@@ -161,58 +161,58 @@ class ManageTournamentView(View):
         return None
 
     @staticmethod
-    def update_max_players(body: dict, tournament: Tournament, tournament_players) -> Optional[list[str]]:
+    def update_max_players(body: dict, tournament: Tournament, tournament_players) -> Optional[str]:
         new_max_players = body.get('max-players')
         if new_max_players is not None:
-            valid_new_max_players, new_max_players_errors = ManageTournamentView.is_valid_max_players(
+            valid_new_max_players, new_max_players_error = ManageTournamentView.is_valid_max_players(
                 new_max_players, tournament_players)
             if not valid_new_max_players:
-                return new_max_players_errors
+                return new_max_players_error
             else:
                 tournament.max_players = new_max_players
         return None
 
     @staticmethod
-    def update_registration_deadline(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_registration_deadline(body: dict, tournament: Tournament) -> Optional[str]:
         new_deadline = body.get('registration-deadline')
         if new_deadline is not None:
             valid_registration_deadline, registration_deadline_error = TournamentView.is_valid_deadline(new_deadline)
             if not valid_registration_deadline:
-                return [registration_deadline_error]
+                return registration_deadline_error
             else:
                 tournament.registration_deadline = new_deadline
         return None
 
     @staticmethod
-    def update_is_private(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_is_private(body: dict, tournament: Tournament) -> Optional[str]:
         new_is_private = body.get('is-private')
         if new_is_private is not None:
             valid_is_private, is_private_error = TournamentView.is_valid_private(new_is_private)
             if not valid_is_private:
-                return [is_private_error]
+                return is_private_error
             else:
                 tournament.is_private = new_is_private
         return None
 
     @staticmethod
-    def update_password(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_password(body: dict, tournament: Tournament) -> Optional[str]:
         new_password = body.get('password')
         valid_password, password_error = TournamentView.is_valid_password(new_password)
         if tournament.is_private and (tournament.password is None or new_password is not None):
             if not valid_password:
-                return [password_error]
+                return password_error
             else:
                 tournament.password = make_password(new_password)
         return None
 
     @staticmethod
-    def is_valid_max_players(new_max_players: Any, tournament_players: Any) -> tuple[bool, Optional[list[str]]]:
+    def is_valid_max_players(new_max_players: Any, tournament_players: Any) -> tuple[bool, Optional[str]]:
         valid_max_players, max_players_error = TournamentView.is_valid_max_players(new_max_players)
         if not valid_max_players:
             return False, max_players_error
         elif len(tournament_players) > new_max_players:
-            return False, [f'You cannot set the max players to {new_max_players} because there are already '
-                           f'{len(tournament_players)} players registered']
+            return False, f'You cannot set the max players to {new_max_players} because there are already '\
+                          f'{len(tournament_players)} players registered'
         return True, None
 
     @staticmethod
