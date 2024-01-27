@@ -65,17 +65,11 @@ class GenerateMatchesView(View):
         nb_players = len(players)
         seed_order = GenerateMatchesView.get_seed_order(nb_players)
         matches = []
-        i = 0
 
-        for match in seed_order:
-            if match[0] - 1 < nb_players:
-                player_1 = players[match[0] - 1]
-            else:
-                player_1 = None
-            if match[1] - 1 < nb_players:
-                player_2 = players[match[1] - 1]
-            else:
-                player_2 = None
+        for i, match in enumerate(seed_order):
+            player_1 = players[match[0] - 1] if match[0] - 1 < nb_players else None
+            player_2 = players[match[1] - 1] if match[1] - 1 < nb_players else None
+
             matches.append(
                 Match(
                     player_1=player_1,
@@ -84,8 +78,6 @@ class GenerateMatchesView(View):
                     match_id=i
                 )
             )
-            i += 1
-
         return matches
 
     @staticmethod
