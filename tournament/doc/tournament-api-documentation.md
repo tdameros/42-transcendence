@@ -343,7 +343,7 @@ None
 
 </details>
 
-Update the score of a match for a tournament
+Update match status
 
 <details>
  <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>

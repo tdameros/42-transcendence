@@ -54,9 +54,7 @@ class ManageMatchesView(View):
 
     @staticmethod
     def patch(request: HttpRequest, tournament_id: int, match_id: int):
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        # TODO: add service authentication when implemented
 
         try:
             body = json.loads(request.body.decode('utf8'))
@@ -88,10 +86,10 @@ class ManageMatchesView(View):
             return [error.MATCH_FINISHED]
 
         new_match_status_error = ManageMatchesView.update_match_status(body, match)
-        new_player_1_error = ManageMatchesView.update_player_1(body, match)
-        new_player_1_score_error = ManageMatchesView.update_player_1_score(body, match)
-        new_player_2_error = ManageMatchesView.update_player_2(body, match)
-        new_player_2_score_error = ManageMatchesView.update_player_2_score(body, match)
+        new_player_1_error = ManageMatchesView.update_player(body, match, 1)
+        new_player_1_score_error = ManageMatchesView.update_player_score(body, match, 1)
+        new_player_2_error = ManageMatchesView.update_player(body, match, 2)
+        new_player_2_score_error = ManageMatchesView.update_player_score(body, match, 2)
         new_winner_error = ManageMatchesView.update_winner(body, match)
 
         if new_match_status_error is not None:
@@ -121,49 +119,31 @@ class ManageMatchesView(View):
         return None
 
     @staticmethod
-    def update_player_1(body: dict, match: Match) -> Optional[str]:
-        new_player_1 = body.get('player_1')
-        if new_player_1 is not None:
-            if not isinstance(new_player_1, int):
+    def update_player(body: dict, match: Match, player_id: int) -> Optional[str]:
+        new_player = body.get(f'player_{player_id}')
+        if new_player is not None:
+            if not isinstance(new_player, int):
                 return error.MATCH_PLAYER_NOT_INT
             try:
-                match.player_1 = Player.objects.get(id=new_player_1)
+                if player_id == 1:
+                    match.player_1 = Player.objects.get(id=new_player)
+                elif player_id == 2:
+                    match.player_2 = Player.objects.get(id=new_player)
             except ObjectDoesNotExist:
                 return error.MATCH_PLAYER_NOT_EXIST
-        return None
 
     @staticmethod
-    def update_player_1_score(body: dict, match: Match) -> Optional[str]:
-        new_player_1_score = body.get('player_1_score')
-        if new_player_1_score is not None:
-            if not isinstance(new_player_1_score, int):
+    def update_player_score(body: dict, match: Match, player_id: int) -> Optional[str]:
+        new_player_score = body.get(f'player_{player_id}_score')
+        if new_player_score is not None:
+            if not isinstance(new_player_score, int):
                 return error.MATCH_PLAYER_SCORE_NOT_INT
-            if new_player_1_score < 0 or new_player_1_score > settings.MATCH_POINT_TO_WIN:
+            if new_player_score < 0 or new_player_score > settings.MATCH_POINT_TO_WIN:
                 return error.MATCH_PLAYER_SCORE_INVALID
-            match.player_1_score = new_player_1_score
-        return None
-
-    @staticmethod
-    def update_player_2_score(body: dict, match: Match) -> Optional[str]:
-        new_player_2_score = body.get('player_2_score')
-        if new_player_2_score is not None:
-            if not isinstance(new_player_2_score, int):
-                return error.MATCH_PLAYER_SCORE_NOT_INT
-            if new_player_2_score < 0 or new_player_2_score > settings.MATCH_POINT_TO_WIN:
-                return error.MATCH_PLAYER_SCORE_INVALID
-            match.player_2_score = new_player_2_score
-        return None
-
-    @staticmethod
-    def update_player_2(body: dict, match: Match) -> Optional[str]:
-        new_player_2 = body.get('player_2')
-        if new_player_2 is not None:
-            if not isinstance(new_player_2, int):
-                return error.MATCH_PLAYER_NOT_INT
-            try:
-                match.player_2 = Player.objects.get(id=new_player_2)
-            except ObjectDoesNotExist:
-                return error.MATCH_PLAYER_NOT_EXIST
+            if player_id == 1:
+                match.player_1_score = new_player_score
+            elif player_id == 2:
+                match.player_2_score = new_player_score
         return None
 
     @staticmethod
