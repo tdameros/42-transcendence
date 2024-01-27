@@ -23,9 +23,11 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: sh -c "python3 src/manage.py makemigrations &&
-                 python3 src/manage.py migrate &&
-                 gunicorn --chdir src/ user_stats.wsgi:application -w 4 -b 0.0.0.0:8000"
+        command: sh -c "cp -r /app/user_stats /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ user_stats.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
             - user_stats_code:/app/user_stats
             - common_code:/app/common
