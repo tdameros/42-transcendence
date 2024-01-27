@@ -9,17 +9,15 @@ from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
 from api.models import User
-from common.src.jwt_managers import UserAccessJWTDecoder
+from common.src.jwt_managers import user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET']), name='dispatch')
 class UserView(View):
+
     @staticmethod
     def get(request: HttpRequest, user_id: int):
-        token = request.headers.get('Authorization')
-        valid, user, errors = UserAccessJWTDecoder.authenticate(token)
-        if not valid:
-            return JsonResponse({'errors': errors}, status=401)
         try:
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
@@ -29,9 +27,6 @@ class UserView(View):
     @staticmethod
     def post(request: HttpRequest, user_id: int):
         # TODO: add service authentication when implemented
-        # user, error = authenticate_service(request)
-        # if service is None:
-        #     return JsonResponse({'errors': error}, status=401)
         try:
             json_body = json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError as e:
@@ -54,9 +49,6 @@ class UserView(View):
     @staticmethod
     def patch(request: HttpRequest, user_id: int):
         # TODO: add service authentication when implemented
-        # user, error = authenticate_service(request)
-        # if service is None:
-        #     return JsonResponse({'errors': error}, status=401)
         try:
             json_body = json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError as e:

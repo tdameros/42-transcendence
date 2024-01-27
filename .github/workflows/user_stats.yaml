@@ -49,6 +49,7 @@ jobs:
     - name: Check imports
       working-directory: user_stats/src/
       run: |
+        cp -r ../../common/ .
         isort . --check-only
 
     - name: Run Django migrations
