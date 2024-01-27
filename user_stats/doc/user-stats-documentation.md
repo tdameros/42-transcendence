@@ -13,9 +13,9 @@
 
 #### Header
 
-> | name            | type   | description  | type     |
-> |-----------------|--------|--------------|----------|
-> | `Authorization` | String | Access token | Required |
+> | name            | type   | description  | requirement |
+> |-----------------|--------|--------------|-------------|
+> | `Authorization` | String | Access token | Required    |
 
 ### Response
 
@@ -47,20 +47,20 @@
 
 #### Header (not implemented)
 
-> | name            | type   | description   | type     |
-> |-----------------|--------|---------------|----------|
-> | `Authorization` | String | Service token | Required |
+> | name            | type   | description   | requirement |
+> |-----------------|--------|---------------|-------------|
+> | `Authorization` | String | Service token | Required    |
  
 #### Body 
 
-> | name           | type | description            |
-> |----------------|------|------------------------|
-> | `elo`          | int  | User elo               |
-> | `games_played` | int  | Number of games played |
-> | `games_won`    | int  | Number of games won    |
-> | `games_lost`   | int  | Number of games lost   |
-> | `win_rate`     | int  | Win rate               |
-> | `friends`      | int  | Number of friends      |
+> | name           | type | description            | requirement |
+> |----------------|------|------------------------|-------------|
+> | `elo`          | int  | User elo               | Optional    |
+> | `games_played` | int  | Number of games played | Optional    |
+> | `games_won`    | int  | Number of games won    | Optional    |
+> | `games_lost`   | int  | Number of games lost   | Optional    |
+> | `win_rate`     | int  | Win rate               | Optional    |
+> | `friends`      | int  | Number of friends      | Optional    |
 
 ### Response
 
@@ -81,20 +81,20 @@
 
 #### Header (not implemented)
 
-> | name            | type   | description   | type     |
-> |-----------------|--------|---------------|----------|
-> | `Authorization` | String | Service token | Required |
+> | name            | type   | description   | requirement |
+> |-----------------|--------|---------------|-------------|
+> | `Authorization` | String | Service token | Required    |
 
 #### Body
 
-> | name           | type | description            |
-> |----------------|------|------------------------|
-> | `elo`          | int  | User elo               |
-> | `games_played` | int  | Number of games played |
-> | `games_won`    | int  | Number of games won    |
-> | `games_lost`   | int  | Number of games lost   |
-> | `win_rate`     | int  | Win rate               |
-> | `friends`      | int  | Number of friends      |
+> | name           | type | description            | requirement |
+> |----------------|------|------------------------|-------------|
+> | `elo`          | int  | User elo               | Optional    |
+> | `games_played` | int  | Number of games played | Optional    |
+> | `games_won`    | int  | Number of games won    | Optional    |
+> | `games_lost`   | int  | Number of games lost   | Optional    |
+> | `win_rate`     | int  | Win rate               | Optional    |
+> | `friends`      | int  | Number of friends      | Optional    |
 
 ### Response
 
