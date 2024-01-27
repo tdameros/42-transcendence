@@ -1,10 +1,11 @@
 from django.urls import path
 
-from api.views.manage_tournament_views import ManageTournamentView
-from api.views.tournament_players_views import AnonymizePlayerView, TournamentPlayersView
 from api.views.generate_matches_views import GenerateMatchesView
+from api.views.manage_tournament_views import ManageTournamentView
+from api.views.matches_views import ManageMatchesView, MatchesView
+from api.views.tournament_players_views import (AnonymizePlayerView,
+                                                TournamentPlayersView)
 from api.views.tournament_views import TournamentView
-from api.views.matches_views import MatchesView, ManageMatchesView
 
 urlpatterns = [
     path('', TournamentView.as_view(), name='tournament'),

@@ -11,9 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
 from api.models import Match, Player, Tournament
+from api.views.match_utils import MatchUtils
 from tournament import settings
 from tournament.authenticate_request import authenticate_request
-from api.views.match_utils import MatchUtils
 
 
 @method_decorator(csrf_exempt, name='dispatch')

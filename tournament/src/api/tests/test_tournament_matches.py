@@ -4,9 +4,9 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
+from api import error_message as error
 from api.models import Match, Player, Tournament
 from tournament import settings
-from api import error_message as error
 
 
 class GenerateTournamentMatches(TestCase):
@@ -80,7 +80,7 @@ class GenerateTournamentMatches(TestCase):
 
 class MatchesTest(TestCase):
     def setUp(self):
-        tournament = Tournament.objects.create(name='tournament 1', admin_id=1, max_players=8)
+        tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
             Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament)
@@ -126,7 +126,7 @@ class MatchesTest(TestCase):
 
 class GetMatchTest(TestCase):
     def setUp(self):
-        tournament = Tournament.objects.create(name='tournament 1', admin_id=1, max_players=8)
+        tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
             Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament)
@@ -183,16 +183,27 @@ class GetMatchTest(TestCase):
 
 class UpdateMatchTest(TestCase):
     def setUp(self):
-        tournament = Tournament.objects.create(name='tournament 1', admin_id=1, max_players=8)
+        tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
-            Player.objects.create(nickname=f'player {i}', user_id=i, tournament=tournament)
+            Player.objects.create(id=i + 1, nickname=f'player {i}', user_id=i, tournament=tournament)
         players = tournament.players.all()
 
         for i in range(0, 4):
-            Match.objects.create(player_1=players[i], player_2=players[i + 4], tournament=tournament, match_id=i + 1)
+            Match.objects.create(
+                player_1=players[i],
+                player_2=players[i + 4],
+                tournament=tournament,
+                match_id=i + 1
+            )
 
-        Match.objects.create(player_1=players[0], player_2=players[4], tournament=tournament, match_id=5, status=Match.FINISHED)
+        Match.objects.create(
+            player_1=players[0],
+            player_2=players[4],
+            tournament=tournament,
+            match_id=5,
+            status=Match.FINISHED
+        )
 
     def update_match(self, tournament_id, match_id, body):
         url = reverse('manage-match', args=(tournament_id, match_id))
@@ -247,6 +258,8 @@ class UpdateMatchTest(TestCase):
 
         response, body = self.update_match(1, 1, {'player_1': 2})
 
+        if response.status_code != 200:
+            print(body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['id'], 1)
         self.assertEqual(body['status'], 'Not played')
@@ -260,6 +273,8 @@ class UpdateMatchTest(TestCase):
 
         response, body = self.update_match(1, 1, {'player_2': 6})
 
+        if response.status_code != 200:
+            print(body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['id'], 1)
         self.assertEqual(body['status'], 'Not played')
@@ -273,6 +288,8 @@ class UpdateMatchTest(TestCase):
 
         response, body = self.update_match(1, 1, {'player_1': 2, 'player_2': 6})
 
+        if response.status_code != 200:
+            print(body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['id'], 1)
         self.assertEqual(body['status'], 'Not played')
@@ -351,4 +368,3 @@ class UpdateMatchTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.MATCH_WINNER_NOT_EXIST])
-
