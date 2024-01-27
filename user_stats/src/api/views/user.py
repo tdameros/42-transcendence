@@ -9,15 +9,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
 from api.models import User
-from user_stats.authenticate import authenticate
+from common.src.jwt_managers import UserAccessJWTDecoder
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UserView(View):
     @staticmethod
     def get(request: HttpRequest, user_id: int):
-        user, errors = authenticate(request)
-        if user is None:
+        token = request.headers.get('Authorization')
+        valid, user, errors = UserAccessJWTDecoder.authenticate(token)
+        if not valid:
             return JsonResponse({'errors': errors}, status=401)
         try:
             user = User.objects.get(pk=user_id)

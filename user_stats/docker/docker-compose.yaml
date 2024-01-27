@@ -27,7 +27,8 @@ services:
                  python3 src/manage.py migrate &&
                  gunicorn --chdir src/ user_stats.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - user_stats_code:/app/src/
+            - user_stats_code:/app/user_stats
+            - common_code:/app/common
         expose:
             - "8000"
         depends_on:
