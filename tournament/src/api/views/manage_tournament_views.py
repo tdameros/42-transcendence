@@ -1,4 +1,5 @@
 import json
+import math
 from typing import Any, Optional
 
 from django.contrib.auth.hashers import make_password
@@ -12,6 +13,55 @@ from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
 from tournament.authenticate_request import authenticate_request
+from tournament import settings
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StartTournamentView(View):
+    @staticmethod
+    def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+            players = tournament.players.all()
+            matches = tournament.matches.all()
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        start_error = StartTournamentView.check_start_permissions(user, tournament, players, matches)
+        if start_error is not None:
+            return JsonResponse(data={'errors': [start_error]}, status=403)
+
+        tournament.status = Tournament.IN_PROGRESS
+
+        try:
+            tournament.save()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': f'tournament `{tournament.name}` successfully started'}, status=200)
+
+
+    @staticmethod
+    def check_start_permissions(user: dict, tournament: Tournament, players, matches) -> Optional[str]:
+        if tournament.status != Tournament.CREATED:
+            return 'The tournament has already started'
+
+        if tournament.admin_id != user['id']:
+            return 'You are not the owner of the tournament, so you cannot start it'
+
+        if len(players) < settings.MIN_PLAYERS:
+            return error.NOT_ENOUGH_PLAYERS
+
+        if len(matches) != int(2 ** math.ceil(math.log2(len(players))) - 1):
+            return error.MATCHES_NOT_GENERATED
+
+        return None
 
 
 @method_decorator(csrf_exempt, name='dispatch')
