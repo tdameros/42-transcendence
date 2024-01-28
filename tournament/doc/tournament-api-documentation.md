@@ -374,10 +374,10 @@ None
 
 </details>
 
-Update match status
+Start a match
 
 <details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/match/{match-id}</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/start</b></code></summary>
 
 ### Parameters
 
@@ -388,18 +388,36 @@ All fields are optional
 - The status of the match
 - The first player
 - The second player
-- The score of the first player
-- The score of the second player
-- The winner of the match
 
 > ```javascript
 > {
->    "status": 1,
->    "player1": "Player1",
->    "player2": "Player2",
->    "score1": 2,
->    "score2": 1,
->    "winner": "Player1"
+>   "player1": 1,
+>   "player2": 2
+> }
+
+### Responses
+
+> | http code | content-type       | response                                  |
+> |-----------|--------------------|-------------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`       |
+
+</details>
+
+Add one point to a player
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/add-point</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- The player to add a point
+
+> ```javascript
+> {
+>   "player": 1
 > }
 > ```
 
@@ -409,5 +427,31 @@ All fields are optional
 > |-----------|--------------------|-------------------------------------------|
 > | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}` |
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`       |
+
+</details>
+
+End a match
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/end</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- Winner of the match
+
+> ```javascript
+> {
+>   "winner": 2
+> }
+> ```
+
+### Responses
+
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "status": "Finished", ...}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
 </details>

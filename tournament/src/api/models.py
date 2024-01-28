@@ -21,6 +21,7 @@ class Player(models.Model):
     nickname = models.CharField(max_length=settings.MAX_NICKNAME_LENGTH)
     user_id = models.IntegerField()
     elo = models.IntegerField(null=True)
+    rank = models.IntegerField(null=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='players')
 
 
