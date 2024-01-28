@@ -32,8 +32,8 @@ class StartMatchView(View):
             return JsonResponse(data={'errors': [error_message]}, status=400)
 
         try:
-            player1 = Player.objects.get(user_id=player1)
-            player2 = Player.objects.get(user_id=player2)
+            player1 = Player.objects.get(tournament_id=tournament_id, user_id=player1)
+            player2 = Player.objects.get(tournament_id=tournament_id, user_id=player2)
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.MATCH_PLAYER_NOT_EXIST]}, status=404)
         except Exception as e:
@@ -97,7 +97,7 @@ class EndMatchView(View):
         if not isinstance(winner, int):
             return JsonResponse(data={'errors': [error.MATCH_WINNER_NOT_INT]}, status=400)
         try:
-            winner = Player.objects.get(user_id=winner)
+            winner = Player.objects.get(tournament_id=tournament_id, user_id=winner)
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.MATCH_PLAYER_NOT_EXIST]}, status=404)
         except Exception as e:
@@ -136,7 +136,7 @@ class EndMatchView(View):
 
     @staticmethod
     def set_winner(match: Match, winner: int):
-        if match.player_1.user_id == winner:
+        if match.player_1.user_id == winner.user_id:
             match.winner = match.player_1
         else:
             match.winner = match.player_2
@@ -201,7 +201,7 @@ class AddPointView(View):
         if not isinstance(player, int):
             return JsonResponse(data={'errors': [error.MATCH_PLAYER_NOT_INT]}, status=400)
         try:
-            player = Player.objects.get(user_id=player)
+            player = Player.objects.get(tournament_id=tournament_id, user_id=player)
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.MATCH_PLAYER_NOT_EXIST]}, status=404)
         except Exception as e:
@@ -210,7 +210,7 @@ class AddPointView(View):
         try:
             match = AddPointView.get_match(tournament_id, player)
         except ObjectDoesNotExist:
-            return JsonResponse({'errors': [f'match with user_id `{player}` does not exist']}, status=404)
+            return JsonResponse({'errors': [error.MATCH_NOT_FOUND]}, status=404)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
@@ -236,8 +236,8 @@ class AddPointView(View):
         )
 
     @staticmethod
-    def update_score(match: Match, player: int):
-        if match.player_1.user_id == player:
+    def update_score(match: Match, player: Player):
+        if match.player_1.user_id == player.user_id:
             match.player_1_score += 1
         else:
             match.player_2_score += 1

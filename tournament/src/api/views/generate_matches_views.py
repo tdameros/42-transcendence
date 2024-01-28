@@ -33,7 +33,6 @@ class GenerateMatchesView(View):
             tournament = Tournament.objects.get(id=tournament_id)
             players = list(tournament.players.all())
             # GenerateMatchesView.set_players_elo(players)
-            tournament.matches.all().delete()
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
@@ -47,6 +46,7 @@ class GenerateMatchesView(View):
         matches = GenerateMatchesView.generate_matches(players, tournament)
 
         try:
+            tournament.matches.all().delete()
             Match.objects.bulk_create(matches)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
