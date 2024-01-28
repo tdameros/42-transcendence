@@ -43,7 +43,7 @@ class GenerateMatchesView(View):
         if error_message is not None:
             return JsonResponse({'errors': [error_message]}, status=status_code)
 
-        players = GenerateMatchesView.sort_players(players, body.get('is_random', False))
+        players = GenerateMatchesView.sort_players(players, body.get('random', False))
         matches = GenerateMatchesView.generate_matches(players, tournament)
 
         try:
