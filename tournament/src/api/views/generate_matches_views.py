@@ -89,6 +89,7 @@ class GenerateMatchesView(View):
                     match_id=i + nb_matches_first_round
                 )
             )
+        GenerateMatchesView.manage_no_opponent(matches, nb_matches_first_round)
         return matches
 
     @staticmethod
@@ -116,6 +117,23 @@ class GenerateMatchesView(View):
             out.append(length - player)
 
         return out
+
+    @staticmethod
+    def manage_no_opponent(matches: list[Match], nb_matches_first_round: int):
+        for i in range(0, nb_matches_first_round):
+            if matches[i].player_1 is None or matches[i].player_2 is None:
+                matches[i].status = Match.FINISHED
+                winner = matches[i].player_1 if matches[i].player_1 is not None else matches[i].player_2
+                matches[i].winner = winner
+
+                next_match_id = MatchUtils.get_next_match_id(i, len(matches))
+                print(i)
+                print(len(matches))
+                print(next_match_id)
+                if i % 2 == 0:
+                    matches[next_match_id].player_1 = winner
+                else:
+                    matches[next_match_id].player_2 = winner
 
     @staticmethod
     def set_players_elo(players: list[Player]):
