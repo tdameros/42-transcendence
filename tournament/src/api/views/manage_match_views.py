@@ -162,6 +162,7 @@ class EndMatchView(View):
                 next_match.player_1 = match.winner
             else:
                 next_match.player_2 = match.winner
+            next_match.save()
 
     @staticmethod
     def set_winner_ranking(winner: Player):

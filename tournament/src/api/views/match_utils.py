@@ -4,7 +4,7 @@ from api.models import Match
 class MatchUtils:
     @staticmethod
     def get_next_match_id(match_id: int, nb_matches: int) -> int:
-        return int((nb_matches - match_id) / 2) + (match_id + 1) % 2
+        return nb_matches - int((nb_matches - match_id) / 2)
 
     @staticmethod
     def matches_to_json(matches: list[Match]) -> dict[str, list[any]]:
