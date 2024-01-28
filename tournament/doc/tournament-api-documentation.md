@@ -312,10 +312,41 @@ None
 
 </details>
 
+Generate matches for a tournament
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/matches/generate</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- Randomly generate matches (optional, default = false)
+
+> ```javascript
+> {
+>   "random": true
+> }
+
+### Responses
+
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"nb-matches": 14, "matches": [...]}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`             |
+
+</details>
+
+--------------------------------------------------------------------------------
+
+## `/tournament/{id}/match`
+
+### Manage match of a tournament
+
 Retrieve details of a match
 
 <details>
- <summary><code>GET</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
+ <summary><code>GET</code> <code><b>/tournament/{id}/match/{match-id}</b></code></summary>
 
 ### Parameters
 
@@ -346,7 +377,7 @@ None
 Update match status
 
 <details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
+ <summary><code>PATCH</code> <code><b>/tournament/{id}/match/{match-id}</b></code></summary>
 
 ### Parameters
 
@@ -378,30 +409,5 @@ All fields are optional
 > |-----------|--------------------|-------------------------------------------|
 > | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}` |
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`       |
-
-</details>
-
-Generate matches for a tournament
-
-<details>
- <summary><code>POST</code> <code><b>/tournament/{id}/matches/generate</b></code></summary>
-
-### Parameters
-
-#### Body
-
-- Randomly generate matches (optional, default = false)
-
-> ```javascript
-> {
->   "random": true
-> }
-
-### Responses
-
-> | http code | content-type       | response                               |
-> |-----------|--------------------|----------------------------------------|
-> | `200`     | `application/json` | `{"nb-matches": 14, "matches": [...]}` |
-> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`             |
 
 </details>

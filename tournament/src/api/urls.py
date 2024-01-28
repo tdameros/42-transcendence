@@ -13,6 +13,6 @@ urlpatterns = [
     path('<int:tournament_id>/players', TournamentPlayersView.as_view(), name='tournament-players'),
     path('<int:tournament_id>/matches', MatchesView.as_view(), name='matches'),
     path('<int:tournament_id>/matches/generate', GenerateMatchesView.as_view(), name='generate-matches'),
-    path('<int:tournament_id>/matches/<int:match_id>', ManageMatchesView.as_view(), name='manage-match'),
+    path('<int:tournament_id>/match/<int:match_id>', ManageMatchesView.as_view(), name='manage-match'),
     path('player/anonymize', AnonymizePlayerView.as_view(), name='player')
 ]
