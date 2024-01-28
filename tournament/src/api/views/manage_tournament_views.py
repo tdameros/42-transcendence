@@ -91,7 +91,8 @@ class ManageTournamentView(View):
             'nb-players': len(tournament_players),
             'players': [{
                 'nickname': player.nickname,
-                'user-id': player.user_id
+                'user-id': player.user_id,
+                'rank': player.rank
             } for player in tournament_players],
             'is-private': tournament.is_private,
             'status': TournamentView.status_to_string(tournament.status),
