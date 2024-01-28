@@ -150,3 +150,6 @@ GitHub.sublime-settings
 # Node.js #
 node_modules/
 package-lock.json
+
+# Common folder #
+user_stats/src/common

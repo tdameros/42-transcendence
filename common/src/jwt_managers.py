@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 
 import jwt
+from django.http import JsonResponse
 
 import common.src.settings as settings
 
@@ -63,3 +65,17 @@ class UserAccessJWTDecoder:
             return False, None, ['No user_id in payload']
 
         return True, decoded_payload, None
+
+
+def user_authentication(methods):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if request.method in methods:
+                token = request.headers.get('Authorization')
+                valid, user, errors = UserAccessJWTDecoder.authenticate(token)
+                if not valid:
+                    return JsonResponse({'errors': errors}, status=401)
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
