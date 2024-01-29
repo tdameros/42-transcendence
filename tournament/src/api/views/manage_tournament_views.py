@@ -44,7 +44,7 @@ class StartTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        return JsonResponse({'message': f'tournament `{tournament.name}` successfully started'}, status=200)
+        return JsonResponse({'message': f'Tournament `{tournament.name}` successfully started'}, status=200)
 
 
     @staticmethod

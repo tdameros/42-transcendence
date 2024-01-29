@@ -547,3 +547,61 @@ class DeleteTournamentsTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body['message'], 'No tournament created by this user')
+
+
+class StartTournamentTest(TestCase):
+    @patch('api.views.generate_matches_views.authenticate_request')
+    def setUp(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+        tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
+
+        for i in range(0, 8):
+            Player.objects.create(
+                id=i,
+                nickname=f'player {i}',
+                user_id=i,
+                tournament=tournament,
+            )
+
+        url = reverse('generate-matches', args=(1,))
+
+        response = self.client.post(url, {'random': True}, content_type='application/json')
+
+        body = json.loads(response.content.decode('utf8'))
+
+    def start_tournament(self, tournament_id):
+        url = reverse('start-tournament', args=(tournament_id,))
+
+        response = self.client.patch(url)
+
+        body = json.loads(response.content.decode('utf8'))
+
+        return response, body
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_start_tournament(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        tournament = Tournament.objects.get(id=1)
+
+        response, body = self.start_tournament(1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], f'Tournament `{tournament.name}` successfully started')
+
+        tournament = Tournament.objects.get(id=1)
+
+        self.assertEqual(tournament.status, Tournament.IN_PROGRESS)
+
+    @patch('api.views.manage_tournament_views.authenticate_request')
+    def test_start_tournament_not_found(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (user, None)
+
+        response, body = self.start_tournament(2)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], ['tournament with id `2` does not exist'])
+
