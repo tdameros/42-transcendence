@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'api'
 ]
 
@@ -75,7 +76,20 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8080",
+        "https://localhost",
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://localhost",
+        "https://42.shiftcode.fr",
+    ]
 
 ROOT_URLCONF = 'tournament.urls'
 
