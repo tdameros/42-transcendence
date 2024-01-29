@@ -6,7 +6,6 @@ from django.urls import reverse
 
 from api import error_message as error
 from api.models import Match, Player, Tournament
-from tournament import settings
 
 
 class GenerateTournamentMatches(TestCase):
@@ -182,9 +181,7 @@ class StartMatchTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        response = self.client.post(url, {'random': True}, content_type='application/json')
-
-        body = json.loads(response.content.decode('utf8'))
+        self.client.post(url, {'random': True}, content_type='application/json')
 
         tournament.status = Tournament.IN_PROGRESS
         tournament.save()
@@ -241,6 +238,7 @@ class StartMatchTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.MATCH_PLAYER_NOT_INT])
 
+
 class EndMatchTest(TestCase):
     @patch('api.views.generate_matches_views.authenticate_request')
     def setUp(self, mock_get):
@@ -260,7 +258,7 @@ class EndMatchTest(TestCase):
 
         response = self.client.post(url, {'random': True}, content_type='application/json')
 
-        body = json.loads(response.content.decode('utf8'))
+        json.loads(response.content.decode('utf8'))
 
         match = Match.objects.get(match_id=0, tournament_id=1)
         match.status = Match.IN_PROGRESS
@@ -317,6 +315,7 @@ class EndMatchTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.MATCH_WINNER_NOT_INT])
 
+
 class AddPointTest(TestCase):
     @patch('api.views.generate_matches_views.authenticate_request')
     def setUp(self, mock_get):
@@ -336,7 +335,7 @@ class AddPointTest(TestCase):
 
         response = self.client.post(url, {'random': True}, content_type='application/json')
 
-        body = json.loads(response.content.decode('utf8'))
+        json.loads(response.content.decode('utf8'))
 
         match = Match.objects.get(match_id=0, tournament_id=1)
         match.status = Match.IN_PROGRESS

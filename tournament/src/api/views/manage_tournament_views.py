@@ -12,8 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
-from tournament.authenticate_request import authenticate_request
 from tournament import settings
+from tournament.authenticate_request import authenticate_request
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -45,7 +45,6 @@ class StartTournamentView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': f'Tournament `{tournament.name}` successfully started'}, status=200)
-
 
     @staticmethod
     def check_start_permissions(user: dict, tournament: Tournament, players, matches) -> Optional[str]:

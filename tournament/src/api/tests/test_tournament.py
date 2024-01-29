@@ -566,9 +566,7 @@ class StartTournamentTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        response = self.client.post(url, {'random': True}, content_type='application/json')
-
-        body = json.loads(response.content.decode('utf8'))
+        self.client.post(url, {'random': True}, content_type='application/json')
 
     def start_tournament(self, tournament_id):
         url = reverse('start-tournament', args=(tournament_id,))
@@ -604,4 +602,3 @@ class StartTournamentTest(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['errors'], ['tournament with id `2` does not exist'])
-

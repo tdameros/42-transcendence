@@ -1,10 +1,13 @@
 from django.urls import path
 
 from api.views.generate_matches_views import GenerateMatchesView
-from api.views.manage_tournament_views import ManageTournamentView, StartTournamentView
+from api.views.manage_match_views import (AddPointView, EndMatchView,
+                                          StartMatchView)
+from api.views.manage_tournament_views import (ManageTournamentView,
+                                               StartTournamentView)
 from api.views.matches_views import MatchesView
-from api.views.manage_match_views import StartMatchView, EndMatchView, AddPointView
-from api.views.tournament_players_views import AnonymizePlayerView, TournamentPlayersView
+from api.views.tournament_players_views import (AnonymizePlayerView,
+                                                TournamentPlayersView)
 from api.views.tournament_views import TournamentView
 
 urlpatterns = [

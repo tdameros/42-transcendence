@@ -3,11 +3,11 @@ import math
 from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
 
 from api import error_message as error
 from api.models import Match, Player, Tournament
