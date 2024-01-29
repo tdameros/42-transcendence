@@ -213,7 +213,7 @@ all fields are mandatory
 > errors can be :
 > - Refresh token not found
 > - Signature verification failed
-> - Empty payload
+> - No expiration date found
 > - Signature has expired
 > - No user_id in payload
 > - User does not exist

@@ -1,5 +1,4 @@
 export class BootstrapUtils {
-
   static setInvalidInput(input) {
     input.classList.remove('is-valid');
     input.classList.add('is-invalid');
@@ -9,7 +8,6 @@ export class BootstrapUtils {
     input.classList.remove('is-invalid');
     input.classList.add('is-valid');
   }
-
 }
 
-export default { BootstrapUtils };
+export default {BootstrapUtils};

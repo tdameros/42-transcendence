@@ -1,7 +1,6 @@
-import {Cookies} from "./Cookies.js";
+import {Cookies} from './Cookies.js';
 
 export class Theme {
-
   static defaultTheme = 'light';
 
   static set(theme) {
@@ -22,4 +21,4 @@ export class Theme {
   }
 }
 
-export default { Theme };
+export default {Theme};

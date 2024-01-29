@@ -61,18 +61,9 @@ FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-ACCESS_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-REFRESH_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl88VVar5X6lAlHjj4o4r
-r3WoAQloSNbxjgyUd6dU3z3a8JbLibihyl/LjrfAJXCT39FzBbjcWHw7dnDkBeU0
-xX8pPNESkfJI7wxzkc1WcPk1KMwvy1dTaoCub7fZxNl2oOObdzTGpic8co7VOUqa
-5cJks3MTL/8ipxaf4HVJ4luvcySvPflL1woWO3QfTomL/B/Xnu9fmj2ynn8DptfY
-wJEe4eFA/jx+TP3coPBgs/XYG3stdyislm574U+5QvfRi1uii8jkFgpIxwUnxYbx
-mZW+X8IdGmaUnucNeF1pLZjEIcr7MkzP3zm1auQww71DObGTPaLLJNjTPdP3rWYJ
-mQIDAQAB
------END PUBLIC KEY-----"""
-REFRESH_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
+SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'  # TODO ask Tom if we can delete this
+REFRESH_KEY = 'WE_SOULD_ALSO_CHANGE_THIS_KEY'  # TODO change this key
+ACCESS_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXzxVVqvlfqUCU
 eOPijiuvdagBCWhI1vGODJR3p1TfPdrwlsuJuKHKX8uOt8AlcJPf0XMFuNxYfDt2
 cOQF5TTFfyk80RKR8kjvDHORzVZw+TUozC/LV1NqgK5vt9nE2Xag45t3NMamJzxy
@@ -104,7 +95,7 @@ REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -191,7 +182,6 @@ else:
                 'PORT': '5432',
             }
         }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
