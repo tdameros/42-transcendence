@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
 from api.models import Match, Player, Tournament
+from api.views.match_utils import MatchUtils
 from tournament import settings
 from tournament.authenticate_request import authenticate_request
 
@@ -50,7 +51,7 @@ class GenerateMatchesView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        return JsonResponse(GenerateMatchesView.matches_to_json(matches), status=200)
+        return JsonResponse(MatchUtils.matches_to_json(matches), status=200)
 
     @staticmethod
     def sort_players(players: list[Player], is_random: any) -> list[Player]:
@@ -129,19 +130,3 @@ class GenerateMatchesView(View):
             return error.NOT_ENOUGH_PLAYERS, 400
 
         return None, 200
-
-    @staticmethod
-    def matches_to_json(matches: list[Match]) -> dict[str, list[any]]:
-        matches_data = [
-            {
-                'id': match.match_id,
-                'player_1': match.player_1.nickname if match.player_1 is not None else None,
-                'player_2': match.player_2.nickname if match.player_2 is not None else None
-            } for match in matches
-        ]
-        data = {
-            'nb-matches': len(matches),
-            'matches': matches_data
-        }
-
-        return data
