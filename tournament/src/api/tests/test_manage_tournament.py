@@ -42,6 +42,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['status'], 'Created')
         self.assertEqual(body['players'], [{
             'nickname': f'Player{i}',
+            'rank': None,
             'user-id': i
         } for i in range(1, 14)])
 
@@ -62,6 +63,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['players'], [
             {
                 'nickname': f'Player{i}',
+                'rank': None,
                 'user-id': i
             } for i in range(1, 3)
         ])

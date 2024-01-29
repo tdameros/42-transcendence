@@ -25,6 +25,13 @@ class StartMatchView(View):
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
+        try:
+            Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'Tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
         player1 = body.get('player1')
         player2 = body.get('player2')
         is_valid, error_message = StartMatchView.is_valid_players(player1, player2)
@@ -92,6 +99,13 @@ class EndMatchView(View):
             body = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        try:
+            Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'Tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         winner = body.get('winner')
         if not isinstance(winner, int):
@@ -197,6 +211,13 @@ class AddPointView(View):
             body = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        try:
+            Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'Tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         player = body.get('player')
         if not isinstance(player, int):

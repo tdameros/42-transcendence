@@ -127,9 +127,6 @@ class GenerateMatchesView(View):
                 matches[i].winner = winner
 
                 next_match_id = MatchUtils.get_next_match_id(i, len(matches))
-                print(i)
-                print(len(matches))
-                print(next_match_id)
                 if i % 2 == 0:
                     matches[next_match_id].player_1 = winner
                 else:
