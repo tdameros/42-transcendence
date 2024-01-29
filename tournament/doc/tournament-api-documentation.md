@@ -183,10 +183,21 @@ Update tournament settings
 
 </details>
 
+Start a tournament
+
 <details>
  <summary><code>PATCH</code> <code><b>/tournament/{id}/start</b></code></summary>
 
-#### Start a tournament
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                            |
+> |-----------|--------------------|-------------------------------------|
+> | `200`     | `application/json` | `{"message": "..."}`                |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
 
 </details>
 
