@@ -33,7 +33,6 @@ class GenerateMatchesView(View):
             tournament = Tournament.objects.get(id=tournament_id)
             players = list(tournament.players.all())
             # GenerateMatchesView.set_players_elo(players)
-            tournament.matches.all().delete()
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
@@ -43,10 +42,11 @@ class GenerateMatchesView(View):
         if error_message is not None:
             return JsonResponse({'errors': [error_message]}, status=status_code)
 
-        players = GenerateMatchesView.sort_players(players, body.get('is_random', False))
+        players = GenerateMatchesView.sort_players(players, body.get('random', False))
         matches = GenerateMatchesView.generate_matches(players, tournament)
 
         try:
+            tournament.matches.all().delete()
             Match.objects.bulk_create(matches)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
@@ -79,6 +79,17 @@ class GenerateMatchesView(View):
                     match_id=i
                 )
             )
+        nb_matches_first_round = len(matches)
+        for i in range(0, nb_matches_first_round - 1):
+            matches.append(
+                Match(
+                    player_1=None,
+                    player_2=None,
+                    tournament=tournament,
+                    match_id=i + nb_matches_first_round
+                )
+            )
+        GenerateMatchesView.manage_no_opponent(matches, nb_matches_first_round)
         return matches
 
     @staticmethod
@@ -106,6 +117,20 @@ class GenerateMatchesView(View):
             out.append(length - player)
 
         return out
+
+    @staticmethod
+    def manage_no_opponent(matches: list[Match], nb_matches_first_round: int):
+        for i in range(0, nb_matches_first_round):
+            if matches[i].player_1 is None or matches[i].player_2 is None:
+                matches[i].status = Match.FINISHED
+                winner = matches[i].player_1 if matches[i].player_1 is not None else matches[i].player_2
+                matches[i].winner = winner
+
+                next_match_id = MatchUtils.get_next_match_id(i, len(matches))
+                if i % 2 == 0:
+                    matches[next_match_id].player_1 = winner
+                else:
+                    matches[next_match_id].player_2 = winner
 
     @staticmethod
     def set_players_elo(players: list[Player]):

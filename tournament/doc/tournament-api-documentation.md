@@ -183,10 +183,21 @@ Update tournament settings
 
 </details>
 
+Start a tournament
+
 <details>
  <summary><code>PATCH</code> <code><b>/tournament/{id}/start</b></code></summary>
 
-#### Start a tournament
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                            |
+> |-----------|--------------------|-------------------------------------|
+> | `200`     | `application/json` | `{"message": "..."}`                |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}` |
 
 </details>
 
@@ -312,10 +323,41 @@ None
 
 </details>
 
+Generate matches for a tournament
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/matches/generate</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- Randomly generate matches (optional, default = false)
+
+> ```javascript
+> {
+>   "random": true
+> }
+
+### Responses
+
+> | http code | content-type       | response                               |
+> |-----------|--------------------|----------------------------------------|
+> | `200`     | `application/json` | `{"nb-matches": 14, "matches": [...]}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`             |
+
+</details>
+
+--------------------------------------------------------------------------------
+
+## `/tournament/{id}/match`
+
+### Manage match of a tournament
+
 Retrieve details of a match
 
 <details>
- <summary><code>GET</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
+ <summary><code>GET</code> <code><b>/tournament/{id}/match/{match-id}</b></code></summary>
 
 ### Parameters
 
@@ -343,10 +385,10 @@ None
 
 </details>
 
-Update match status
+Start a match
 
 <details>
- <summary><code>PATCH</code> <code><b>/tournament/{id}/matches/{match-id}</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/start</b></code></summary>
 
 ### Parameters
 
@@ -357,18 +399,36 @@ All fields are optional
 - The status of the match
 - The first player
 - The second player
-- The score of the first player
-- The score of the second player
-- The winner of the match
 
 > ```javascript
 > {
->    "status": 1,
->    "player1": "Player1",
->    "player2": "Player2",
->    "score1": 2,
->    "score2": 1,
->    "winner": "Player1"
+>   "player1": 1,
+>   "player2": 2
+> }
+
+### Responses
+
+> | http code | content-type       | response                                  |
+> |-----------|--------------------|-------------------------------------------|
+> | `200`     | `application/json` | `{"id": 1, "status": "In-progress", ...}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`       |
+
+</details>
+
+Add one point to a player
+
+<details>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/add-point</b></code></summary>
+
+### Parameters
+
+#### Body
+
+- The player to add a point
+
+> ```javascript
+> {
+>   "player": 1
 > }
 > ```
 
@@ -381,27 +441,28 @@ All fields are optional
 
 </details>
 
-Generate matches for a tournament
+End a match
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/matches/generate</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/end</b></code></summary>
 
 ### Parameters
 
 #### Body
 
-- Randomly generate matches (optional, default = false)
+- Winner of the match
 
 > ```javascript
 > {
->   "random": true
+>   "winner": 2
 > }
+> ```
 
 ### Responses
 
 > | http code | content-type       | response                               |
 > |-----------|--------------------|----------------------------------------|
-> | `200`     | `application/json` | `{"nb-matches": 14, "matches": [...]}` |
-> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`             |
+> | `200`     | `application/json` | `{"id": 1, "status": "Finished", ...}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
 </details>

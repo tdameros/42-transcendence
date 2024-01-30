@@ -1,16 +1,11 @@
-import json
-from typing import Optional
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from api import error_message as error
-from api.models import Match, Player, Tournament
+from api.models import Tournament
 from api.views.match_utils import MatchUtils
-from tournament import settings
 from tournament.authenticate_request import authenticate_request
 
 
@@ -31,128 +26,3 @@ class MatchesView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse(MatchUtils.matches_to_json(matches), status=200)
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class ManageMatchesView(View):
-    @staticmethod
-    def get(request: HttpRequest, tournament_id: int, match_id: int):
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
-
-        try:
-            match = Match.objects.get(tournament_id=tournament_id, match_id=match_id)
-        except ObjectDoesNotExist:
-            return JsonResponse({'errors': [f'match with id `{match_id}` does not exist']}, status=404)
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
-
-        return JsonResponse(MatchUtils.match_to_json(match), status=200)
-
-    @staticmethod
-    def patch(request: HttpRequest, tournament_id: int, match_id: int):
-        # TODO: add service authentication when implemented
-
-        try:
-            body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
-
-        try:
-            match = Match.objects.get(tournament_id=tournament_id, match_id=match_id)
-        except ObjectDoesNotExist:
-            return JsonResponse({'errors': [f'match with id `{match_id}` does not exist']}, status=404)
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
-
-        try:
-            update_errors = ManageMatchesView.update_match(body, match)
-            if update_errors:
-                return JsonResponse(data={'errors': update_errors}, status=400)
-            match.save()
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
-
-        return JsonResponse(MatchUtils.match_to_json(match), status=200)
-
-    @staticmethod
-    def update_match(body: dict, match: Match) -> list[str]:
-        update_errors = []
-
-        if match.status == Match.FINISHED:
-            return [error.MATCH_FINISHED]
-
-        new_match_status_error = ManageMatchesView.update_match_status(body, match)
-        new_player_1_error = ManageMatchesView.update_player(body, match, 1)
-        new_player_1_score_error = ManageMatchesView.update_player_score(body, match, 1)
-        new_player_2_error = ManageMatchesView.update_player(body, match, 2)
-        new_player_2_score_error = ManageMatchesView.update_player_score(body, match, 2)
-        new_winner_error = ManageMatchesView.update_winner(body, match)
-
-        if new_match_status_error is not None:
-            update_errors.append(new_match_status_error)
-        if new_player_1_error is not None:
-            update_errors.append(new_player_1_error)
-        if new_player_2_error is not None:
-            update_errors.append(new_player_2_error)
-        if new_player_1_score_error is not None:
-            update_errors.append(new_player_1_score_error)
-        if new_player_2_score_error is not None:
-            update_errors.append(new_player_2_score_error)
-        if new_winner_error is not None:
-            update_errors.append(new_winner_error)
-
-        return update_errors
-
-    @staticmethod
-    def update_match_status(body: dict, match: Match) -> Optional[str]:
-        new_status = body.get('status')
-        if new_status is not None:
-            if not isinstance(new_status, int):
-                return error.MATCH_STATUS_NOT_INT
-            if new_status < Match.NOT_PLAYED or new_status > Match.FINISHED:
-                return error.MATCH_STATUS_INVALID
-            match.status = new_status
-        return None
-
-    @staticmethod
-    def update_player(body: dict, match: Match, player_id: int) -> Optional[str]:
-        new_player = body.get(f'player_{player_id}')
-        if new_player is not None:
-            if not isinstance(new_player, int):
-                return error.MATCH_PLAYER_NOT_INT
-            try:
-                if player_id == 1:
-                    match.player_1 = Player.objects.get(id=new_player)
-                elif player_id == 2:
-                    match.player_2 = Player.objects.get(id=new_player)
-            except ObjectDoesNotExist:
-                return error.MATCH_PLAYER_NOT_EXIST
-
-    @staticmethod
-    def update_player_score(body: dict, match: Match, player_id: int) -> Optional[str]:
-        new_player_score = body.get(f'player_{player_id}_score')
-        if new_player_score is not None:
-            if not isinstance(new_player_score, int):
-                return error.MATCH_PLAYER_SCORE_NOT_INT
-            if new_player_score < 0 or new_player_score > settings.MATCH_POINT_TO_WIN:
-                return error.MATCH_PLAYER_SCORE_INVALID
-            if player_id == 1:
-                match.player_1_score = new_player_score
-            elif player_id == 2:
-                match.player_2_score = new_player_score
-        return None
-
-    @staticmethod
-    def update_winner(body: dict, match: Match) -> Optional[str]:
-        new_winner = body.get('winner')
-        if new_winner is not None:
-            if not isinstance(new_winner, int):
-                return error.MATCH_WINNER_NOT_INT
-            try:
-                match.winner = Player.objects.get(id=new_winner)
-            except ObjectDoesNotExist:
-                return error.MATCH_WINNER_NOT_EXIST
-            match.status = Match.FINISHED
-        return None
