@@ -1,29 +1,15 @@
-import {Component} from "./Component.js";
-import {Theme} from "../Theme.js";
+import {Component} from './Component.js';
+import {Theme} from '../Theme.js';
 
 export class ThemeButton extends Component {
   constructor() {
     super();
   }
 
-  switchTheme() {
-    if (Theme.get() === 'light') {
-      Theme.set('dark');
-    } else {
-      Theme.set('light');
-    }
-    this.switchBtn.classList.toggle('btn-outline-light');
-    this.switchBtn.classList.toggle('btn-outline-dark');
-  }
-
-  postRender() {
-    this.switchBtn = this.querySelector('#switch-btn');
-    super.addComponentEventListener(this.switchBtn, 'click', this.switchTheme);
-  }
-
   render() {
     const theme = Theme.get();
-    const btnClass = theme === 'light' ? 'btn-outline-dark' : 'btn-outline-light';
+    const btnClass = theme === 'light' ?
+      'btn-outline-dark' : 'btn-outline-light';
     return (`
       <button id="switch-btn" class="btn ${btnClass}" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -34,6 +20,7 @@ export class ThemeButton extends Component {
       </button>
     `);
   }
+
   style() {
     return (`
       <style>
@@ -41,6 +28,21 @@ export class ThemeButton extends Component {
       </style>
     `);
   }
+
+  postRender() {
+    this.switchBtn = this.querySelector('#switch-btn');
+    super.addComponentEventListener(this.switchBtn, 'click', this.#switchTheme);
+  }
+
+  #switchTheme() {
+    if (Theme.get() === 'light') {
+      Theme.set('dark');
+    } else {
+      Theme.set('light');
+    }
+    this.switchBtn.classList.toggle('btn-outline-light');
+    this.switchBtn.classList.toggle('btn-outline-dark');
+  }
 }
 
-export default { ThemeButton };
+export default {ThemeButton};

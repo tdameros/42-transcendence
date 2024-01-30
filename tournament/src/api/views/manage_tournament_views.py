@@ -1,4 +1,5 @@
 import json
+import math
 from typing import Any, Optional
 
 from django.contrib.auth.hashers import make_password
@@ -11,7 +12,55 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
+from tournament import settings
 from tournament.authenticate_request import authenticate_request
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StartTournamentView(View):
+    @staticmethod
+    def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
+        user, authenticate_errors = authenticate_request(request)
+        if user is None:
+            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+            players = tournament.players.all()
+            matches = tournament.matches.all()
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        start_error = StartTournamentView.check_start_permissions(user, tournament, players, matches)
+        if start_error is not None:
+            return JsonResponse(data={'errors': [start_error]}, status=403)
+
+        tournament.status = Tournament.IN_PROGRESS
+
+        try:
+            tournament.save()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': f'Tournament `{tournament.name}` successfully started'}, status=200)
+
+    @staticmethod
+    def check_start_permissions(user: dict, tournament: Tournament, players, matches) -> Optional[str]:
+        if tournament.status != Tournament.CREATED:
+            return 'The tournament has already started'
+
+        if tournament.admin_id != user['id']:
+            return 'You are not the owner of the tournament, so you cannot start it'
+
+        if len(players) < settings.MIN_PLAYERS:
+            return error.NOT_ENOUGH_PLAYERS
+
+        if len(matches) != int(2 ** math.ceil(math.log2(len(players))) - 1):
+            return error.MATCHES_NOT_GENERATED
+
+        return None
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -41,7 +90,8 @@ class ManageTournamentView(View):
             'nb-players': len(tournament_players),
             'players': [{
                 'nickname': player.nickname,
-                'user-id': player.user_id
+                'user-id': player.user_id,
+                'rank': player.rank
             } for player in tournament_players],
             'is-private': tournament.is_private,
             'status': TournamentView.status_to_string(tournament.status),
@@ -131,21 +181,21 @@ class ManageTournamentView(View):
         update_errors = []
 
         new_name_errors = ManageTournamentView.update_tournament_name(body, tournament)
-        new_max_players_errors = ManageTournamentView.update_max_players(body, tournament, tournament_players)
-        new_deadline_errors = ManageTournamentView.update_registration_deadline(body, tournament)
-        new_is_private_errors = ManageTournamentView.update_is_private(body, tournament)
-        new_password_errors = ManageTournamentView.update_password(body, tournament)
+        new_max_players_error = ManageTournamentView.update_max_players(body, tournament, tournament_players)
+        new_deadline_error = ManageTournamentView.update_registration_deadline(body, tournament)
+        new_is_private_error = ManageTournamentView.update_is_private(body, tournament)
+        new_password_error = ManageTournamentView.update_password(body, tournament)
 
         if new_name_errors is not None:
             update_errors.extend(new_name_errors)
-        if new_max_players_errors is not None:
-            update_errors.extend(new_max_players_errors)
-        if new_deadline_errors is not None:
-            update_errors.extend(new_deadline_errors)
-        if new_is_private_errors is not None:
-            update_errors.extend(new_is_private_errors)
-        if new_password_errors is not None:
-            update_errors.extend(new_password_errors)
+        if new_max_players_error is not None:
+            update_errors.append(new_max_players_error)
+        if new_deadline_error is not None:
+            update_errors.append(new_deadline_error)
+        if new_is_private_error is not None:
+            update_errors.append(new_is_private_error)
+        if new_password_error is not None:
+            update_errors.append(new_password_error)
 
         return update_errors
 
@@ -161,58 +211,58 @@ class ManageTournamentView(View):
         return None
 
     @staticmethod
-    def update_max_players(body: dict, tournament: Tournament, tournament_players) -> Optional[list[str]]:
+    def update_max_players(body: dict, tournament: Tournament, tournament_players) -> Optional[str]:
         new_max_players = body.get('max-players')
         if new_max_players is not None:
-            valid_new_max_players, new_max_players_errors = ManageTournamentView.is_valid_max_players(
+            valid_new_max_players, new_max_players_error = ManageTournamentView.is_valid_max_players(
                 new_max_players, tournament_players)
             if not valid_new_max_players:
-                return new_max_players_errors
+                return new_max_players_error
             else:
                 tournament.max_players = new_max_players
         return None
 
     @staticmethod
-    def update_registration_deadline(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_registration_deadline(body: dict, tournament: Tournament) -> Optional[str]:
         new_deadline = body.get('registration-deadline')
         if new_deadline is not None:
             valid_registration_deadline, registration_deadline_error = TournamentView.is_valid_deadline(new_deadline)
             if not valid_registration_deadline:
-                return [registration_deadline_error]
+                return registration_deadline_error
             else:
                 tournament.registration_deadline = new_deadline
         return None
 
     @staticmethod
-    def update_is_private(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_is_private(body: dict, tournament: Tournament) -> Optional[str]:
         new_is_private = body.get('is-private')
         if new_is_private is not None:
             valid_is_private, is_private_error = TournamentView.is_valid_private(new_is_private)
             if not valid_is_private:
-                return [is_private_error]
+                return is_private_error
             else:
                 tournament.is_private = new_is_private
         return None
 
     @staticmethod
-    def update_password(body: dict, tournament: Tournament) -> Optional[list[str]]:
+    def update_password(body: dict, tournament: Tournament) -> Optional[str]:
         new_password = body.get('password')
         valid_password, password_error = TournamentView.is_valid_password(new_password)
         if tournament.is_private and (tournament.password is None or new_password is not None):
             if not valid_password:
-                return [password_error]
+                return password_error
             else:
                 tournament.password = make_password(new_password)
         return None
 
     @staticmethod
-    def is_valid_max_players(new_max_players: Any, tournament_players: Any) -> tuple[bool, Optional[list[str]]]:
+    def is_valid_max_players(new_max_players: Any, tournament_players: Any) -> tuple[bool, Optional[str]]:
         valid_max_players, max_players_error = TournamentView.is_valid_max_players(new_max_players)
         if not valid_max_players:
             return False, max_players_error
         elif len(tournament_players) > new_max_players:
-            return False, [f'You cannot set the max players to {new_max_players} because there are already '
-                           f'{len(tournament_players)} players registered']
+            return False, f'You cannot set the max players to {new_max_players} because there are already '\
+                          f'{len(tournament_players)} players registered'
         return True, None
 
     @staticmethod

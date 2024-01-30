@@ -100,7 +100,6 @@ class TournamentView(View):
 
     @staticmethod
     def delete(request: HttpRequest) -> JsonResponse:
-        # TODO: authorize this endpoint only for auth microservice
         user, authenticate_errors = authenticate_request(request)
         if user is None:
             return JsonResponse(data={'errors': authenticate_errors}, status=401)

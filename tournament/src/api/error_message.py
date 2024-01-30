@@ -30,3 +30,19 @@ NICKNAME_INVALID_CHAR = 'Nickname may only contain letters, numbers and spaces'
 
 NOT_REGISTERED = 'You are not registered for this tournament'
 CANT_LEAVE = 'You can not leave this tournament'
+
+NOT_OWNER = 'You are not the owner of this tournament'
+ALREADY_STARTED = 'Tournament has already started'
+NOT_ENOUGH_PLAYERS = 'Not enough players to start tournament'
+
+TOURNAMENT_NOT_STARTED = 'Tournament has not started'
+
+MATCH_FINISHED = 'Match has already finished'
+MATCH_NOT_FOUND = 'Match not found'
+MATCH_STATUS_INVALID = 'Invalid match status'
+MATCH_STATUS_NOT_INT = 'Match status must be an integer'
+MATCH_PLAYER_NOT_INT = 'Player must be an integer'
+MATCH_PLAYER_NOT_EXIST = 'Player does not exist'
+MATCH_WINNER_NOT_INT = 'Winner must be an integer'
+MATCH_WINNER_NOT_EXIST = 'Winner does not exist'
+MATCHES_NOT_GENERATED = 'Matches have not been generated yet'

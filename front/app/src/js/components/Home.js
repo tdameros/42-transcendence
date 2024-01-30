@@ -1,4 +1,4 @@
-import {Component} from "./Component.js";
+import {Component} from './Component.js';
 
 export class Home extends Component {
   constructor() {
@@ -18,4 +18,4 @@ export class Home extends Component {
   }
 }
 
-export default { Home };
+export default {Home};

@@ -35,7 +35,8 @@ class TournamentPlayersView(View):
 
         players_data = [{
             'nickname': player.nickname,
-            'user_id': player.user_id
+            'user_id': player.user_id,
+            'rank': player.rank
         } for player in players]
 
         response_data = {
