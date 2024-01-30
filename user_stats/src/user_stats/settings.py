@@ -37,6 +37,8 @@ GAMES_LOST_DEFAULT = 0
 WIN_RATE_DEFAULT = 0.0
 FRIENDS_DEFAULT = 0
 
+K_FACTOR = 32
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-t&v78k#dy@lxr3!rf5(@7bkwyajn7@!8+*5&piup+%i29!a1_0'
