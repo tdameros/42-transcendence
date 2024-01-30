@@ -80,16 +80,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-if DEBUG:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8080",
-        "https://localhost",
-    ]
-else:
-    CORS_ALLOWED_ORIGINS = [
-        "https://localhost",
-        "https://42.shiftcode.fr",
-    ]
+CORS_ALLOWED_ORIGINS = ['https://*']
 
 ROOT_URLCONF = 'tournament.urls'
 
