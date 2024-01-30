@@ -1,6 +1,7 @@
 import json
 import math
 import random
+import requests
 from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -32,7 +33,7 @@ class GenerateMatchesView(View):
         try:
             tournament = Tournament.objects.get(id=tournament_id)
             players = list(tournament.players.all())
-            # GenerateMatchesView.set_players_elo(players)
+            GenerateMatchesView.set_players_elo(players, request.headers['Authorization'])
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
@@ -57,8 +58,8 @@ class GenerateMatchesView(View):
     def sort_players(players: list[Player], is_random: any) -> list[Player]:
         if isinstance(is_random, bool) and is_random:
             random.shuffle(players)
-        # else:
-        #     players.sort(key=lambda x: x.elo, reverse=True)
+        else:
+            players.sort(key=lambda x: x.elo, reverse=True)
         return players
 
     @staticmethod
@@ -133,15 +134,21 @@ class GenerateMatchesView(View):
                     matches[next_match_id].player_2 = winner
 
     @staticmethod
-    def set_players_elo(players: list[Player]):
+    def set_players_elo(players: list[Player], jwt: str):
         for player in players:
-            player.elo = GenerateMatchesView.get_elo(player)
+            player.elo = GenerateMatchesView.get_elo(player, jwt)
             player.save()
 
     @staticmethod
-    def get_elo(player: Player) -> int:
-        # TODO: Get elo from user stats microservice
-        return random.randint(1, 1000)
+    def get_elo(player: Player, jwt: str) -> int:
+        headers = {'Authorization': jwt}
+        response = requests.get(f'{settings.USER_STATS_USER_ENDPOINT}{player.user_id}', headers=headers)
+
+        if response.status_code == 200:
+            body = response.json()
+            return body['elo']
+        else:
+            raise Exception(f'Error while getting elo for player {player.user_id}')
 
     @staticmethod
     def error_handler(user_id: int, tournament: Tournament, players: list[Player]) -> tuple[Optional[str], int]:

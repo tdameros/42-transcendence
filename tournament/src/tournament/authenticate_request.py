@@ -40,9 +40,9 @@ def get_user(user_id, encoded_jwt, errors):
         response = requests.get(f'{settings.USER_MANAGEMENT_USER_ENDPOINT}{user_id}/', headers=headers)
 
         if response.status_code == 200:
-            return json.loads(response.text)
+            return response.json()
 
-        body = json.loads(response.body.decode('utf-8'))
+        body = response.json()
 
         errors.extend(body['errors'])
         return None
