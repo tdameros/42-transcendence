@@ -2,8 +2,18 @@ import {JSONRequests} from './JSONRequests.js';
 import {JWT} from './JWT.js';
 
 export class ApiClient {
+  static userManagement = 'user-management';
+
   static microservicesURLs = {
     'user-management': 'http://localhost:6002',
+  };
+
+  static userManagementURIs = {
+    'signin': 'user/signin/',
+    'signup': 'user/signup/',
+    'username-exist': 'user/username-exist/',
+    'email-exist': 'user/email-exist/',
+    'forgot-password-send-code': 'user/forgot-password/send-code/',
   };
 
   constructor() {
@@ -30,8 +40,8 @@ export class ApiClient {
       username: username,
       password: password,
     };
-    return await ApiClient.post('user-management',
-        'user/signin/', body);
+    return await ApiClient.post(ApiClient.userManagement,
+        ApiClient.userManagementURIs['signin'], body);
   }
 
   async signUp(username, email, password) {
@@ -40,32 +50,32 @@ export class ApiClient {
       email: email,
       password: password,
     };
-    return await ApiClient.post('user-management',
-        'user/signup/', body);
+    return await ApiClient.post(ApiClient.userManagement,
+        ApiClient.userManagementURIs['signup'], body);
   }
 
   async usernameExist(username) {
     const body = {
       username: username,
     };
-    return await ApiClient.post('user-management',
-        'user/username-exist/', body);
+    return await ApiClient.post(ApiClient.userManagement,
+        ApiClient.userManagementURIs['username-exist'], body);
   }
 
   async emailExist(email) {
     const body = {
       email: email,
     };
-    return await ApiClient.post('user-management',
-        'user/email-exist/', body);
+    return await ApiClient.post(ApiClient.userManagement,
+        ApiClient.userManagementURIs['email-exist'], body);
   }
 
   async forgotPasswordSendCode(email) {
     const body = {
       email: email,
     };
-    return await ApiClient.post('user-management',
-        'user/forgot-password/send-code/', body);
+    return await ApiClient.post(ApiClient.userManagement,
+        ApiClient.userManagementURIs['forgot-password-send-code'], body);
   }
 
   static async post(microservice, uri, body, headers = {}) {
