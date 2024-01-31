@@ -78,9 +78,7 @@ class UserHistoryView(View):
 
     @staticmethod
     def validate_page(page: Any) -> (bool, Optional[str]):
-        try:
-            page = int(page)
-        except ValueError:
+        if not page.isdigit():
             return False, error.PAGE_INVALID
         if int(page) < 1:
             return False, error.PAGE_INVALID
@@ -88,9 +86,7 @@ class UserHistoryView(View):
 
     @staticmethod
     def validate_page_size(page_size: Any) -> (bool, Optional[str]):
-        try:
-            page_size = int(page_size)
-        except ValueError:
+        if not page_size.isdigit():
             return False, error.PAGE_SIZE_INVALID
         if int(page_size) < 1:
             return False, error.PAGE_SIZE_INVALID
