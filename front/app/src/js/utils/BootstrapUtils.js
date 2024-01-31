@@ -9,5 +9,3 @@ export class BootstrapUtils {
     input.classList.add('is-valid');
   }
 }
-
-export default {BootstrapUtils};

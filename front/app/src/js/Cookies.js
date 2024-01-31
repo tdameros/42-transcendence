@@ -22,5 +22,3 @@ export class Cookies {
     document.cookie = `${name}=;${options}`;
   }
 }
-
-export default {Cookies};

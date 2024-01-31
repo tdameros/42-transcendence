@@ -1,5 +1,5 @@
-import {Component} from './Component.js';
-import {Theme} from '../Theme.js';
+import {Component} from '../Component.js';
+import {Theme} from '../../Theme.js';
 
 export class ThemeButton extends Component {
   constructor() {
@@ -44,5 +44,3 @@ export class ThemeButton extends Component {
     this.switchBtn.classList.toggle('btn-outline-dark');
   }
 }
-
-export default {ThemeButton};

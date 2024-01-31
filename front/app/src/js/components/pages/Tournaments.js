@@ -1,4 +1,4 @@
-import {Component} from './Component.js';
+import {Component} from '../Component.js';
 
 export class Tournaments extends Component {
   constructor() {
@@ -18,5 +18,3 @@ export class Tournaments extends Component {
     `);
   }
 }
-
-export default {Tournaments};

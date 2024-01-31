@@ -109,5 +109,3 @@ export class InputValidator {
     return {validity: true, missingRequirements};
   }
 }
-
-export default {InputValidator};
