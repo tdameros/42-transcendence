@@ -1,16 +1,14 @@
-import json
-
-from django.http import HttpRequest, JsonResponse
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
 from typing import Any, Optional
 
-from api.models import User
-from api.models import Match
-from common.src.jwt_managers import user_authentication
+from django.core.paginator import Paginator
+from django.http import HttpRequest, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
 import api.error_message as error
+from api.models import Match, User
+from common.src.jwt_managers import user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -73,7 +71,7 @@ class UserHistoryView(View):
         if not isinstance(user_id, int):
             return False, error.USER_ID_INVALID
         try:
-            user = User.objects.get(pk=user_id)
+            User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return False, error.USER_NOT_FOUND
         return True, None

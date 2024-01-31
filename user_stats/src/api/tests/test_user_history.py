@@ -1,14 +1,11 @@
 import json
-from dateutil import parser
 from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
 
 import api.error_message as error
-from api.models import User
-from api.models import Match
-
+from api.models import Match, User
 
 
 class HistoryTest(TestCase):
@@ -26,16 +23,16 @@ class HistoryTest(TestCase):
 class GetHistory(HistoryTest):
     def setUp(self):
         User.objects.create(
-            id = 1,
-            elo = 1000,
+            id=1,
+            elo=1000,
         )
         User.objects.create(
-            id = 2,
-            elo = 1100,
+            id=2,
+            elo=1100,
         )
         User.objects.create(
-            id = 3,
-            elo = 1300,
+            id=3,
+            elo=1300,
         )
         body = {
             'winner_id': 1,
@@ -158,5 +155,3 @@ class GetHistory(HistoryTest):
         self.assertEqual(history[3]['result'], True)
         self.assertEqual(history[3]['user_score'], 10)
         self.assertEqual(history[3]['opponent_score'], 8)
-
-

@@ -1,7 +1,7 @@
 from django.urls import path
 
-from api.views.user import UserView
 from api.views.match import MatchView
+from api.views.user import UserView
 from api.views.user_history import UserHistoryView
 
 urlpatterns = [

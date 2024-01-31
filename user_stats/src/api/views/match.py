@@ -1,16 +1,15 @@
 import json
 from typing import Any, Optional
-from dateutil import parser
 
+from dateutil import parser
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from user_stats import settings
 import api.error_message as error
-from api.models import User
-from api.models import Match
+from api.models import Match, User
+from user_stats import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
