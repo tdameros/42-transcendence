@@ -12,13 +12,13 @@ from api.views.tournament_views import TournamentView
 
 urlpatterns = [
     path('', TournamentView.as_view(), name='tournament'),
-    path('<int:tournament_id>', ManageTournamentView.as_view(), name='manage-tournament'),
-    path('<int:tournament_id>/start', StartTournamentView.as_view(), name='start-tournament'),
-    path('<int:tournament_id>/players', TournamentPlayersView.as_view(), name='tournament-players'),
-    path('<int:tournament_id>/matches', MatchesView.as_view(), name='matches'),
-    path('<int:tournament_id>/matches/generate', GenerateMatchesView.as_view(), name='generate-matches'),
-    path('<int:tournament_id>/match/start', StartMatchView.as_view(), name='start-match'),
-    path('<int:tournament_id>/match/end', EndMatchView.as_view(), name='end-match'),
-    path('<int:tournament_id>/match/add-point', AddPointView.as_view(), name='add-point'),
-    path('player/anonymize', AnonymizePlayerView.as_view(), name='player')
+    path('<int:tournament_id>/', ManageTournamentView.as_view(), name='manage-tournament'),
+    path('<int:tournament_id>/start/', StartTournamentView.as_view(), name='start-tournament'),
+    path('<int:tournament_id>/players/', TournamentPlayersView.as_view(), name='tournament-players'),
+    path('<int:tournament_id>/matches/', MatchesView.as_view(), name='matches'),
+    path('<int:tournament_id>/matches/generate/', GenerateMatchesView.as_view(), name='generate-matches'),
+    path('<int:tournament_id>/match/start/', StartMatchView.as_view(), name='start-match'),
+    path('<int:tournament_id>/match/end/', EndMatchView.as_view(), name='end-match'),
+    path('<int:tournament_id>/match/add-point/', AddPointView.as_view(), name='add-point'),
+    path('player/anonymize/', AnonymizePlayerView.as_view(), name='player')
 ]
