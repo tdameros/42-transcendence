@@ -26,14 +26,8 @@ class GenerateMatchesView(View):
             return JsonResponse(data={'errors': authenticate_errors}, status=401)
 
         try:
-            body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
-
-        try:
             tournament = Tournament.objects.get(id=tournament_id)
             players = list(tournament.players.all())
-            GenerateMatchesView.set_players_elo(players, request.headers['Authorization'])
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
@@ -43,7 +37,12 @@ class GenerateMatchesView(View):
         if error_message is not None:
             return JsonResponse({'errors': [error_message]}, status=status_code)
 
-        players = GenerateMatchesView.sort_players(players, body.get('random', False))
+        try:
+            players = GenerateMatchesView.sort_players(request, players)
+        except json.JSONDecodeError:
+            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
         matches = GenerateMatchesView.generate_matches(players, tournament)
 
         try:
@@ -55,10 +54,13 @@ class GenerateMatchesView(View):
         return JsonResponse(MatchUtils.matches_to_json(matches), status=200)
 
     @staticmethod
-    def sort_players(players: list[Player], is_random: any) -> list[Player]:
+    def sort_players(request: HttpRequest, players: list[Player]) -> list[Player]:
+        body = json.loads(request.body.decode('utf8'))
+        is_random = body.get('random')
         if isinstance(is_random, bool) and is_random:
             random.shuffle(players)
         else:
+            GenerateMatchesView.set_players_elo(players, request.headers['Authorization'])
             players.sort(key=lambda x: x.elo, reverse=True)
         return players
 
