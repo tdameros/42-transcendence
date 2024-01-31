@@ -68,8 +68,10 @@ this documentation details the different endpoints of each microservice.
 ## User Stats 
 > ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
 
-> ### [/user/{id}/match/](../user_stats/doc/user-stats-documentation.md#useridgames)
-
 > ### [/user/{id}/progress/](../user_stats/doc/user-stats-documentation.md#useridprogress)
  
 > ### [/user/{id}/graph/](../user_stats/doc/user-stats-documentation.md#useridgraph)
+ 
+> ### [/user/{id}/history/](../user_stats/doc/user-stats-documentation.md#useridhistory)
+
+> ### [/match/](../user_stats/doc/user-stats-documentation.md#match)

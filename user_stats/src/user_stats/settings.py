@@ -37,6 +37,8 @@ GAMES_LOST_DEFAULT = 0
 WIN_RATE_DEFAULT = 0.0
 FRIENDS_DEFAULT = 0
 
+K_FACTOR = 32
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-t&v78k#dy@lxr3!rf5(@7bkwyajn7@!8+*5&piup+%i29!a1_0'
@@ -45,7 +47,7 @@ ACCESS_PUBLIC_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18i
 
 DECODE_ALGORITHM = 'HS256'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -57,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'api',
 ]
 
@@ -68,7 +71,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['https://*']
 
 ROOT_URLCONF = 'user_stats.urls'
 

@@ -21,3 +21,12 @@ WIN_RATE_INVALID = '`win_rate` field invalid'
 
 FRIENDS_REQUIRED = '`friends` field required'
 FRIENDS_INVALID = '`friends` field invalid'
+
+SCORE_REQUIRED = '`score` field required'
+SCORE_INVALID = '`score` field invalid'
+
+DATE_REQUIRED = '`date` field required'
+DATE_INVALID = '`date` field invalid'
+
+PAGE_INVALID = 'page invalid'
+PAGE_SIZE_INVALID = 'page_size invalid'
