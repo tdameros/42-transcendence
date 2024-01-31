@@ -25,10 +25,13 @@ DEBUG = False
 
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
+    USER_STATS_URL = 'http://localhost:8002/'
 else:
     USER_MANAGEMENT_URL = 'http://user-management-nginx/'
+    USER_STATS_URL = 'http://user-stats-nginx/'
 
 USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
+USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'user/'
 
 MIN_TOURNAMENT_NAME_LENGTH = 3
 MAX_TOURNAMENT_NAME_LENGTH = 20
