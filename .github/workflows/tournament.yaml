@@ -50,7 +50,7 @@ jobs:
         isort . --check-only
 
     - name: Copy common
-      working-directory: user_management/src/
+      working-directory: tournament/src/
       run: |
         cp -r ../../common .
 
