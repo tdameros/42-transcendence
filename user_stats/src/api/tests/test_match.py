@@ -1,12 +1,11 @@
 import json
-from dateutil import parser
 
+from dateutil import parser
 from django.test import TestCase
 from django.urls import reverse
 
 import api.error_message as error
-from api.models import User
-from api.models import Match
+from api.models import Match, User
 
 
 class MatchTest(TestCase):
@@ -56,22 +55,22 @@ class MatchTest(TestCase):
 class PostMatch(MatchTest):
     def setUp(self):
         User.objects.create(
-            id = 1,
-            elo = 1000,
-            games_played = 0,
-            games_won = 0,
-            games_lost = 0,
-            win_rate = 0,
-            friends = 0
+            id=1,
+            elo=1000,
+            games_played=0,
+            games_won=0,
+            games_lost=0,
+            win_rate=0,
+            friends=0
         )
         User.objects.create(
-            id = 2,
-            elo = 1200,
-            games_played = 0,
-            games_won = 0,
-            games_lost = 0,
-            win_rate = 0,
-            friends = 0
+            id=2,
+            elo=1200,
+            games_played=0,
+            games_won=0,
+            games_lost=0,
+            win_rate=0,
+            friends=0
         )
 
     def test_valid_match(self):
@@ -89,13 +88,13 @@ class PostMatch(MatchTest):
         body['date'] = '2021-01-01T00:00:01+10'
         self.assert_match_integrity(body)
         User.objects.create(
-            id = 3,
-            elo = 100,
-            games_played = 50,
-            games_won = 20,
-            games_lost = 30,
-            win_rate = 0.4,
-            friends = 1000
+            id=3,
+            elo=100,
+            games_played=50,
+            games_won=20,
+            games_lost=30,
+            win_rate=0.4,
+            friends=1000
         )
         body['winner_id'] = 3
         self.assert_match_integrity(body)
@@ -184,9 +183,11 @@ class PostMatch(MatchTest):
             self.assertEqual(response.status_code, 400)
             self.assertEqual(
                 response.json()['errors'],
-                [error.SCORE_REQUIRED if key == 'winner_score'or key == 'loser_score'
-                else error.USER_ID_REQUIRED if key == 'winner_id' or key == 'loser_id'
-                else error.DATE_REQUIRED])
+                [
+                    error.SCORE_REQUIRED if key == 'winner_score' or key == 'loser_score'
+                    else error.USER_ID_REQUIRED if key == 'winner_id' or key == 'loser_id'
+                    else error.DATE_REQUIRED
+                ])
 
     def test_invalid_match_body_type(self):
         body = {
@@ -203,9 +204,11 @@ class PostMatch(MatchTest):
             self.assertEqual(response.status_code, 400)
             self.assertEqual(
                 response.json()['errors'],
-                [error.SCORE_INVALID if key == 'winner_score'or key == 'loser_score'
-                else error.USER_ID_INVALID if key == 'winner_id' or key == 'loser_id'
-                else error.DATE_INVALID])
+                [
+                    error.SCORE_INVALID if key == 'winner_score' or key == 'loser_score'
+                    else error.USER_ID_INVALID if key == 'winner_id' or key == 'loser_id'
+                    else error.DATE_INVALID
+                ])
 
     def test_invalid_match_body_value(self):
         body = {
@@ -227,6 +230,8 @@ class PostMatch(MatchTest):
             self.assertEqual(response.status_code, 400)
             self.assertEqual(
                 response.json()['errors'],
-                [error.SCORE_INVALID if key == 'winner_score'or key == 'loser_score'
-                else error.USER_ID_INVALID if key == 'winner_id' or key == 'loser_id'
-                else error.DATE_INVALID])
+                [
+                    error.SCORE_INVALID if key == 'winner_score' or key == 'loser_score'
+                    else error.USER_ID_INVALID if key == 'winner_id' or key == 'loser_id'
+                    else error.DATE_INVALID
+                ])
