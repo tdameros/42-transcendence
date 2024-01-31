@@ -69,9 +69,9 @@ class UserView(View):
     def validate_update_request(json_body: Any, user_id: int) -> (bool, Optional[list[str]]):
         errors = []
         elo = json_body.get('elo')
-        games_played = json_body.get('games_played')
-        games_won = json_body.get('games_won')
-        games_lost = json_body.get('games_lost')
+        matches_played = json_body.get('matches_played')
+        matches_won = json_body.get('matches_won')
+        matches_lost = json_body.get('matches_lost')
         win_rate = json_body.get('win_rate')
         friends = json_body.get('friends')
 
@@ -81,14 +81,14 @@ class UserView(View):
         valid, error = UserView.validate_elo(elo)
         if elo is not None and not valid:
             errors.append(error)
-        valid, error = UserView.validate_games_played(games_played)
-        if games_played is not None and not valid:
+        valid, error = UserView.validate_matches_played(matches_played)
+        if matches_played is not None and not valid:
             errors.append(error)
-        valid, error = UserView.validate_games_won(games_won)
-        if games_won is not None and not valid:
+        valid, error = UserView.validate_matches_won(matches_won)
+        if matches_won is not None and not valid:
             errors.append(error)
-        valid, error = UserView.validate_games_lost(games_lost)
-        if games_lost is not None and not valid:
+        valid, error = UserView.validate_matches_lost(matches_lost)
+        if matches_lost is not None and not valid:
             errors.append(error)
         valid, error = UserView.validate_win_rate(win_rate)
         if win_rate is not None and not valid:
@@ -105,12 +105,12 @@ class UserView(View):
     def update_user(json_body: Any, user: User) -> None:
         if json_body.get('elo') is not None:
             user.elo = json_body['elo']
-        if json_body.get('games_played') is not None:
-            user.games_played = json_body['games_played']
-        if json_body.get('games_won') is not None:
-            user.games_won = json_body['games_won']
-        if json_body.get('games_lost') is not None:
-            user.games_lost = json_body['games_lost']
+        if json_body.get('matches_played') is not None:
+            user.matches_played = json_body['matches_played']
+        if json_body.get('matches_won') is not None:
+            user.matches_won = json_body['matches_won']
+        if json_body.get('matches_lost') is not None:
+            user.matches_lost = json_body['matches_lost']
         if json_body.get('win_rate') is not None:
             user.win_rate = json_body['win_rate']
         if json_body.get('friends') is not None:
@@ -135,33 +135,33 @@ class UserView(View):
         return True, None
 
     @staticmethod
-    def validate_games_played(games_played: Any) -> (bool, Optional[str]):
-        if games_played is None:
-            return False, error.GAMES_PLAYED_REQUIRED
-        if not isinstance(games_played, int):
-            return False, error.GAMES_PLAYED_INVALID
-        if games_played < 0:
-            return False, error.GAMES_PLAYED_INVALID
+    def validate_matches_played(matches_played: Any) -> (bool, Optional[str]):
+        if matches_played is None:
+            return False, error.MATCHES_PLAYED_REQUIRED
+        if not isinstance(matches_played, int):
+            return False, error.MATCHES_PLAYED_INVALID
+        if matches_played < 0:
+            return False, error.MATCHES_PLAYED_INVALID
         return True, None
 
     @staticmethod
-    def validate_games_won(games_won: Any) -> (bool, Optional[str]):
-        if games_won is None:
-            return False, error.GAMES_WON_REQUIRED
-        if not isinstance(games_won, int):
-            return False, error.GAMES_WON_INVALID
-        if games_won < 0:
-            return False, error.GAMES_WON_INVALID
+    def validate_matches_won(matches_won: Any) -> (bool, Optional[str]):
+        if matches_won is None:
+            return False, error.MATCHES_WON_REQUIRED
+        if not isinstance(matches_won, int):
+            return False, error.MATCHES_WON_INVALID
+        if matches_won < 0:
+            return False, error.MATCHES_WON_INVALID
         return True, None
 
     @staticmethod
-    def validate_games_lost(games_lost: Any) -> (bool, Optional[str]):
-        if games_lost is None:
-            return False, error.GAMES_LOST_REQUIRED
-        if not isinstance(games_lost, int):
-            return False, error.GAMES_LOST_INVALID
-        if games_lost < 0:
-            return False, error.GAMES_LOST_INVALID
+    def validate_matches_lost(matches_lost: Any) -> (bool, Optional[str]):
+        if matches_lost is None:
+            return False, error.MATCHES_LOST_REQUIRED
+        if not isinstance(matches_lost, int):
+            return False, error.MATCHES_LOST_INVALID
+        if matches_lost < 0:
+            return False, error.MATCHES_LOST_INVALID
         return True, None
 
     @staticmethod

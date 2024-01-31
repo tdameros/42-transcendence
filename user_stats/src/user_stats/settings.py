@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True 
 
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
@@ -31,9 +31,9 @@ else:
 USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
 
 ELO_DEFAULT = 500
-GAMES_PLAYED_DEFAULT = 0
-GAMES_WON_DEFAULT = 0
-GAMES_LOST_DEFAULT = 0
+MATCHES_PLAYED_DEFAULT = 0
+MATCHES_WON_DEFAULT = 0
+MATCHES_LOST_DEFAULT = 0
 WIN_RATE_DEFAULT = 0.0
 FRIENDS_DEFAULT = 0
 

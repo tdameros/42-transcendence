@@ -89,7 +89,7 @@ class MatchView(View):
         match.result = result
         match.user_elo = user.elo
         match.user_win_rate = user.win_rate
-        match.user_matches_played = user.games_played
+        match.user_matches_played = user.matches_played
         match.user_expected_result = MatchView.calculate_expected_result(user.elo, match.opponent.elo)
         match.date = parser.isoparse(json_body['date'])
         return match
@@ -100,12 +100,12 @@ class MatchView(View):
 
         winner.elo = winner_elo
         loser.elo = loser_elo
-        winner.games_played += 1
-        winner.games_won += 1
-        winner.win_rate = winner.games_won / winner.games_played
-        loser.games_played += 1
-        loser.games_lost += 1
-        loser.win_rate = loser.games_won / loser.games_played
+        winner.matches_played += 1
+        winner.matches_won += 1
+        winner.win_rate = winner.matches_won / winner.matches_played
+        loser.matches_played += 1
+        loser.matches_lost += 1
+        loser.win_rate = loser.matches_won / loser.matches_played
         winner.save()
         loser.save()
 

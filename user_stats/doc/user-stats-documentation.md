@@ -30,14 +30,14 @@
 
 #### Body
 
-> | name           | type | description            |
-> |----------------|------|------------------------|
-> | `elo`          | int  | User elo               |
-> | `games_played` | int  | Number of games played |
-> | `games_won`    | int  | Number of games won    |
-> | `games_lost`   | int  | Number of games lost   |
-> | `win_rate`     | int  | Win rate               |
-> | `friends`      | int  | Number of friends      |
+> | name             | type | description              |
+> |------------------|------|--------------------------|
+> | `elo`            | int  | User elo                 |
+> | `matches_played` | int  | Number of matches played |
+> | `matches_won`    | int  | Number of matches won    |
+> | `matches_lost`   | int  | Number of matches lost   |
+> | `win_rate`       | int  | Win rate                 |
+> | `friends`        | int  | Number of friends        |
 
 </details>
 
@@ -54,14 +54,14 @@
  
 #### Body 
 
-> | name           | type | description            | requirement |
-> |----------------|------|------------------------|-------------|
-> | `elo`          | int  | User elo               | Optional    |
-> | `games_played` | int  | Number of games played | Optional    |
-> | `games_won`    | int  | Number of games won    | Optional    |
-> | `games_lost`   | int  | Number of games lost   | Optional    |
-> | `win_rate`     | int  | Win rate               | Optional    |
-> | `friends`      | int  | Number of friends      | Optional    |
+> | name             | type | description              | requirement |
+> |------------------|------|--------------------------|-------------|
+> | `elo`            | int  | User elo                 | Optional    |
+> | `matches_played` | int  | Number of matches played | Optional    |
+> | `matches_won`    | int  | Number of matches won    | Optional    |
+> | `matches_lost`   | int  | Number of matches lost   | Optional    |
+> | `win_rate`       | int  | Win rate                 | Optional    |
+> | `friends`        | int  | Number of friends        | Optional    |
 
 ### Response
 
@@ -89,27 +89,27 @@
 
 #### Body
 
-> | name           | type | description            | requirement |
-> |----------------|------|------------------------|-------------|
-> | `elo`          | int  | User elo               | Optional    |
-> | `games_played` | int  | Number of games played | Optional    |
-> | `games_won`    | int  | Number of games won    | Optional    |
-> | `games_lost`   | int  | Number of games lost   | Optional    |
-> | `win_rate`     | int  | Win rate               | Optional    |
-> | `friends`      | int  | Number of friends      | Optional    |
+> | name             | type | description              | requirement |
+> |------------------|------|--------------------------|-------------|
+> | `elo`            | int  | User elo                 | Optional    |
+> | `matches_played` | int  | Number of matches played | Optional    |
+> | `matches_won`    | int  | Number of matches won    | Optional    |
+> | `matches_lost`   | int  | Number of matches lost   | Optional    |
+> | `win_rate`       | int  | Win rate                 | Optional    |
+> | `friends`        | int  | Number of friends        | Optional    |
 
 ### Response
 
 #### Body
 
-> | name           | type | description            |
-> |----------------|------|------------------------|
-> | `elo`          | int  | User elo               |
-> | `games_played` | int  | Number of games played |
-> | `games_won`    | int  | Number of games won    |
-> | `games_lost`   | int  | Number of games lost   |
-> | `win_rate`     | int  | Win rate               |
-> | `friends`      | int  | Number of friends      |
+> | name             | type | description              |
+> |------------------|------|--------------------------|
+> | `elo`            | int  | User elo                 |
+> | `matches_played` | int  | Number of matches played |
+> | `matches_won`    | int  | Number of matches won    |
+> | `matches_lost`   | int  | Number of matches lost   |
+> | `win_rate`       | int  | Win rate                 |
+> | `friends`        | int  | Number of friends        |
 
 #### Status code
 
