@@ -20,7 +20,7 @@ export class JSONRequests {
         ...headers,
       },
     };
-    return await JSONRequests.request(`${url}`, options);
+    return await JSONRequests.request(url, options);
   }
 
   static async request(url, options) {
