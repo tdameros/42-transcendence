@@ -9,7 +9,6 @@ export class Router {
     window.addEventListener('popstate', (event) => {
       this.#loadRoute(document.location.pathname);
     });
-    this.#loadRoute(document.location.pathname);
   }
 
   addRoute(path, customElement) {
@@ -22,6 +21,15 @@ export class Router {
       window.history.pushState({}, '', newPath);
     }
     return result;
+  }
+
+  init() {
+    this.#loadRoute(document.location.pathname);
+  }
+
+  redirect(newPath) {
+    window.history.replaceState({}, '', newPath);
+    this.#loadRoute(newPath);
   }
 
   #findMatchingRoute(path) {
@@ -83,5 +91,3 @@ export class Route {
     this.pathRegex = new RegExp(`^${parsedPath}$`);
   }
 }
-
-export default {Router, Route};
