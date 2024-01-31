@@ -74,5 +74,3 @@ export class Component extends HTMLElement {
   postRender() {
   }
 }
-
-export default {Component};

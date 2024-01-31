@@ -1,4 +1,4 @@
-import {Component} from './Component.js';
+import {Component} from '../Component.js';
 
 export class Singleplayer extends Component {
   constructor() {
@@ -18,5 +18,3 @@ export class Singleplayer extends Component {
     `);
   }
 }
-
-export default {Singleplayer};

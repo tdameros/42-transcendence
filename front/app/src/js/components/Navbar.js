@@ -1,5 +1,4 @@
 import {Component} from './Component.js';
-import {Cookies} from '../Cookies.js';
 
 export class Navbar extends Component {
   constructor() {
@@ -74,9 +73,7 @@ export class Navbar extends Component {
   }
 
   #logNavPart() {
-    const jwt = Cookies.get('jwt');
-    const auth = jwt !== undefined && jwt !== null && jwt !== '';
-    if (auth) {
+    if (window.ApiClient.isAuth()) {
       return (this.#logPart());
     }
     return (this.#logOutPart());
@@ -93,7 +90,7 @@ export class Navbar extends Component {
                   <img id="nav-profile-img" src="/img/tdameros.jpg" alt="profile image"
                        class="rounded-circle"
                        style="width: 40px; height: 40px;">
-                  <span id="nav-username">@username</span>
+                  <span id="nav-username">@${localStorage.getItem('username')}</span>
               </span>
               <ul class="dropdown-menu dropdown-menu-end"
                   aria-labelledby="dropdownMenuLink">
@@ -150,10 +147,9 @@ export class Navbar extends Component {
   }
 
   #logout() {
-    Cookies.remove('jwt');
+    window.ApiClient.logout();
     window.router.navigate('/');
   }
-
 
   #generateNavLink(linkId) {
     const activeLink = this.getAttribute('nav-active');
@@ -167,5 +163,3 @@ export class Navbar extends Component {
     return (navLink.outerHTML);
   }
 }
-
-export default {Navbar};

@@ -1,3 +1,9 @@
+:root {
+    --dark-hover-brightness: 0.95;
+    --light-hover-brightness: 1.1;
+    --hover-brightness: var(--light-hover-brightness);
+}
+
 @font-face {
     font-family: 'JetBrains Mono';
     src: url('/fonts/JetBrainsMono-Regular.woff2') format('truetype');
@@ -25,4 +31,16 @@ body {
 
 a {
     cursor: pointer;
+}
+
+.dynamic-hover:hover {
+    filter: brightness(var(--hover-brightness));
+}
+
+.dark-hover:hover {
+    filter: brightness(var(--dark-hover-brightness));
+}
+
+.light-hover:hover {
+    filter: brightness(var(--light-hover-brightness));
 }

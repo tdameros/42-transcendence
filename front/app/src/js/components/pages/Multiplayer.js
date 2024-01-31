@@ -1,4 +1,4 @@
-import {Component} from './Component.js';
+import {Component} from '../Component.js';
 
 export class Multiplayer extends Component {
   constructor() {
@@ -18,5 +18,3 @@ export class Multiplayer extends Component {
     `);
   }
 }
-
-export default {Multiplayer};
