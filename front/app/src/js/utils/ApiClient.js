@@ -5,7 +5,6 @@ export class ApiClient {
   static microservicesURLs = {
     'user-management': 'http://localhost:6002',
   };
-  static signInUri = '/signin';
 
   constructor() {
     this.accessToken = new JWT(null);
