@@ -25,14 +25,7 @@ class OAuthFactory:
             return None
 
 
-class BaseOAuth(View, ABC):
-    @staticmethod
-    def get(request, auth_service):
-        oauth_handler = OAuthFactory.create_oauth_handler(auth_service)
-        if oauth_handler:
-            return oauth_handler.handle_auth(request)
-        else:
-            return JsonResponse(data={'errors': ['Unknown auth service']}, status=400)
+class BaseOAuth(ABC):
 
     @staticmethod
     def create_pending_oauth():
@@ -44,6 +37,17 @@ class BaseOAuth(View, ABC):
     @abstractmethod
     def handle_auth(self, request):
         pass
+
+
+class OAuth(View):
+
+    @staticmethod
+    def get(request, auth_service):
+        oauth_handler = OAuthFactory.create_oauth_handler(auth_service)
+        if oauth_handler:
+            return oauth_handler.handle_auth(request)
+        else:
+            return JsonResponse(data={'errors': ['Unknown auth service']}, status=400)
 
 
 class GitHubOAuth(BaseOAuth):

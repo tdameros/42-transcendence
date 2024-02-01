@@ -25,11 +25,14 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: sh -c "python3 src/manage.py makemigrations &&
-                 python3 src/manage.py migrate &&
-                 gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
+        command: sh -c "cp -r /app/tournament /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
         volumes:
-            - tournament_code:/app/src/
+            - tournament_code:/app/tournament
+            - common_code:/app/common
         expose:
             - "8000"
         depends_on:

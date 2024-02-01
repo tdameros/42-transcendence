@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from common.src import settings
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,9 +53,8 @@ PASSWORD_MAX_LENGTH = 30
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
 
-ACCESS_PUBLIC_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-
-DECODE_ALGORITHM = 'HS256'
+ACCESS_PUBLIC_KEY = settings.ACCESS_PUBLIC_KEY
+DECODE_ALGORITHM = settings.ACCESS_ALGORITHM
 
 ALLOWED_HOSTS = ['*']
 
