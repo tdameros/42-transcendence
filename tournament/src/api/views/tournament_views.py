@@ -36,15 +36,19 @@ class TournamentView(View):
 
         page_tournaments = tournaments[page_size * (page - 1): page_size * page]
 
-        tournaments_data = [{
-            'id': tournament.id,
-            'name': tournament.name,
-            'max-players': tournament.max_players,
-            'registration-deadline': tournament.registration_deadline,
-            'is-private': tournament.is_private,
-            'status': TournamentView.status_to_string(tournament.status),
-            'admin': user['username']
-        } for tournament in page_tournaments]
+        try:
+            tournaments_data = [{
+                'id': tournament.id,
+                'name': tournament.name,
+                'max-players': tournament.max_players,
+                'nb-players': tournament.players.count(),
+                'registration-deadline': tournament.registration_deadline,
+                'is-private': tournament.is_private,
+                'status': TournamentView.status_to_string(tournament.status),
+                'admin': user['username']
+            } for tournament in page_tournaments]
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         response_data = {
             'page': page,
