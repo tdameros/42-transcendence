@@ -14,7 +14,7 @@ from api import error_message as error
 from api.models import Player, Tournament
 from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import get_user_id
+from tournament.get_user import get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
