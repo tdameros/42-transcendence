@@ -100,3 +100,15 @@
   >> ```
   >
   >> Updates the position and direction of the player at index player_index 
+
+- ### `update_ball`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'match_index': int,
+  >>     'position': {'x': float, 'y': float, 'z': float}
+  >>     'movement': {'x': float, 'y': float, 'z': float}
+  >> }
+  >> ```
+  >
+  >> Updates the position and movement of the ball in the match at index match_index

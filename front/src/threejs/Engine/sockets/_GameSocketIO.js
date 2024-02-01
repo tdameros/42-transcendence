@@ -51,6 +51,7 @@ export class _GameSocketIO {
         });
 
         this.#socketIO.on('update_player', (data) => {
+            console.log('update_player received');
             const playerLocation = data['player_location']
             this.#engine.scene
                         .setPlayerPaddleDirection(playerLocation,
@@ -58,6 +59,14 @@ export class _GameSocketIO {
             this.#engine.scene
                         .setPlayerPaddlePosition(playerLocation,
                                                  data['position'])
+        });
+
+        this.#socketIO.on('update_ball', (data) => {
+            console.log('update_ball received');
+            const matchIndex = data['match_index'];
+            const match = this.#engine.scene.matches[matchIndex];
+            match.setBallMovement(data['movement']);
+            match.setBallPosition(data['position']);
         });
 
         this.#socketIO.connect();
