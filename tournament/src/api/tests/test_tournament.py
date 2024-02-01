@@ -579,10 +579,10 @@ class DeleteTournamentsTest(TestCase):
 
 
 class StartTournamentTest(TestCase):
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def setUp(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
         tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
@@ -595,7 +595,7 @@ class StartTournamentTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        self.client.post(url, {'random': True}, content_type='application/json')
+        self.client.post(url, {'random': True}, content_type='application/json', headers=get_fake_headers(1))
 
     def start_tournament(self, tournament_id):
         url = reverse('start-tournament', args=(tournament_id,))
@@ -608,9 +608,7 @@ class StartTournamentTest(TestCase):
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_start_tournament(self, mock_get):
-        user = {'id': 1}
-        mock_get.return_value = (True, user, None)
-
+        mock_get.return_value = (True, {'id': 1}, None)
         response, body = self.start_tournament(1)
 
         tournament = Tournament.objects.get(id=1)
@@ -621,9 +619,7 @@ class StartTournamentTest(TestCase):
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_start_tournament_not_found(self, mock_get):
-        user = {'id': 1}
-        mock_get.return_value = (True, user, None)
-
+        mock_get.return_value = (True, {'id': 1}, None)
         response, body = self.start_tournament(2)
 
         self.assertEqual(response.status_code, 404)

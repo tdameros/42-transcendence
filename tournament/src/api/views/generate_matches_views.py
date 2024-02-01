@@ -13,17 +13,17 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Match, Player, Tournament
 from api.views.match_utils import MatchUtils
+from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import authenticate_request
+from tournament.authenticate_request import get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
 class GenerateMatchesView(View):
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -33,7 +33,7 @@ class GenerateMatchesView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        error_message, status_code = GenerateMatchesView.error_handler(user['id'], tournament, players)
+        error_message, status_code = GenerateMatchesView.error_handler(user_id, tournament, players)
         if error_message is not None:
             return JsonResponse({'errors': [error_message]}, status=status_code)
 

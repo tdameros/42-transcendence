@@ -15,7 +15,8 @@ from api.models import Player, Tournament
 from api.views.tournament_players_views import TournamentPlayersView
 from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import get_jwt, get_user_id, get_username_by_id
+from tournament.authenticate_request import (get_jwt, get_user_id,
+                                             get_username_by_id)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
