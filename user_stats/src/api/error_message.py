@@ -30,3 +30,5 @@ DATE_INVALID = '`date` field invalid'
 
 PAGE_INVALID = 'page invalid'
 PAGE_SIZE_INVALID = 'page_size invalid'
+
+DAYS_INVALID = 'days invalid'

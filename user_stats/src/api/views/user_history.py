@@ -12,7 +12,7 @@ from common.src.jwt_managers import user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-# @method_decorator(user_authentication(['GET']), name='dispatch')
+@method_decorator(user_authentication(['GET']), name='dispatch')
 class UserHistoryView(View):
 
     @staticmethod

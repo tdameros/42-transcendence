@@ -14,7 +14,7 @@ from common.src.jwt_managers import user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-# @method_decorator(user_authentication(['GET']), name='dispatch')
+@method_decorator(user_authentication(['GET']), name='dispatch')
 class UserProgressView(View):
 
     @staticmethod
@@ -35,7 +35,7 @@ class UserProgressView(View):
         }
         date = timezone.now() - datetime.timedelta(days=int(days))
         try:
-            match = Match.objects.filter(user_id=user_id, date__gte=date).order_by('-date').first()
+            match = Match.objects.filter(user_id=user_id, date__gte=date).order_by('date').first()
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         if match is None:
@@ -46,7 +46,7 @@ class UserProgressView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
         progress['elo'] =  user.elo - match.user_elo
         progress['win_rate'] = float(user.win_rate) - float(match.user_win_rate)
-        progress['matches_played'] = user.games_played - match.user_matches_played
+        progress['matches_played'] = user.matches_played - match.user_matches_played
         return JsonResponse({'progress': progress}, status=200)
 
 
