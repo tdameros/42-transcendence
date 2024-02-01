@@ -1,13 +1,17 @@
 from django.conf.urls.static import static
 from django.urls import path
 
-from user.views.OAuth import OAuth, OAuthCallback
-from user.views.views import (ForgotPasswordChangePasswordView,
-                              ForgotPasswordCheckCodeView,
-                              ForgotPasswordSendCodeView, IsEmailTakenView,
-                              IsUsernameTakenView, RefreshJWT,
-                              SearchUsernameView, SignInView, SignUpView,
-                              UserIdView)
+from user.views.forgot_password import (ForgotPasswordChangePasswordView,
+                                        ForgotPasswordCheckCodeView,
+                                        ForgotPasswordSendCodeView)
+from user.views.is_email_taken import IsEmailTakenView
+from user.views.is_username_taken import IsUsernameTakenView
+from user.views.oauth import OAuth, OAuthCallback
+from user.views.refresh_JWT import RefreshJWT
+from user.views.search_username import SearchUsernameView
+from user.views.sign_in import SignInView
+from user.views.sign_up import SignUpView
+from user.views.user_id import UserIdView
 from user_management import settings
 
 urlpatterns = [

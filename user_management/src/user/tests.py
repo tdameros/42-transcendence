@@ -46,7 +46,6 @@ class TestsSignup(TestCase):
             'aurelx42', 'aurelh42', long_username
         ]
         for username in valid_usernames:
-            print(f'\nTesting {name} with username {username}')
             email = 'c' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
@@ -68,12 +67,10 @@ class TestsSignup(TestCase):
              f'Username length {settings.USERNAME_MIN_LENGTH - 1} < {settings.USERNAME_MIN_LENGTH}'),
             (long_username, f'Username length {len(long_username)} > {settings.USERNAME_MAX_LENGTH}'),
         ]
-        print(f'\n-------------------\nTesting {name}')
         for invalid_username in invalid_usernames:
             username = invalid_username[0]
             expected_errors = [invalid_username[1]]
             email = 'b' + random.randint(0, 100000).__str__() + '@a.fr'
-            print(f'\nTesting {name} with username \'{username}\'')
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -95,7 +92,6 @@ class TestsSignup(TestCase):
         ]
         for email in valid_emails:
             username = 'Aurel' + str(random.randint(0, 100000))  # To avoid `username already taken` error
-            print(f'\nTesting {name} with email {email}')
             self.run_signup_test(name, username, email, password, expected_status, has_refresh_token)
 
     def test_signup_invalid_email(self):
@@ -117,12 +113,10 @@ class TestsSignup(TestCase):
             ('a.@a', 'Email missing TLD'),
             ('a@a.123456789ABCDEFG', f'TLD length 16 > {settings.TLD_MAX_LENGTH}'),
         ]
-        print(f'\n-------------------\nTesting {name}')
         for invalid_email in invalid_emails:
             email = invalid_email[0]
             expected_errors = [invalid_email[1]]
             username = 'Aurel' + str(random.randint(0, 100000))
-            print(f'\nTesting {name} with email \'{email}\'')
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -141,7 +135,6 @@ class TestsSignup(TestCase):
         ]
         for password in valid_passwords:
             username = 'Aurel' + str(random.randint(0, 100000))
-            print(f'\nTesting {name} with password {password}')
             email = 'a' + random.randint(0, 100000).__str__() + '@a.fr'
             self.run_signup_test(name,
                                  username,
@@ -167,12 +160,10 @@ class TestsSignup(TestCase):
             ('a' * settings.PASSWORD_MIN_LENGTH + 'A*', 'Password missing digit'),
             ('a' * settings.PASSWORD_MIN_LENGTH + 'A1', 'Password missing special character'),
         ]
-        print(f'\n-------------------\nTesting {name}')
         for invalid_password in invalid_passwords:
             password = invalid_password[0]
             expected_errors = [invalid_password[1]]
             username = 'Aurel' + str(random.randint(0, 100000))
-            print(f'\nTesting {name} with password \'{password}\'')
             self.run_signup_test(name,
                                  username,
                                  email,
@@ -248,25 +239,20 @@ class TestsUsernameExist(TestCase):
 class TestsRefreshJWT(TestCase):
 
     def test_refresh_jwt(self):
-        print('\n-------------------\nTesting Refresh JWT')
         data_preparation = {
             'username': 'Aurel303',
             'email': 'alevra@gmail.com',
             'password': 'Validpass42*',
         }
         url = reverse('signup')
-        print('Creating user...')
         result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
-        print('User created')
         data = {
             'refresh_token': result.json()['refresh_token']
         }
         url = reverse('refresh-access-jwt')
-        print('Testing valid refresh token')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('access_token' in result.json())
-        print('Testing invalids refresh tokens ... :')
         # 1 Refresh token not found
         valid_access_token = UserAccessJWTManager.generate_jwt(1)[1]
 
@@ -315,7 +301,6 @@ class TestsRefreshJWT(TestCase):
                   ]
 
         for error in errors:
-            print(f'\nTesting {error[0]}')
             url = reverse('refresh-access-jwt')
             try:
                 result = self.client.post(url, json.dumps(error[1]), content_type='application/json')
