@@ -1,13 +1,13 @@
 import json
 from unittest.mock import patch
 
-import jwt
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
 from api import error_message as error
 from api.models import Player, Tournament
+from api.tests.utils import get_fake_headers
 from tournament import settings
 
 
@@ -600,7 +600,7 @@ class StartTournamentTest(TestCase):
     def start_tournament(self, tournament_id):
         url = reverse('start-tournament', args=(tournament_id,))
 
-        response = self.client.patch(url)
+        response = self.client.patch(url, headers=get_fake_headers(1))
 
         body = json.loads(response.content.decode('utf8'))
 
@@ -611,13 +611,20 @@ class StartTournamentTest(TestCase):
         user = {'id': 1}
         mock_get.return_value = (True, user, None)
 
-        Tournament.objects.get(id=1)
+        response, body = self.start_tournament(1)
 
-        self.start_tournament(1)
+        tournament = Tournament.objects.get(id=1)
 
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['message'], f'Tournament `{tournament.name}` successfully started')
+        self.assertEqual(tournament.status, Tournament.IN_PROGRESS)
 
-def get_fake_headers(user_id: int) -> dict:
-    fake_payload = {'user_id': user_id, 'username': 'admin'}
-    fake_jwt = jwt.encode(fake_payload, key=None, algorithm=None)
-    headers = {'Authorization': fake_jwt}
-    return headers
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_start_tournament_not_found(self, mock_get):
+        user = {'id': 1}
+        mock_get.return_value = (True, user, None)
+
+        response, body = self.start_tournament(2)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], ['tournament with id `2` does not exist'])
