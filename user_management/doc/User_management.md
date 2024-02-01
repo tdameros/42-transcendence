@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 
-## `signup`
+## `/user/signup/`
 
 ### Account creation
 
@@ -60,7 +60,7 @@ all fields are mandatory
 </details>
 
 
-## `signin`
+## `/user/signin/`
 
 ### User connection
 
@@ -103,7 +103,7 @@ all fields are mandatory
 </details>
 
 
-## `username-exist`
+## `/user/username-exist/`
 
 ### Check if username is already taken
 
@@ -142,7 +142,7 @@ will return a boolean
 
 </details>
 
-## `email-exist`
+## `/user/email-exist/`
 
 ### Check if email is already taken
 
@@ -181,7 +181,7 @@ will return a boolean
 </details>
 
 
-## `refresh-access-jwt`
+## `/user/refresh-access-jwt/`
 
 ### Trade a valid refresh token for an access token
 
@@ -222,7 +222,7 @@ all fields are mandatory
 </details>
 
 
-## `forgot-password/send-code`
+## `/user/forgot-password/send-code/`
 
 ### Send a code to the user's email
 
@@ -259,7 +259,7 @@ all fields are mandatory
 
 </details>
 
-## `forgot-password/check-code`
+## `/user/forgot-password/check-code/`
 
 ### Verify the code sent by email
 
@@ -301,7 +301,7 @@ all fields are mandatory
 </details>
 
 
-## `forgot-password/change-password`
+## `/user/forgot-password/change-password/`
 
 ### Change the password of the user with the given code
 
@@ -327,7 +327,7 @@ all fields are mandatory
 </details>
 
 
-## `user/{user-id}`
+## `/user/{user-id}/`
 ### Get user non-sensitive information
 
 will return a user object when successful
@@ -367,14 +367,14 @@ Might be extended to return more information in the future, if needed
 
 </details>
 
-## `search-username`
+## `/user/search-username/`
 
 ### Search for a username
 
 will return a list of usernames that contains the searched username
 
 <details>
- <summary><code>POST</code><code><b>/search-username/</b></code></summary>
+ <summary><code>POST</code><code><b>/user/search-username/</b></code></summary>
 
 ### Parameters
 
@@ -405,20 +405,20 @@ will return a list of usernames that contains the searched username
 </details>
 
 
-## `oauth/{oauth-service}`
+## `/user/oauth/{oauth-service}/`
 ### Initiate OAuth authentication for the specified service
 
 This endpoint initiates the OAuth authentication process for the specified authentication service.
 It returns a redirection URL to the OAuth service's authorization endpoint.
 <details>
- <summary><code>GET</code><code><b>/oauth/{auth_service}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/oauth/{auth_service}/</b></code></summary>
 
 ### Parameters
 
 #### In the URL (mandatory)
  {auth_service}
 > 
-> NB: `auth_service` must be one of the following values: 'github', 'local-test', '42api'
+> NB: `auth_service` must be one of the following values: 'github', '42api'
 > 
 #### Responses
 
@@ -429,13 +429,13 @@ It returns a redirection URL to the OAuth service's authorization endpoint.
 
 </details>
 
-## `oauth/callback/{auth-service}`
+## `/user/oauth/callback/{auth-service}/`
 ### OAuth Callback for the specified service
 
 This endpoint handles the callback after successful OAuth authentication and retrieves the user's information.
 
 <details>
- <summary><code>GET</code><code><b>/oauth/callback/{auth_service}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/oauth/callback/{auth_service}/</b></code></summary>
 
 ### Parameters
 
