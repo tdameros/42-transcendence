@@ -186,6 +186,39 @@
 <details>
  <summary><code>GET</code> <code><b>/user/{id}/progress/</b></code></summary>
 
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description   | requirement |
+> |-----------------|--------|---------------|-------------|
+> | `Authorization` | String | Service token | Required    |
+
+#### Query
+
+> | name   | type   | default | description | requirement |
+> |--------|--------|---------|-------------|-------------|
+> | `days` | int    | 7       | Days span   | Optional    |
+
+### Response
+
+#### Body
+
+> | name             | type | description                |
+> |------------------|------|----------------------------|
+> | `elo`            | int  | Elo progression            |
+> | `win_rate`       | int  | Win rate progression       |
+> | `matches_played` | int  | Matches played progression |
+
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `404`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
+
 </details>
 
 --------------------------------------------------------------------------------
