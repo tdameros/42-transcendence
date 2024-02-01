@@ -12,7 +12,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
-from user.views.SignUp import SignUpView
+from user.views.sign_up import SignUpView
 
 
 @method_decorator(csrf_exempt, name='dispatch')
