@@ -1,12 +1,12 @@
 import json
 from unittest.mock import patch
-from django.utils import timezone
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 import api.error_message as error
-from api.models import Match, User
+from api.models import User
 
 
 class ProgressTest(TestCase):
@@ -35,7 +35,6 @@ class ProgressTest(TestCase):
         if matches_played is not None:
             self.assertEqual(progress['matches_played'], matches_played)
         return progress
-
 
 
 class GetProgress(ProgressTest):
@@ -77,7 +76,6 @@ class GetProgress(ProgressTest):
 
         progress = self.assert_progress_validity(2, None, 0, 1)
         self.assertLess(progress['elo'], 0)
-
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_multiple_matches(self, mock_authenticate):

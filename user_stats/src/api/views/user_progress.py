@@ -1,9 +1,8 @@
-from typing import Any, Optional
 import datetime
-from django.utils import timezone
+from typing import Any, Optional
 
-from django.core.paginator import Paginator
 from django.http import HttpRequest, JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -44,11 +43,10 @@ class UserProgressView(View):
             user = User.objects.get(pk=user_id)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
-        progress['elo'] =  user.elo - match.user_elo
+        progress['elo'] = user.elo - match.user_elo
         progress['win_rate'] = float(user.win_rate) - float(match.user_win_rate)
         progress['matches_played'] = user.matches_played - match.user_matches_played
         return JsonResponse({'progress': progress}, status=200)
-
 
     @staticmethod
     def validate_get_request(request: HttpRequest, user_id: int) -> (bool, Optional[list[str]]):
