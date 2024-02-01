@@ -13,17 +13,17 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Player, Tournament
 from api.views.tournament_players_views import TournamentPlayersView
+from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import authenticate_request
+from tournament.authenticate_request import get_jwt, get_user_id, get_username_by_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET', 'POST', 'DELETE']), name='dispatch')
 class TournamentView(View):
     @staticmethod
     def get(request: HttpRequest) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        jwt = get_jwt(request)
 
         filter_params = TournamentView.get_filter_params(request)
         try:
@@ -45,7 +45,7 @@ class TournamentView(View):
                 'registration-deadline': tournament.registration_deadline,
                 'is-private': tournament.is_private,
                 'status': TournamentView.status_to_string(tournament.status),
-                'admin': user['username']
+                'admin': get_username_by_id(tournament.admin_id, jwt)
             } for tournament in page_tournaments]
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
@@ -62,9 +62,7 @@ class TournamentView(View):
 
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
@@ -79,7 +77,7 @@ class TournamentView(View):
         tournament = Tournament(
             name=json_request['name'],
             is_private=is_private,
-            admin_id=user['id']
+            admin_id=user_id
         )
 
         if is_private:
@@ -94,7 +92,7 @@ class TournamentView(View):
             tournament.registration_deadline = TournamentView.convert_to_utc_datetime(registration_deadline)
         try:
             tournament.save()
-            register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user['id'])
+            register_admin_errors = TournamentView.register_admin_as_player(json_request, tournament, user_id)
             if register_admin_errors is not None:
                 tournament.delete()
                 return JsonResponse({'errors': register_admin_errors}, status=400)
@@ -104,17 +102,15 @@ class TournamentView(View):
 
     @staticmethod
     def delete(request: HttpRequest) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
-            user_tournaments = Tournament.objects.filter(admin_id=user['id'], status=Tournament.CREATED)
+            user_tournaments = Tournament.objects.filter(admin_id=user_id, status=Tournament.CREATED)
             nb_tournaments = len(user_tournaments)
             if user_tournaments:
                 user_tournaments.delete()
 
-            player = Player.objects.filter(user_id=user['id'], tournament__status=Tournament.CREATED)
+            player = Player.objects.filter(user_id=user_id, tournament__status=Tournament.CREATED)
             if player:
                 player.delete()
         except Exception as e:
