@@ -92,8 +92,8 @@ async def background_task():
 
     clock = Clock()
     while True:
-        game.get_scene().update(clock.get_delta())
-        await sio.sleep(0.1)
+        await game.get_scene().update(sio, clock.get_delta())
+        await sio.sleep(0.01)
 
 
 # The app arguments is not used but is required by

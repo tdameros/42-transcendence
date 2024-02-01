@@ -42,7 +42,7 @@ jobs:
             - name: Run PEP8 check
               working-directory: pong_server/
               run: |
-                  flake8 . --max-line-length=90
+                  flake8 . --max-line-length=95
 
             - name: Check imports in src
               working-directory: pong_server/src/

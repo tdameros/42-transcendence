@@ -2,7 +2,7 @@ import numpy
 
 from src.game_server import settings
 from src.game_server.Scene.Player._Board import _Board
-from src.game_server.Scene.Player._Paddle import _Paddle
+from src.game_server.Scene.Player.Paddle import Paddle
 from src.game_server.vector_to_dict import vector_to_dict
 
 
@@ -14,9 +14,10 @@ class Player(object):
         self._position: numpy.ndarray = numpy.array([settings.BOARD_SIZE[0] / 2. * sign,
                                                      0.,
                                                      0.])
-        self._paddle: _Paddle = _Paddle(numpy.array([settings.PADDLE_X_POSITION * sign,
-                                                     0.,
-                                                     settings.PADDLE_SIZE[2] / 2.]))
+        self._paddle: Paddle = Paddle(numpy.array([settings.PADDLE_X_POSITION * sign,
+                                                   0.,
+                                                   settings.PADDLE_SIZE[2] / 2.]),
+                                      self._position)
         self._board: _Board = _Board()
 
     def to_json(self) -> dict:
@@ -42,3 +43,6 @@ class Player(object):
 
     def get_paddle_position(self):
         return self._paddle.get_position()
+
+    def get_paddle(self):
+        return self._paddle
