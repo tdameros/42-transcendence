@@ -196,7 +196,7 @@ will return an access token when successful
 all fields are mandatory
 > ``` javascript
 > {
->     "refresh_jwt": "234235sfs3r2.."
+>     "refresh_token": "234235sfs3r2.."
 > }
 > ```
 
@@ -243,11 +243,11 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type       | response                                            |
-> |-----------|--------------------|-----------------------------------------------------|
-> | `200`     | `application/json` | `{"ok": "Email sent","email": "************ra@gmail.com", "expires": "2024-01-10T11:20:43.253"}}`                    |
-> | `400`     | `application/json` | `{"errors": "AAA"}`                  |
-> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+> | http code | content-type       | response                                                                                          |
+> |-----------|--------------------|---------------------------------------------------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent","email": "************ra@gmail.com", "expires": "2024-01-10T11:20:43.253"}}` |
+> | `400`     | `application/json` | `{"errors": "AAA"}`                                                                               |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`                                              |
 
 
 > errors can be :
