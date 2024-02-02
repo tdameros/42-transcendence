@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import {_Board} from "./_Board";
-import {_Paddle} from "./_Paddle";
+import {Paddle} from "./Paddle";
 
 export class Player {
     #threeJSGroup = new THREE.Group();
@@ -10,21 +10,22 @@ export class Player {
 
 
     constructor(playerJson) {
-        this.#moveSpeed = playerJson['move_speed'];
-        this.#board = new _Board(playerJson['board']);
-        this.#paddle = new _Paddle(playerJson['paddle']);
-
-        this.#threeJSGroup.add(this.#board.threeJSBoard);
-        this.#threeJSGroup.add(this.#paddle.threeJSGroup);
-
         const position = playerJson['position'];
         this.#threeJSGroup.position.set(position['x'],
                                         position['y'],
                                         position['z']);
+
+        this.#moveSpeed = playerJson['move_speed'];
+        this.#board = new _Board(playerJson['board']);
+        this.#paddle = new Paddle(playerJson['paddle'],
+                                   this.#threeJSGroup.position);
+
+        this.#threeJSGroup.add(this.#board.threeJSBoard);
+        this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     }
 
-    updateFrame(timeDelta) {
-        this.#paddle.updateFrame(timeDelta);
+    updateFrame(timeDelta, paddleBoundingBox) {
+        this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
         this.#board.updateFrame(timeDelta);
     }
 
@@ -42,5 +43,9 @@ export class Player {
 
     getPaddlePosition() {
         return this.#paddle.getPosition();
+    }
+
+    get paddle() {
+        return this.#paddle;
     }
 }

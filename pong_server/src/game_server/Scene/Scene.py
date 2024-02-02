@@ -23,9 +23,9 @@ class Scene(object):
             "matches": [match.to_json() for match in self._matches]
         }
 
-    def update(self, time_delta: float):
-        for match in self._matches:
-            match.update_positions(time_delta)
+    async def update(self, sio, time_delta: float):
+        for i in range(len(self._matches)):
+            await self._matches[i].update_positions(sio, time_delta, i)
 
     def get_match(self, index: int):
         return self._matches[index]

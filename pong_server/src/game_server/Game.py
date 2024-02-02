@@ -54,7 +54,7 @@ class Game(object):
     def have_all_players_joined(self) -> bool:
         return len(self._player_sid_map.keys()) == len(self.PLAYERS_LIST)
 
-    def get_scene(self):
+    def get_scene(self) -> Scene:
         return self._scene
 
     def get_player_location(self, sid: str) -> PlayerLocation | None:

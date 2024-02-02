@@ -21,10 +21,14 @@ class Match(object):
             'ball': self._ball.to_json()
         }
 
-    def update_positions(self, time_delta: float):
+    async def update_positions(self, sio, time_delta: float, match_index: int):
         self._players[0].update_position(time_delta)
         self._players[1].update_position(time_delta)
-        self._ball.update_position(time_delta)
+        await self._ball.update_position(sio,
+                                         time_delta,
+                                         self._players[0].get_paddle(),
+                                         self._players[1].get_paddle(),
+                                         match_index)
 
     def get_player(self, index: int) -> Player:
         return self._players[index]

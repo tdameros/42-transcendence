@@ -15,7 +15,7 @@ from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.setup_logging import setup_logging
 
-sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
+sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
 sio.attach(app)
 
@@ -92,8 +92,8 @@ async def background_task():
 
     clock = Clock()
     while True:
-        game.get_scene().update(clock.get_delta())
-        await sio.sleep(0.1)
+        await game.get_scene().update(sio, clock.get_delta())
+        await sio.sleep(0.01)
 
 
 # The app arguments is not used but is required by
