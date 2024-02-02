@@ -1,0 +1,76 @@
+name: Tournament Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    services:
+      postgres:
+        image: postgres:16.0-bookworm
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        pip install isort
+        pip install -r tournament/docker/requirements.txt
+
+    - name: Run PEP8 check
+      working-directory: tournament/src/
+      run: |
+        flake8 . --max-line-length=120 --exclude=migrations
+
+    - name: Check imports
+      working-directory: tournament/src/
+      run: |
+        isort . --check-only
+
+    - name: Copy common
+      working-directory: tournament/src/
+      run: |
+        cp -r ../../common .
+
+    - name: Run Django migrations
+      working-directory: tournament/src/
+      env:
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        python manage.py makemigrations
+        python manage.py migrate
+
+    - name: Run unit tests
+      working-directory: tournament/src/
+      env:
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        python manage.py test

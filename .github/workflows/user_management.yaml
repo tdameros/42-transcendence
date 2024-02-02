@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
   build:
@@ -48,6 +50,11 @@ jobs:
       working-directory: user_management/src/
       run: |
         isort . --check-only
+
+    - name: Copy common
+      working-directory: user_management/src/
+      run: |
+        cp -r ../../common .
 
     - name: Run Django migrations
       working-directory: user_management/src/

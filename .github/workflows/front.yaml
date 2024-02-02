@@ -1,0 +1,41 @@
+name: Front Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 21
+
+    - name: Install dependencies
+      working-directory: front/app/
+      run: npm install
+
+    - name: Run linter
+      working-directory: front/app/
+      run: npm run lint
+
+    - name: Run unit tests
+      working-directory: front/app/
+      run: npm test
+
+    - name: Build with Vite
+      working-directory: front/app/
+      run: npm run build
+

@@ -149,3 +149,10 @@ GitHub.sublime-settings
 
 # MacOS #
 .DS_Store
+
+# Node.js #
+node_modules/
+package-lock.json
+
+# Common folder #
+user_stats/src/common

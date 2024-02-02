@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from common.src import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +22,41 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+if DEBUG:
+    USER_MANAGEMENT_URL = 'http://localhost:8001/'
+    USER_STATS_URL = 'http://localhost:8002/'
+else:
+    USER_MANAGEMENT_URL = 'http://user-management-nginx/'
+    USER_STATS_URL = 'http://user-stats-nginx/'
+
+USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
+USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'user/'
+
+MIN_TOURNAMENT_NAME_LENGTH = 3
+MAX_TOURNAMENT_NAME_LENGTH = 20
+MAX_PLAYERS = 16
+MIN_PLAYERS = 3
+
+DEFAULT_PAGE_SIZE = 10
+MAX_PAGE_SIZE = 50
+
+MIN_NICKNAME_LENGTH = 3
+MAX_NICKNAME_LENGTH = 14
+
+HASH_PASSWORD_MAX_LENGTH = 128
+PASSWORD_MIN_LENGTH = 4
+PASSWORD_MAX_LENGTH = 30
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ACCESS_PUBLIC_KEY = settings.ACCESS_PUBLIC_KEY
+DECODE_ALGORITHM = settings.ACCESS_ALGORITHM
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +68,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -47,7 +80,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['https://*']
 
 ROOT_URLCONF = 'tournament.urls'
 
@@ -73,16 +111,39 @@ WSGI_APPLICATION = 'tournament.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'myuser',
-        'PASSWORD': 'mypassword',
-        'HOST': 'tournament-db',
-        'PORT': '5432',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # PostgreSQL for GitHub Actions
+    if 'GITHUB_ACTIONS' in os.environ:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+
+                'NAME': os.environ.get('DB_NAME'),
+                'USER': os.environ.get('DB_USER'),
+                'PASSWORD': os.environ.get('DB_PASSWORD'),
+                'HOST': 'localhost',
+                'PORT': '5432',
+            }
+        }
+    # PostgreSQL for production
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'mydatabase',
+                'USER': 'myuser',
+                'PASSWORD': 'mypassword',
+                'HOST': 'tournament-db',
+                'PORT': '5432',
+            }
+        }
 
 
 # Password validation
