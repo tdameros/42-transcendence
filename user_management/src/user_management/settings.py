@@ -13,12 +13,17 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
@@ -28,20 +33,37 @@ PASSWORD_MIN_LENGTH = 8
 PASSWORD_MAX_LENGTH = 30
 ELO_DEFAULT = 500
 TLD_MAX_LENGTH = 15
+FORGOT_PASSWORD_CODE_MAX_LENGTH = 12
+FORGOT_PASSWORD_CODE_EXPIRATION_MINUTES = 15
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+MAX_USERNAME_SEARCH_RESULTS = 10
+
+# OAuth
+OAUTH_STATE_MAX_LENGTH = 32
+
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
+GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
+GITHUB_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/github'
+GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
+GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
+
+FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
+FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize'
+FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token'
+FT_API_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/42api'
+FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
+FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-ACCESS_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-REFRESH_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl88VVar5X6lAlHjj4o4r
-r3WoAQloSNbxjgyUd6dU3z3a8JbLibihyl/LjrfAJXCT39FzBbjcWHw7dnDkBeU0
-xX8pPNESkfJI7wxzkc1WcPk1KMwvy1dTaoCub7fZxNl2oOObdzTGpic8co7VOUqa
-5cJks3MTL/8ipxaf4HVJ4luvcySvPflL1woWO3QfTomL/B/Xnu9fmj2ynn8DptfY
-wJEe4eFA/jx+TP3coPBgs/XYG3stdyislm574U+5QvfRi1uii8jkFgpIxwUnxYbx
-mZW+X8IdGmaUnucNeF1pLZjEIcr7MkzP3zm1auQww71DObGTPaLLJNjTPdP3rWYJ
-mQIDAQAB
------END PUBLIC KEY-----"""
-REFRESH_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
+SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'  # TODO ask Tom if we can delete this
+REFRESH_KEY = 'WE_SOULD_ALSO_CHANGE_THIS_KEY'  # TODO change this key
+ACCESS_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXzxVVqvlfqUCU
 eOPijiuvdagBCWhI1vGODJR3p1TfPdrwlsuJuKHKX8uOt8AlcJPf0XMFuNxYfDt2
 cOQF5TTFfyk80RKR8kjvDHORzVZw+TUozC/LV1NqgK5vt9nE2Xag45t3NMamJzxy
@@ -73,14 +95,14 @@ REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,6 +113,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,6 +123,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['https://*']
 
 ROOT_URLCONF = 'user_management.urls'
 
@@ -120,47 +147,47 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'user_management.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# #SQLite 3 for local development
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# #SQLite 3 for debugs and tests
 
-# PostgreSQL for production
-
-if 'GITHUB_ACTIONS' in os.environ:
+if DEBUG:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-
-            'NAME': os.environ.get('DB_NAME'),
-            'USER': os.environ.get('DB_USER'),
-            'PASSWORD': os.environ.get('DB_PASSWORD'),
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'mydatabase',
-            'USER': 'myuser',
-            'PASSWORD': 'mypassword',
-            'HOST': 'user-management-db',
-            'PORT': '5432',
-        }
-    }
+    # PostgreSQL for GitHub Actions
+    if 'GITHUB_ACTIONS' in os.environ:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
 
+                'NAME': os.environ.get('DB_NAME'),
+                'USER': os.environ.get('DB_USER'),
+                'PASSWORD': os.environ.get('DB_PASSWORD'),
+                'HOST': 'localhost',
+                'PORT': '5432',
+            }
+        }
+    # PostgreSQL for production
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'mydatabase',
+                'USER': 'myuser',
+                'PASSWORD': 'mypassword',
+                'HOST': 'user-management-db',
+                'PORT': '5432',
+            }
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -180,7 +207,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -191,7 +217,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

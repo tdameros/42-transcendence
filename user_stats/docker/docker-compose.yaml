@@ -1,0 +1,50 @@
+services:
+    user-stats-nginx:
+        networks:
+            - transcendence
+            - user_stats
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        expose:
+            - "80"
+            - "443"
+        depends_on:
+            - user-stats
+        volumes:
+            - user_stats_static_volume:/app/static
+            - user_stats_media_volume:/app/media
+        restart: on-failure
+
+    user-stats:
+        networks:
+            - transcendence
+            - user_stats
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "cp -r /app/user_stats /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ user_stats.wsgi:application -w 4 -b 0.0.0.0:8000"
+        volumes:
+            - user_stats_code:/app/user_stats
+            - common_code:/app/common
+        expose:
+            - "8000"
+        depends_on:
+            - user-stats-db
+        restart: on-failure
+
+    user-stats-db:
+        networks:
+            - user_stats
+        image: postgres:16.0-bookworm
+        environment:
+            POSTGRES_DB: mydatabase
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - user_stats_postgres_volume:/var/lib/postgresql/data
+        restart: on-failure
