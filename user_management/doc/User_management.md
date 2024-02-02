@@ -34,29 +34,6 @@ all fields are mandatory
 > | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Username empty
-> - Username already taken
-> - Username length {len(username)} > 20
-> - Username must be alphanumeric
-
-> - Email {email} already taken
-> - Email empty
-> - Email length {len(email)} > 50
-> - Email missing @
-> - Email missing "." character
-> - Email contains more than one @ character
-
-> - Password empty
-> - Password length {len(password)} < 8
-> - Password missing uppercase character
-> - Password missing digit
-> - Password missing special character
-
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -89,16 +66,6 @@ all fields are mandatory
 > | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`                    |
 > | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred : ...']}` |
-> 
-> errors can be combined
-
-> errors can be :
-> - Username empty
-> - Password empty
-> - Username not found
-> - Invalid password
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -131,15 +98,6 @@ will return a boolean
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be combined
-
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> 
-> NB : An empty username is considered as not taken
-
 </details>
 
 ## `/user/email-exist/`
@@ -169,14 +127,6 @@ will return a boolean
 > | `200`     | `application/json`       | `{"is_taken": true}`                                 |
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
-
-> 
-> errors can be combined
-
-> errors can be :
-> - Empty email
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -208,17 +158,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Refresh token not found
-> - Signature verification failed
-> - No expiration date found
-> - Signature has expired
-> - No user_id in payload
-> - User does not exist
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -250,13 +189,6 @@ all fields are mandatory
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`                                              |
 
 
-> errors can be :
-> - No email provided
-> - Email can not be empty
-> - Username not found
-> - Invalid JSON format in the request body : decode error
-> - An unexpected error occurred
-
 </details>
 
 ## `/user/forgot-password/check-code/`
@@ -287,16 +219,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
-
-> errors can be :
-> - Mandatory value missing : 'email'
-> - Mandatory value missing : 'code'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
 
 </details>
 
@@ -351,19 +273,6 @@ Might be extended to return more information in the future, if needed
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
-
-> errors can be :
-> - Mandatory value missing : 'username'
-> - Mandatory value missing : 'code'
-> - Mandatory value missing : 'password'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
-> - (all the errors from the is_valid_password function in the sign_up route)
-
 
 </details>
 
@@ -397,11 +306,6 @@ will return a list of usernames that contains the searched username
 > | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> - No username found
 </details>
 
 
