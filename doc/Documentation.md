@@ -41,29 +41,29 @@ this documentation details the different endpoints of each microservice.
 > #### Manage matches of a tournament
 
 ## User Management
-> ### [/user/signup](../user_management/doc/User_management.md#signup)
+> ### [/user/signup](../user_management/doc/User_management.md#usersignup)
 
-> ### [/user/signin](../user_management/doc/User_management.md#signin)
+> ### [/user/signin](../user_management/doc/User_management.md#usersignin)
 
-> ### [/user/username-exist](../user_management/doc/User_management.md#username-exist)
+> ### [/user/username-exist](../user_management/doc/User_management.md#userusername-exist)
 
-> ### [/user/email-exist](../user_management/doc/User_management.md#email-exist)
+> ### [/user/email-exist](../user_management/doc/User_management.md#useremail-exist)
 
-> ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#forgot-passwordsend-code)
+> ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#userforgot-passwordsend-code)
 
-> ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#forgot-passwordcheck-code)
+> ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#userforgot-passwordcheck-code)
 
-> ### [/user/forgot-password/change-password](../user_management/doc/User_management.md#forgot-passwordchange-password)
+> ### [/user/forgot-password/change-password](../user_management/doc/User_management.md#userforgot-passwordchange-password)
 
-> ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#refresh-access-jwt)
+> ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#userrefresh-access-jwt)
 
-> ### [/user/{user_id}](../user_management/doc/User_management.md#user-id)
+> ### [/user/{user_id}](../user_management/doc/User_management.md#useruser-id)
 
-> ### [/user/search-username/](../user_management/doc/User_management.md#search-username)
+> ### [/user/search-username/](../user_management/doc/User_management.md#usersearch-username)
 
-> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#oauthoauth-service)
+> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#useroauthoauth-service)
 
-> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)
+> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#useroauthcallbackauth-service)
 
 ## User Stats 
 > ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
