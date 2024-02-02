@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - user-stats
+      - dev
   pull_request:
     branches:
       - main
       - user-stats
+      - dev
 
 jobs:
   build:
