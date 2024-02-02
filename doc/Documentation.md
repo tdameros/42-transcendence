@@ -66,12 +66,12 @@ this documentation details the different endpoints of each microservice.
 > ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)
 
 ## User Stats 
-> ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
+> ### [/statistics/user/{id}](../user_stats/doc/user-stats-documentation.md#statisticsuserid)
 
-> ### [/user/{id}/progress/](../user_stats/doc/user-stats-documentation.md#useridprogress)
+> ### [/statistics/user/{id}/progress/](../user_stats/doc/user-stats-documentation.md#statisticsuseridprogress)
  
-> ### [/user/{id}/graph/](../user_stats/doc/user-stats-documentation.md#useridgraph)
+> ### [/statistics/user/{id}/graph/](../user_stats/doc/user-stats-documentation.md#statisticsuseridgraph)
  
-> ### [/user/{id}/history/](../user_stats/doc/user-stats-documentation.md#useridhistory)
+> ### [/statistics/user/{id}/history/](../user_stats/doc/user-stats-documentation.md#statisticsuseridhistory)
 
-> ### [/match/](../user_stats/doc/user-stats-documentation.md#match)
+> ### [/statistics/match/](../user_stats/doc/user-stats-documentation.md#statisticsmatch)
