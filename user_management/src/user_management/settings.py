@@ -45,7 +45,7 @@ MAX_USERNAME_SEARCH_RESULTS = 10
 
 # OAuth
 OAUTH_STATE_MAX_LENGTH = 32
-
+OAUTH_SOURCE_MAX_LENGTH = 100
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
 GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
@@ -95,7 +95,7 @@ REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
