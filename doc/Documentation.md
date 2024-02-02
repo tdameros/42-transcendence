@@ -65,6 +65,8 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)
 
+> ### [/user/update-infos/](../user_management/doc/User_management.md#userupdate-infos)
+
 ## User Stats 
 > ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
 

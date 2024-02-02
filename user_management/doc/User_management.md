@@ -460,3 +460,40 @@ This endpoint handles the callback after successful OAuth authentication and ret
 > | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`       |
 
 </details>
+
+## '/user/update-infos/'
+
+
+### Update user's information
+
+will return 200 if successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+mandatory field : change_list, access_token
+all other fields are optional and depend on the change_list
+
+> ``` javascript
+> {
+>   "access_token": "d2d040fj..."
+>   "change_list": ["username", "email", "password"]
+>    "username": "NewUsername",
+>    "email": "newemail@asdf.fr",
+>   "password": "NewPassword42*"
+> }
+> NB : change_list must contain at least one of the following values : "username", "email", "password"
+> ```
+
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
