@@ -7,7 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
 from user_management.JWTManager import UserAccessJWTManager
-from user_management.utils import is_valid_username, is_valid_email, is_valid_password
+from user_management.utils import (is_valid_email, is_valid_password,
+                                   is_valid_username)
 
 
 class UserUpdateInfosManager:

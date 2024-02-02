@@ -3,9 +3,9 @@ import string
 from io import BytesIO
 
 import requests
-from PIL import Image
 from django.core.files import File
 from django.core.files.base import ContentFile
+from PIL import Image
 
 from user.models import User
 from user_management import settings

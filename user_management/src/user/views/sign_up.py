@@ -7,7 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
 from user_management.JWTManager import UserRefreshJWTManager
-from user_management.utils import is_valid_password, is_valid_email, is_valid_username
+from user_management.utils import (is_valid_email, is_valid_password,
+                                   is_valid_username)
 
 
 @method_decorator(csrf_exempt, name='dispatch')

@@ -460,4 +460,3 @@ class TestsUserUpdateInfos(TestCase):
         self.assertEqual(result.status_code, 400)
         self.assertTrue('errors' in result.json())
         self.assertTrue(result.json()['errors'])
-
