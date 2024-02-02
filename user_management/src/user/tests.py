@@ -204,7 +204,7 @@ class TestsSignin(TestCase):
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data_wrong_pass), content_type='application/json')
-        self.assertEqual(result.status_code, 400)
+        self.assertEqual(result.status_code, 401)
 
 
 class TestsUsernameExist(TestCase):
