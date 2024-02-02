@@ -226,7 +226,7 @@ all fields are mandatory
 
 ### Send a code to the user's email
 
-will return 200 if successful and send a 12 characters code to the user's email
+will return 200 if successful and send a 6 alphanum code to the user's email
 
 <details>
  <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
