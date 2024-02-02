@@ -12,17 +12,17 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
+from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import authenticate_request
+from tournament.get_user import get_user_id, get_username_by_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['PATCH']), name='dispatch')
 class StartTournamentView(View):
     @staticmethod
     def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -33,7 +33,7 @@ class StartTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        start_error = StartTournamentView.check_start_permissions(user, tournament, players, matches)
+        start_error = StartTournamentView.check_start_permissions(user_id, tournament, players, matches)
         if start_error is not None:
             return JsonResponse(data={'errors': [start_error]}, status=403)
 
@@ -47,11 +47,11 @@ class StartTournamentView(View):
         return JsonResponse({'message': f'Tournament `{tournament.name}` successfully started'}, status=200)
 
     @staticmethod
-    def check_start_permissions(user: dict, tournament: Tournament, players, matches) -> Optional[str]:
+    def check_start_permissions(user_id: int, tournament: Tournament, players, matches) -> Optional[str]:
         if tournament.status != Tournament.CREATED:
             return 'The tournament has already started'
 
-        if tournament.admin_id != user['id']:
+        if tournament.admin_id != user_id:
             return 'You are not the owner of the tournament, so you cannot start it'
 
         if len(players) < settings.MIN_PLAYERS:
@@ -64,12 +64,11 @@ class StartTournamentView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET', 'DELETE', 'PATCH']), name='dispatch')
 class ManageTournamentView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        jwt = request.headers.get('Authorization')
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -83,20 +82,23 @@ class ManageTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        tournament_data = {
-            'id': tournament.id,
-            'name': tournament.name,
-            'max-players': tournament.max_players,
-            'nb-players': len(tournament_players),
-            'players': [{
-                'nickname': player.nickname,
-                'user-id': player.user_id,
-                'rank': player.rank
-            } for player in tournament_players],
-            'is-private': tournament.is_private,
-            'status': TournamentView.status_to_string(tournament.status),
-            'admin': user['username']
-        }
+        try:
+            tournament_data = {
+                'id': tournament.id,
+                'name': tournament.name,
+                'max-players': tournament.max_players,
+                'nb-players': len(tournament_players),
+                'players': [{
+                    'nickname': player.nickname,
+                    'user-id': player.user_id,
+                    'rank': player.rank
+                } for player in tournament_players],
+                'is-private': tournament.is_private,
+                'status': TournamentView.status_to_string(tournament.status),
+                'admin': get_username_by_id(tournament.admin_id, jwt)
+            }
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
         if tournament.registration_deadline is not None:
             tournament_data['registration-deadline'] = tournament.registration_deadline
@@ -105,9 +107,7 @@ class ManageTournamentView(View):
 
     @staticmethod
     def delete(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -119,7 +119,7 @@ class ManageTournamentView(View):
         tournament_name = tournament.name
         tournament_admin = tournament.admin_id
 
-        if tournament_admin != user['id']:
+        if tournament_admin != user_id:
             return JsonResponse({
                 'errors': [f'you cannot delete `{tournament_name}` because you are not the owner of the tournament']
             }, status=403)
@@ -133,9 +133,7 @@ class ManageTournamentView(View):
 
     @staticmethod
     def patch(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             body = json.loads(request.body.decode('utf8'))
@@ -150,7 +148,7 @@ class ManageTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        manage_errors = ManageTournamentView.check_manage_permissions(user, tournament)
+        manage_errors = ManageTournamentView.check_manage_permissions(user_id, tournament)
         if manage_errors is not None:
             return JsonResponse(data={'errors': manage_errors}, status=403)
 
@@ -167,11 +165,11 @@ class ManageTournamentView(View):
         return JsonResponse(tournament_data, status=200)
 
     @staticmethod
-    def check_manage_permissions(user: dict, tournament: Tournament) -> Optional[list[str]]:
+    def check_manage_permissions(user_id: int, tournament: Tournament) -> Optional[list[str]]:
         if tournament.status != Tournament.CREATED:
             return ['The tournament has already started, so you cannot update the settings']
 
-        if tournament.admin_id != user['id']:
+        if tournament.admin_id != user_id:
             return ['You are not the owner of the tournament, so you cannot update the settings']
 
         return None
