@@ -1,4 +1,3 @@
-import datetime
 from typing import Any, Optional
 from dateutil import parser
 
@@ -26,15 +25,17 @@ class UserGraph:
             data = UserGraph.get_data_from_interval(user_id, date_intervals, field)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
-        return JsonResponse({'data': data}, status=200)
+        return JsonResponse({'graph': data}, status=200)
 
 
     @staticmethod
     def get_date_intervals(start, end, num_points):
         date_intervals = []
 
-        start = timezone.make_aware(start)
-        end = timezone.make_aware(end)
+        if timezone.is_naive(start):
+            start = timezone.make_aware(start)
+        if timezone.is_naive(end):
+            end = timezone.make_aware(end)
         interval = timezone.timedelta(seconds=(end - start).total_seconds() / (num_points - 1))
         for i in range(num_points):
             date_intervals.append(start + interval * i)
@@ -82,6 +83,9 @@ class UserGraph:
         valid, error = UserGraph.validate_num_points(num_points)
         if not valid:
             errors.append(error)
+        valid, error = UserGraph.validate_date_order(start, end)
+        if not valid:
+            errors.append(error)
 
         if errors:
             return False, errors
@@ -102,22 +106,37 @@ class UserGraph:
     @staticmethod
     def validate_date(date: Any) -> (bool, Optional[str]):
         if date is None:
-            return False, error.DATE_REQUIRED
+            return False, error.DATE_QUERY_REQUIRED
         try:
             if parser.isoparse(date) is None:
-                return False, error.DATE_INVALID
+                return False, error.DATE_QUERY_INVALID
         except ValueError:
-            return False, error.DATE_INVALID
+            return False, error.DATE_QUERY_INVALID
         return True, None
 
     @staticmethod
     def validate_num_points(num_points: Any) -> (bool, Optional[str]):
+        if num_points is None:
+            return False, error.NUM_POINTS_REQUIRED
         if not num_points.isdigit():
             return False, error.NUM_POINTS_INVALID
-        if int(num_points) < 1:
+        if int(num_points) < 2:
             return False, error.NUM_POINTS_INVALID
         return True, None
 
+    @staticmethod
+    def validate_date_order(start: Any, end: Any) -> (bool, Optional[str]):
+        valid, _ = UserGraph.validate_date(start)
+        if not valid:
+            return True, None
+        valid, _ = UserGraph.validate_date(end)
+        if not valid:
+            return True, None
+        start = parser.isoparse(start)
+        end = parser.isoparse(end)
+        if start > end:
+            return False, error.DATE_ORDER_INVALID
+        return True, None
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET']), name='dispatch')
@@ -128,7 +147,6 @@ class UserGraphEloView(View):
         valid, errors = UserGraph.validate_get_request(request, user_id)
         if not valid:
             return JsonResponse({'errors': errors}, status=400)
-        days = request.GET.get('days', '7')
 
         return UserGraph.get_graph_data(request, user_id, 'elo')
 
@@ -141,7 +159,6 @@ class UserGraphWinRateView(View):
             valid, errors = UserGraph.validate_get_request(request, user_id)
             if not valid:
                 return JsonResponse({'errors': errors}, status=400)
-            days = request.GET.get('days', '7')
 
             return UserGraph.get_graph_data(request, user_id, 'win_rate')
 
@@ -154,7 +171,6 @@ class UserGraphMatchesPlayedView(View):
             valid, errors = UserGraph.validate_get_request(request, user_id)
             if not valid:
                 return JsonResponse({'errors': errors}, status=400)
-            days = request.GET.get('days', '7')
 
             return UserGraph.get_graph_data(request, user_id, 'matches_played')
 
