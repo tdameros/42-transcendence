@@ -12,7 +12,7 @@ class GetTournamentTest(TestCase):
     def setUp(self):
         Tournament.objects.create(id=1, name='Test1', admin_id=1)
         Tournament.objects.create(id=2, name='Test2', admin_id=2)
-        Tournament.objects.create(id=3, name='Test3', admin_id=3, registration_deadline='2020-01-01T00:00:00Z')
+        Tournament.objects.create(id=3, name='Test3', admin_id=3)
         Tournament.objects.create(id=4, name='finished', status=Tournament.FINISHED, admin_id=4)
 
         for i in range(1, 14):
@@ -48,30 +48,6 @@ class GetTournamentTest(TestCase):
             'rank': None,
             'user-id': i
         } for i in range(1, 14)])
-
-    @patch('api.views.manage_tournament_views.get_username_by_id')
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_tournament_with_deadline(self, mock_authenticate_request, mock_get_username_by_id):
-        user = {'id': 1, 'username': 'admin'}
-        mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
-        response, body = self.get_tournament(3)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(body['id'], 3)
-        self.assertEqual(body['name'], 'Test3')
-        self.assertEqual(body['max-players'], 16)
-        self.assertEqual(body['nb-players'], 2)
-        self.assertEqual(body['is-private'], False)
-        self.assertEqual(body['status'], 'Created')
-        self.assertEqual(body['registration-deadline'], '2020-01-01T00:00:00Z')
-        self.assertEqual(body['players'], [
-            {
-                'nickname': f'Player{i}',
-                'rank': None,
-                'user-id': i
-            } for i in range(1, 3)
-        ])
 
     @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')

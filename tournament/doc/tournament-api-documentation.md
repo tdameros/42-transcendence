@@ -44,7 +44,6 @@ Create a new tournament
 
 - Tournament name must be between 3 and 20 characters and can only contain alnum and space
 - Players must be between 2 and 16 (optional, default = 16 players)
-- Registration deadline (optional)
 - Nickname for the tournament (optional)
 - A boolean that specifies if tournament is private
 - A password for the tournament (if is-private is true)
@@ -53,7 +52,6 @@ Create a new tournament
 > {
 >     "name": "World Championship",
 >     "max-players": 16,
->     "registration-deadline": "2024-02-17T10:53",
 >     "is-private": true,
 >     "password": "Password1%"
 >     "nickname": "Player"
@@ -119,7 +117,6 @@ Body
 >             "user_id": 2
 >           }
 >       ],
->       "registration-deadline": "2024-02-17T10:53",
 >       "is-private": true,
 >       "status": "created",
 >       "admin": "edelage",
@@ -161,7 +158,6 @@ Update tournament settings
 
 - Tournament name must be between 3 and 20 characters and can only contain alnum and space (optional)
 - Players must be between 2 and 16 (optional)
-- Registration deadline (optional)
 - A boolean that specifies if tournament is private (optional)
 - A password for the tournament (optional)
 
@@ -169,7 +165,6 @@ Update tournament settings
 > {
 >   "name": "World Championship",
 >   "max-players": 16,
->   "registration-deadline": "2024-02-17T10:53",
 >   "is-private": true,
 >   "password": "Password1%"
 > }
