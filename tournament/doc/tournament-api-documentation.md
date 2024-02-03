@@ -86,6 +86,25 @@ None
 
 </details>
 
+Get your active tournaments
+
+<details>
+ <summary><code>GET</code> <code><b>/tournament/my-active-tournament</b></code></summary>
+
+
+### Parameters
+
+None
+
+### Responses
+
+> | http code     | content-type       | response                                                     |
+> |---------------|--------------------|--------------------------------------------------------------|
+> | `201`         | `application/json` | `{"nb_active_tournaments": 2, "active_tournaments": [...]}`  |
+> | `400` / `401` | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                          |
+
+</details>
+
 --------------------------------------------------------------------------------
 
 ## `/tournament/{id}`
