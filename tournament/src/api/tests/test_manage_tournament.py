@@ -147,7 +147,6 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 3)
         self.assertEqual(body['errors'], ['you cannot delete `Test3` because the tournament has already started'])
 
-
     @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_delete_tournament_not_found(self, mock_authenticate_request, mock_get_username_by_id):
@@ -160,8 +159,6 @@ class DeleteTournamentTest(TestCase):
         body = json.loads(response.content.decode('utf-8'))
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(Tournament.objects.count(), 2)
-        self.assertEqual(body['errors'], ['tournament with id `3` does not exist'])
         self.assertEqual(Tournament.objects.count(), 3)
         self.assertEqual(body['errors'], ['tournament with id `50` does not exist'])
 
