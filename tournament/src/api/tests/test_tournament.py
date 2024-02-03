@@ -239,7 +239,6 @@ class CreateTournamentTest(TestCase):
         data = {
             'name': 'World Championship',
             'max-players': 16,
-            'registration-deadline': '2027-02-17T10:53:00Z',
             'is-private': False
         }
 
@@ -250,7 +249,6 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(body['name'], data['name'])
         self.assertEqual(body['max_players'], data['max-players'])
-        self.assertEqual(body['registration_deadline'], data['registration-deadline'])
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
 
@@ -262,7 +260,6 @@ class CreateTournamentTest(TestCase):
         data = {
             'name': 'World Championship',
             'max-players': 16,
-            'registration-deadline': '2027-02-17T10:53:00Z',
             'is-private': True,
             'password': 'test'
         }
@@ -276,7 +273,6 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(body['name'], data['name'])
         self.assertEqual(body['max_players'], data['max-players'])
-        self.assertEqual(body['registration_deadline'], data['registration-deadline'])
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
         self.assertEqual(len(players), 0)
@@ -300,7 +296,6 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(body['name'], data['name'])
         self.assertEqual(body['max_players'], data['max-players'])
-        self.assertEqual(body['registration_deadline'], None)
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
         self.assertEqual(len(players), 1)
@@ -315,7 +310,6 @@ class CreateTournamentTest(TestCase):
         data = {
             'name': 'World Championship',
             'max-players': 16,
-            'registration-deadline': '2027-01-06T07:38:51-07:00',
             'is-private': False
         }
 
@@ -326,7 +320,6 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(body['name'], data['name'])
         self.assertEqual(body['max_players'], data['max-players'])
-        self.assertEqual(body['registration_deadline'], '2027-01-06T14:38:51Z')
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
 
@@ -347,7 +340,6 @@ class CreateTournamentTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(body['name'], data['name'])
         self.assertEqual(body['max_players'], settings.MAX_PLAYERS)
-        self.assertEqual(body['registration_deadline'], None)
         self.assertEqual(body['is_private'], data['is-private'])
         self.assertEqual(body['admin_id'], 1)
 
@@ -424,30 +416,6 @@ class BadRequestCreateTournamentTest(TestCase):
             'name': 'Test',
             'is-private': 1,
             'max-players': 'test'
-        }
-
-        self.send_tournament_bad_request(mock_get, data, expected_errors)
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_invalid_iso_8601(self, mock_get):
-        expected_errors = [error.NOT_ISO_8601]
-
-        data = {
-            'name': 'Test',
-            'is-private': False,
-            'registration-deadline': '2030-07-1222:30:00'
-        }
-
-        self.send_tournament_bad_request(mock_get, data, expected_errors)
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_passed_deadline(self, mock_get):
-        expected_errors = [error.DEADLINE_PASSED]
-
-        data = {
-            'name': 'Test',
-            'is-private': False,
-            'registration-deadline': '2022-07-12T00:00:00Z'
         }
 
         self.send_tournament_bad_request(mock_get, data, expected_errors)

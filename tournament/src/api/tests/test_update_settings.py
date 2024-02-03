@@ -15,7 +15,7 @@ class PatchTournamentTest(TestCase):
     def setUp(self):
         Tournament.objects.create(id=1, name='Test1', admin_id=1)
         Tournament.objects.create(id=2, name='Test2', admin_id=1)
-        Tournament.objects.create(id=3, name='Test3', admin_id=1, registration_deadline='2028-01-01T00:00:00Z')
+        Tournament.objects.create(id=3, name='Test3', admin_id=1)
         Tournament.objects.create(id=4, name='in_progress', status=Tournament.IN_PROGRESS, admin_id=1)
         Tournament.objects.create(id=5, name='finished', status=Tournament.FINISHED, admin_id=1)
         Tournament.objects.create(id=6, name='8players', max_players=14, admin_id=1)
@@ -132,29 +132,6 @@ class PatchTournamentTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(body['errors'], [error.NAME_INVALID_CHAR])
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_patch_passed_deadline(self, mock_authenticate_request):
-        user = {'id': 1, 'username': 'admin'}
-        mock_authenticate_request.return_value = (True, user, None)
-        response, body = self.patch_tournament(3, {'registration-deadline': '2022-01-01T00:00:00Z'})
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(body['errors'], [error.DEADLINE_PASSED])
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_patch_deadline(self, mock_authenticate_request):
-        user = {'id': 1, 'username': 'admin'}
-        mock_authenticate_request.return_value = (True, user, None)
-        response, body = self.patch_tournament(3, {'registration-deadline': '2029-01-01T00:00:00Z'})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(body['id'], 3)
-        self.assertEqual(body['name'], 'Test3')
-        self.assertEqual(body['max-players'], 16)
-        self.assertEqual(body['is-private'], False)
-        self.assertEqual(body['status'], 'Created')
-        self.assertEqual(body['registration-deadline'], '2029-01-01T00:00:00Z')
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_patch_no_password(self, mock_get):

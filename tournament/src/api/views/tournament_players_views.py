@@ -1,5 +1,4 @@
 import json
-from datetime import datetime, timezone
 from typing import Optional
 
 from django.contrib.auth.hashers import check_password
@@ -134,9 +133,7 @@ class TournamentPlayersView(View):
         except Exception as e:
             return False, [f'An unexpected error occurred : {e}', 500]
 
-        if tournament.status != Tournament.CREATED or (
-                tournament.registration_deadline is not None
-                and tournament.registration_deadline < datetime.now(timezone.utc)):
+        if tournament.status != Tournament.CREATED:
             return False, ['The registration phase is over', 403]
 
         if tournament.is_private and password is None:

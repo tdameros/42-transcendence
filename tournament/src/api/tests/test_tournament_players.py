@@ -73,7 +73,6 @@ class PostTournamentPlayers(TestCase):
             name='deadline passed',
             admin_id=1,
             max_players=16,
-            registration_deadline='2021-01-01 00:00:00+00:00'
         )
         Tournament.objects.create(
             id=4,
@@ -195,18 +194,6 @@ class PostTournamentPlayers(TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['errors'], [f'tournament with id `{tournament_id}` does not exist'])
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_deadline_passed(self, mock_authenticate_request):
-        user = {'id': 1}
-        mock_authenticate_request.return_value = (True, user, None)
-        tournament_id = 3
-        body = json.dumps({'nickname': 'player 1'})
-
-        response, body = self.post_tournament_players(tournament_id, body)
-
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(body['errors'], ['The registration phase is over'])
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_already_register_to_another_tournament(self, mock_authenticate_request):

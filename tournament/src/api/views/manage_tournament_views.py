@@ -100,9 +100,6 @@ class ManageTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        if tournament.registration_deadline is not None:
-            tournament_data['registration-deadline'] = tournament.registration_deadline
-
         return JsonResponse(tournament_data, status=200)
 
     @staticmethod
@@ -180,7 +177,6 @@ class ManageTournamentView(View):
 
         new_name_errors = ManageTournamentView.update_tournament_name(body, tournament)
         new_max_players_error = ManageTournamentView.update_max_players(body, tournament, tournament_players)
-        new_deadline_error = ManageTournamentView.update_registration_deadline(body, tournament)
         new_is_private_error = ManageTournamentView.update_is_private(body, tournament)
         new_password_error = ManageTournamentView.update_password(body, tournament)
 
@@ -188,8 +184,6 @@ class ManageTournamentView(View):
             update_errors.extend(new_name_errors)
         if new_max_players_error is not None:
             update_errors.append(new_max_players_error)
-        if new_deadline_error is not None:
-            update_errors.append(new_deadline_error)
         if new_is_private_error is not None:
             update_errors.append(new_is_private_error)
         if new_password_error is not None:
@@ -218,17 +212,6 @@ class ManageTournamentView(View):
                 return new_max_players_error
             else:
                 tournament.max_players = new_max_players
-        return None
-
-    @staticmethod
-    def update_registration_deadline(body: dict, tournament: Tournament) -> Optional[str]:
-        new_deadline = body.get('registration-deadline')
-        if new_deadline is not None:
-            valid_registration_deadline, registration_deadline_error = TournamentView.is_valid_deadline(new_deadline)
-            if not valid_registration_deadline:
-                return registration_deadline_error
-            else:
-                tournament.registration_deadline = new_deadline
         return None
 
     @staticmethod
@@ -270,7 +253,6 @@ class ManageTournamentView(View):
             'name': tournament.name,
             'max-players': tournament.max_players,
             'is-private': tournament.is_private,
-            'registration-deadline': tournament.registration_deadline,
             'status': TournamentView.status_to_string(tournament.status),
         }
         return tournament_data
