@@ -120,6 +120,10 @@ class ManageTournamentView(View):
             return JsonResponse({
                 'errors': [f'you cannot delete `{tournament_name}` because you are not the owner of the tournament']
             }, status=403)
+        elif tournament.status == Tournament.IN_PROGRESS:
+            return JsonResponse({
+                'errors': [f'you cannot delete `{tournament_name}` because the tournament has already started']
+            }, status=403)
 
         try:
             tournament.delete()
