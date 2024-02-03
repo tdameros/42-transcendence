@@ -35,7 +35,7 @@ class GetTournamentTest(TestCase):
 
         return response, body
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_default(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -50,7 +50,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_2(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -65,7 +65,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_size(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -80,7 +80,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 3)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_size_too_high(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -95,7 +95,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 1)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_too_high(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -110,7 +110,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_size_and_page(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -125,7 +125,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 3)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_negative_params(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -140,7 +140,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 5)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_page_size_1(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -155,7 +155,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 50)
         self.assertEqual(body['nb-tournaments'], 50)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_display_private(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -170,7 +170,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 8)
         self.assertEqual(body['nb-tournaments'], 75)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_display_completed(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -187,7 +187,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 8)
         self.assertEqual(body['nb-tournaments'], 75)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_display_private_and_completed(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}
@@ -202,7 +202,7 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['nb-pages'], 11)
         self.assertEqual(body['nb-tournaments'], 105)
 
-    @patch('api.views.tournament_views.get_username_by_id')
+    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_no_tournament(self, mock_get, mock_get_username):
         user = {'id': 1, 'username': 'admin'}

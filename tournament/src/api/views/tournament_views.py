@@ -11,9 +11,10 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Player, Tournament
 from api.views.tournament_players_views import TournamentPlayersView
+from api.views.tournament_utils import TournamentUtils
 from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.get_user import get_jwt, get_user_id, get_username_by_id
+from tournament.get_user import get_jwt, get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -35,15 +36,7 @@ class TournamentView(View):
         page_tournaments = tournaments[page_size * (page - 1): page_size * page]
 
         try:
-            tournaments_data = [{
-                'id': tournament.id,
-                'name': tournament.name,
-                'max-players': tournament.max_players,
-                'nb-players': tournament.players.count(),
-                'is-private': tournament.is_private,
-                'status': TournamentView.status_to_string(tournament.status),
-                'admin': get_username_by_id(tournament.admin_id, jwt)
-            } for tournament in page_tournaments]
+            tournaments_data = TournamentUtils.tournament_to_json(page_tournaments, jwt)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
