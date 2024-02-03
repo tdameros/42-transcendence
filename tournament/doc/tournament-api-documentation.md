@@ -86,10 +86,16 @@ None
 
 </details>
 
+--------------------------------------------------------------------------------
+
+## `/tournament/self`
+
+### Manage user's tournaments
+
 Get your active tournaments
 
 <details>
- <summary><code>GET</code> <code><b>/tournament/my-active-tournament</b></code></summary>
+ <summary><code>GET</code> <code><b>/tournament/self/ongoing</b></code></summary>
 
 
 ### Parameters

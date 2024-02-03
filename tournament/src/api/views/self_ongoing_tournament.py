@@ -10,7 +10,7 @@ from tournament.get_user import get_user_id
 
 
 @method_decorator(user_authentication(['GET']), name='dispatch')
-class MyActiveTournamentView(View):
+class SelfOnGoingTournament(View):
     @staticmethod
     def get(request: HttpRequest):
         user_id = get_user_id(request)

@@ -17,7 +17,7 @@ class TestMyActiveTournamentView(TestCase):
         Player.objects.create(nickname='nickname1', user_id=2, tournament=tournament)
 
     def get_my_active_tournament(self, user_id):
-        url = reverse('my-active-tournament')
+        url = reverse('self-ongoing')
         response = self.client.get(url, headers=get_fake_headers(user_id))
 
         body = response.json()
