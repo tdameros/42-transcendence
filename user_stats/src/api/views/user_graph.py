@@ -1,6 +1,6 @@
 from typing import Any, Optional
-from dateutil import parser
 
+from dateutil import parser
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -26,7 +26,6 @@ class UserGraph:
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse({'graph': data}, status=200)
-
 
     @staticmethod
     def get_date_intervals(start, end, num_points):
@@ -138,6 +137,7 @@ class UserGraph:
             return False, error.DATE_ORDER_INVALID
         return True, None
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET']), name='dispatch')
 class UserGraphEloView(View):
@@ -150,27 +150,28 @@ class UserGraphEloView(View):
 
         return UserGraph.get_graph_data(request, user_id, 'elo')
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET']), name='dispatch')
 class UserGraphWinRateView(View):
 
-        @staticmethod
-        def get(request: HttpRequest, user_id: int):
-            valid, errors = UserGraph.validate_get_request(request, user_id)
-            if not valid:
-                return JsonResponse({'errors': errors}, status=400)
+    @staticmethod
+    def get(request: HttpRequest, user_id: int):
+        valid, errors = UserGraph.validate_get_request(request, user_id)
+        if not valid:
+            return JsonResponse({'errors': errors}, status=400)
 
-            return UserGraph.get_graph_data(request, user_id, 'win_rate')
+        return UserGraph.get_graph_data(request, user_id, 'win_rate')
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET']), name='dispatch')
 class UserGraphMatchesPlayedView(View):
 
-        @staticmethod
-        def get(request: HttpRequest, user_id: int):
-            valid, errors = UserGraph.validate_get_request(request, user_id)
-            if not valid:
-                return JsonResponse({'errors': errors}, status=400)
+    @staticmethod
+    def get(request: HttpRequest, user_id: int):
+        valid, errors = UserGraph.validate_get_request(request, user_id)
+        if not valid:
+            return JsonResponse({'errors': errors}, status=400)
 
-            return UserGraph.get_graph_data(request, user_id, 'matches_played')
-
+        return UserGraph.get_graph_data(request, user_id, 'matches_played')

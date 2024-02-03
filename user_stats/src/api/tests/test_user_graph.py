@@ -9,6 +9,7 @@ from api.models import User
 
 NOW = timezone.now()
 
+
 class GraphTest(TestCase):
     def get_graph(self, user_id, start, end, num_points):
         url_elo = reverse('user_graph_elo', kwargs={'user_id': user_id})
@@ -48,6 +49,7 @@ class GraphTest(TestCase):
             body['date'] = date.isoformat()
             self.post_match(body)
 
+
 class GetGraph(GraphTest):
     def setUp(self):
         User.objects.create(
@@ -66,7 +68,12 @@ class GetGraph(GraphTest):
     def test_valid_daily_graph(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         self.post_daily_matches()
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            7
+        )
         self.assertEqual(response_elo.status_code, 200)
         self.assertEqual(response_win_rate.status_code, 200)
         self.assertEqual(response_matches_played.status_code, 200)
@@ -74,7 +81,12 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(3, NOW - timezone.timedelta(days=7), NOW, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            3,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            7
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
@@ -94,11 +106,21 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_end(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), None, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            None,
+            7
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), 'abc', 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            'abc',
+            7
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
@@ -106,23 +128,47 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_num_points(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, None)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            None
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 'abc')
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            'abc'
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, -1)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1, NOW - timezone.timedelta(days=7),
+            NOW,
+            -1
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 0)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            0
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 1)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            1
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
@@ -130,7 +176,12 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_start_end(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW, NOW - timezone.timedelta(days=7), 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW,
+            NOW - timezone.timedelta(days=7),
+            7
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
@@ -138,15 +189,30 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_start_end_num_points(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW, NOW - timezone.timedelta(days=7), None)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW,
+            NOW - timezone.timedelta(days=7),
+            None
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW, NOW - timezone.timedelta(days=7), 'abc')
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW,
+            NOW - timezone.timedelta(days=7),
+            'abc'
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW, None, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW,
+            None,
+            7
+        )
         self.assertEqual(response_elo.status_code, 400)
         self.assertEqual(response_win_rate.status_code, 400)
         self.assertEqual(response_matches_played.status_code, 400)
@@ -170,7 +236,11 @@ class GetGraph(GraphTest):
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_no_matches(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            7)
         self.assertEqual(response_elo.status_code, 200)
         self.assertEqual(response_win_rate.status_code, 200)
         self.assertEqual(response_matches_played.status_code, 200)
@@ -179,7 +249,11 @@ class GetGraph(GraphTest):
     def test_valid_no_progress(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         self.post_daily_matches()
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=20), NOW - timezone.timedelta(days=10), 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=20),
+            NOW - timezone.timedelta(days=10),
+            7)
         self.assertEqual(response_elo.status_code, 200)
         self.assertEqual(response_win_rate.status_code, 200)
         self.assertEqual(response_matches_played.status_code, 200)
@@ -194,7 +268,12 @@ class GetGraph(GraphTest):
             'loser_score': 1,
             'date': (NOW - timezone.timedelta(days=20)).isoformat(),
         })
-        response_elo, response_win_rate, response_matches_played = self.get_graph(1, NOW - timezone.timedelta(days=7), NOW, 7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            NOW - timezone.timedelta(days=7),
+            NOW,
+            7
+        )
         self.assertEqual(response_elo.status_code, 200)
         self.assertEqual(response_win_rate.status_code, 200)
         self.assertEqual(response_matches_played.status_code, 200)
