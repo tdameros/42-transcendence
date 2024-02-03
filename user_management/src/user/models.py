@@ -16,3 +16,4 @@ class User(models.Model):
 class PendingOAuth(models.Model):
     hashed_state = models.CharField(max_length=settings.OAUTH_STATE_MAX_LENGTH, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=settings.OAUTH_SOURCE_MAX_LENGTH)

@@ -165,7 +165,7 @@ all fields are mandatory
 
 ### Send a code to the user's email
 
-will return 200 if successful and send a 12 characters code to the user's email
+will return 200 if successful and send a 6 alphanum code to the user's email
 
 <details>
  <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
@@ -315,14 +315,17 @@ will return a list of usernames that contains the searched username
 This endpoint initiates the OAuth authentication process for the specified authentication service.
 It returns a redirection URL to the OAuth service's authorization endpoint.
 <details>
- <summary><code>GET</code><code><b>/user/oauth/{auth_service}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/oauth/{auth_service}/?source=https://example.com</b></code></summary>
 
 ### Parameters
 
 #### In the URL (mandatory)
  {auth_service}
+ and as a query parameter :
+- `source`: The URL to which the OAuth service will redirect the user after authentication
 > 
 > NB: `auth_service` must be one of the following values: 'github', '42api'
+> and `source` must be a valid URL wich does not begin with www but with http or https
 > 
 #### Responses
 
@@ -354,14 +357,14 @@ This endpoint handles the callback after successful OAuth authentication and ret
 
 #### Responses
 
-> | http code | content-type       | response                                             |
-> |-----------|--------------------|------------------------------------------------------|
-> | `201`     | `application/json` | `{"refresh_token": "XXXXX"}`                         |
-> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`    |
-> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                      |
-> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`       |
-> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}` |
-> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`       |
+> | http code | content-type       | response                                                                        |
+> |-----------|--------------------|---------------------------------------------------------------------------------|
+> | `201`     | `application/json` | `redirect to source, putting the refresh token in a cookie named refresh_token` |
+> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`                               |
+> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                                                 |
+> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`                                  |
+> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}`                            |
+> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`                                  |
 
 </details>
 
