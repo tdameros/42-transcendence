@@ -228,7 +228,17 @@
 ### User graph data
 
 <details>
- <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/elo/</b></code></summary>
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/win_rate/</b></code></summary>
+
+</details>
+
+<details>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/matches/</b></code></summary>
 
 </details>
 
