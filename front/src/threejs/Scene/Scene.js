@@ -1,55 +1,55 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
-import {Match} from "./Match";
-import {PlayerLocation} from "./PlayerLocation";
+import {Match} from './Match';
+import {PlayerLocation} from './PlayerLocation';
 
 export class Scene {
-    #threeJSScene = new THREE.Scene();
-    #matches = [];
-    #currentPlayerLocation;
+  #threeJSScene = new THREE.Scene();
+  #matches = [];
+  #currentPlayerLocation;
 
-    constructor(matchesJson, playerLocationJson) {
-        for (let matchJson of matchesJson) {
-            const newMatch = new Match(matchJson);
-            this.#matches.push(newMatch);
-            this.#threeJSScene.add(newMatch.threeJSGroup);
-        }
-
-        this.#currentPlayerLocation = new PlayerLocation(playerLocationJson);
+  constructor(matchesJson, playerLocationJson) {
+    for (const matchJson of matchesJson) {
+      const newMatch = new Match(matchJson);
+      this.#matches.push(newMatch);
+      this.#threeJSScene.add(newMatch.threeJSGroup);
     }
 
-    updateFrame(timeDelta) {
-        for (const match of this.#matches) {
-            match.updateFrame(timeDelta);
-        }
-    }
+    this.#currentPlayerLocation = new PlayerLocation(playerLocationJson);
+  }
 
-    setPlayerPaddleDirection(playerLocationJson, direction) {
-        new PlayerLocation(playerLocationJson).getPlayerFromScene(this)
-                                              .setPaddleDirection(direction);
+  updateFrame(timeDelta) {
+    for (const match of this.#matches) {
+      match.updateFrame(timeDelta);
     }
+  }
 
-    setPlayerPaddlePosition(playerLocationJson, positionJson) {
-        new PlayerLocation(playerLocationJson).getPlayerFromScene(this)
-                                              .setPaddlePosition(positionJson)
-    }
+  setPlayerPaddleDirection(playerLocationJson, direction) {
+    new PlayerLocation(playerLocationJson).getPlayerFromScene(this)
+        .setPaddleDirection(direction);
+  }
 
-    getCurrentPlayerPaddlePositionAsArray() {
-        const position = this.#currentPlayerLocation.getPlayerFromScene(this)
-                                                    .getPaddlePosition();
-        return [position.x, position.y, position.z];
-    }
+  setPlayerPaddlePosition(playerLocationJson, positionJson) {
+    new PlayerLocation(playerLocationJson).getPlayerFromScene(this)
+        .setPaddlePosition(positionJson);
+  }
 
-    setCurrentPlayerPaddleDirection(direction) {
-        this.#currentPlayerLocation.getPlayerFromScene(this)
-                                   .setPaddleDirection(direction);
-    }
+  getCurrentPlayerPaddlePositionAsArray() {
+    const position = this.#currentPlayerLocation.getPlayerFromScene(this)
+        .getPaddlePosition();
+    return [position.x, position.y, position.z];
+  }
 
-    get matches() {
-        return this.#matches;
-    }
+  setCurrentPlayerPaddleDirection(direction) {
+    this.#currentPlayerLocation.getPlayerFromScene(this)
+        .setPaddleDirection(direction);
+  }
 
-    get threeJSScene() {
-        return this.#threeJSScene;
-    }
+  get matches() {
+    return this.#matches;
+  }
+
+  get threeJSScene() {
+    return this.#threeJSScene;
+  }
 }
