@@ -15,7 +15,7 @@ services:
         volumes:
             - tournament_static_volume:/app/static
             - tournament_media_volume:/app/media
-            - ssl_certificate:/etc/nginx/ssl
+            - ssl_certs:/etc/nginx/ssl
         restart: on-failure
 
     tournament:
@@ -33,7 +33,7 @@ services:
         volumes:
             - tournament_code:/app/tournament
             - common_code:/app/common
-            - ssl_certificate:/app/ssl
+            - ssl_certs:/app/ssl
         expose:
             - "8000"
         depends_on:

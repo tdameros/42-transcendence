@@ -175,7 +175,7 @@ volumes:
             device: common
 
     # SSL certificate
-    ssl_certificate:
+    ssl_certs:
         driver: local
         driver_opts:
             type: none
