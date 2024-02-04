@@ -1,0 +1,52 @@
+services:
+    notification-nginx:
+        networks:
+            - transcendence
+            - notification
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        expose:
+            - "80"
+            - "443"
+        ports:
+            - "6005:80"
+        depends_on:
+            - notification
+        volumes:
+            - notification_static_volume:/app/static
+            - notification_media_volume:/app/media
+        restart: on-failure
+
+    notification:
+        networks:
+            - transcendence
+            - notification
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "cp -r /app/notification /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        gunicorn --chdir src/ notification.wsgi:application -w 4 -b 0.0.0.0:8000"
+        volumes:
+            - notification_code:/app/notification
+            - common_code:/app/common
+        expose:
+            - "8000"
+        depends_on:
+            - notification-db
+        restart: on-failure
+
+    notification-db:
+        networks:
+            - notification
+        image: postgres:16.0-bookworm
+        environment:
+            POSTGRES_DB: mydatabase
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - notification_postgres_volume:/var/lib/postgresql/data
+        restart: on-failure

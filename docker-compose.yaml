@@ -68,6 +68,20 @@ services:
             file: pong_server/docker/docker-compose.yaml
             service: pong-server
 
+    # Notification
+    notification:
+        extends:
+            file: notification/docker/docker-compose.yaml
+            service: notification
+    notification-db:
+        extends:
+            file: notification/docker/docker-compose.yaml
+            service: notification-db
+    notification-nginx:
+        extends:
+            file: notification/docker/docker-compose.yaml
+            service: notification-nginx
+
 
 networks:
     front:
@@ -83,6 +97,9 @@ networks:
         driver: bridge
 
     transcendence:
+        driver: bridge
+
+    notification:
         driver: bridge
 
 
@@ -165,6 +182,22 @@ volumes:
             type: none
             o: bind
             device: pong_server/src/
+
+    # Notification
+    notification_postgres_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: notification/docker/volumes/db/
+    notification_code:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: notification/src/
+    notification_static_volume:
+    notification_media_volume:
 
     # Common code
     common_code:
