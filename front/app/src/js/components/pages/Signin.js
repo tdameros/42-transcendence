@@ -64,10 +64,6 @@ export class Signin extends Component {
   style() {
     return (`
       <style>
-      .active {
-          font-family: 'JetBrains Mono', monospace;
-      }
-      
       #login {
           height: 100vh;
       }

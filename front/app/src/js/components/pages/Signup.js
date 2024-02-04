@@ -27,7 +27,7 @@ export class Signup extends Component {
           <div class="login-card card m-3">
               <div class="card-body m-2">
                   <h2 class="card-title text-center m-5 dynamic-hover">Sign up</h2>
-                  <form>
+                  <form id="signup-form">
                       <div class="form-group mb-4">
                           <div class="input-group has-validation">
                               <span class="input-group-text"
@@ -74,7 +74,6 @@ export class Signup extends Component {
                               </div>
                           </div>
                       </div>
-                  </form>
                   <alert-component id="alert-form" alert-display="false">
                   </alert-component>
                   <div class="d-flex mb-3">
@@ -83,6 +82,7 @@ export class Signup extends Component {
                   <div class="row d-flex justify-content-center">
                       <button id="signupBtn" type="submit" class="btn btn-primary" disabled>Sign up</button>
                   </div>
+                  </form>
                   <hr class="my-4">
                   <div class="row">
                     <github-button-component class="p-0"></github-button-component>
@@ -147,6 +147,16 @@ export class Signup extends Component {
       window.router.navigate('/signin/'),
     );
     this.alertForm = this.querySelector('#alert-form');
+    this.signupBtn = this.querySelector('#signupBtn');
+    super.addComponentEventListener(this.signupBtn, 'click', (event) => {
+      event.preventDefault();
+      this.#signupHandler();
+    });
+    this.signupForm = this.querySelector('#signup-form');
+    super.addComponentEventListener(this.signupForm, 'submit', (event) => {
+      event.preventDefault();
+      this.#signupHandler();
+    });
   }
 
 
