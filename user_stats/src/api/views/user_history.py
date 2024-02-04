@@ -35,7 +35,7 @@ class UserHistoryView(View):
             return JsonResponse({'errors': [str(e)]}, status=400)
         history = [{
             'id': obj.id,
-            'opponent_id': obj.opponent.id,
+            'opponent_id': obj.opponent.id if obj.opponent else None,
             'date': obj.date.isoformat(),
             'result': obj.result,
             'user_score': obj.user_score,

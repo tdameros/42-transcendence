@@ -66,6 +66,19 @@ class UserView(View):
         return JsonResponse(model_to_dict(user), status=200)
 
     @staticmethod
+    def delete(request: HttpRequest, user_id: int):
+        # TODO: add service authentication when implemented
+        valid, error_msg = UserView.validate_user_id(user_id)
+        if not valid:
+            return JsonResponse({'errors': [error_msg]}, status=400)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({'errors': [error.USER_NOT_FOUND]}, status=404)
+        user.delete()
+        return JsonResponse({}, status=200)
+
+    @staticmethod
     def validate_update_request(json_body: Any, user_id: int) -> (bool, Optional[list[str]]):
         errors = []
         elo = json_body.get('elo')
