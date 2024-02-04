@@ -2,12 +2,12 @@ import json
 
 import pyotp
 import qrcode
+from common.src.jwt_managers import user_authentication
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from common.src.jwt_managers import user_authentication
 from user.models import User
 from user_management.JWTManager import get_user_id
 

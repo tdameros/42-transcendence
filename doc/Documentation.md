@@ -67,6 +67,12 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/update-infos/](../user_management/doc/User_management.md#userupdate-infos)
 
+> ### [/user/2fa/enable](../user_management/doc/User_management.md#user2faenable)
+
+> ### [/user/2fa/disable](../user_management/doc/User_management.md#user2fadisable)
+
+> ### [/user/2fa/verify](../user_management/doc/User_management.md#user2faverify)
+
 ## User Stats 
 > ### [/statistics/user/{id}](../user_stats/doc/user-stats-documentation.md#statisticsuserid)
 
