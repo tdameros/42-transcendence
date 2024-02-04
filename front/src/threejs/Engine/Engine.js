@@ -1,64 +1,63 @@
-import {Scene} from '../Scene/Scene';
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {_RedirectionSocketIO} from './sockets/_RedirectionSocketIO';
-import {LoadingScreenScene} from "../Scene/LoadingScreenScene";
+import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
 
 export class Engine {
-    #threeJS;
-    #keyHookHandler;
-    #socket;
-    #scene
+  #threeJS;
+  #keyHookHandler;
+  #socket;
+  #scene;
 
-    constructor() {
-        this.#threeJS = new _ThreeJS(this);
-        this.#keyHookHandler = new _KeyHookHandler(this);
-        this.#scene = new LoadingScreenScene();
-        this.#socket = null;
+  constructor() {
+    this.#threeJS = new _ThreeJS(this);
+    this.#keyHookHandler = new _KeyHookHandler(this);
+    this.#scene = new LoadingScreenScene();
+    this.#socket = null;
+  }
+
+  connectToServer() {
+    this.#socket = new _RedirectionSocketIO(this);
+  }
+
+  renderFrame() {
+    this.#threeJS.renderFrame(this.#scene.threeJSScene);
+  }
+
+  emit(event, data) {
+    if (this.#socket === null) {
+      console.log('Error: Socket is null: Failed to send event(', event, '): ', data);
+      return;
     }
 
-    connectToServer() {
-        this.#socket = new _RedirectionSocketIO(this);
-    }
+    this.#socket.emit(event, data);
+  }
 
-    renderFrame() {
-        this.#threeJS.renderFrame(this.#scene.threeJSScene);
-    }
+  get scene() {
+    return this.#scene;
+  }
 
-    emit(event, data) {
-        if (this.#socket === null) {
-            console.log('Error: Socket is null: Failed to send event(', event, '): ', data);
-            return;
-        }
+  set scene(newScene) {
+    this.#scene = newScene;
+  }
 
-        this.#socket.emit(event, data);
-    }
+  setAnimationLoop(loopFunction) {
+    this.#threeJS.setAnimationLoop(loopFunction);
+  }
 
-    get scene() {
-        return this.#scene;
-    }
+  stopAnimationLoop() {
+    this.#threeJS.stopAnimationLoop();
+  }
 
-    set scene(newScene) {
-        this.#scene = newScene;
-    }
+  set socket(socket) {
+    this.#socket = socket;
+  }
 
-    setAnimationLoop(loopFunction) {
-        this.#threeJS.setAnimationLoop(loopFunction);
-    }
+  startListeningForKeyHooks() {
+    this.#keyHookHandler.startListeningForKeyHooks();
+  }
 
-    stopAnimationLoop() {
-        this.#threeJS.stopAnimationLoop();
-    }
-
-    set socket(socket) {
-        this.#socket = socket;
-    }
-
-    startListeningForKeyHooks() {
-        this.#keyHookHandler.startListeningForKeyHooks()
-    }
-
-    stopListeningForKeyHooks() {
-        this.#keyHookHandler.stopListeningForKeyHooks()
-    }
+  stopListeningForKeyHooks() {
+    this.#keyHookHandler.stopListeningForKeyHooks();
+  }
 }

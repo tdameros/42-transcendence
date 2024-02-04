@@ -1,51 +1,51 @@
-import * as THREE from "three";
-import {_Board} from "./_Board";
-import {Paddle} from "./Paddle";
+import * as THREE from 'three';
+import {_Board} from './_Board';
+import {Paddle} from './Paddle';
 
 export class Player {
-    #threeJSGroup = new THREE.Group();
-    #moveSpeed;
-    #board;
-    #paddle;
+  #threeJSGroup = new THREE.Group();
+  #moveSpeed;
+  #board;
+  #paddle;
 
 
-    constructor(playerJson) {
-        const position = playerJson['position'];
-        this.#threeJSGroup.position.set(position['x'],
-                                        position['y'],
-                                        position['z']);
+  constructor(playerJson) {
+    const position = playerJson['position'];
+    this.#threeJSGroup.position.set(position['x'],
+        position['y'],
+        position['z']);
 
-        this.#moveSpeed = playerJson['move_speed'];
-        this.#board = new _Board(playerJson['board']);
-        this.#paddle = new Paddle(playerJson['paddle'],
-                                   this.#threeJSGroup.position);
+    this.#moveSpeed = playerJson['move_speed'];
+    this.#board = new _Board(playerJson['board']);
+    this.#paddle = new Paddle(playerJson['paddle'],
+        this.#threeJSGroup.position);
 
-        this.#threeJSGroup.add(this.#board.threeJSBoard);
-        this.#threeJSGroup.add(this.#paddle.threeJSGroup);
-    }
+    this.#threeJSGroup.add(this.#board.threeJSBoard);
+    this.#threeJSGroup.add(this.#paddle.threeJSGroup);
+  }
 
-    updateFrame(timeDelta, paddleBoundingBox) {
-        this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
-        this.#board.updateFrame(timeDelta);
-    }
+  updateFrame(timeDelta, paddleBoundingBox) {
+    this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
+    this.#board.updateFrame(timeDelta);
+  }
 
-    get threeJSGroup() {
-        return this.#threeJSGroup;
-    }
+  get threeJSGroup() {
+    return this.#threeJSGroup;
+  }
 
-    setPaddleDirection(direction) {
-        this.#paddle.setDirection(direction);
-    }
+  setPaddleDirection(direction) {
+    this.#paddle.setDirection(direction);
+  }
 
-    setPaddlePosition(positionJson) {
-        this.#paddle.setPosition(positionJson);
-    }
+  setPaddlePosition(positionJson) {
+    this.#paddle.setPosition(positionJson);
+  }
 
-    getPaddlePosition() {
-        return this.#paddle.getPosition();
-    }
+  getPaddlePosition() {
+    return this.#paddle.getPosition();
+  }
 
-    get paddle() {
-        return this.#paddle;
-    }
+  get paddle() {
+    return this.#paddle;
+  }
 }

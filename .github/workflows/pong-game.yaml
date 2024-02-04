@@ -1,0 +1,33 @@
+name: Pong Server Tests
+
+on:
+    push:
+        branches:
+            - main
+            - dev
+            - basic-pong
+            - pong-game
+    pull_request:
+        branches:
+            - main
+            - dev
+            - basic-pong
+            - pong-game
+
+jobs:
+    build:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              working-directory: front/src/threejs/
+              run: |
+                  npm i
+
+            - name: Run linter
+              working-directory: front/src/threejs/
+              run: |
+                  npx eslint .
