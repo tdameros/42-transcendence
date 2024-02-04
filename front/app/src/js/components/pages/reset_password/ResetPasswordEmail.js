@@ -1,6 +1,6 @@
-import {Component} from '../Component.js';
-import {InputValidator} from '../../utils/InputValidator.js';
-import {BootstrapUtils} from '../../utils/BootstrapUtils.js';
+import {Component} from '../../Component.js';
+import {InputValidator} from '../../../utils/InputValidator.js';
+import {BootstrapUtils} from '../../../utils/BootstrapUtils.js';
 
 export class ResetPasswordEmail extends Component {
   constructor() {

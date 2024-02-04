@@ -25,7 +25,7 @@ const router = new Router(app, [
   new Route('/signup/', 'signup-component'),
   new Route('/reset-password/', 'reset-password-component'),
   new Route('/oauth/:refresh-token/', 'oauth-component'),
-  new Route('/tournaments/create/', 'tournaments-create-component'),
+  new Route('/tournaments/create/', 'tournament-create-component'),
   new Route('', 'home-component'),
 ]);
 
