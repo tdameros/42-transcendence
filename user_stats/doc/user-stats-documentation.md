@@ -150,9 +150,10 @@
 
 #### Body
 
-> | name      | type        | description     |
-> |-----------|-------------|-----------------|
-> | `history` | list[Match] | Matches history |
+> | name          | type        | description              |
+> |---------------|-------------|--------------------------|
+> | `history`     | list[Match] | Matches history          |
+> | `total_pages` | int         | The total number of page |
 
 #### Match
 

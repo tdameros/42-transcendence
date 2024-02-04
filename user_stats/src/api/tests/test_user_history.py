@@ -93,6 +93,43 @@ class GetHistory(HistoryTest):
         self.assertEqual(len(history), 2)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_valid_no_match(self, mock_authenticate):
+        Match.objects.all().delete()
+        mock_authenticate.return_value = (True, {'id': 1}, None)
+        response = self.get_history(1, page=1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['history'], [])
+        self.assertEqual(response.json()['total_pages'], 1)
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_valid_total_pages(self, mock_authenticate):
+        mock_authenticate.return_value = (True, {'id': 1}, None)
+        response = self.get_history(1, page_size=2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_pages'], 2)
+        response = self.get_history(1, page_size=1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_pages'], 4)
+        body = {
+            'winner_id': 1,
+            'loser_id': 2,
+            'winner_score': 10,
+            'loser_score': 8,
+            'date': '2020-01-01T00:00:00+00:00',
+        }
+        for i in range(20):
+            self.post_match(body)
+        response = self.get_history(1, page_size=10)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_pages'], 3)
+        response = self.get_history(1, page_size=5)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_pages'], 5)
+        response = self.get_history(1, page_size=1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_pages'], 24)
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         response = self.get_history(4)
