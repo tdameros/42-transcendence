@@ -173,3 +173,11 @@ volumes:
             type: none
             o: bind
             device: common
+
+    # SSL certificate
+    ssl_certificate:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ssl/certs

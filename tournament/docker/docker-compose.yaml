@@ -7,15 +7,15 @@ services:
             context: nginx
             dockerfile: Dockerfile
         expose:
-            - "80"
             - "443"
         ports:
-            - "6001:80"
+            - "6001:443"
         depends_on:
             - tournament
         volumes:
             - tournament_static_volume:/app/static
             - tournament_media_volume:/app/media
+            - ssl_certificate:/etc/nginx/ssl
         restart: on-failure
 
     tournament:
