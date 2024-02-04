@@ -3,6 +3,8 @@ import {Multiplayer} from './Multiplayer.js';
 import {Signin} from './Signin.js';
 import {Signup} from './Signup.js';
 import {Singleplayer} from './Singleplayer.js';
+import {NotFound} from './NotFound.js';
+
 import {
   TournamentBracket,
   TournamentCreate,
@@ -30,6 +32,7 @@ export {
   TournamentsList,
   Home,
   Multiplayer,
+  NotFound,
   Signin,
   Signup,
   Singleplayer,
