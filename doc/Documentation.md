@@ -65,7 +65,14 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#oauthcallbackauth-service)
 
+> ### [/user/2fa/enable](../user_management/doc/User_management.md#user2faenable)
+
+> ### [/user/2fa/disable](../user_management/doc/User_management.md#user2fadisable)
+
+> ### [/user/2fa/verify](../user_management/doc/User_management.md#user2faverify)
+
 ## User Stats 
+
 > ### [/user/{id}](../user_stats/doc/user-stats-documentation.md#userid)
 
 > ### [/user/{id}/progress/](../user_stats/doc/user-stats-documentation.md#useridprogress)
