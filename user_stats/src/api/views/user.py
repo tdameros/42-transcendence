@@ -75,7 +75,10 @@ class UserView(View):
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return JsonResponse({'errors': [error.USER_NOT_FOUND]}, status=404)
-        user.delete()
+        try:
+            user.delete()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse({}, status=200)
 
     @staticmethod
