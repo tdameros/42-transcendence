@@ -101,7 +101,6 @@ class GetHistory(HistoryTest):
         self.assertEqual(response.json()['history'], [])
         self.assertEqual(response.json()['total_pages'], 1)
 
-
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_total_pages(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
@@ -129,7 +128,6 @@ class GetHistory(HistoryTest):
         response = self.get_history(1, page_size=1)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['total_pages'], 24)
-
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):
