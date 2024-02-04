@@ -5,24 +5,21 @@ import {
 } from './buttons';
 
 import {
+  ResetPassword,
+  ResetPasswordCode,
+  ResetPasswordEmail,
+  ResetPasswordNew,
+  TournamentBracket,
+  TournamentCreate,
+  TournamentDetails,
+  Tournaments,
+  TournamentsList,
   Home,
   Multiplayer,
   Signin,
   Signup,
   Singleplayer,
-  Tournaments,
-  TournamentsList,
-  TournamentsBracket,
-  TournamentDetails,
-  TournamentsCreate,
 } from './pages';
-
-import {
-  ResetPassword,
-  ResetPasswordCode,
-  ResetPasswordEmail,
-  ResetPasswordNew,
-} from './reset_password';
 
 import {
   Alert,
@@ -42,11 +39,12 @@ customElements.define('multiplayer-component', Multiplayer);
 customElements.define('signin-component', Signin);
 customElements.define('signup-component', Signup);
 customElements.define('singleplayer-component', Singleplayer);
-customElements.define('tournaments-component', Tournaments);
-customElements.define('tournaments-list-component', TournamentsList);
-customElements.define('tournaments-bracket-component', TournamentsBracket);
+
+customElements.define('tournament-bracket-component', TournamentBracket);
+customElements.define('tournament-create-component', TournamentCreate);
 customElements.define('tournament-details-component', TournamentDetails);
-customElements.define('tournaments-create-component', TournamentsCreate);
+customElements.define('tournaments-list-component', TournamentsList);
+customElements.define('tournaments-component', Tournaments);
 
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
