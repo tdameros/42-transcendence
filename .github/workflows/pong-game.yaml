@@ -1,4 +1,4 @@
-name: Pong Server Tests
+name: Pong Game Tests
 
 on:
     push:
