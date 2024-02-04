@@ -20,8 +20,8 @@ class UserHistoryView(View):
         valid, errors = UserHistoryView.validate_get_request(request, user_id)
         if not valid:
             return JsonResponse({'errors': errors}, status=400)
-        page = request.GET.get('page', 1)
-        page_size = request.GET.get('page_size', 10)
+        page = request.GET.get('page', '1')
+        page_size = request.GET.get('page_size', '10')
 
         return UserHistoryView.get_history_data(user_id, page, page_size)
 
@@ -48,8 +48,8 @@ class UserHistoryView(View):
     @staticmethod
     def validate_get_request(request: HttpRequest, user_id: int) -> (bool, Optional[list[str]]):
         errors = []
-        page = request.GET.get('page', 1)
-        page_size = request.GET.get('page_size', 10)
+        page = request.GET.get('page', '1')
+        page_size = request.GET.get('page_size', '10')
 
         valid, error = UserHistoryView.validate_user_id(user_id)
         if not valid:

@@ -6,17 +6,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api.models import Tournament
 from api.views.match_utils import MatchUtils
-from tournament.authenticate_request import authenticate_request
+from common.src.jwt_managers import user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET']), name='dispatch')
 class MatchesView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
-
         try:
             tournament = Tournament.objects.get(id=tournament_id)
             matches = list(tournament.matches.all())

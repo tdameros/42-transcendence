@@ -20,8 +20,8 @@ class MatchTest(TestCase):
         winner_score = body.get('winner_score')
         loser_score = body.get('loser_score')
         date = body.get('date')
-        winner_elo_before = User.objects.get(pk=winner_id).elo
-        loser_elo_before = User.objects.get(pk=loser_id).elo
+        winner_before = User.objects.get(pk=winner_id)
+        loser_before = User.objects.get(pk=loser_id)
         response = self.post_match(body)
         self.assertEqual(response.status_code, 201)
         match1 = Match.objects.get(pk=response.json()['winner_match_id'])
@@ -34,10 +34,9 @@ class MatchTest(TestCase):
         self.assertEqual(match1.user_score, winner_score)
         self.assertEqual(match1.opponent_score, loser_score)
         self.assertEqual(match1.result, True)
-        self.assertEqual(match1.user_elo, winner.elo)
-        self.assertEqual(match1.user_elo - match1.user_elo_delta, winner_elo_before)
-        self.assertEqual(match1.user_win_rate, winner.win_rate)
-        self.assertEqual(match1.user_elo_delta, winner.elo - winner_elo_before)
+        self.assertEqual(match1.user_elo, winner.elo - match1.user_elo_delta)
+        self.assertEqual(match1.user_win_rate, winner_before.win_rate)
+        self.assertEqual(match1.user_matches_played, winner_before.matches_played)
         self.assertEqual(match1.date, parser.isoparse(date))
 
         self.assertEqual(match2.user_id, loser_id)
@@ -45,10 +44,9 @@ class MatchTest(TestCase):
         self.assertEqual(match2.user_score, loser_score)
         self.assertEqual(match2.opponent_score, winner_score)
         self.assertEqual(match2.result, False)
-        self.assertEqual(match2.user_elo, loser.elo)
-        self.assertEqual(match2.user_elo - match2.user_elo_delta, loser_elo_before)
-        self.assertEqual(match2.user_win_rate, loser.win_rate)
-        self.assertEqual(match2.user_elo_delta, loser.elo - loser_elo_before)
+        self.assertEqual(match2.user_elo, loser.elo - match2.user_elo_delta)
+        self.assertEqual(match2.user_win_rate, loser_before.win_rate)
+        self.assertEqual(match2.user_matches_played, loser_before.matches_played)
         self.assertEqual(match2.date, parser.isoparse(date))
 
 
@@ -57,18 +55,18 @@ class PostMatch(MatchTest):
         User.objects.create(
             id=1,
             elo=1000,
-            games_played=0,
-            games_won=0,
-            games_lost=0,
+            matches_played=0,
+            matches_won=0,
+            matches_lost=0,
             win_rate=0,
             friends=0
         )
         User.objects.create(
             id=2,
             elo=1200,
-            games_played=0,
-            games_won=0,
-            games_lost=0,
+            matches_played=0,
+            matches_won=0,
+            matches_lost=0,
             win_rate=0,
             friends=0
         )
@@ -90,9 +88,9 @@ class PostMatch(MatchTest):
         User.objects.create(
             id=3,
             elo=100,
-            games_played=50,
-            games_won=20,
-            games_lost=30,
+            matches_played=50,
+            matches_won=20,
+            matches_lost=30,
             win_rate=0.4,
             friends=1000
         )
