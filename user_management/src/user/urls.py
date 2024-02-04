@@ -13,6 +13,7 @@ from user.views.sign_in import SignInView
 from user.views.sign_up import SignUpView
 from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdView
+from user.views.username import UsernameView
 from user_management import settings
 
 urlpatterns = [
@@ -29,7 +30,8 @@ urlpatterns = [
     path('oauth/<str:auth_service>/', OAuth.as_view(), name='oauth'),
     path('oauth/callback/<str:auth_service>/', OAuthCallback.as_view(), name='oauth-callback'),
     path('update-infos/', UpdateInfos.as_view(), name='update-infos'),
-    path('<str:user_id>/', UserIdView.as_view(), name='user-id')
+    path('<str:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('username/<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
 if settings.DEBUG:
