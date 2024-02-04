@@ -10,7 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
 from user_management.JWTManager import get_user_id
-from user_management.utils import generate_random_string
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -25,7 +24,7 @@ class Enable2fa(View):
         if user.has_2fa:
             return JsonResponse(data={'errors': ['2fa already enabled']}, status=400)
         user.has_2fa = True
-        user.totp_secret = generate_random_string(16)
+        user.totp_secret = pyotp.random_base32()
         user.totp_config_url = f'otpauth://totp/{user.username}?secret={user.totp_secret}&issuer=Pong'
         user.save()
         qr = qrcode.make(user.totp_config_url)
