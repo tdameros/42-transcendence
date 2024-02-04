@@ -228,9 +228,56 @@
 ### User graph data
 
 <details>
- <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/.../</b></code></summary>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/elo/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/win_rate/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/matches_played/</b></code>
+
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description  | requirement |
+> |-----------------|--------|--------------|-------------|
+> | `Authorization` | String | Access token | Required    |
+
+#### Query
+
+> | name         | type | default | description                        | requirement |
+> |--------------|------|---------|------------------------------------|-------------|
+> | `start`      | Date | None    | ISO 8061 formatted date            | Required    |
+> | `end`        | Date | None    | ISO 8061 formatted date            | Required    |
+> | `num_points` | int  | None    | The numbers of values in the graph | Required    |
+
+### Response
+
+#### Body
+
+> | name    | type        | description |
+> |---------|-------------|-------------|
+> | `graph` | list[Graph] | Graph data  |
+
+#### Graph
+
+> | name    | type | description |
+> |---------|------|-------------|
+> | `date`  | Date | Date        |
+> | `value` | int  | Value       |
+
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `404`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
 
 </details>
+
 
 --------------------------------------------------------------------------------
 
