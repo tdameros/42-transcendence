@@ -7,7 +7,7 @@ export class Router {
     Object.assign(this.#routes, routes);
     this.#app = app;
     window.addEventListener('popstate', (event) => {
-      this.#loadRoute(document.location.pathname);
+      this.#popstateHandler(event);
     });
   }
 
@@ -16,20 +16,36 @@ export class Router {
   }
 
   navigate(newPath) {
-    const result = this.#loadRoute(newPath);
-    if (result !== null && window.location.pathname !== newPath) {
+    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    if (route === null) {
+      console.error(`Route not found`);
+      return null;
+    }
+    if (window.location.pathname !== newPath) {
       window.history.pushState({}, '', newPath);
     }
-    return result;
+    return this.#loadRoute(route, parametersValues);
   }
 
   init() {
-    this.#loadRoute(document.location.pathname);
+    const {route, parametersValues} = this.#findMatchingRoute(
+        document.location.pathname,
+    );
+    if (route === null) {
+      console.error(`Route not found`);
+      return null;
+    }
+    return this.#loadRoute(route, parametersValues);
   }
 
   redirect(newPath) {
     window.history.replaceState({}, '', newPath);
-    this.#loadRoute(newPath);
+    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    if (route === null) {
+      console.error(`Route not found`);
+      return null;
+    }
+    return this.#loadRoute(route, parametersValues);
   }
 
   #findMatchingRoute(path) {
@@ -47,18 +63,24 @@ export class Router {
     return {route: defaultRoute, parametersValues: []};
   }
 
-  #loadRoute(path) {
-    const {route, parametersValues} = this.#findMatchingRoute(path);
-    if (route === null) {
-      console.error(`Route not found`);
-      return null;
-    }
+  #loadRoute(route, parametersValues) {
     const customElement = document.createElement(route.customElement);
     Router.#setParametersInElement(customElement, route.pathParameters,
         parametersValues);
     this.#app.innerHTML = '';
     this.#app.appendChild(customElement);
     return customElement;
+  }
+
+  #popstateHandler(event) {
+    const {route, parametersValues} = this.#findMatchingRoute(
+        document.location.pathname,
+    );
+    if (route === null) {
+      console.error(`Route not found`);
+      return null;
+    }
+    this.#loadRoute(route, parametersValues);
   }
 
   static #setParametersInElement(element, parameters, values) {
