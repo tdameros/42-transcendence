@@ -12,6 +12,7 @@ export class Tournaments extends Component {
   render() {
     if (!window.ApiClient.isAuth()) {
       window.router.redirect('/signin/');
+      return false;
     }
     return (`
       <navbar-component nav-active="tournaments"></navbar-component>

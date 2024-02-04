@@ -10,6 +10,7 @@ export class TournamentsCreate extends Component {
   render() {
     if (!window.ApiClient.isAuth()) {
       window.router.redirect('/signin/');
+      return false;
     }
     return (`
       <navbar-component disable-padding-top="true"></navbar-component>
