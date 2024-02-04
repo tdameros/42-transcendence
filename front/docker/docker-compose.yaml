@@ -13,6 +13,7 @@ services:
             - front-vite
         volumes:
             - front_dist:/transcendence/
+            - ssl_certs:/etc/nginx/ssl
 
     front-vite:
         image: node:21-bookworm
