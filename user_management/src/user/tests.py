@@ -354,7 +354,32 @@ class UserId(TestCase):
         url = reverse('user-id', args=[user.id])
         result = self.client.get(url)
         self.assertEqual(result.status_code, 200)
-        self.assertTrue('username' in result.json())
+        self.assertEqual(user.username, result.json()['username'])
+        self.assertEqual(user.id, result.json()['id'])
+
+
+class Username(TestCase):
+
+    def test_username(self):
+        data_preparation = {
+            'username': 'Aurel303',
+            'email': 'alevra@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.all().first()
+        url = reverse('username', args=[user.username])
+        result = self.client.get(url)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(user.username, result.json()['username'])
+        self.assertEqual(user.id, result.json()['id'])
+
+    def test_invalid_username(self):
+        url = reverse('username', args=['invalid_username_123'])
+        result = self.client.get(url)
+        self.assertEqual(result.status_code, 404)
+        self.assertTrue('errors' in result.json())
 
 
 class TestsSearchUsername(TestCase):
