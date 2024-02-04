@@ -29,10 +29,11 @@ services:
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        gunicorn -c /app/gunicorn_config.py"
         volumes:
             - tournament_code:/app/tournament
             - common_code:/app/common
+            - ssl_certificate:/app/ssl
         expose:
             - "8000"
         depends_on:
