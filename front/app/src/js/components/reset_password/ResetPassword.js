@@ -5,6 +5,10 @@ export class ResetPassword extends Component {
     super();
   }
   render() {
+    if (window.ApiClient.isAuth()) {
+      window.router.redirect('/');
+      return false;
+    }
     return (`
       <navbar-component disable-padding-top="true"></navbar-component>
       <div id="container">

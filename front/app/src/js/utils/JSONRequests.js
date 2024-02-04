@@ -1,6 +1,32 @@
 
 export class JSONRequests {
-  static async get(url, headers={}) {
+  static async patch(url, params={}, headers={}) {
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    };
+    const queryString= new URLSearchParams(params).toString();
+    url = queryString ? `${url}?${queryString}` : url;
+    return await JSONRequests.request(url, options);
+  }
+
+  static async delete(url, params={}, headers={}) {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    };
+    const queryString= new URLSearchParams(params).toString();
+    url = queryString ? `${url}?${queryString}` : url;
+    return await JSONRequests.request(url, options);
+  }
+
+  static async get(url, params={}, headers={}) {
     const options = {
       method: 'GET',
       headers: {
@@ -8,6 +34,8 @@ export class JSONRequests {
         ...headers,
       },
     };
+    const queryString= new URLSearchParams(params).toString();
+    url = queryString ? `${url}?${queryString}` : url;
     return await JSONRequests.request(url, options);
   }
 

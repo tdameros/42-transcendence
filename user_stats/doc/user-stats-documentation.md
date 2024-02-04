@@ -2,12 +2,12 @@
 
 --------------------------------------------------------------------------------
 
-## `/user/{id}/`
+## `/statistics/user/{id}/`
 
 ### General user statistics
 
 <details>
- <summary><code>GET</code> <code><b>/user/{id}/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/</b></code></summary>
 
 ### Request
 
@@ -42,7 +42,7 @@
 </details>
 
 <details>
- <summary><code>POST</code> <code><b>/user/{id}/</b></code></summary>
+ <summary><code>POST</code> <code><b>/statistics/user/{id}/</b></code></summary>
 
 ### Request
 
@@ -77,7 +77,7 @@
 </details>
 
 <details>
- <summary><code>PATCH</code> <code><b>/user/{id}/</b></code></summary>
+ <summary><code>PATCH</code> <code><b>/statistics/user/{id}/</b></code></summary>
 
 ### Request
 
@@ -124,12 +124,12 @@
 
 --------------------------------------------------------------------------------
 
-## `/user/{id}/history/`
+## `/statistics/user/{id}/history/`
 
 ### User match history
 
 <details>
- <summary><code>GET</code> <code><b>/user/{id}/history/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/history/</b></code></summary>
 
 ### Request
 
@@ -179,12 +179,12 @@
 
 --------------------------------------------------------------------------------
 
-## `/user/{id}/progress/`
+## `/statistics/user/{id}/progress/`
 
 ### Weekly user progression
 
 <details>
- <summary><code>GET</code> <code><b>/user/{id}/progress/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/progress/</b></code></summary>
 
 ### Request
 
@@ -223,23 +223,70 @@
 
 --------------------------------------------------------------------------------
 
-## `/user/{id}/graph/`
+## `/statistics/user/{id}/graph/`
 
 ### User graph data
 
 <details>
- <summary><code>GET</code> <code><b>/user/{id}/graph/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/.../</b></code></summary>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/elo/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/win_rate/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/matches_played/</b></code>
+
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description  | requirement |
+> |-----------------|--------|--------------|-------------|
+> | `Authorization` | String | Access token | Required    |
+
+#### Query
+
+> | name         | type | default | description                        | requirement |
+> |--------------|------|---------|------------------------------------|-------------|
+> | `start`      | Date | None    | ISO 8061 formatted date            | Required    |
+> | `end`        | Date | None    | ISO 8061 formatted date            | Required    |
+> | `num_points` | int  | None    | The numbers of values in the graph | Required    |
+
+### Response
+
+#### Body
+
+> | name    | type        | description |
+> |---------|-------------|-------------|
+> | `graph` | list[Graph] | Graph data  |
+
+#### Graph
+
+> | name    | type | description |
+> |---------|------|-------------|
+> | `date`  | Date | Date        |
+> | `value` | int  | Value       |
+
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `404`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
 
 </details>
 
+
 --------------------------------------------------------------------------------
 
-## `/match/`
+## `/statistics/match/`
 
 ### General matches data
 
 <details>
- <summary><code>POST</code> <code><b>/match/</b></code></summary>
+ <summary><code>POST</code> <code><b>/statistics/match/</b></code></summary>
 
 ### Request
 

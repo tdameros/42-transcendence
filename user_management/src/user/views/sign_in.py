@@ -17,11 +17,11 @@ class SignInView(View):
             json_request = json.loads(request.body.decode('utf-8'))
             validation_errors = SignInView.signin_infos_validation(json_request)
             if validation_errors:
-                return JsonResponse(data={'errors': validation_errors}, status=400)
+                return JsonResponse(data={'errors': validation_errors}, status=401)
             user = User.objects.filter(username=json_request['username']).first()
             success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
-                return JsonResponse(data={'errors': errors}, status=400)
+                return JsonResponse(data={'errors while creating jwt': errors}, status=500)
             return JsonResponse(data={'refresh_token': refresh_token}, status=200)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)

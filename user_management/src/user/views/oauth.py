@@ -4,6 +4,7 @@ from hashlib import sha256
 
 import requests
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views import View
 
@@ -28,14 +29,14 @@ class OAuthFactory:
 class BaseOAuth(ABC):
 
     @staticmethod
-    def create_pending_oauth():
+    def create_pending_oauth(source):
         state = generate_random_string(settings.OAUTH_STATE_MAX_LENGTH)
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
-        PendingOAuth.objects.create(hashed_state=hashed_state)
+        PendingOAuth.objects.create(hashed_state=hashed_state, source=source)
         return state
 
     @abstractmethod
-    def handle_auth(self, request):
+    def handle_auth(self, request, source):
         pass
 
 
@@ -43,16 +44,20 @@ class OAuth(View):
 
     @staticmethod
     def get(request, auth_service):
+        source = request.GET.get('source')
+        if source is None:
+            return JsonResponse(data={'errors': ['No source provided']}, status=400)
+
         oauth_handler = OAuthFactory.create_oauth_handler(auth_service)
         if oauth_handler:
-            return oauth_handler.handle_auth(request)
+            return oauth_handler.handle_auth(request, source)
         else:
             return JsonResponse(data={'errors': ['Unknown auth service']}, status=400)
 
 
 class GitHubOAuth(BaseOAuth):
-    def handle_auth(self, request):
-        state = self.create_pending_oauth()
+    def handle_auth(self, request, source):
+        state = self.create_pending_oauth(source)
         authorization_url = self.get_github_authorization_url(state)
         return JsonResponse(data={'redirection_url': authorization_url}, status=200)
 
@@ -68,8 +73,8 @@ class GitHubOAuth(BaseOAuth):
 
 
 class FtApiOAuth(BaseOAuth):
-    def handle_auth(self, request):
-        state = self.create_pending_oauth()
+    def handle_auth(self, request, source):
+        state = self.create_pending_oauth(source)
         authorization_url = self.get_ft_api_authorization_url(state)
         return JsonResponse(data={'redirection_url': authorization_url}, status=200)
 
@@ -105,8 +110,11 @@ class OAuthCallback(View):
     def get(self, request, auth_service):
         code = request.GET.get('code')
         state = request.GET.get('state')
+        source = self.get_source_url(state)
         self.set_params(auth_service)
-        self.check_and_update_state(state)
+        if self.check_state(state) is False:
+            return redirect(f"{source}/?error=invalid_state")
+        self.flush_pending_oauth(state)
         access_token = self.get_access_token(code)
         if not access_token:
             return JsonResponse(data={'errors': ['Failed to retrieve access token']}, status=400)
@@ -120,7 +128,10 @@ class OAuthCallback(View):
         if not success:
             return JsonResponse(data={'errors': errors}, status=400)
 
-        return JsonResponse(data={'refresh_token': refresh_token}, status=201)
+        response = redirect(source)
+        response.set_cookie('refresh_token', refresh_token)
+
+        return response
 
     @staticmethod
     def create_or_get_user(login, email, avatar_url):
@@ -169,13 +180,12 @@ class OAuthCallback(View):
             return login, avatar_url, email
 
     @staticmethod
-    def check_and_update_state(state):
+    def check_state(state):
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
         pending_oauth = PendingOAuth.objects.filter(hashed_state=hashed_state).first()
         if pending_oauth is None:
-            return JsonResponse(data={'errors': ['Invalid state']}, status=400)
-        pending_oauth.delete()
-        PendingOAuth.objects.filter(created_at__lte=timezone.now() - timedelta(minutes=5)).delete()
+            return False
+        return True
 
     def get_access_token(self, code):
         payload = {
@@ -196,3 +206,12 @@ class OAuthCallback(View):
         access_token = response.json()['access_token']
 
         return access_token
+
+    def get_source_url(self, state):
+        pending_oauth = PendingOAuth.objects.filter(hashed_state=sha256(str(state).encode('utf-8')).hexdigest()).first()
+        return pending_oauth.source
+
+    def flush_pending_oauth(self, state):
+        hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
+        PendingOAuth.objects.filter(hashed_state=hashed_state).delete()
+        PendingOAuth.objects.filter(created_at__lte=timezone.now() - timedelta(minutes=5)).delete()

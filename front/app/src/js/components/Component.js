@@ -10,7 +10,11 @@ export class Component extends HTMLElement {
 
   connectedCallback() {
     if (!this.#rendered) {
-      this.innerHTML = this.render() + this.style();
+      const render = this.render();
+      if (render === false) {
+        return;
+      }
+      this.innerHTML = render + this.style();
       this.#rendered = true;
       this.postRender();
     }
@@ -25,6 +29,9 @@ export class Component extends HTMLElement {
   }
 
   addComponentEventListener(element, event, callback) {
+    if (!element) {
+      return;
+    }
     if (!this.#componentEventListeners[event]) {
       this.#componentEventListeners[event] = [];
     }

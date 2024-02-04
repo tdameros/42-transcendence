@@ -205,7 +205,7 @@ class TestsSignin(TestCase):
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data_wrong_pass), content_type='application/json')
-        self.assertEqual(result.status_code, 400)
+        self.assertEqual(result.status_code, 401)
 
 
 class TestsUsernameExist(TestCase):
@@ -405,6 +405,62 @@ class TestsSearchUsername(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 0)
+
+
+class TestsUserUpdateInfos(TestCase):
+    """ 1) first, create a user with /user/signup
+    2) get the access token of the user just created with /user/refresh-access-jwt
+    3) then, update the user infos with /user/update-infos
+    4) finally, check if the user infos have been updated with /user/user-id
+    5) test invalid data"""
+    def test_user_update_infos(self):
+        # 1)
+        data_preparation = {
+            'username': 'UpdateThisUser',
+            'email': 'updatethisuser@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        refresh_token = result.json()['refresh_token']
+        user = User.objects.filter(username='UpdateThisUser').first()
+
+        # 2)
+        url = reverse('refresh-access-jwt')
+        result = self.client.post(url, json.dumps({'refresh_token': refresh_token}), content_type='application/json')
+        access_token = result.json()['access_token']
+
+        # 3)
+        data = {
+            'access_token': access_token,
+            'change_list': ['username', 'email', 'password'],
+            'username': 'UpdatedUser',
+            'email': 'updateduser@gmail.com',
+            'password': 'AnotherValidpass42*'
+        }
+        url = reverse('update-infos')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+
+        # 4)
+        self.assertEqual(result.status_code, 200)
+        user = User.objects.filter(username='UpdatedUser').first()
+        self.assertEqual(user.username, 'UpdatedUser')
+        self.assertEqual(user.email, 'updateduser@gmail.com')
+
+        # 5)
+        data = {
+            'access_token': access_token,
+            'change_list': ['username', 'email', 'password'],
+            'username': 'I',
+            'email': 'a.fr',
+            'password': 'aninvalidpassword'
+        }
+
+        url = reverse('update-infos')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 400)
+        self.assertTrue('errors' in result.json())
+        self.assertTrue(result.json()['errors'])
 
 
 class TestsTwoFa(TestCase):

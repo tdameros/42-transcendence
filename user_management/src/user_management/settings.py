@@ -33,7 +33,7 @@ PASSWORD_MIN_LENGTH = 8
 PASSWORD_MAX_LENGTH = 30
 ELO_DEFAULT = 500
 TLD_MAX_LENGTH = 15
-FORGOT_PASSWORD_CODE_MAX_LENGTH = 12
+FORGOT_PASSWORD_CODE_MAX_LENGTH = 6
 FORGOT_PASSWORD_CODE_EXPIRATION_MINUTES = 15
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -49,7 +49,7 @@ TOTP_CONFIG_URL_MAX_LENGTH = 200
 
 # OAuth
 OAUTH_STATE_MAX_LENGTH = 32
-
+OAUTH_SOURCE_MAX_LENGTH = 100
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
 GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
@@ -106,19 +106,17 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'user',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -126,6 +124,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

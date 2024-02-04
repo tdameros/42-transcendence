@@ -11,6 +11,10 @@ import {
   Signup,
   Singleplayer,
   Tournaments,
+  TournamentsList,
+  TournamentsBracket,
+  TournamentDetails,
+  TournamentsCreate,
 } from './pages';
 
 import {
@@ -39,6 +43,10 @@ customElements.define('signin-component', Signin);
 customElements.define('signup-component', Signup);
 customElements.define('singleplayer-component', Singleplayer);
 customElements.define('tournaments-component', Tournaments);
+customElements.define('tournaments-list-component', TournamentsList);
+customElements.define('tournaments-bracket-component', TournamentsBracket);
+customElements.define('tournament-details-component', TournamentDetails);
+customElements.define('tournaments-create-component', TournamentsCreate);
 
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);

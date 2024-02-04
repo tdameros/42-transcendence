@@ -34,29 +34,6 @@ all fields are mandatory
 > | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Username empty
-> - Username already taken
-> - Username length {len(username)} > 20
-> - Username must be alphanumeric
-
-> - Email {email} already taken
-> - Email empty
-> - Email length {len(email)} > 50
-> - Email missing @
-> - Email missing "." character
-> - Email contains more than one @ character
-
-> - Password empty
-> - Password length {len(password)} < 8
-> - Password missing uppercase character
-> - Password missing digit
-> - Password missing special character
-
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -89,16 +66,6 @@ all fields are mandatory
 > | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`                    |
 > | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred : ...']}` |
-> 
-> errors can be combined
-
-> errors can be :
-> - Username empty
-> - Password empty
-> - Username not found
-> - Invalid password
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -131,15 +98,6 @@ will return a boolean
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be combined
-
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> 
-> NB : An empty username is considered as not taken
-
 </details>
 
 ## `/user/email-exist/`
@@ -169,14 +127,6 @@ will return a boolean
 > | `200`     | `application/json`       | `{"is_taken": true}`                                 |
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
-
-> 
-> errors can be combined
-
-> errors can be :
-> - Empty email
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -208,17 +158,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Refresh token not found
-> - Signature verification failed
-> - No expiration date found
-> - Signature has expired
-> - No user_id in payload
-> - User does not exist
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -226,7 +165,7 @@ all fields are mandatory
 
 ### Send a code to the user's email
 
-will return 200 if successful and send a 12 characters code to the user's email
+will return 200 if successful and send a 6 alphanum code to the user's email
 
 <details>
  <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
@@ -249,13 +188,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": "AAA"}`                                                                               |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`                                              |
 
-
-> errors can be :
-> - No email provided
-> - Email can not be empty
-> - Username not found
-> - Invalid JSON format in the request body : decode error
-> - An unexpected error occurred
 
 </details>
 
@@ -287,16 +219,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
-
-> errors can be :
-> - Mandatory value missing : 'email'
-> - Mandatory value missing : 'code'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
 
 </details>
 
@@ -351,19 +273,6 @@ Might be extended to return more information in the future, if needed
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
-
-> errors can be :
-> - Mandatory value missing : 'username'
-> - Mandatory value missing : 'code'
-> - Mandatory value missing : 'password'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
-> - (all the errors from the is_valid_password function in the sign_up route)
-
 
 </details>
 
@@ -397,11 +306,6 @@ will return a list of usernames that contains the searched username
 > | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> - No username found
 </details>
 
 
@@ -411,14 +315,17 @@ will return a list of usernames that contains the searched username
 This endpoint initiates the OAuth authentication process for the specified authentication service.
 It returns a redirection URL to the OAuth service's authorization endpoint.
 <details>
- <summary><code>GET</code><code><b>/user/oauth/{auth_service}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/oauth/{auth_service}/?source=https://example.com</b></code></summary>
 
 ### Parameters
 
 #### In the URL (mandatory)
  {auth_service}
+ and as a query parameter :
+- `source`: The URL to which the OAuth service will redirect the user after authentication
 > 
 > NB: `auth_service` must be one of the following values: 'github', '42api'
+> and `source` must be a valid URL wich does not begin with www but with http or https
 > 
 #### Responses
 
@@ -447,6 +354,48 @@ This endpoint handles the callback after successful OAuth authentication and ret
 #### In the Query Parameters (mandatory)
 - `code`: Authorization code obtained from the OAuth service
 - `state`: State parameter to prevent CSRF attacks
+
+#### Responses
+
+> | http code | content-type       | response                                                                        |
+> |-----------|--------------------|---------------------------------------------------------------------------------|
+> | `201`     | `application/json` | `redirect to source, putting the refresh token in a cookie named refresh_token` |
+> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`                               |
+> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                                                 |
+> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`                                  |
+> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}`                            |
+> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`                                  |
+
+</details>
+
+## '/user/update-infos/'
+
+
+### Update user's information
+
+will return 200 if successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+mandatory field : change_list, access_token
+all other fields are optional and depend on the change_list
+
+> ``` javascript
+> {
+>   "access_token": "d2d040fj..."
+>   "change_list": ["username", "email", "password"]
+>    "username": "NewUsername",
+>    "email": "newemail@asdf.fr",
+>   "password": "NewPassword42*"
+> }
+> NB : change_list must contain at least one of the following values : "username", "email", "password"
+> ```
+
 
 #### Responses
 
@@ -545,4 +494,3 @@ All fields mandatory:
 ****
 
 </details>
-
