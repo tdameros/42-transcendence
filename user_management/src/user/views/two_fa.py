@@ -1,0 +1,73 @@
+import json
+
+import pyotp
+import qrcode
+from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
+from common.src.jwt_managers import user_authentication
+from user.models import User
+from user_management.JWTManager import get_user_id
+from user_management.utils import generate_random_string
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
+class Enable2fa(View):
+    def post(self, request):
+        user_id = get_user_id(request)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse(data={'errors': ['user not found']}, status=400)
+        if user.has_2fa:
+            return JsonResponse(data={'errors': ['2fa already enabled']}, status=400)
+        user.has_2fa = True
+        user.totp_secret = generate_random_string(16)
+        user.totp_config_url = f'otpauth://totp/{user.username}?secret={user.totp_secret}&issuer=Pong'
+        user.save()
+        qr = qrcode.make(user.totp_config_url)
+        response = HttpResponse(content_type="image/png")
+        qr.save(response, "PNG")
+        return response
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
+class Disable2fa(View):
+    def post(self, request):
+        user_id = get_user_id(request)
+        user = User.objects.get(id=user_id)
+        if not user.has_2fa:
+            return JsonResponse(data={'errors': ['2fa not enabled']}, status=400)
+        user.has_2fa = False
+        user.save()
+
+        return JsonResponse(data={'message': '2fa disabled'}, status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
+class Verify2fa(View):
+    @csrf_exempt
+    def post(self, request):
+        user_id = get_user_id(request)
+        user = User.objects.get(id=user_id)
+
+        if not user.has_2fa:
+            return JsonResponse(data={'errors': ['2fa not enabled']}, status=400)
+        json_request = json.loads(request.body.decode('utf-8'))
+        code = json_request.get('code')
+        if not code:
+            return JsonResponse(data={'errors': ['code not provided']}, status=400)
+        if not self.verify_totp(code, user):
+            return JsonResponse(data={'errors': ['invalid code']}, status=400)
+        return JsonResponse(data={'message': '2fa verified'}, status=200)
+
+    def verify_totp(self, code_to_verify, user):
+        return pyotp.TOTP(user.totp_secret).verify(code_to_verify)
+
+
