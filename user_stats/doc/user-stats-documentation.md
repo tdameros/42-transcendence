@@ -156,16 +156,16 @@
 
 #### Match
 
-> | name              | type   | description            |
-> |-------------------|--------|------------------------|
-> | `id`              | int    | Match id               |
-> | `opponent_id`     | int    | Opponent id            |
-> | `date`            | Date   | Match date             |
-> | `result`          | String | Match result           |
-> | `user_score`      | int    | User score             |
-> | `opponent_score`  | int    | Opponent score         |
-> | `elo_delta`       | int    | Elo won / lost         |
-> | `expected_result` | int    | Probability of winning |
+> | name              | type       | description            |
+> |-------------------|------------|------------------------|
+> | `id`              | int        | Match id               |
+> | `opponent_id`     | int / None | Opponent id            |
+> | `date`            | Date       | Match date             |
+> | `result`          | String     | Match result           |
+> | `user_score`      | int        | User score             |
+> | `opponent_score`  | int        | Opponent score         |
+> | `elo_delta`       | int        | Elo won / lost         |
+> | `expected_result` | int        | Probability of winning |
 
 #### Status code
 
