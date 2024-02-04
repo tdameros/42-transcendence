@@ -34,7 +34,6 @@ class Enable2fa(View):
         return response
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['POST']), name='dispatch')
 class Disable2fa(View):
@@ -69,5 +68,3 @@ class Verify2fa(View):
 
     def verify_totp(self, code_to_verify, user):
         return pyotp.TOTP(user.totp_secret).verify(code_to_verify)
-
-
