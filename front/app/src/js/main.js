@@ -26,7 +26,8 @@ const router = new Router(app, [
   new Route('/reset-password/', 'reset-password-component'),
   new Route('/oauth/:refresh-token/', 'oauth-component'),
   new Route('/tournaments/create/', 'tournament-create-component'),
-  new Route('', 'home-component'),
+  new Route('/', 'home-component'),
+  new Route('', 'notfound-component'),
 ]);
 
 window.router = router;
