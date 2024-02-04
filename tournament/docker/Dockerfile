@@ -8,7 +8,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Copy the gunicorn config file
-COPY ./gunicorn/config.py /app/gunicorn_config.py
+COPY gunicorn/gunicorn.conf.py /app/gunicorn.conf.py
 
 # Installez les dépendances
 RUN pip install --no-cache-dir -r requirements.txt

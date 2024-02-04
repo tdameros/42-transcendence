@@ -29,7 +29,7 @@ services:
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn -c /app/gunicorn_config.py"
+                        gunicorn -c /app/gunicorn.conf.py"
         volumes:
             - tournament_code:/app/tournament
             - common_code:/app/common
