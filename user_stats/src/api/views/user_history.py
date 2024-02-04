@@ -43,7 +43,11 @@ class UserHistoryView(View):
             'elo_delta': obj.user_elo_delta,
             'expected_result': obj.user_expected_result,
         } for obj in page_object]
-        return JsonResponse({'history': history}, status=200)
+        body = {
+            'history': history,
+            'total_pages': paginator.num_pages,
+        }
+        return JsonResponse(body, status=200)
 
     @staticmethod
     def validate_get_request(request: HttpRequest, user_id: int) -> (bool, Optional[list[str]]):
@@ -89,5 +93,7 @@ class UserHistoryView(View):
         if not page_size.isdigit():
             return False, error.PAGE_SIZE_INVALID
         if int(page_size) < 1:
+            return False, error.PAGE_SIZE_INVALID
+        if int(page_size) > 50:
             return False, error.PAGE_SIZE_INVALID
         return True, None
