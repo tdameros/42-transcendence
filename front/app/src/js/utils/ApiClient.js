@@ -6,8 +6,8 @@ export class ApiClient {
   static tournament = 'tournament';
 
   static microservicesURLs = {
-    'user-management': `${window.location.protocol}//${window.location.hostname}:6002`,
-    'tournament': `${window.location.protocol}//${window.location.hostname}:6001`,
+    'user-management': `http://${window.location.hostname}:6002`,
+    'tournament': `http://${window.location.hostname}:6001`,
   };
 
   static userManagementURIs = {
