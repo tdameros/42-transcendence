@@ -29,6 +29,7 @@ export class TournamentDetails extends Component {
                           <button type="button" class="btn-close"
                                   data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
+                      <form>
                       <div class="modal-body d-flex flex-column justify-content-center">
                           <input type="text" class="form-control mb-2" id="nickname"
                                  placeholder="nickname" required>
@@ -41,6 +42,7 @@ export class TournamentDetails extends Component {
                           <button id="join-modal-btn" class="btn btn-primary">Join
                           </button>
                       </div>
+                      </form>
                   </div>
               </div>
           </div>
@@ -71,6 +73,7 @@ export class TournamentDetails extends Component {
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
       this.modalAlert.setAttribute('alert-display', 'false');
+      this.modalAlert.setAttribute('alert-message', '');
       this.joinModalNickname.value = '';
       this.modalPassword.value = '';
     });
