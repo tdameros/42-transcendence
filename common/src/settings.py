@@ -10,4 +10,9 @@ mQIDAQAB
 ACCESS_ALGORITHM = 'RS256'
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
-USER_STATS_URL = 'https://user-stats-nginx/'
+
+USER_STATS_URL = 'http://user-stats-nginx/'
+DEBUG_USER_STATS_URL = 'http://localhost:8001/'
+
+USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
+DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'

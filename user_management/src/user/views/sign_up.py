@@ -1,11 +1,14 @@
 import json
 
+import common.src.settings as common
+import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
+from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (is_valid_email, is_valid_password,
                                    is_valid_username)
@@ -23,6 +26,10 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=json_request['password'])
+            valid, errors = self.post_user_stats(user.id)
+            if not valid:
+                user.delete()
+                return JsonResponse(data={'errors': errors}, status=500)
             success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
@@ -30,7 +37,21 @@ class SignUpView(View):
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
+
+    @staticmethod
+    def post_user_stats(user_id: int) -> (bool, list):
+        try:
+            if settings.DEBUG:
+                response = requests.post(f'{common.DEBUG_USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
+            else:
+                response = requests.post(f'{common.USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
+        except requests.exceptions.RequestException:
+            return False, ['Could not access user-stats']
+        if not response.ok:
+            print(response.json())
+            return False, ['Could not create user in user-stats']
+        return True, None
 
     @staticmethod
     def signup_infos_validation(json_request):

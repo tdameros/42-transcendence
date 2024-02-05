@@ -1,6 +1,7 @@
 import json
 import random
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import jwt
 from django.test import TestCase
@@ -34,7 +35,9 @@ class TestsSignup(TestCase):
         if expected_errors:
             self.assertEqual(result.json()['errors'], expected_errors)
 
-    def test_signup_valid_username(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_valid_username(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
         has_refresh_token = True
         expected_status = 201
@@ -54,7 +57,9 @@ class TestsSignup(TestCase):
                                  expected_status,
                                  has_refresh_token)
 
-    def test_signup_invalid_username(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_invalid_username(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
         has_refresh_token = False
         expected_status = 400
@@ -79,7 +84,9 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    def test_signup_valid_email(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_valid_email(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
         has_refresh_token = True
         expected_status = 201
@@ -94,7 +101,9 @@ class TestsSignup(TestCase):
             username = 'Aurel' + str(random.randint(0, 100000))  # To avoid `username already taken` error
             self.run_signup_test(name, username, email, password, expected_status, has_refresh_token)
 
-    def test_signup_invalid_email(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_invalid_email(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
         has_refresh_token = False
         expected_status = 400
@@ -125,7 +134,9 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    def test_signup_valid_password(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_valid_password(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         has_refresh_token = True
         expected_status = 201
         name = 'Valid Password'
@@ -143,7 +154,9 @@ class TestsSignup(TestCase):
                                  expected_status,
                                  has_refresh_token)
 
-    def test_signup_invalid_password(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_invalid_password(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         has_refresh_token = False
         expected_status = 400
         name = 'Invalid Password'
@@ -172,7 +185,9 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    def test_signup_not_a_json(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signup_not_a_json(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         string = 'This is not a JSON'
         url = reverse('signup')
         result = self.client.post(url, string, content_type='application/json')
@@ -182,7 +197,9 @@ class TestsSignup(TestCase):
 
 class TestsSignin(TestCase):
 
-    def test_signin(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_signin(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'aurelien123',
             'email': 'a@a.fr',
@@ -209,7 +226,9 @@ class TestsSignin(TestCase):
 
 class TestsUsernameExist(TestCase):
 
-    def test_username_exist(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_username_exist(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'Burel305',
             'email': 'a@a.fr',
@@ -238,7 +257,9 @@ class TestsUsernameExist(TestCase):
 
 class TestsRefreshJWT(TestCase):
 
-    def test_refresh_jwt(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_refresh_jwt(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'Aurel303',
             'email': 'alevra@gmail.com',
@@ -313,7 +334,9 @@ class TestsRefreshJWT(TestCase):
 
 class TestsEmailExist(TestCase):
 
-    def test_email_exist(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_email_exist(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'Aurel305',
             'email': 'a@a.fr',
@@ -342,7 +365,9 @@ class TestsEmailExist(TestCase):
 
 class UserId(TestCase):
 
-    def test_user_id(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_user_id(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'Aurel303',
             'email': 'alevra@gmail.com',
@@ -384,7 +409,9 @@ class Username(TestCase):
 
 class TestsSearchUsername(TestCase):
 
-    def test_search_username(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_search_username(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         for i in range(1, 20):
             data_preparation = {
                 'username': f'Felix{i}',
@@ -437,7 +464,9 @@ class TestsUserUpdateInfos(TestCase):
     3) then, update the user infos with /user/update-infos
     4) finally, check if the user infos have been updated with /user/user-id
     5) test invalid data"""
-    def test_user_update_infos(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_user_update_infos(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         # 1)
         data_preparation = {
             'username': 'UpdateThisUser',
