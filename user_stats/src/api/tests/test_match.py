@@ -1,11 +1,11 @@
 import json
 
+import api.error_message as error
+from api.models import Match
+from api.models import User
 from dateutil import parser
 from django.test import TestCase
 from django.urls import reverse
-
-import api.error_message as error
-from api.models import Match, User
 
 
 class MatchTest(TestCase):

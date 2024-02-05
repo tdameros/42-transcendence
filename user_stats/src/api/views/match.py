@@ -1,14 +1,15 @@
 import json
 from typing import Any, Optional
 
+import api.error_message as error
+from api.models import Match
+from api.models import User
 from dateutil import parser
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-
-import api.error_message as error
-from api.models import Match, User
 from user_stats import settings
 
 

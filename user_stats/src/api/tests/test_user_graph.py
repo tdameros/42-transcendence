@@ -1,11 +1,11 @@
 import json
 from unittest.mock import patch
 
+from api.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from api.models import User
 
 NOW = timezone.now()
 

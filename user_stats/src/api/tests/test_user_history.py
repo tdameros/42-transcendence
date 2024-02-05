@@ -1,11 +1,11 @@
 import json
 from unittest.mock import patch
 
+import api.error_message as error
+from api.models import Match
+from api.models import User
 from django.test import TestCase
 from django.urls import reverse
-
-import api.error_message as error
-from api.models import Match, User
 
 
 class HistoryTest(TestCase):

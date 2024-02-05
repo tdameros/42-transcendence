@@ -1,11 +1,12 @@
-from django.urls import path
-
 from api.views.match import MatchView
 from api.views.user import UserView
-from api.views.user_graph import (UserGraphEloView, UserGraphMatchesPlayedView,
-                                  UserGraphWinRateView)
+from api.views.user_graph import UserGraphEloView
+from api.views.user_graph import UserGraphMatchesPlayedView
+from api.views.user_graph import UserGraphWinRateView
 from api.views.user_history import UserHistoryView
 from api.views.user_progress import UserProgressView
+from django.urls import path
+
 
 urlpatterns = [
     path('user/<int:user_id>/', UserView.as_view(), name='user'),

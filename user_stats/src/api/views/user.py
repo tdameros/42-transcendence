@@ -1,15 +1,15 @@
 import json
 from typing import Any, Optional
 
-from django.forms.models import model_to_dict
-from django.http import HttpRequest, JsonResponse
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-
 import api.error_message as error
 from api.models import User
 from common.src.jwt_managers import user_authentication
+from django.forms.models import model_to_dict
+from django.http import HttpRequest
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 
 @method_decorator(csrf_exempt, name='dispatch')

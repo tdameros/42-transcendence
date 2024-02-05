@@ -1,12 +1,11 @@
 import json
 from unittest.mock import patch
 
+import api.error_message as error
+from api.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-
-import api.error_message as error
-from api.models import User
 
 
 class ProgressTest(TestCase):

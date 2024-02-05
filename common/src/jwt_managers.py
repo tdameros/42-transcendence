@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from functools import wraps
 
-import jwt
-from django.http import JsonResponse
-
 import common.src.settings as settings
+from django.http import JsonResponse
+import jwt
 
 
 class JWTManager:
