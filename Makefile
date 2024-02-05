@@ -21,7 +21,17 @@ VOLUMES                         =   $(FRONT_DIST_VOLUME_PATH) \
 
 .PHONY: all
 all:
+	if [ ! -e ssl/certs/certificate.crt ] && [ ! -e ssl/certs/certificate.crt ]; then \
+  		$(MAKE) generate_ssl_certificate; \
+  		echo "SSL certificate generated"; \
+    fi
 	$(MAKE) up
+
+.PHONY: generate_ssl_certificate
+generate_ssl_certificate:
+	docker build -t ssl_certificate_generator ./ssl
+	mkdir -p ssl/certs
+	docker run -v ./ssl/certs:/app/ssl ssl_certificate_generator
 
 .PHONY: up
 up: create_volume_path
