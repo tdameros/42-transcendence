@@ -26,7 +26,7 @@ DEBUG = False
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
 else:
-    USER_MANAGEMENT_URL = 'http://user-management-nginx/'
+    USER_MANAGEMENT_URL = 'https://user-management-nginx/'
 
 USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
 
