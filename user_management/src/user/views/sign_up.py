@@ -1,6 +1,7 @@
 import json
 
 import common.src.settings as common
+from common.src.internal_requests import InternalRequests
 import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -43,9 +44,11 @@ class SignUpView(View):
     def post_user_stats(user_id: int) -> (bool, list):
         try:
             if settings.DEBUG:
-                response = requests.post(f'{common.DEBUG_USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
+                response = InternalRequests.post(f'{common.DEBUG_USER_STATS_USER_ENDPOINT}{user_id}/',
+                                                 data=json.dumps({}))
             else:
-                response = requests.post(f'{common.USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
+                response = InternalRequests.post(f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
+                                                 data=json.dumps({}))
         except requests.exceptions.RequestException:
             return False, ['Could not access user-stats']
         if not response.ok:
