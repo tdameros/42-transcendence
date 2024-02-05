@@ -1,11 +1,11 @@
 import base64
 import json
 
-import common.src.settings as common_settings
-from common.src.jwt_managers import JWTManager, UserAccessJWTDecoder
 from django.conf import settings
 from django.http import HttpRequest
 
+import common.src.settings as common_settings
+from common.src.jwt_managers import JWTManager, UserAccessJWTDecoder
 from user.models import User
 
 

@@ -21,6 +21,7 @@ services:
 
     user-management:
         networks:
+            - transcendence
             - user_management
         build:
             context: .
