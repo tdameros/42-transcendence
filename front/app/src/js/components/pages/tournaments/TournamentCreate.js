@@ -1,7 +1,7 @@
-import {Component} from '../Component.js';
-import {ErrorPage} from '../../utils/ErrorPage.js';
+import {Component} from '../../Component.js';
+import {ErrorPage} from '../../../utils/ErrorPage.js';
 
-export class TournamentsCreate extends Component {
+export class TournamentCreate extends Component {
   constructor() {
     super();
     this.passwordHiden = true;

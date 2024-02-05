@@ -3,14 +3,19 @@ export class ErrorPage {
   static NetworkErrorMessage = 'Network error, ' +
     'please check your network connection.';
 
-  static load(message) {
+  static load(message, refresh = false) {
     window.app.innerHTML = `
         <${ErrorPage.errorComponentName}
-            message="${message}">
+            message="${message}"
+            refresh="${refresh}">
         </${ErrorPage.errorComponentName}>`;
   }
 
   static loadNetworkError() {
-    ErrorPage.load(ErrorPage.NetworkErrorMessage);
+    ErrorPage.load(ErrorPage.NetworkErrorMessage, true);
+  }
+
+  static loadNotFound() {
+    ErrorPage.load('Page not found');
   }
 }

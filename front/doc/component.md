@@ -15,6 +15,9 @@ This class is an abstract class, and must not be instantiated.
 
 Returns the HTML content to be rendered inside the component.
 
+If the function returns `false`, the component is not loaded into the DOM
+and the postRender function is not called.
+
 ```javascript
 render() {
   const message = 'Hello World!'

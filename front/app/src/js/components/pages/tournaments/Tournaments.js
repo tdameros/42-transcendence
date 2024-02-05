@@ -1,6 +1,6 @@
-import {Component} from '../Component.js';
-import {ErrorPage} from '../../utils/ErrorPage.js';
-import {Cookies} from '../../Cookies.js';
+import {Component} from '../../Component.js';
+import {ErrorPage} from '../../../utils/ErrorPage.js';
+import {Cookies} from '../../../Cookies.js';
 import {TournamentsList} from './TournamentsList.js';
 
 export class Tournaments extends Component {
@@ -34,7 +34,7 @@ export class Tournaments extends Component {
         'tournaments-list-component',
     );
     this.tournamentBracketComponent = document.querySelector(
-        'tournaments-bracket-component',
+        'tournament-bracket-component',
     );
     this.tournamentDetailsComponent = document.querySelector(
         'tournament-details-component',

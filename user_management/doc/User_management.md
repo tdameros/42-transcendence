@@ -255,11 +255,10 @@ all fields are mandatory
 </details>
 
 
-## `/user/{user-id}/`
+## `/user/id/{user-id}/`
 ### Get user non-sensitive information
 
-will return a user object when successful
-Might be extended to return more information in the future, if needed
+will return public user information
 
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
@@ -275,7 +274,34 @@ Might be extended to return more information in the future, if needed
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+</details>
+
+
+## `/user/{username}/`
+### Get user non-sensitive information
+
+will return public user information
+
+<details>
+ <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+{username}
+>
+> NB : username must be a string
+>
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 

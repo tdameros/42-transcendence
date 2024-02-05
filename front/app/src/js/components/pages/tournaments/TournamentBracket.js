@@ -1,6 +1,6 @@
-import {Component} from '../Component.js';
+import {Component} from '../../Component.js';
 
-export class TournamentsBracket extends Component {
+export class TournamentBracket extends Component {
   constructor(matches, nbOfPlayers) {
     super();
     this.matches = matches;

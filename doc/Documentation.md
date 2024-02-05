@@ -13,8 +13,10 @@ this documentation details the different endpoints of each microservice.
 > #### Retrieve information from a specific template
 
 ## Front
-### [Components usage](../front/doc/front.md)
-> ### [/components](../front/doc/components.md)
+> ### [Front documentation](../front/doc/front.md)
+> ### [/component](../front/doc/component.md)
+> ### [/router](../front/doc/router.md)
+> ### [/cookies](../front/doc/cookies.md)
 
 ## Matchmaking
 ### [Events sent by the client](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-client)

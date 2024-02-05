@@ -1,5 +1,5 @@
-import {Component} from '../Component.js';
-import {Cookies} from '../../Cookies.js';
+import {Component} from '../../Component.js';
+import {Cookies} from '../../../Cookies.js';
 
 export class TournamentsList extends Component {
   static privateCheckBoxId = 'private-check-box';

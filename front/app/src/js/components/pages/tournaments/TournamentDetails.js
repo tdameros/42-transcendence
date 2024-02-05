@@ -1,7 +1,7 @@
-import {Component} from '../Component.js';
+import {Component} from '../../Component.js';
+import {ErrorPage} from '../../../utils/ErrorPage.js';
+import {TournamentBracket} from './TournamentBracket.js';
 import {Modal} from 'bootstrap';
-import {ErrorPage} from '../../utils/ErrorPage.js';
-import {TournamentsBracket} from './TournamentsBracket.js';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -29,6 +29,7 @@ export class TournamentDetails extends Component {
                           <button type="button" class="btn-close"
                                   data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
+                      <form>
                       <div class="modal-body d-flex flex-column justify-content-center">
                           <input type="text" class="form-control mb-2" id="nickname"
                                  placeholder="nickname" required>
@@ -38,9 +39,10 @@ export class TournamentDetails extends Component {
                                            alert-display="false"></alert-component>
                       </div>
                       <div class="modal-footer">
-                          <button id="join-modal-btn" class="btn btn-primary">Join
+                          <button id="join-modal-btn" type="submit" class="btn btn-primary">Join
                           </button>
                       </div>
+                      </form>
                   </div>
               </div>
           </div>
@@ -71,6 +73,7 @@ export class TournamentDetails extends Component {
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
       this.modalAlert.setAttribute('alert-display', 'false');
+      this.modalAlert.setAttribute('alert-message', '');
       this.joinModalNickname.value = '';
       this.modalPassword.value = '';
     });
@@ -216,7 +219,7 @@ export class TournamentDetails extends Component {
           this.tournamentId,
       );
       if (response.ok) {
-        const bracket = new TournamentsBracket(
+        const bracket = new TournamentBracket(
             body.matches, this.tournament['nb-players'],
         );
         this.body.innerHTML = '';
@@ -295,7 +298,8 @@ export class TournamentDetails extends Component {
     this.joinModal.show();
   }
 
-  async #modalJoinBtnHandler() {
+  async #modalJoinBtnHandler(event) {
+    event.preventDefault();
     const nickname = this.joinModalNickname.value;
     const password = this.modalPassword.value;
     try {
