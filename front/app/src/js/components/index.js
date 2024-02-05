@@ -16,6 +16,7 @@ import {
   TournamentsList,
   Home,
   Multiplayer,
+  NotFound,
   Signin,
   Signup,
   Singleplayer,
@@ -36,6 +37,7 @@ customElements.define('theme-button-component', ThemeButton);
 
 customElements.define('home-component', Home);
 customElements.define('multiplayer-component', Multiplayer);
+customElements.define('notfound-component', NotFound);
 customElements.define('signin-component', Signin);
 customElements.define('signup-component', Signup);
 customElements.define('singleplayer-component', Singleplayer);
