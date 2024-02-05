@@ -4,8 +4,8 @@ import logging
 from time import time
 from typing import Optional
 
-from aiohttp import web
 import socketio
+from aiohttp import web
 
 import src.settings as settings
 
