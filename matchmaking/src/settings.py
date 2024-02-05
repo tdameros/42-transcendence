@@ -1,6 +1,5 @@
 import logging
 
-
 DEBUG = True
 
 if DEBUG:

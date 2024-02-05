@@ -2,6 +2,7 @@ from typing import Optional
 
 import jwt
 import requests
+
 import src.settings as settings
 
 

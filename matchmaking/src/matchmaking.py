@@ -6,6 +6,7 @@ from typing import Optional
 
 from aiohttp import web
 import socketio
+
 import src.settings as settings
 
 from .authenticate import authenticate_user
