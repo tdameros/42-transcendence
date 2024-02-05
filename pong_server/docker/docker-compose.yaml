@@ -2,12 +2,21 @@ services:
     pong-server:
         networks:
             - transcendence
+        ports:
+            - '${PONG_GAME_CREATOR_PORT}:${PONG_GAME_CREATOR_PORT}'
+            - '${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}:${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}'
+
         build:
+            args:
+                - PONG_GAME_CREATOR_PORT=${PONG_GAME_CREATOR_PORT}
+                - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
+                - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
             context: .
             dockerfile: Dockerfile
-        command: python3 /app/src/main.py
         volumes:
             - pong_server_code:/app/src/
-        expose:
-            - "4242"
+
+        command: sh -c 'cd /app/ &&
+                        python3 -m src.redirection_server'
+
         restart: on-failure

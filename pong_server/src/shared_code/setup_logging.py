@@ -5,10 +5,10 @@ from colorlog import ColoredFormatter
 import src.shared_code.settings as settings
 
 
-def create_log_formatter():
+def create_log_formatter(prefix: str):
     return ColoredFormatter(
-        "%(log_color)s%(levelname)-8s %(asctime)s:%(reset)s %(message)s",
-        datefmt="%Hh:%Mm:%Ss",
+        f'{prefix}%(log_color)s%(levelname)-8s %(asctime)s:%(reset)s %(message)s',
+        datefmt='%Hh:%Mm:%Ss',
         reset=True,
         log_colors={
             'DEBUG': 'cyan',
@@ -22,8 +22,8 @@ def create_log_formatter():
     )
 
 
-def setup_logging():
-    formatter = create_log_formatter()
+def setup_logging(prefix: str = ''):
+    formatter = create_log_formatter(prefix)
 
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)

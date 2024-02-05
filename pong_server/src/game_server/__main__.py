@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 import socketio
@@ -7,7 +8,7 @@ from socketio.exceptions import ConnectionRefusedError
 
 from src.game_server.Clock import Clock
 from src.game_server.Game import Game
-from src.game_server.print_server_uri import print_server_uri
+from src.game_server.get_server_uri import get_server_uri
 from src.game_server.update_player_movement_and_position import \
     update_player_direction_and_position
 from src.shared_code.emit import emit
@@ -86,14 +87,27 @@ async def wait_for_all_players_to_join():
 
 
 async def background_task():
-    await print_server_uri(sio)
+    try:
+        pid = os.getpid()
+        server_uri = await get_server_uri(sio, pid)
+        print(f'uri: {server_uri}')
+        sys.stdout.flush()
+        """ Do not use logging()! This should always be printed as the redirection
+            server will read it """
 
-    await wait_for_all_players_to_join()
+        logging.info(f'Game Server({os.getpid()}) started with uri {server_uri}')
 
-    clock = Clock()
-    while True:
-        await game.get_scene().update(sio, clock.get_delta())
-        await sio.sleep(0.01)
+        await wait_for_all_players_to_join()
+
+        clock = Clock()
+        while True:
+            await game.get_scene().update(sio, clock.get_delta())
+            await sio.sleep(0.01)
+    except Exception as e:
+        print(f'Error: in background_task: {e}')
+        """ Do not use logging! This should always be printed as the game
+            creator will read it """
+        exit(2)
 
 
 # The app arguments is not used but is required by
@@ -105,11 +119,23 @@ async def start_background_task(app):
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     try:
-        setup_logging()
+        setup_logging(f'Game Server({os.getpid()}): ')
         game = Game(sys.argv[1:])
-        # web.run_app(app, port=4242)
-        web.run_app(app, host='localhost', port=0, access_log=None)
+
+        min_port = int(os.getenv('PONG_GAME_SERVERS_MIN_PORT'))
+        max_port = int(os.getenv('PONG_GAME_SERVERS_MAX_PORT'))
+
+        for port in range(min_port, max_port + 1):
+            try:
+                web.run_app(app, host='0.0.0.0', port=port, access_log=None)
+                exit(0)
+            except Exception:
+                continue
+
+        raise Exception('Could not find an available port')
+
     except Exception as e:
         print(f'Error: {e}')
-        """ Do not use logging! This should always be printed as the redirection
-            server will read it """
+        """ Do not use logging! This should always be printed as the game
+            creator will read it """
+        exit(1)

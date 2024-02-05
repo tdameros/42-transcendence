@@ -41,8 +41,8 @@ export class Ball {
 
     if (this.#handleCollisions(travel,
         matchBoundingBox,
-                               this.#movement.x < 0. ? leftPaddle : rightPaddle,
-                               timeDelta)) {
+        this.#movement.x < 0. ? leftPaddle : rightPaddle,
+        timeDelta)) {
       this.#threeJSGroup.position.sub(radiusCompensator);
     }
   }
@@ -90,8 +90,7 @@ export class Ball {
       this.#movement.y = -this.#movement.y * this.#acceleration;
     }
     this.#threeJSGroup.position
-        .add(this.#movement.clone()
-            .multiplyScalar(timeDelta * (1. - closestT)));
+        .add(this.#movement.clone().multiplyScalar(timeDelta * (1. - closestT)));
     return true;
   }
 

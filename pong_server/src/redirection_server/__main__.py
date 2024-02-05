@@ -1,4 +1,5 @@
 import logging
+import os
 
 import socketio
 from aiohttp import web
@@ -10,7 +11,7 @@ from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.setup_logging import setup_logging
 
-sio = socketio.AsyncServer(cors_allowed_origins=['http://localhost:5173'])
+sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
 sio.attach(app)
 
@@ -111,5 +112,7 @@ async def start_background_task(app):
 app.on_startup.append(start_background_task)
 if __name__ == '__main__':
     setup_logging()
-    # web.run_app(app, port=4242)
-    web.run_app(app, host='localhost', port=4242, access_log=None)
+    web.run_app(app,
+                host='0.0.0.0',
+                port=int(os.getenv('PONG_GAME_CREATOR_PORT')),
+                access_log=None)
