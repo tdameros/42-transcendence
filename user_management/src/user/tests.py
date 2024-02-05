@@ -385,7 +385,9 @@ class UserId(TestCase):
 
 class Username(TestCase):
 
-    def test_username(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_username(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
         data_preparation = {
             'username': 'Aurel303',
             'email': 'alevra@gmail.com',
