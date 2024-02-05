@@ -249,7 +249,7 @@ all fields are mandatory
 </details>
 
 
-## `/user/{user-id}/`
+## `/user/id/{user-id}/`
 ### Get user non-sensitive information
 
 will return public user information
@@ -276,7 +276,7 @@ will return public user information
 </details>
 
 
-## `/user/username/{username}/`
+## `/user/{username}/`
 ### Get user non-sensitive information
 
 will return public user information
