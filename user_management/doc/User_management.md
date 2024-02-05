@@ -256,20 +256,20 @@ will return a user object when successful
 Might be extended to return more information in the future, if needed
 
 <details>
- <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/{user_id_or_username}/</b></code></summary>
 
 ### Parameters
 
 #### In the URL (mandatory)
- {user_id}
+ {user_id_or_username}
 > 
-> NB : user_id must be an integer
+> NB : user_id is an integer
 > 
 #### Responses
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `200`     | `application/json` | `{'id': user.id, 'username': user.username}`         |
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 

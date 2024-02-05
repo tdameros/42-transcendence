@@ -29,7 +29,7 @@ urlpatterns = [
     path('oauth/<str:auth_service>/', OAuth.as_view(), name='oauth'),
     path('oauth/callback/<str:auth_service>/', OAuthCallback.as_view(), name='oauth-callback'),
     path('update-infos/', UpdateInfos.as_view(), name='update-infos'),
-    path('<str:user_id>/', UserIdView.as_view(), name='user-id')
+    path('<str:user_id_or_username>/', UserIdView.as_view(), name='user-id-or-username')
 ]
 
 if settings.DEBUG:

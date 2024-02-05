@@ -351,10 +351,16 @@ class UserId(TestCase):
         url = reverse('signup')
         self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         user = User.objects.all().first()
-        url = reverse('user-id', args=[user.id])
+        url = reverse('user-id-or-username', args=[user.id])
         result = self.client.get(url)
         self.assertEqual(result.status_code, 200)
         self.assertTrue('username' in result.json())
+        self.assertEqual(result.json()['username'], 'Aurel303')
+        url = reverse('user-id-or-username', args=[user.username])
+        result = self.client.get(url)
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('id' in result.json())
+        self.assertEqual(result.json()['id'], user.id)
 
 
 class TestsSearchUsername(TestCase):
