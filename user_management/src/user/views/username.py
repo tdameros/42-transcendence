@@ -7,11 +7,11 @@ from user.models import User
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class UserIdView(View):
+class UsernameView(View):
     @staticmethod
-    def get(request, user_id):
+    def get(request, username):
         try:
-            user = User.objects.filter(id=user_id).first()
+            user = User.objects.filter(username=username).first()
             if user is None:
                 return JsonResponse(data={'errors': ['User not found']}, status=404)
             return JsonResponse(data={'id': user.id, 'username': user.username}, status=200)
