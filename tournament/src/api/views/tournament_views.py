@@ -14,7 +14,7 @@ from api.views.tournament_players_views import TournamentPlayersView
 from api.views.tournament_utils import TournamentUtils
 from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.get_user import get_jwt, get_user_id
+from tournament.get_user import get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -22,8 +22,6 @@ from tournament.get_user import get_jwt, get_user_id
 class TournamentView(View):
     @staticmethod
     def get(request: HttpRequest) -> JsonResponse:
-        jwt = get_jwt(request)
-
         filter_params = TournamentView.get_filter_params(request)
         try:
             tournaments = Tournament.objects.filter(**filter_params)
