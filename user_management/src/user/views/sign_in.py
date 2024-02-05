@@ -9,14 +9,18 @@ from user.models import User
 from user_management.JWTManager import UserRefreshJWTManager
 
 
+def return_refresh_token(user):
+    success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
+    if success is False:
+        return JsonResponse(data={'errors while creating jwt': errors}, status=500)
+    return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+
+
 def handle_2fa_code(user, request):
     if '2fa_code' not in request.POST:
         return JsonResponse(data={'errors': ['2fa_code is required']}, status=401)
     if user.verify_2fa(request.POST['2fa_code']):
-        success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
-        if success is False:
-            return JsonResponse(data={'errors while creating jwt': errors}, status=500)
-        return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+        return return_refresh_token(user)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -31,10 +35,7 @@ class SignInView(View):
             user = User.objects.filter(username=json_request['username']).first()
             if user.has_2fa:
                 return handle_2fa_code(user, request)
-            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
-            if success is False:
-                return JsonResponse(data={'errors while creating jwt': errors}, status=500)
-            return JsonResponse(data={'refresh_token': refresh_token}, status=200)
+            return return_refresh_token(user)
         except json.JSONDecodeError:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
