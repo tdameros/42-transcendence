@@ -56,7 +56,7 @@ ROOT_URLCONF = 'notification.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['notification/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block css_style %}
+<style>
+    .fa-solid {
+        font-size: 26px;
+    }
+
+    .fa-solid[data-count]:after {
+        position: absolute;
+        right: 0%;
+        top: 1%;
+        content: attr(data-count);
+        font-size: 36%;
+        padding: .6em;
+        border-radius: 999px;
+        line-height: .75em;
+        color: white;
+        background: rgba(255, 0, 0, .85);
+        text-align: center;
+        min-width: 2em;
+        font-weight: bold;
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Welcome to Notify</h1>
+</div>
+{% endblock %}
+
+{% block js_script %}
+<script>
+    // setup chat scoket
+    const notifyScoket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/notification/'
+    );
+
+    // on socket open
+    notifyScoket.onopen = function (e) {
+        console.log('Socket successfully connected.');
+    };
+
+    // on socket close
+    notifyScoket.onclose = function (e) {
+        console.log('Socket closed unexpectedly');
+    };
+
+    // on receiving message on group
+    notifyScoket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const message = data.message;
+        console.log('Message received: ' + message)
+        // Call the setMessage function to add the new li element
+        setMessage(message);
+
+    };
+
+    function setMessage(message) {
+        // Create a new li element
+        var newLi = document.createElement('li');
+
+        // Create a new anchor element
+        var newAnchor = document.createElement('a');
+        newAnchor.className = 'dropdown-item text-wrap';
+        newAnchor.href = '#';
+        newAnchor.textContent = message;
+
+        // Append the anchor element to the li element
+        newLi.appendChild(newAnchor);
+
+        // Get the ul element with the id "notify"
+        var ulElement = document.getElementById('notify');
+
+        // Append the new li element to the ul element
+        ulElement.appendChild(newLi);
+
+        // getting object of count
+        count = document.getElementById('bellCount').getAttribute('data-count');
+        document.getElementById('bellCount').setAttribute('data-count', parseInt(count) + 1);
+    }
+
+
+</script>
+{% endblock %}

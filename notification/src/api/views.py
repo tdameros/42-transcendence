@@ -1,5 +1,6 @@
 from django.http import JsonResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return JsonResponse({'message': 'Hello, world!'}, status=200)
+    return render(request, 'index.html')
