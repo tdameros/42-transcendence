@@ -1,6 +1,8 @@
 from django.urls import path
-from api import views
+from api.views.notification_views import UserNotificationView
+from api.views.views import index
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index, name='index'),
+    path('user/', UserNotificationView.as_view(), name='notification'),
 ]
