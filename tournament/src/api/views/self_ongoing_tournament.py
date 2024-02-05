@@ -38,11 +38,7 @@ class SelfOnGoingTournament(View):
         if len(my_tournaments) > 0:
             active_tournaments.extend(my_tournaments)
 
-        jwt = request.headers.get('Authorization')
-        try:
-            tournaments_data = TournamentUtils.tournament_to_json(active_tournaments, jwt)
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
+        tournaments_data = TournamentUtils.tournament_to_json(active_tournaments)
 
         return JsonResponse(
             {

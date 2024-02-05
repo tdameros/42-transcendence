@@ -9,6 +9,8 @@ mQIDAQAB
 -----END PUBLIC KEY-----"""
 ACCESS_ALGORITHM = 'RS256'
 
+USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+
 USER_STATS_URL = 'http://user-stats-nginx/'
 DEBUG_USER_STATS_URL = 'http://localhost:8001/'
 
