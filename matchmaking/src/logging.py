@@ -1,7 +1,6 @@
 import logging
 
 from colorlog import ColoredFormatter
-
 import src.settings as settings
 
 
