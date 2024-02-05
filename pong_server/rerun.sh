@@ -14,6 +14,7 @@ while true; do
     kill -9 $(pgrep '[P]ython')
     sleep 1
     clear
+    `sed 's/^/export /' ../.env`
     python -m unittest discover test
     find . -name '*.py' | entr -z -d python3 -m src.redirection_server
 done
