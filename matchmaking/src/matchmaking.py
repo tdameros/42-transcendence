@@ -28,7 +28,6 @@ class Matchmaking:
         self.sio.attach(self.app)
         self.sio.on('connect')(self.connect)
         self.sio.on('disconnect')(self.disconnect)
-        self.sio.on('queue_join')(self.queue_join)
         self.sio.on('queue_info')(self.queue_info)
         self.app.on_startup.append(self.start_matchmaking)
 
@@ -98,26 +97,20 @@ class Matchmaking:
         if user is None:
             logging.debug(str(errors))
             raise socketio.exceptions.ConnectionRefusedError(str(errors))
-        logging.debug(f'Authenticated user: {user}')
+        player = {
+            'sid': sid,
+            'user_id': user['id'],
+            'elo': user['elo'],
+            'timestamp': time(),
+        }
+        self.queue.append(player)
+        logging.debug(f'User added to the queue: {user}')
         return True
 
     def disconnect(self, sid):
         for user in self.queue:
             if user.get('sid') == sid:
                 self.queue.remove(user)
-
-    def queue_join(self, sid, data):
-        user_id = data.get('user_id')
-        elo = data.get('elo')
-        if elo is None or user_id is None:
-            self.sio.disconnect(sid)
-        player = {
-            'sid': sid,
-            'user_id': user_id,
-            'elo': elo,
-            'timestamp': time(),
-        }
-        self.queue.append(player)
 
     async def queue_info(self, sid, data):
         await self.sio.emit('queue_info', json.dumps(self.queue), room=sid)
