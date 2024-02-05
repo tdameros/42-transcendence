@@ -522,7 +522,10 @@ class TestsUserUpdateInfos(TestCase):
 
 class TestsTwoFa(TestCase):
 
-    def test_two_fa(self):
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_two_fa(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
+
         data_preparation = {
             'username': 'TestTwoFA',
             'email': 'aurelien.levra@gmail.com',
