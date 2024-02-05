@@ -1,6 +1,6 @@
 import logging
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     LOG_LEVEL = logging.DEBUG
