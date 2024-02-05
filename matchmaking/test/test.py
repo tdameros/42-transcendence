@@ -43,15 +43,15 @@ class TestSearchOpponent(unittest.TestCase):
         self.assertEqual(opponent, None)
 
     def test_valid_elo_threshold(self):
-        self.player1['timestamp'] -= 10
+        self.player1['timestamp'] -= 60
         self.matchmaking.queue.append(self.player1)
         self.matchmaking.queue.append(self.player2)
         opponent = self.matchmaking.search_opponent(self.player1)
         self.assertEqual(opponent, self.player2)
 
     def test_valid_high_elo_threshold(self):
-        self.player1['elo'] = 9000
-        self.player1['timestamp'] -= 50
+        self.player1['elo'] = 5000
+        self.player1['timestamp'] -= 240
         self.matchmaking.queue.append(self.player1)
         self.matchmaking.queue.append(self.player2)
         opponent = self.matchmaking.search_opponent(self.player1)

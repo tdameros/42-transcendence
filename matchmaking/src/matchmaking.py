@@ -78,9 +78,8 @@ class Matchmaking:
     @staticmethod
     def get_elo_threshold(player: dict) -> int:
         elapsed_time = time() - player.get('timestamp')
-        queue_time = elapsed_time / settings.QUEUE_MAX_TIME
-        queue_time = min(queue_time, 1)
-        elo_threshold = settings.ELO_MAX_THRESHOLD * queue_time
+        threshold_factor = elapsed_time / settings.THRESHOLD_TIME
+        elo_threshold = settings.ELO_THRESHOLD * threshold_factor
 
         return elo_threshold
 
