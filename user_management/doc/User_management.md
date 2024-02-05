@@ -50,12 +50,18 @@ will return a refresh token when successful
 
 #### Body
 
-all fields are mandatory
+mandatory fields :
+- username
+- password
+
+optional fields :
+- 2fa_code : if the user has 2FA enabled, this field is mandatory
 
 > ``` javascript
 > {
 >     "username": "Aurel",
->     "password": "Validpass21*"
+>     "password": "Validpass21*",
+>     "2fa_code": "123456"
 > }
 > ```
 
