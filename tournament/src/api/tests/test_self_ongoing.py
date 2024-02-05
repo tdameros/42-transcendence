@@ -23,11 +23,9 @@ class TestMyActiveTournamentView(TestCase):
         body = response.json()
         return response, body
 
-    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_my_active_tournament(self, mock_authenticate, mock_get_username_by_id):
+    def test_get_my_active_tournament(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'user_id': 1}, None)
-        mock_get_username_by_id.return_value = 'nickname'
         response, body = self.get_my_active_tournament(1)
 
         self.assertEqual(response.status_code, 200)
@@ -41,7 +39,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 2,
                     'is-private': False,
                     'status': 'Created',
-                    'admin': mock_get_username_by_id.return_value
+                    'admin_id': 1
                 },
             ]
         })
@@ -57,11 +55,9 @@ class TestMyActiveTournamentView(TestCase):
             'active-tournaments': []
         })
 
-    @patch('api.views.tournament_utils.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_my_active_tournament_user_2(self, mock_authenticate, mock_get_username_by_id):
+    def test_get_my_active_tournament_user_2(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'user_id': 2}, None)
-        mock_get_username_by_id.return_value = 'nickname1'
         response, body = self.get_my_active_tournament(2)
 
         self.assertEqual(response.status_code, 200)
@@ -77,7 +73,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 2,
                     'is-private': False,
                     'status': 'Created',
-                    'admin': 'nickname1'
+                    'admin_id': 1
                 },
                 {
                     'id': 3,
@@ -86,7 +82,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 0,
                     'is-private': False,
                     'status': 'Created',
-                    'admin': 'nickname1'
+                    'admin_id': 2
                 },
                 {
                     'id': 4,
@@ -95,7 +91,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 0,
                     'is-private': False,
                     'status': 'Created',
-                    'admin': 'nickname1'
+                    'admin_id': 2
                 }
             ]
         })

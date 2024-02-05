@@ -8,3 +8,6 @@ mZW+X8IdGmaUnucNeF1pLZjEIcr7MkzP3zm1auQww71DObGTPaLLJNjTPdP3rWYJ
 mQIDAQAB
 -----END PUBLIC KEY-----"""
 ACCESS_ALGORITHM = 'RS256'
+
+USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+USER_STATS_URL = 'https://user-stats-nginx/'

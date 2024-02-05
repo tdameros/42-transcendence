@@ -35,10 +35,7 @@ class TournamentView(View):
 
         page_tournaments = tournaments[page_size * (page - 1): page_size * page]
 
-        try:
-            tournaments_data = TournamentUtils.tournament_to_json(page_tournaments, jwt)
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
+        tournaments_data = TournamentUtils.tournament_to_json(page_tournaments)
 
         response_data = {
             'page': page,

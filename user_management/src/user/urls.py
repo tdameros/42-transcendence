@@ -30,7 +30,7 @@ urlpatterns = [
     path('oauth/<str:auth_service>/', OAuth.as_view(), name='oauth'),
     path('oauth/callback/<str:auth_service>/', OAuthCallback.as_view(), name='oauth-callback'),
     path('update-infos/', UpdateInfos.as_view(), name='update-infos'),
-    path('/id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
