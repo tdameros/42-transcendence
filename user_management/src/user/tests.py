@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import jwt
+import pyotp
 from django.test import TestCase
 from django.urls import reverse
 
@@ -466,6 +467,7 @@ class TestsUserUpdateInfos(TestCase):
     3) then, update the user infos with /user/update-infos
     4) finally, check if the user infos have been updated with /user/user-id
     5) test invalid data"""
+
     @patch('user.views.sign_up.SignUpView.post_user_stats')
     def test_user_update_infos(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
@@ -516,3 +518,49 @@ class TestsUserUpdateInfos(TestCase):
         self.assertEqual(result.status_code, 400)
         self.assertTrue('errors' in result.json())
         self.assertTrue(result.json()['errors'])
+
+
+class TestsTwoFa(TestCase):
+
+    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    def test_two_fa(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
+
+        data_preparation = {
+            'username': 'TestTwoFA',
+            'email': 'aurelien.levra@gmail.com',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signup')
+        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        refresh_token = result.json()['refresh_token']
+        data = {
+            'refresh_token': refresh_token
+        }
+        url = reverse('refresh-access-jwt')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        access_token = result.json()['access_token']
+        url = reverse('enable-2fa')
+        result = self.client.post(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue('image/png' in result['Content-Type'])
+        url = reverse('verify-2fa')
+        data = {
+            'code': '234567'
+        }
+
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(result.status_code, 400)
+        real_code = pyotp.TOTP(User.objects.get(username='TestTwoFA').totp_secret).now()
+        data = {
+            'code': real_code
+        }
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{access_token}')
+        self.assertEqual(result.status_code, 200)
+        url = reverse('disable-2fa')
+        result = self.client.post(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
+        self.assertEqual(result.status_code, 200)
