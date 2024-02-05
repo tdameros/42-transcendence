@@ -10,8 +10,6 @@ from user.models import User
 class UserIdView(View):
     @staticmethod
     def get(request, user_id):
-        if not user_id.isnumeric():
-            return JsonResponse(data={'errors': ['User id must be an integer']}, status=400)
         try:
             user = User.objects.filter(id=user_id).first()
             if user is None:
