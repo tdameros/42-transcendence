@@ -2,12 +2,12 @@ import json
 
 import pyotp
 import qrcode
-from common.src.jwt_managers import user_authentication
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src.jwt_managers import user_authentication
 from user.models import User
 from user_management.JWTManager import get_user_id
 
@@ -61,9 +61,7 @@ class Verify2fa(View):
         code = json_request.get('code')
         if not code:
             return JsonResponse(data={'errors': ['code not provided']}, status=400)
-        if not self.verify_totp(code, user):
+        if not user.verify_2fa(code):
             return JsonResponse(data={'errors': ['invalid code']}, status=400)
         return JsonResponse(data={'message': '2fa verified'}, status=200)
 
-    def verify_totp(self, code_to_verify, user):
-        return pyotp.TOTP(user.totp_secret).verify(code_to_verify)
