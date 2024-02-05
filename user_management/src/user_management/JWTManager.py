@@ -1,6 +1,10 @@
+import base64
+import json
+
 import common.src.settings as common_settings
 from common.src.jwt_managers import JWTManager, UserAccessJWTDecoder
 from django.conf import settings
+from django.http import HttpRequest
 
 from user.models import User
 
@@ -72,3 +76,12 @@ class UserAccessJWTManager:
             return False, None, ['User does not exist']
 
         return True, user_id, None
+
+
+def get_user_id(request: HttpRequest) -> int:
+    jwt = request.headers.get('Authorization')
+    split_jwt = jwt.split('.')
+    payload = base64.b64decode(split_jwt[1] + '===')
+
+    payload_dict = json.loads(payload)
+    return int(payload_dict['user_id'])

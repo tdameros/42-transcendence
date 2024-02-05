@@ -1,3 +1,4 @@
+import pyotp
 from django.db import models
 
 from user_management import settings
@@ -10,6 +11,12 @@ class User(models.Model):
     forgotPasswordCode = models.CharField(null=True, max_length=settings.FORGOT_PASSWORD_CODE_MAX_LENGTH)
     forgotPasswordCodeExpiration = models.DateTimeField(null=True)
     avatar = models.ImageField(null=True, upload_to='avatars/')
+    has_2fa = models.BooleanField(default=False)
+    totp_secret = models.CharField(max_length=settings.TOTP_SECRET_MAX_LENGTH, null=True)
+    totp_config_url = models.CharField(max_length=settings.TOTP_CONFIG_URL_MAX_LENGTH, null=True)
+
+    def verify_2fa(self, code):
+        return pyotp.TOTP(self.totp_secret).verify(code)
 
 
 class PendingOAuth(models.Model):
