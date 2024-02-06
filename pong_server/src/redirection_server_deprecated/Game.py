@@ -5,8 +5,8 @@ import src.shared_code.settings as settings
 
 
 class Game(object):
-    def __init__(self, clients: list[str]):
-        self._clients: list[str] = clients
+    def __init__(self, clients: list[int]):
+        self._clients: list[int] = clients
         self._uri: str | None = None
 
     def create_server(self):
@@ -33,9 +33,9 @@ class Game(object):
         """ Can Raise Exception """
 
         try:
-            command = ['python3', '-m', 'src.game_server']
+            command = ['python3', '-m', 'src.game_server', '0']
             for player in self._clients:
-                command.append(player)
+                command.append(str(player))
             return subprocess.Popen(command,
                                     stdout=subprocess.PIPE,
                                     universal_newlines=True)
@@ -63,7 +63,7 @@ class Game(object):
     def was_server_created(self) -> bool:
         return self._uri is not None
 
-    def get_clients(self) -> list[str]:
+    def get_clients(self) -> list[int]:
         return self._clients
 
     def get_uri(self) -> str | None:
