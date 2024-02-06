@@ -281,6 +281,52 @@ will return public user information
 
 </details>
 
+## `/user/id-list/`
+
+### Get a list of user ids
+
+will return a list of user ids
+
+<details>
+ <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+> ``` javascript
+> 
+> {
+>     "id_list": ["1", "2", "3"]
+> }
+
+> NB : id_list must be a list of integers
+> if a user is not found, it will not be in the response
+
+#### Responses
+
+200 :
+```javascript
+
+[
+    {
+        "id": 2,
+        "username": "Aurel1243"
+    },
+    {
+        "id": 3,
+        "username": "Aurel121233"
+    }
+]
+```
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `...`                                                |
+> | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
 
 ## `/user/{username}/`
 ### Get user non-sensitive information
@@ -518,5 +564,4 @@ All fields mandatory:
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 ****
 </details>
-
 

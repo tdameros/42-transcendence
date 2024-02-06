@@ -13,7 +13,7 @@ from user.views.sign_in import SignInView
 from user.views.sign_up import SignUpView
 from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
 from user.views.update_infos import UpdateInfos
-from user.views.user_id import UserIdView
+from user.views.user_id import UserIdListView, UserIdView
 from user.views.username import UsernameView
 from user_management import settings
 
@@ -35,6 +35,7 @@ urlpatterns = [
     path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 

@@ -564,3 +564,37 @@ class TestsTwoFa(TestCase):
         url = reverse('disable-2fa')
         result = self.client.post(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 200)
+
+
+class TestUserIdList(TestCase):
+    def test_user_id_list(self):
+        # create a user
+
+        User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel2', email='aurel2@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel3', email='aurel3@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel4', email='aurel4@42.fr', password='Validpass42*')
+
+        # get the list of id of the users
+
+        id_list = [user.id for user in User.objects.all()]
+        data = {
+            'id_list': id_list
+        }
+
+        url = reverse('user-id-list')
+        try:
+            result = self.client.post(url, json.dumps(data), content_type='application/json')
+            self.assertEqual(result.status_code, 200)
+            for i in range(4):
+                self.assertEqual(result.json()[i]['id'], id_list[i])
+                self.assertEqual(result.json()[i]['username'], f'Aurel{i + 1}')
+            data = {
+                'id_list': 'a'
+            }
+            url = reverse('user-id-list')
+        except Exception as e:
+            print(e)
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 400)
+        self.assertTrue('errors' in result.json())
