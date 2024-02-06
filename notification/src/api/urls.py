@@ -4,5 +4,5 @@ from api.views.views import index
 
 urlpatterns = [
     path('', index, name='index'),
-    path('user/', UserNotificationView.as_view(), name='notification'),
+    path('user/', UserNotificationView.as_view(), name='user-notification'),
 ]
