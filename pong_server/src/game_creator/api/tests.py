@@ -4,13 +4,13 @@ import socket
 from typing import Optional
 
 import api.error_messages as error_messages
-from django.test import TestCase
 from django.urls import reverse
 
+from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
 
 
-class PostCreateGameTest(TestCase):
+class PostCreateGameTest(TestCaseNoDatabase):
     def setUp(self):
         self._port_min = os.getenv('PONG_GAME_SERVERS_MIN_PORT')
         self._port_max = os.getenv('PONG_GAME_SERVERS_MAX_PORT')
@@ -228,7 +228,6 @@ class PostCreateGameTest(TestCase):
         body, status = self.post_request(request_body)
         s.close()
 
-        print(body, status)
         self.assertEqual(status, 500)
 
         self.assertEqual(len(body), 1)
@@ -247,7 +246,6 @@ class PostCreateGameTest(TestCase):
 
         body, status = self.post_request(request_body)
 
-        print(body, status)
         self.assertEqual(status, 500)
 
         self.assertEqual(len(body), 1)
