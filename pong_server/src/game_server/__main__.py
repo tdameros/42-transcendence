@@ -150,7 +150,7 @@ async def start_server():
 
 async def main():
     try:
-        setup_logging(f'Game Server({os.getpid()}): ')
+        setup_logging(f'Game Server {os.getpid()}: ')
         logging.debug(f'Starting Game Server({os.getpid()})')
 
         global game
@@ -167,10 +167,10 @@ async def main():
         """ Do not use logging! This should always be printed as the game
             creator will read it """
         sys.stdout.flush()
-        logging.error(f'Game Server({os.getpid()}) failed to open: {str(e)}')
+        logging.error(f'failed to start: {str(e)}')
         exit(1)
 
-    logging.info(f'Game Server({os.getpid()}) started with uri {uri}')
+    logging.info(f'started with uri {uri}')
 
     while True:
         await sio.sleep(5)

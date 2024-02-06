@@ -74,18 +74,18 @@ class CreateGameView(View):
             return []
 
         correct_players: set[int] = set()
-        for i in range(len(players)):
-            if players[i] is None:
+        for index, player in enumerate(players):
+            if player is None:
                 continue
             try:
-                if not isinstance(players[i], int):
-                    players[i] = int(players[i])
-                if players[i] in correct_players:
-                    errors.append(error_messages.player_is_found_multiple_times(players[i]))
+                if not isinstance(player, int):
+                    player = int(player)
+                if player in correct_players:
+                    errors.append(error_messages.player_is_found_multiple_times(player))
                 else:
-                    correct_players.add(players[i])
+                    correct_players.add(player)
             except ValueError:
-                errors.append(error_messages.player_is_not_an_optional_int(i))
+                errors.append(error_messages.player_is_not_an_optional_int(index))
 
         return players
 
