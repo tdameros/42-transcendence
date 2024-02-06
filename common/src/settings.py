@@ -8,3 +8,11 @@ mZW+X8IdGmaUnucNeF1pLZjEIcr7MkzP3zm1auQww71DObGTPaLLJNjTPdP3rWYJ
 mQIDAQAB
 -----END PUBLIC KEY-----"""
 ACCESS_ALGORITHM = 'RS256'
+
+USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+
+USER_STATS_URL = 'https://user-stats-nginx/'
+DEBUG_USER_STATS_URL = 'http://localhost:8001/'
+
+USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
+DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'

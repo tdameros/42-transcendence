@@ -34,29 +34,6 @@ all fields are mandatory
 > | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Username empty
-> - Username already taken
-> - Username length {len(username)} > 20
-> - Username must be alphanumeric
-
-> - Email {email} already taken
-> - Email empty
-> - Email length {len(email)} > 50
-> - Email missing @
-> - Email missing "." character
-> - Email contains more than one @ character
-
-> - Password empty
-> - Password length {len(password)} < 8
-> - Password missing uppercase character
-> - Password missing digit
-> - Password missing special character
-
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -73,12 +50,18 @@ will return a refresh token when successful
 
 #### Body
 
-all fields are mandatory
+mandatory fields :
+- username
+- password
+
+optional fields :
+- 2fa_code : if the user has 2FA enabled, this field is mandatory
 
 > ``` javascript
 > {
 >     "username": "Aurel",
->     "password": "Validpass21*"
+>     "password": "Validpass21*",
+>     "2fa_code": "123456"
 > }
 > ```
 
@@ -89,16 +72,6 @@ all fields are mandatory
 > | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`                    |
 > | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred : ...']}` |
-> 
-> errors can be combined
-
-> errors can be :
-> - Username empty
-> - Password empty
-> - Username not found
-> - Invalid password
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -131,15 +104,6 @@ will return a boolean
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be combined
-
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> 
-> NB : An empty username is considered as not taken
-
 </details>
 
 ## `/user/email-exist/`
@@ -169,14 +133,6 @@ will return a boolean
 > | `200`     | `application/json`       | `{"is_taken": true}`                                 |
 > | `401`     | `application/json`       | `{"errors": [ "AAA","BBB", "..."]}`                  |
 > | `500`     | `application/json`       | `{"errors": ['An unexpected error occurred : ...']}` |
-
-> 
-> errors can be combined
-
-> errors can be :
-> - Empty email
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 
 </details>
 
@@ -208,17 +164,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
->errors can be combined
-
-> errors can be :
-> - Refresh token not found
-> - Signature verification failed
-> - No expiration date found
-> - Signature has expired
-> - No user_id in payload
-> - User does not exist
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
 </details>
 
 
@@ -226,7 +171,7 @@ all fields are mandatory
 
 ### Send a code to the user's email
 
-will return 200 if successful and send a 12 characters code to the user's email
+will return 200 if successful and send a 6 alphanum code to the user's email
 
 <details>
  <summary><code>POST</code><code><b>/user/forgot-password/send-code/</b></code></summary>
@@ -249,13 +194,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": "AAA"}`                                                                               |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`                                              |
 
-
-> errors can be :
-> - No email provided
-> - Email can not be empty
-> - Username not found
-> - Invalid JSON format in the request body : decode error
-> - An unexpected error occurred
 
 </details>
 
@@ -287,16 +225,6 @@ all fields are mandatory
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
-
-> errors can be :
-> - Mandatory value missing : 'email'
-> - Mandatory value missing : 'code'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
 
 </details>
 
@@ -327,11 +255,10 @@ all fields are mandatory
 </details>
 
 
-## `/user/{user-id}/`
+## `/user/id/{user-id}/`
 ### Get user non-sensitive information
 
-will return a user object when successful
-Might be extended to return more information in the future, if needed
+will return public user information
 
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
@@ -347,22 +274,36 @@ Might be extended to return more information in the future, if needed
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> errors details are optional
 
-> errors can be :
-> - Mandatory value missing : 'username'
-> - Mandatory value missing : 'code'
-> - Mandatory value missing : 'password'
-> - Email empty
-> - Code empty
-> - Username not found
-> - Invalid code
-> - Code expired
-> - (all the errors from the is_valid_password function in the sign_up route)
+</details>
+
+
+## `/user/{username}/`
+### Get user non-sensitive information
+
+will return public user information
+
+<details>
+ <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+{username}
+>
+> NB : username must be a string
+>
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 
 </details>
@@ -397,11 +338,6 @@ will return a list of usernames that contains the searched username
 > | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
-> 
-> errors can be :
-> - Invalid JSON format in the request body
-> - An unexpected error occurred
-> - No username found
 </details>
 
 
@@ -411,14 +347,17 @@ will return a list of usernames that contains the searched username
 This endpoint initiates the OAuth authentication process for the specified authentication service.
 It returns a redirection URL to the OAuth service's authorization endpoint.
 <details>
- <summary><code>GET</code><code><b>/user/oauth/{auth_service}/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/oauth/{auth_service}/?source=https://example.com</b></code></summary>
 
 ### Parameters
 
 #### In the URL (mandatory)
  {auth_service}
+ and as a query parameter :
+- `source`: The URL to which the OAuth service will redirect the user after authentication
 > 
 > NB: `auth_service` must be one of the following values: 'github', '42api'
+> and `source` must be a valid URL wich does not begin with www but with http or https
 > 
 #### Responses
 
@@ -450,13 +389,134 @@ This endpoint handles the callback after successful OAuth authentication and ret
 
 #### Responses
 
-> | http code | content-type       | response                                             |
-> |-----------|--------------------|------------------------------------------------------|
-> | `201`     | `application/json` | `{"refresh_token": "XXXXX"}`                         |
-> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`    |
-> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                      |
-> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`       |
-> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}` |
-> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`       |
+> | http code | content-type       | response                                                                        |
+> |-----------|--------------------|---------------------------------------------------------------------------------|
+> | `201`     | `application/json` | `redirect to source, putting the refresh token in a cookie named refresh_token` |
+> | `400`     | `application/json` | `{"errors": ["Failed to retrieve access token"]}`                               |
+> | `400`     | `application/json` | `{"errors": ["Invalid state"]}`                                                 |
+> | `400`     | `application/json` | `{"errors": ["Failed to create or get user"]}`                                  |
+> | `400`     | `application/json` | `{"errors": ["An unexpected error occurred : ..."]}`                            |
+> | `500`     | `application/json` | `{"errors": ['Failed to create or get user']}`                                  |
 
 </details>
+
+## '/user/update-infos/'
+
+
+### Update user's information
+
+will return 200 if successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+mandatory field : change_list, access_token
+all other fields are optional and depend on the change_list
+
+> ``` javascript
+> {
+>   "access_token": "d2d040fj..."
+>   "change_list": ["username", "email", "password"]
+>    "username": "NewUsername",
+>    "email": "newemail@asdf.fr",
+>   "password": "NewPassword42*"
+> }
+> NB : change_list must contain at least one of the following values : "username", "email", "password"
+> ```
+
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+</details>
+
+## `/user/2fa/enable`
+### Enable Two-Factor Authentication
+
+This endpoint enables Two-Factor Authentication for the user.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/enable</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `image/png`        | `png of the QR code the user needs to scan`          |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+</details>
+
+## `/user/2fa/disable`
+
+### Disable Two-Factor Authentication
+
+This endpoint disables Two-Factor Authentication for the user.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/disable</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "2fa disabled"}`                        |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+If the user already have 2FA disabled, the response will be :
+400 `{"errors": ["2FA is already disabled"]}`
+else
+200 `{'message': '2fa disabled'}`
+
+</details>
+
+## `/user/2fa/verify`
+
+
+### Verify Two-Factor Authentication
+
+This endpoint verifies the user's Two-Factor Authentication code.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/verify</b></code></summary>
+
+### Parameters
+
+#### Body
+
+All fields mandatory:
+> ``` javascript
+> {
+>    "code": "123456"
+> }
+> ```
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "2fa verified"}`                        |
+> | `400`     | `application/json` | `{"errors": ["...]}`                                 |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+****
+</details>
+
+

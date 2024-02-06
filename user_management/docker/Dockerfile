@@ -9,3 +9,5 @@ COPY requirements.txt /app/
 
 # Installez les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./gunicorn/gunicorn.conf.py /app/gunicorn.conf.py

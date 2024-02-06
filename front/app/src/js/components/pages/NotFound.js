@@ -1,13 +1,13 @@
 import {Component} from '../Component.js';
+import {ErrorPage} from '../../utils/ErrorPage.js';
 
-export class Tournaments extends Component {
+export class NotFound extends Component {
   constructor() {
     super();
   }
   render() {
+    ErrorPage.loadNotFound();
     return (`
-      <navbar-component nav-active="tournaments"></navbar-component>
-      <h1>Tournaments</h1>
     `);
   }
   style() {

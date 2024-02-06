@@ -29,7 +29,23 @@ const router = new Router(app, [
 > | `app`    | HTMLElement | Application container  | Required |
 > | `routes` | Array       | Array of route objects | Optional |
 
+
+## init
+
+Initialize the router by loading the route corresponding to the current URI
+without adding it to the history.
+
+```javascript
+const app = document.querySelector('#app'); // Replace '#app' with the selector of your application container
+const router = new Router(app, [
+  new Route('/signin/', 'signin-component'),
+  new Route('/', 'home-component'),
+]);
+router.init();
+```
+
 ## addRoute
+
 
 Add a new route to the router.
 Each route consists of a path and a custom element associated with that path.
@@ -85,6 +101,28 @@ router.navigate('/example/');
 > | null        | null        | Error, path not found   |
 > | HTMLElement | HTMLElement | Custom element instance |
 
+
+## redirect
+
+Redirect to a new path, replacing the current path with the new one.
+
+```javascript
+router.redirect('/example/');
+```
+
+### Parameters
+
+> | name             | data type   | description                         | type       |
+> |------------------|-------------|-------------------------------------|------------|
+> | `newPath`        | String      | New path to navigate                | Required   |
+
+### Return
+
+> | data type   | value       | description             |
+> |-------------|-------------|-------------------------|
+> | null        | null        | Error, path not found   |
+> | HTMLElement | HTMLElement | Custom element instance |
+
 --------------------------------------------------------------------------------
 
 ## Example
@@ -100,6 +138,6 @@ const router = new Router(app, [
   new Route('/signup/', 'signup-component'),
   new Route('', 'home-component'),
 ]);
-
+router.init();
 window.router = router;
 ```

@@ -13,7 +13,7 @@ class User(models.Model):
 
 
 class Match(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user')
     opponent = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='opponent')
     user_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)

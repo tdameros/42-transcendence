@@ -1,5 +1,5 @@
-import {Component} from '../Component.js';
-import {Keys} from '../../utils/Keys.js';
+import {Component} from '../../Component.js';
+import {Keys} from '../../../utils/Keys.js';
 
 export class ResetPasswordCode extends Component {
   constructor() {

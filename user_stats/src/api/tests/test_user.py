@@ -25,6 +25,21 @@ class UserTest(TestCase):
         response = self.client.patch(url, json.dumps(body), content_type='application/json')
         return response
 
+    def delete_user(self, user_id: int):
+        url = reverse('user', kwargs={'user_id': user_id})
+        response = self.client.delete(url)
+        return response
+
+    def post_match(self, body: dict):
+        url = reverse('match')
+        response = self.client.post(url, json.dumps(body), content_type='application/json')
+        return response
+
+    def get_history(self, user_id: int, page=1, page_size=10):
+        url = reverse('user_history', kwargs={'user_id': user_id})
+        response = self.client.get(url, {'page': page, 'page_size': page_size})
+        return response
+
     def assert_equal_user(self, user, response):
         body = json.loads(response.content.decode('utf-8'))
         self.assertEqual(body['id'], user.id)
@@ -589,3 +604,47 @@ class PatchUserTest(UserTest):
             error.WIN_RATE_INVALID,
             error.FRIENDS_INVALID
         ])
+
+
+class DeleteUserTest(UserTest):
+
+    def test_valid_default(self):
+        user_id = 1
+        self.post_user(user_id, {})
+        response = self.delete_user(user_id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_user_not_found(self):
+        user_id = 1
+        response = self.delete_user(user_id)
+        body = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], [error.USER_NOT_FOUND])
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_valid_history(self, mock_authenticate):
+        mock_authenticate.return_value = (True, {'id': 0}, None)
+        valid_user_id = 0
+        deleted_user_id = 1
+        self.post_user(valid_user_id, {})
+        self.post_user(deleted_user_id, {})
+        self.post_match({
+            'winner_id': valid_user_id,
+            'loser_id': deleted_user_id,
+            'winner_score': 10,
+            'loser_score': 0,
+            'date': '2020-01-01T00:00:00Z'
+        })
+        response = self.delete_user(deleted_user_id)
+        self.assertEqual(response.status_code, 200)
+        response = self.get_history(deleted_user_id)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['errors'][0], error.USER_NOT_FOUND)
+        response = self.get_history(valid_user_id)
+        self.assertEqual(response.status_code, 200)
+        history = response.json()['history']
+        self.assertEqual(len(history), 1)
+        self.assertEqual(history[0]['opponent_id'], None)
+        self.assertEqual(history[0]['user_score'], 10)
+        self.assertEqual(history[0]['opponent_score'], 0)
+        self.assertEqual(history[0]['result'], True)

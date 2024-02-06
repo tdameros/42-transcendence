@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from api import error_message as error
 from api.models import Match, Player, Tournament
+from api.tests.utils import get_fake_headers
 
 
 class GenerateTournamentMatches(TestCase):
@@ -25,16 +26,21 @@ class GenerateTournamentMatches(TestCase):
     def generate_matches(self, tournament_id, is_random):
         url = reverse('generate-matches', args=(tournament_id,))
 
-        response = self.client.post(url, {'random': is_random}, content_type='application/json')
+        response = self.client.post(
+            url,
+            {'random': is_random},
+            content_type='application/json',
+            headers=get_fake_headers(1)
+        )
 
         body = json.loads(response.content.decode('utf8'))
 
         return response, body
 
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_full_tournament(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
 
         tournament_id = 1
 
@@ -49,10 +55,10 @@ class GenerateTournamentMatches(TestCase):
         self.assertEqual(len(body['matches']), 7)
         self.assertEqual(len(matches), 7)
 
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_tournament_not_full(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
 
         tournament_id = 2
 
@@ -64,10 +70,10 @@ class GenerateTournamentMatches(TestCase):
         self.assertEqual(body['nb-matches'], 7)
         self.assertEqual(len(body['matches']), 7)
 
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_tournament_does_not_exist(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
 
         tournament_id = 3
 
@@ -88,10 +94,10 @@ class MatchesTest(TestCase):
         for i in range(0, 4):
             Match.objects.create(player_1=players[i], player_2=players[i + 4], tournament=tournament, match_id=i + 1)
 
-    @patch('api.views.matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_get_matches(self, mock_authenticate):
         user = {'id': 1}
-        mock_authenticate.return_value = (user, None)
+        mock_authenticate.return_value = (True, user, None)
 
         tournament_id = 1
         url = reverse('matches', args=(tournament_id,))
@@ -109,10 +115,10 @@ class MatchesTest(TestCase):
         self.assertEqual(body['matches'][3]['player_1']['nickname'], 'player 3')
         self.assertEqual(body['matches'][3]['player_2']['nickname'], 'player 7')
 
-    @patch('api.views.matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_tournament_not_exist(self, mock_authenticate):
         user = {'id': 1}
-        mock_authenticate.return_value = (user, None)
+        mock_authenticate.return_value = (True, user, None)
 
         tournament_id = 50
         url = reverse('matches', args=(tournament_id,))
@@ -134,10 +140,10 @@ class GetMatchTest(TestCase):
         for i in range(0, 4):
             Match.objects.create(player_1=players[i], player_2=players[i + 4], tournament=tournament, match_id=i + 1)
 
-    @patch('api.views.matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_get_match(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
 
         tournament_id = 1
         url = reverse('matches', args=(tournament_id,))
@@ -150,10 +156,10 @@ class GetMatchTest(TestCase):
         self.assertEqual(body['matches'][0]['player_2']['nickname'], 'player 4')
         self.assertEqual(body['matches'][0]['status'], 'Not played')
 
-    @patch('api.views.matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_tournament_does_not_exist(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
 
         tournament_id = 50
         url = reverse('matches', args=(tournament_id,))
@@ -165,10 +171,10 @@ class GetMatchTest(TestCase):
 
 
 class StartMatchTest(TestCase):
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def setUp(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
         tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
@@ -181,7 +187,7 @@ class StartMatchTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        self.client.post(url, {'random': True}, content_type='application/json')
+        self.client.post(url, {'random': True}, content_type='application/json', headers=get_fake_headers(1))
 
         tournament.status = Tournament.IN_PROGRESS
         tournament.save()
@@ -240,10 +246,10 @@ class StartMatchTest(TestCase):
 
 
 class EndMatchTest(TestCase):
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def setUp(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
         tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
@@ -256,7 +262,7 @@ class EndMatchTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        response = self.client.post(url, {'random': True}, content_type='application/json')
+        response = self.client.post(url, {'random': True}, content_type='application/json', headers=get_fake_headers(1))
 
         json.loads(response.content.decode('utf8'))
 
@@ -317,10 +323,10 @@ class EndMatchTest(TestCase):
 
 
 class AddPointTest(TestCase):
-    @patch('api.views.generate_matches_views.authenticate_request')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def setUp(self, mock_get):
         user = {'id': 1}
-        mock_get.return_value = (user, None)
+        mock_get.return_value = (True, user, None)
         tournament = Tournament.objects.create(id=1, name='tournament 1', admin_id=1, max_players=8)
 
         for i in range(0, 8):
@@ -333,7 +339,7 @@ class AddPointTest(TestCase):
 
         url = reverse('generate-matches', args=(1,))
 
-        response = self.client.post(url, {'random': True}, content_type='application/json')
+        response = self.client.post(url, {'random': True}, content_type='application/json', headers=get_fake_headers(1))
 
         json.loads(response.content.decode('utf8'))
 
