@@ -15,9 +15,9 @@ export class _RedirectionSocketIO {
     this.#socketIO = io('http://localhost:4242', { // TODO use real server address
       query: JSON.stringify({
         'json_web_token': {
-          'user_id': '0', // TODO use client account primary key
+          'user_id': 0, // TODO use client account primary key
         },
-        'game_id': 'game_1',
+        'game_id': 1,
       }),
     });
 

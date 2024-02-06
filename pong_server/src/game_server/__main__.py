@@ -25,7 +25,7 @@ exit_code = 0
 game: Game | None = None
 
 
-async def add_user_to_game(user_id: str, sid: str):
+async def add_user_to_game(user_id: int, sid: str):
     if not game.is_user_part_of_game(user_id):
         raise Exception('You are not part of this game')
 

@@ -1,3 +1,5 @@
+import logging
+
 import numpy
 
 import src.game_server.rooms as rooms
@@ -9,9 +11,12 @@ from src.shared_code.emit import emit
 
 
 class Game(object):
-    def __init__(self, player_list: list[str]):
+    def __init__(self, args: list[str]):
+        self._game_id: int = int(args[0])
+
         #            const list[user_id]
-        self.PLAYERS_LIST: list[str] = player_list
+        self.PLAYERS_LIST: list[int] = [int(player) for player in args[1:]]
+        logging.debug(f'Successfully parsed arguments: {args}')
 
         if len(self.PLAYERS_LIST) == 0:
             raise Exception('Game is empty')
@@ -19,10 +24,10 @@ class Game(object):
             raise Exception(f'Game has an odd number of players '
                             f'(number of players: {len(self.PLAYERS_LIST)})')
 
-        #                     dict[sid, user_id]
-        self._user_id_map: dict[str: str] = {}
+        #                  dict[sid, user_id]
+        self._user_id_map: dict[str: int] = {}
         #                     dict[user_id, sid]
-        self._player_sid_map: dict[str: str] = {}
+        self._player_sid_map: dict[int: str] = {}
 
         self._player_finder: PlayerFinder = PlayerFinder(self.PLAYERS_LIST)
 
@@ -30,20 +35,20 @@ class Game(object):
 
         self.has_started: bool = False
 
-    def is_user_part_of_game(self, user_id: str) -> bool:
+    def is_user_part_of_game(self, user_id: int) -> bool:
         return user_id in self.PLAYERS_LIST
 
-    def get_sid_from_user_id(self, user_id: str) -> str | None:
+    def get_sid_from_user_id(self, user_id: int) -> str | None:
         return self._player_sid_map.get(user_id)
 
-    async def add_user(self, user_id: str, sid: str, sio):
+    async def add_user(self, user_id: int, sid: str, sio):
         self._player_sid_map[user_id] = sid
         self._player_finder.add_player(user_id, sid)
         await sio.enter_room(sid, rooms.ALL_PLAYERS)
 
     async def remove_user(self, sid: str, sio):
         try:
-            user_id: str | None = self._user_id_map.pop(sid)
+            user_id: int | None = self._user_id_map.pop(sid)
             if user_id is not None:
                 del self._player_sid_map[user_id]
             self._player_finder.remove_player(sid)
