@@ -37,10 +37,12 @@ services:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - pong_server_code:/app/src/
+            - pong_server_code:/app/pong_server_code/
             - ssl_certs:/app/ssl
 
-        command: sh -c 'cd /app/ &&
+        command: sh -c 'cp -r /app/pong_server_code /app/src &&
+                        rm -rf /app/src/game_creator/shared_code &&
+                        cp -r /app/src/shared_code /app/src/game_creator/shared_code &&
                         gunicorn -c /app/gunicorn.conf.py'
 
         restart: on-failure

@@ -11,6 +11,7 @@ from src.game_server.Clock import Clock
 from src.game_server.Game import Game
 from src.game_server.update_player_movement_and_position import \
     update_player_direction_and_position
+from src.shared_code import error_messages
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
@@ -144,7 +145,7 @@ async def start_server():
         except OSError:
             continue
 
-    raise Exception("No available ports found in the specified range.")
+    raise Exception(error_messages.NO_AVAILABLE_PORTS)
 
 
 async def main():
@@ -165,6 +166,8 @@ async def main():
         print(f'Error: {str(e)}')
         """ Do not use logging! This should always be printed as the game
             creator will read it """
+        sys.stdout.flush()
+        logging.error(f'Game Server({os.getpid()}) failed to open: {str(e)}')
         exit(1)
 
     logging.info(f'Game Server({os.getpid()}) started with uri {uri}')

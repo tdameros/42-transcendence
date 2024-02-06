@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import numpy
 
@@ -15,14 +16,16 @@ class Game(object):
         self._game_id: int = int(args[0])
 
         #            const list[user_id]
-        self.PLAYERS_LIST: list[int] = [int(player) for player in args[1:]]
+        self.PLAYERS_LIST: list[Optional[int]] = []
+        for player in args[1:]:
+            try:
+                self.PLAYERS_LIST.append(int(player))
+            except ValueError:
+                self.PLAYERS_LIST.append(None)
         logging.debug(f'Successfully parsed arguments: {args}')
 
         if len(self.PLAYERS_LIST) == 0:
             raise Exception('Game is empty')
-        if len(self.PLAYERS_LIST) % 2 == 1:
-            raise Exception(f'Game has an odd number of players '
-                            f'(number of players: {len(self.PLAYERS_LIST)})')
 
         #                  dict[sid, user_id]
         self._user_id_map: dict[str: int] = {}
