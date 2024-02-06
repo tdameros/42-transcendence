@@ -36,7 +36,7 @@
     const notifyScoket = new WebSocket(
         'ws://'
         + window.location.host
-        + '/ws/notification/'
+        + '/ws/notification/?Authorization=auth_token_here'
     );
 
     // on socket open
