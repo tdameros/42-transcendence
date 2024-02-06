@@ -210,6 +210,7 @@
 > | `elo`            | int  | Elo progression            |
 > | `win_rate`       | int  | Win rate progression       |
 > | `matches_played` | int  | Matches played progression |
+> | `friends`        | int  | Friends progression        |
 
 #### Status code
 

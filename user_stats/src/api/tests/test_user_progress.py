@@ -27,7 +27,7 @@ class ProgressTest(TestCase):
     def assert_progress_validity(self, user_id, elo, win_rate, matches_played, days=None):
         response = self.get_progress(user_id, days)
         self.assertEqual(response.status_code, 200)
-        progress = response.json()['progress']
+        progress = response.json()
         if elo is not None:
             self.assertEqual(progress['elo'], elo)
         if win_rate is not None:

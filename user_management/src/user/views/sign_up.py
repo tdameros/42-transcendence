@@ -7,6 +7,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 import common.src.settings as common
+from common.src.internal_requests import InternalRequests
+
 from user.models import User
 from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
@@ -43,10 +45,11 @@ class SignUpView(View):
     def post_user_stats(user_id: int) -> (bool, list):
         try:
             if settings.DEBUG:
-                # response = requests.post(f'{common.DEBUG_USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
-                return True, None # TODO Will be fix later
+                response = InternalRequests.post(f'{common.DEBUG_USER_STATS_USER_ENDPOINT}{user_id}/',
+                                                 data=json.dumps({}))
             else:
-                response = requests.post(f'{common.USER_STATS_USER_ENDPOINT}{user_id}/', data=json.dumps({}))
+                response = InternalRequests.post(f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
+                                                 data=json.dumps({}))
         except requests.exceptions.RequestException:
             return False, ['Could not access user-stats']
         if not response.ok:
