@@ -8,7 +8,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 import common.src.settings as common
 from common.src.internal_requests import InternalRequests
-
 from user.models import User
 from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
