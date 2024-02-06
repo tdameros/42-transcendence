@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import sys
@@ -8,9 +9,9 @@ from socketio.exceptions import ConnectionRefusedError
 
 from src.game_server.Clock import Clock
 from src.game_server.Game import Game
-from src.game_server.get_server_uri import get_server_uri
 from src.game_server.update_player_movement_and_position import \
     update_player_direction_and_position
+from src.shared_code import error_messages
 from src.shared_code.emit import emit
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
@@ -19,11 +20,13 @@ from src.shared_code.setup_logging import setup_logging
 sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
 sio.attach(app)
+should_exit = False
+exit_code = 0
 
 game: Game | None = None
 
 
-async def add_user_to_game(user_id: str, sid: str):
+async def add_user_to_game(user_id: int, sid: str):
     if not game.is_user_part_of_game(user_id):
         raise Exception('You are not part of this game')
 
@@ -86,28 +89,35 @@ async def wait_for_all_players_to_join():
     game.has_started = True
 
 
+async def game_loop():
+    clock = Clock()
+    while True:
+        await game.get_scene().update(sio, clock.get_delta())
+        await sio.sleep(0.01)
+
+
 async def background_task():
     try:
-        pid = os.getpid()
-        server_uri = await get_server_uri(sio, pid)
-        print(f'uri: {server_uri}')
-        sys.stdout.flush()
-        """ Do not use logging()! This should always be printed as the redirection
-            server will read it """
-
-        logging.info(f'Game Server({os.getpid()}) started with uri {server_uri}')
-
         await wait_for_all_players_to_join()
 
-        clock = Clock()
-        while True:
-            await game.get_scene().update(sio, clock.get_delta())
-            await sio.sleep(0.01)
+        await game_loop()
+
     except Exception as e:
-        print(f'Error: in background_task: {e}')
-        """ Do not use logging! This should always be printed as the game
-            creator will read it """
-        exit(2)
+        try:  # Attempt graceful exit
+            print(f'Error: in background_task: {e}')
+            """ Do not use logging! This should always be printed as the game
+                creator will read it """
+            logging.critical(f'Error in background_task: {e}')
+            global exit_code
+            global should_exit
+            exit_code = 2
+            should_exit = True
+            await sio.sleep(30)
+            # If everything goes well, the process will exit(exit_code) before this line
+            # (see main())
+            exit(3)
+        except Exception:  # Graceful exit failed!
+            exit(4)
 
 
 # The app arguments is not used but is required by
@@ -117,25 +127,56 @@ async def start_background_task(app):
 
 
 app.on_startup.append(start_background_task)
-if __name__ == '__main__':
+
+
+async def start_server():
+    runner = web.AppRunner(app)
+    await runner.setup()
+
+    start_port = int(os.getenv('PONG_GAME_SERVERS_MIN_PORT'))
+    end_port = int(os.getenv('PONG_GAME_SERVERS_MAX_PORT'))
+    logging.debug(f'start_port: {start_port}, end_port: {end_port}')
+
+    for port in range(start_port, end_port + 1):
+        try:
+            server = web.TCPSite(runner, '0.0.0.0', port)
+            await server.start()
+            return port
+        except OSError:
+            continue
+
+    raise Exception(error_messages.NO_AVAILABLE_PORTS)
+
+
+async def main():
     try:
-        setup_logging(f'Game Server({os.getpid()}): ')
+        setup_logging(f'Game Server {os.getpid()}: ')
+        logging.debug(f'Starting Game Server({os.getpid()})')
+
+        global game
         game = Game(sys.argv[1:])
 
-        min_port = int(os.getenv('PONG_GAME_SERVERS_MIN_PORT'))
-        max_port = int(os.getenv('PONG_GAME_SERVERS_MAX_PORT'))
-
-        for port in range(min_port, max_port + 1):
-            try:
-                web.run_app(app, host='0.0.0.0', port=port, access_log=None)
-                exit(0)
-            except Exception:
-                continue
-
-        raise Exception('Could not find an available port')
-
+        port = await start_server()
+        uri = f'http://localhost:{port}'  # TODO should be 42.shiftcode.fr in prod
+        print(f'uri: {uri}')
+        """ Do not use logging! This should always be printed as the redirection
+            server will read it """
+        sys.stdout.flush()
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error: {str(e)}')
         """ Do not use logging! This should always be printed as the game
             creator will read it """
+        sys.stdout.flush()
+        logging.error(f'failed to start: {str(e)}')
         exit(1)
+
+    logging.info(f'started with uri {uri}')
+
+    while True:
+        await sio.sleep(5)
+        if should_exit:  # set to True by background_task
+            exit(exit_code)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

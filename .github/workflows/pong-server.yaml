@@ -34,10 +34,18 @@ jobs:
                   pip3 install isort
                   pip3 install -r pong_server/docker/requirements.txt
 
-            - name: Run unit tests
+            - name: Copy shared files
+              run: |
+                  cp -r pong_server/src/shared_code pong_server/src/game_creator/shared_code
+
+            - name: Run unit tests game creator
               working-directory: pong_server/
               run: |
-                  python3 -m unittest discover test
+                  export PONG_GAME_SERVERS_MIN_PORT=42200
+                  export PONG_GAME_SERVERS_MAX_PORT=42210
+                  export PONG_GAME_APP_PATH=`pwd`
+                  cd src/game_creator
+                  python3 manage.py test
 
             - name: Run PEP8 check
               working-directory: pong_server/

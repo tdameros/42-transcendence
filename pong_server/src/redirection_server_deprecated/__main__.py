@@ -4,9 +4,9 @@ import os
 import socketio
 from aiohttp import web
 
-from src.redirection_server.Game import Game
-from src.redirection_server.RefuseConnection import RefuseConnection
-from src.redirection_server.SendURI import SendURI
+from src.redirection_server_deprecated.Game import Game
+from src.redirection_server_deprecated.RefuseConnection import RefuseConnection
+from src.redirection_server_deprecated.SendURI import SendURI
 from src.shared_code.get_json_web_token import get_json_web_token
 from src.shared_code.get_query_string import get_query_string
 from src.shared_code.setup_logging import setup_logging
@@ -19,19 +19,17 @@ number_of_test_players = 2  # TODO remove this
 
 # TODO get all games from server
 #      dict[GameID, Game]
-games: dict[str, Game] = {
-    'game_1': Game([str(nb) for nb in range(number_of_test_players)])
+games: dict[int, Game] = {
+    1: Game([nb for nb in range(number_of_test_players)])
 }
 
 
-def get_game_id(query_string) -> str:
+def get_game_id(query_string) -> int:
     game_id = query_string.get('game_id')
     if game_id is None:
         raise Exception('game_id was not found in query string')
-    if not isinstance(game_id, str):
-        raise Exception('game_id must be a string')
-    if len(game_id) == 0:
-        raise Exception('game_id must not be empty')
+    if not isinstance(game_id, int):
+        raise Exception('game_id must be an int')
     return game_id
 
 
@@ -50,7 +48,7 @@ def get_newly_created_games():
     pass
 
 
-def get_game(game_id: str, user_id: str) -> Game:
+def get_game(game_id: int, user_id: int) -> Game:
     game = games.get(game_id)
     if game is None:
         raise Exception(f'Game {game_id} does not exist')
@@ -86,7 +84,7 @@ def connect(sid, environ, auth):
     #      [game.get_uri(), str(i % number_of_test_players)]
     #      It is like this for now so that I can run test, the i % number_of_test_players
     #      serves as the client nickname for the game server
-    raise SendURI([game.get_uri(), str(i % number_of_test_players)])
+    raise SendURI([game.get_uri(), i % number_of_test_players])
 
 
 @sio.event

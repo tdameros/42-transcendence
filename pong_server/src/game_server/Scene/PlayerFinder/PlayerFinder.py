@@ -4,9 +4,9 @@ from src.game_server.Scene.Scene import Scene
 
 
 class PlayerFinder:
-    def __init__(self, players_id: list[str]):
+    def __init__(self, players_id: list[int]):
         #                             dict[user_id: PlayerData]
-        self._user_id_to_player_data: dict[str: PlayerLocation] = {}
+        self._user_id_to_player_data: dict[int: PlayerLocation] = {}
         i: int = 0
         for player_id in players_id:
             self._user_id_to_player_data[player_id] = PlayerLocation(int(i / 2), i % 2)
@@ -15,7 +15,7 @@ class PlayerFinder:
         #                         dict[sid, PlayerData]
         self._sid_to_player_data: dict[str: PlayerLocation] = {}
 
-    def add_player(self, user_id: str, sid: str):
+    def add_player(self, user_id: int, sid: str):
         player_data: PlayerLocation | None = self._user_id_to_player_data.get(user_id)
         if player_data is not None:
             self._sid_to_player_data[sid] = player_data
@@ -26,7 +26,7 @@ class PlayerFinder:
     def get_player_location_from_sid(self, sid: str) -> PlayerLocation | None:
         return self._sid_to_player_data.get(sid)
 
-    def get_player_location_from_user_id(self, user_id: str):
+    def get_player_location_from_user_id(self, user_id: int):
         return self._user_id_to_player_data.get(user_id)
 
     def get_player(self, scene: Scene, sid: str) -> Player | None:
