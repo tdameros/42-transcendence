@@ -1,22 +1,46 @@
 services:
+    pong-server-nginx:
+        networks:
+            - transcendence
+            - pong_server
+        expose:
+            - "443"
+        ports:
+            - "${PONG_GAME_CREATOR_NGINX_PORT}:443"
+
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        volumes:
+            - pong_server_static_volume:/app/static
+            - pong_server_media_volume:/app/media
+            - ssl_certs:/etc/nginx/ssl
+
+        depends_on:
+            - pong-server
+        restart: on-failure
+
     pong-server:
         networks:
             - transcendence
+            - pong_server
         ports:
-            - '${PONG_GAME_CREATOR_PORT}:${PONG_GAME_CREATOR_PORT}'
             - '${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}:${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}'
+        expose:
+            - "8000"
 
         build:
             args:
-                - PONG_GAME_CREATOR_PORT=${PONG_GAME_CREATOR_PORT}
+                - PONG_GAME_APP_PATH=/app/
                 - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
                 - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
             context: .
             dockerfile: Dockerfile
         volumes:
             - pong_server_code:/app/src/
+            - ssl_certs:/app/ssl
 
         command: sh -c 'cd /app/ &&
-                        python3 -m src.redirection_server'
+                        gunicorn -c /app/gunicorn.conf.py'
 
         restart: on-failure

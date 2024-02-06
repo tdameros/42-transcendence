@@ -15,5 +15,6 @@ while true; do
     sleep 1
     clear
     python -m unittest discover test
+    `sed 's/^/export /' ../.env`
     find . -name '*.py' | entr -z -d python3 -m src.redirection_server_deprecated
 done
