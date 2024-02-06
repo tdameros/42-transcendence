@@ -11,7 +11,10 @@ from user.views.refresh_JWT import RefreshJWT
 from user.views.search_username import SearchUsernameView
 from user.views.sign_in import SignInView
 from user.views.sign_up import SignUpView
+from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
+from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdView
+from user.views.username import UsernameView
 from user_management import settings
 
 urlpatterns = [
@@ -27,7 +30,12 @@ urlpatterns = [
     path('search-username/', SearchUsernameView.as_view(), name='search-username'),
     path('oauth/<str:auth_service>/', OAuth.as_view(), name='oauth'),
     path('oauth/callback/<str:auth_service>/', OAuthCallback.as_view(), name='oauth-callback'),
-    path('<str:user_id>/', UserIdView.as_view(), name='user-id')
+    path('update-infos/', UpdateInfos.as_view(), name='update-infos'),
+    path('2fa/enable/', Enable2fa.as_view(), name='enable-2fa'),
+    path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
+    path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
+    path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
 if settings.DEBUG:

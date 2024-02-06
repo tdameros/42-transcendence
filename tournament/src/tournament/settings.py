@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
-from common.src import settings
+from common.src import settings as common_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,11 +29,11 @@ if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
     USER_STATS_URL = 'http://localhost:8002/'
 else:
-    USER_MANAGEMENT_URL = 'http://user-management-nginx/'
-    USER_STATS_URL = 'http://user-stats-nginx/'
+    USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
+    USER_STATS_URL = common_settings.USER_STATS_URL
 
-USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/'
-USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'user/'
+USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/id/'
+USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
 
 MIN_TOURNAMENT_NAME_LENGTH = 3
 MAX_TOURNAMENT_NAME_LENGTH = 20
@@ -52,9 +52,6 @@ PASSWORD_MAX_LENGTH = 30
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
-
-ACCESS_PUBLIC_KEY = settings.ACCESS_PUBLIC_KEY
-DECODE_ALGORITHM = settings.ACCESS_ALGORITHM
 
 ALLOWED_HOSTS = ['*']
 

@@ -1,5 +1,4 @@
 import json
-from datetime import datetime, timezone
 from typing import Optional
 
 from django.contrib.auth.hashers import check_password
@@ -12,18 +11,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
 from api.models import Player, Tournament
+from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.authenticate_request import authenticate_request
+from tournament.get_user import get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET', 'POST', 'DELETE']), name='dispatch')
 class TournamentPlayersView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
-
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
@@ -49,9 +46,7 @@ class TournamentPlayersView(View):
 
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
@@ -70,7 +65,7 @@ class TournamentPlayersView(View):
         except Exception as e:
             return JsonResponse({'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
-        player = Player(nickname=user_nickname, user_id=user['id'], tournament=tournament)
+        player = Player(nickname=user_nickname, user_id=user_id, tournament=tournament)
 
         password = json_request.get('password')
         can_join, error_data = TournamentPlayersView.player_can_join_tournament(player, password, tournament)
@@ -87,9 +82,7 @@ class TournamentPlayersView(View):
 
     @staticmethod
     def delete(request: HttpRequest, tournament_id: int):
-        user, authenticate_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
             tournament = Tournament.objects.get(id=tournament_id)
@@ -99,7 +92,7 @@ class TournamentPlayersView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         try:
-            player = tournament.players.get(user_id=user['id'])
+            player = tournament.players.get(user_id=user_id)
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.NOT_REGISTERED]}, status=404)
         except Exception as e:
@@ -140,9 +133,7 @@ class TournamentPlayersView(View):
         except Exception as e:
             return False, [f'An unexpected error occurred : {e}', 500]
 
-        if tournament.status != Tournament.CREATED or (
-                tournament.registration_deadline is not None
-                and tournament.registration_deadline < datetime.now(timezone.utc)):
+        if tournament.status != Tournament.CREATED:
             return False, ['The registration phase is over', 403]
 
         if tournament.is_private and password is None:
@@ -174,15 +165,14 @@ class TournamentPlayersView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET']), name='dispatch')
 class AnonymizePlayerView(View):
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
-        user, authenticate_request_errors = authenticate_request(request)
-        if user is None:
-            return JsonResponse(data={'errors': authenticate_request_errors}, status=401)
+        user_id = get_user_id(request)
 
         try:
-            players = Player.objects.filter(user_id=user['id'])
+            players = Player.objects.filter(user_id=user_id)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 

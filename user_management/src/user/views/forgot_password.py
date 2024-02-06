@@ -39,7 +39,8 @@ class ForgotPasswordSendCodeView(View):
             if user is None:
                 return JsonResponse(data={'errors': 'Username not found'}, status=400)
 
-            random_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
+            random_code = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                                  for _ in range(settings.FORGOT_PASSWORD_CODE_MAX_LENGTH))
 
             user.forgotPasswordCode = random_code
             user.forgotPasswordCodeExpiration = datetime.utcnow() + timedelta(
@@ -48,9 +49,10 @@ class ForgotPasswordSendCodeView(View):
             user.save()
 
             subject = "Did you forgot your password?"
-            message = ('Here is your 12 characters code : ' + str(random_code) + '\n'
-                                                                                 '\nCopy-paste this code to renew the '
-                                                                                 'account access!\n\n')
+            message = (f'Here is your {settings.FORGOT_PASSWORD_CODE_MAX_LENGTH} '
+                       f'characters code : ' + str(random_code) + '\n'
+                       '\nCopy-paste this code to renew the '
+                       'account access!\n\n')
 
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [user_email]

@@ -41,6 +41,11 @@ jobs:
         pip install isort
         pip install -r tournament/docker/requirements.txt
 
+    - name: Copy common
+      working-directory: tournament/src/
+      run: |
+        cp -r ../../common .
+
     - name: Run PEP8 check
       working-directory: tournament/src/
       run: |
@@ -50,11 +55,6 @@ jobs:
       working-directory: tournament/src/
       run: |
         isort . --check-only
-
-    - name: Copy common
-      working-directory: tournament/src/
-      run: |
-        cp -r ../../common .
 
     - name: Run Django migrations
       working-directory: tournament/src/

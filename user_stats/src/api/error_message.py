@@ -28,7 +28,15 @@ SCORE_INVALID = '`score` field invalid'
 DATE_REQUIRED = '`date` field required'
 DATE_INVALID = '`date` field invalid'
 
+DATE_QUERY_REQUIRED = 'date required'
+DATE_QUERY_INVALID = 'date invalid'
+
+DATE_ORDER_INVALID = 'date order invalid'
+
 PAGE_INVALID = 'page invalid'
 PAGE_SIZE_INVALID = 'page_size invalid'
 
 DAYS_INVALID = 'days invalid'
+
+NUM_POINTS_REQUIRED = 'num_points required'
+NUM_POINTS_INVALID = 'num_points invalid'

@@ -5,20 +5,22 @@ import {
 } from './buttons';
 
 import {
-  Home,
-  Multiplayer,
-  Signin,
-  Signup,
-  Singleplayer,
-  Tournaments,
-} from './pages';
-
-import {
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
-} from './reset_password';
+  TournamentBracket,
+  TournamentCreate,
+  TournamentDetails,
+  Tournaments,
+  TournamentsList,
+  Home,
+  Multiplayer,
+  NotFound,
+  Signin,
+  Signup,
+  Singleplayer,
+} from './pages';
 
 import {
   Alert,
@@ -35,9 +37,15 @@ customElements.define('theme-button-component', ThemeButton);
 
 customElements.define('home-component', Home);
 customElements.define('multiplayer-component', Multiplayer);
+customElements.define('notfound-component', NotFound);
 customElements.define('signin-component', Signin);
 customElements.define('signup-component', Signup);
 customElements.define('singleplayer-component', Singleplayer);
+
+customElements.define('tournament-bracket-component', TournamentBracket);
+customElements.define('tournament-create-component', TournamentCreate);
+customElements.define('tournament-details-component', TournamentDetails);
+customElements.define('tournaments-list-component', TournamentsList);
 customElements.define('tournaments-component', Tournaments);
 
 customElements.define('reset-password-component', ResetPassword);
