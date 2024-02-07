@@ -414,8 +414,8 @@ Start a match
 
 #### Body
 
-- The first player
-- The second player
+- The first player (user_id)
+- The second player (user_id)
 
 > ```javascript
 > {
@@ -441,7 +441,7 @@ Add one point to a player
 
 #### Body
 
-- The player to add a point
+- The player to add a point (user_id)
 
 > ```javascript
 > {
@@ -467,7 +467,7 @@ End a match
 
 #### Body
 
-- Winner of the match
+- Winner of the match (user_id)
 
 > ```javascript
 > {
