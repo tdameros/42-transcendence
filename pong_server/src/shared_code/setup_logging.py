@@ -2,7 +2,7 @@ import logging
 
 from colorlog import ColoredFormatter
 
-import src.shared_code.settings as settings
+import shared_code.settings as settings
 
 
 def create_log_formatter(prefix: str):

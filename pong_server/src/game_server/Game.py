@@ -3,12 +3,12 @@ from typing import Optional
 
 import numpy
 
-import src.game_server.rooms as rooms
-from src.game_server.Scene.PlayerFinder.PlayerFinder import PlayerFinder
-from src.game_server.Scene.PlayerFinder.PlayerLocation import PlayerLocation
-from src.game_server.Scene.Scene import Scene
-from src.game_server.vector_to_dict import vector_to_dict
-from src.shared_code.emit import emit
+import rooms as rooms
+from Scene.PlayerFinder.PlayerFinder import PlayerFinder
+from Scene.PlayerFinder.PlayerLocation import PlayerLocation
+from Scene.Scene import Scene
+from shared_code.emit import emit
+from vector_to_dict import vector_to_dict
 
 
 class Game(object):

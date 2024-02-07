@@ -1,9 +1,9 @@
 import numpy
 
-from src.game_server import settings
-from src.game_server.Scene.Player._Board import _Board
-from src.game_server.Scene.Player.Paddle import Paddle
-from src.game_server.vector_to_dict import vector_to_dict
+import settings
+from Scene.Player._Board import _Board
+from Scene.Player.Paddle import Paddle
+from vector_to_dict import vector_to_dict
 
 
 class Player(object):

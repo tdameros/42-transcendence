@@ -1,9 +1,9 @@
 import numpy
 
-from src.game_server import settings
-from src.game_server.Scene.Match import Match
-from src.game_server.Scene.Player.Player import Player
-from src.game_server.Scene.PlayerFinder.PlayerLocation import PlayerLocation
+import settings
+from Scene.Match import Match
+from Scene.Player.Player import Player
+from Scene.PlayerFinder.PlayerLocation import PlayerLocation
 
 
 class Scene(object):

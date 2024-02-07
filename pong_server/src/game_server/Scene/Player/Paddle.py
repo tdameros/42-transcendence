@@ -1,8 +1,8 @@
 import numpy
 
-from src.game_server import settings
-from src.game_server.Scene.Segment2 import Segment2
-from src.game_server.vector_to_dict import vector_to_dict
+import settings
+from Scene.Segment2 import Segment2
+from vector_to_dict import vector_to_dict
 
 
 class Paddle(object):

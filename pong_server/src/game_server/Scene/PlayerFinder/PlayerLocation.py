@@ -1,4 +1,4 @@
-from src.game_server.Scene.Player.Player import Player
+from Scene.Player.Player import Player
 
 
 class Scene(object):

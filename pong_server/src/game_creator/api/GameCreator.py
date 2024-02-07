@@ -27,12 +27,12 @@ class GameCreator(object):
     @staticmethod
     def _start_server(game_id: int, players: list[Optional[int]]) -> subprocess.Popen:
         try:
-            command = ['python3', '-m', 'src.game_server', str(game_id)]
+            command = ['python3', 'main.py', str(game_id)]
             for player in players:
                 command.append(str(player))
             return subprocess.Popen(command,
                                     stdout=subprocess.PIPE,
-                                    cwd=os.getenv('PONG_GAME_APP_PATH'),
+                                    cwd=os.getenv('GAME_SERVER_PATH'),
                                     universal_newlines=True)
         except Exception as e:
             error = error_messages.popen_failed_to_run_command(str(e))

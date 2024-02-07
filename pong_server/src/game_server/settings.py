@@ -1,7 +1,6 @@
 import numpy
 
-from src.game_server.Scene.bounding_boxes import (BallBoundingBox,
-                                                  PaddleBoundingBox)
+from Scene.bounding_boxes import BallBoundingBox, PaddleBoundingBox
 
 AUTHORIZED_DELAY: float = 0.1
 

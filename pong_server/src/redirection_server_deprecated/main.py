@@ -1,15 +1,14 @@
 import logging
-import os
 
 import socketio
 from aiohttp import web
 
-from src.redirection_server_deprecated.Game import Game
-from src.redirection_server_deprecated.RefuseConnection import RefuseConnection
-from src.redirection_server_deprecated.SendURI import SendURI
-from src.shared_code.get_json_web_token import get_json_web_token
-from src.shared_code.get_query_string import get_query_string
-from src.shared_code.setup_logging import setup_logging
+from Game import Game
+from RefuseConnection import RefuseConnection
+from SendURI import SendURI
+from shared_code.get_json_web_token import get_json_web_token
+from shared_code.get_query_string import get_query_string
+from shared_code.setup_logging import setup_logging
 
 sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
@@ -112,5 +111,7 @@ if __name__ == '__main__':
     setup_logging()
     web.run_app(app,
                 host='0.0.0.0',
-                port=int(os.getenv('PONG_GAME_CREATOR_PORT')),
+                port=4242,
                 access_log=None)
+    # Port is hardcoded because this is the redirection server so we don't care
+    # (The redirection server will soon be deleted)

@@ -1,5 +1,5 @@
-from src.game_server import settings
-from src.game_server.vector_to_dict import vector_to_dict
+import settings
+from vector_to_dict import vector_to_dict
 
 
 class _Board(object):

@@ -31,7 +31,7 @@ services:
 
         build:
             args:
-                - PONG_GAME_APP_PATH=/app/
+                - GAME_SERVER_PATH=/app/src/game_server/
                 - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
                 - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
             context: .
@@ -40,9 +40,6 @@ services:
             - pong_server_code:/app/pong_server_code/
             - ssl_certs:/app/ssl
 
-        command: sh -c 'cp -r /app/pong_server_code /app/src &&
-                        rm -rf /app/src/game_creator/shared_code &&
-                        cp -r /app/src/shared_code /app/src/game_creator/shared_code &&
-                        gunicorn -c /app/gunicorn.conf.py'
+        command: /app/run.sh
 
         restart: on-failure

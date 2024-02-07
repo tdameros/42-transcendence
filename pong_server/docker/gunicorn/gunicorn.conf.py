@@ -9,7 +9,7 @@ bind = '0.0.0.0:8000'
 # Number of workers
 workers = 4
 
-chdir = 'src/game_creator'
+chdir = '/app/src/game_creator'
 
 daemon = False
 

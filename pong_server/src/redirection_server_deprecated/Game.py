@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-import src.shared_code.settings as settings
+import shared_code.settings as settings
 
 
 class Game(object):
@@ -33,12 +33,15 @@ class Game(object):
         """ Can Raise Exception """
 
         try:
-            command = ['python3', '-m', 'src.game_server', '0']
+            command = ['python3', 'main.py', '0']
             for player in self._clients:
                 command.append(str(player))
             return subprocess.Popen(command,
                                     stdout=subprocess.PIPE,
-                                    universal_newlines=True)
+                                    universal_newlines=True,
+                                    cwd='../game_server')
+            # cwd is hardcoded here because this is the redirection server
+            # (The redirection server will soon be deleted so it doesn't matter)
         except Exception as e:
             raise Exception(f'Failed to run command to start new game '
                             f'server: {e}')

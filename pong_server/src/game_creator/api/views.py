@@ -1,13 +1,14 @@
 import json
 from typing import Optional
 
-from api import error_messages
-from api.GameCreator import GameCreator
-from api.JsonResponseException import JsonResponseException
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+
+from api import error_messages
+from api.GameCreator import GameCreator
+from api.JsonResponseException import JsonResponseException
 
 
 @method_decorator(csrf_exempt, name='dispatch')

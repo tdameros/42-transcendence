@@ -3,9 +3,9 @@ import os
 import socket
 from typing import Optional
 
-import api.error_messages as error_messages
 from django.urls import reverse
 
+import api.error_messages as error_messages
 from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
 
@@ -14,12 +14,12 @@ class PostCreateGameTest(TestCaseNoDatabase):
     def setUp(self):
         self._port_min = os.getenv('PONG_GAME_SERVERS_MIN_PORT')
         self._port_max = os.getenv('PONG_GAME_SERVERS_MAX_PORT')
-        self._app_path = os.getenv('PONG_GAME_APP_PATH')
+        self._app_path = os.getenv('GAME_SERVER_PATH')
 
     def tearDown(self):
         os.environ['PONG_GAME_SERVERS_MIN_PORT'] = self._port_min
         os.environ['PONG_GAME_SERVERS_MAX_PORT'] = self._port_max
-        os.environ['PONG_GAME_APP_PATH'] = self._app_path
+        os.environ['GAME_SERVER_PATH'] = self._app_path
 
     def post_request(self, request_body) -> (dict, int):
         url = reverse('create_game')
@@ -40,7 +40,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
 
         os.environ['PONG_GAME_SERVERS_MIN_PORT'] = str(min_port)
         os.environ['PONG_GAME_SERVERS_MAX_PORT'] = str(max_port)
-        os.environ['PONG_GAME_APP_PATH'] = app_path
+        os.environ['GAME_SERVER_PATH'] = app_path
 
     def test_valid_matchmaking_request(self):
         port = 4242

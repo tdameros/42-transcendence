@@ -7,15 +7,15 @@ import socketio
 from aiohttp import web
 from socketio.exceptions import ConnectionRefusedError
 
-from src.game_server.Clock import Clock
-from src.game_server.Game import Game
-from src.game_server.update_player_movement_and_position import \
+from Clock import Clock
+from Game import Game
+from shared_code import error_messages
+from shared_code.emit import emit
+from shared_code.get_json_web_token import get_json_web_token
+from shared_code.get_query_string import get_query_string
+from shared_code.setup_logging import setup_logging
+from update_player_movement_and_position import \
     update_player_direction_and_position
-from src.shared_code import error_messages
-from src.shared_code.emit import emit
-from src.shared_code.get_json_web_token import get_json_web_token
-from src.shared_code.get_query_string import get_query_string
-from src.shared_code.setup_logging import setup_logging
 
 sio = socketio.AsyncServer(cors_allowed_origins='*')
 app = web.Application()
