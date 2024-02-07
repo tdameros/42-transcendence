@@ -408,7 +408,7 @@ None
 Start a match
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/start</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/start</b></code></summary>
 
 ### Parameters
 
@@ -438,7 +438,7 @@ All fields are optional
 Add one point to a player
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/add-point</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/add-point</b></code></summary>
 
 ### Parameters
 
@@ -464,7 +464,7 @@ Add one point to a player
 End a match
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/end</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/end</b></code></summary>
 
 ### Parameters
 
