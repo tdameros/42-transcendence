@@ -1,8 +1,8 @@
 import numpy
 
-from src.game_server.Game import Game
-from src.game_server.Scene.PlayerFinder.PlayerLocation import PlayerLocation
-from src.game_server.settings import AUTHORIZED_DELAY
+from Game import Game
+from Scene.PlayerFinder.PlayerLocation import PlayerLocation
+from settings import AUTHORIZED_DELAY
 
 
 def is_bad_movement_event_call(game: Game,

@@ -1,6 +1,6 @@
-from src.game_server.Scene.Player.Player import Player
-from src.game_server.Scene.PlayerFinder.PlayerLocation import PlayerLocation
-from src.game_server.Scene.Scene import Scene
+from Scene.Player.Player import Player
+from Scene.PlayerFinder.PlayerLocation import PlayerLocation
+from Scene.Scene import Scene
 
 
 class PlayerFinder:

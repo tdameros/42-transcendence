@@ -4,11 +4,12 @@ from typing import Optional
 
 import numpy
 
-from src.game_server import rooms, settings
-from src.game_server.Scene.Player.Paddle import Paddle
-from src.game_server.Scene.Segment2 import Segment2
-from src.game_server.vector_to_dict import vector_to_dict
-from src.shared_code.emit import emit
+import rooms
+import settings
+from Scene.Player.Paddle import Paddle
+from Scene.Segment2 import Segment2
+from shared_code.emit import emit
+from vector_to_dict import vector_to_dict
 
 
 class Ball(object):

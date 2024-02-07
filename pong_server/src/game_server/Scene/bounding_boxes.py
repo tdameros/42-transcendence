@@ -1,4 +1,4 @@
-import src.game_server.settings as settings
+import settings as settings
 
 
 class BallBoundingBox(object):

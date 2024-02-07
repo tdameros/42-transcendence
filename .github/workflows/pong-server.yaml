@@ -5,13 +5,11 @@ on:
         branches:
             - main
             - dev
-            - basic-pong
             - pong-game
     pull_request:
         branches:
             - main
             - dev
-            - basic-pong
             - pong-game
 
 jobs:
@@ -37,14 +35,16 @@ jobs:
             - name: Copy shared files
               run: |
                   cp -r pong_server/src/shared_code pong_server/src/game_creator/shared_code
+                  cp -r pong_server/src/shared_code pong_server/src/game_server/shared_code
 
             - name: Run unit tests game creator
-              working-directory: pong_server/
+              working-directory: pong_server/src/
               run: |
                   export PONG_GAME_SERVERS_MIN_PORT=42200
                   export PONG_GAME_SERVERS_MAX_PORT=42210
-                  export PONG_GAME_APP_PATH=`pwd`
-                  cd src/game_creator
+                  export GAME_SERVER_PATH=`pwd`/game_server/
+
+                  cd game_creator
                   python3 manage.py test
 
             - name: Run PEP8 check
@@ -52,8 +52,18 @@ jobs:
               run: |
                   flake8 . --max-line-length=95
 
-            - name: Check imports in src
-              working-directory: pong_server/src/
+            - name: Check imports in game_creator
+              working-directory: pong_server/src/game_creator/
+              run: |
+                  isort . --check-only
+
+            - name: Check imports in game_server
+              working-directory: pong_server/src/game_server/
+              run: |
+                  isort . --check-only
+
+            - name: Check imports in shared_code
+              working-directory: pong_server/src/shared_code/
               run: |
                   isort . --check-only
 

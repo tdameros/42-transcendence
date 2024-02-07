@@ -1,8 +1,8 @@
 import numpy
 
-from src.game_server.Scene.Ball import Ball
-from src.game_server.Scene.Player.Player import Player
-from src.game_server.vector_to_dict import vector_to_dict
+from Scene.Ball import Ball
+from Scene.Player.Player import Player
+from vector_to_dict import vector_to_dict
 
 
 class Match(object):
