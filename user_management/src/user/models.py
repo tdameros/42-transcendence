@@ -14,6 +14,7 @@ class User(models.Model):
     has_2fa = models.BooleanField(default=False)
     totp_secret = models.CharField(max_length=settings.TOTP_SECRET_MAX_LENGTH, null=True)
     totp_config_url = models.CharField(max_length=settings.TOTP_CONFIG_URL_MAX_LENGTH, null=True)
+    friends = models.ManyToManyField('self', symmetrical=False)
 
     def verify_2fa(self, code):
         return pyotp.TOTP(self.totp_secret).verify(code)

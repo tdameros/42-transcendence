@@ -15,6 +15,7 @@ from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
 from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdView
 from user.views.username import UsernameView
+from user.views.friends import FriendsView
 from user_management import settings
 
 urlpatterns = [
@@ -36,6 +37,7 @@ urlpatterns = [
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
+    path('friends/', FriendsView.as_view(), name='friends'),
 ]
 
 if settings.DEBUG:
