@@ -19,8 +19,9 @@ export class Scene {
   }
 
   updateFrame(timeDelta) {
+    const currentTime = Date.now();
     for (const match of this.#matches) {
-      match.updateFrame(timeDelta);
+      match.updateFrame(timeDelta, currentTime);
     }
   }
 

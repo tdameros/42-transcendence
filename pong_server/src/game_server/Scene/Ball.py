@@ -3,6 +3,7 @@ import sys
 from typing import Optional
 
 import numpy
+import socketio
 
 import rooms
 import settings
@@ -12,18 +13,22 @@ from shared_code.emit import emit
 from vector_to_dict import vector_to_dict
 
 
+class Match(object):
+    def get_index(self) -> int:
+        pass
+
+    async def player_marked_point(self, sio: socketio.AsyncServer, player_index: int):
+        pass
+
+
 class Ball(object):
     def __init__(self):
         self._position: numpy.ndarray = numpy.array([0.,
                                                      0.,
                                                      settings.BALL_RADIUS / 2.])
 
-        x = -5.5 if random.randint(0, 1) == 0 else 5.5
-        y = -2.8 if random.randint(0, 1) == 0 else 2.8
-        self._movement: numpy.ndarray = numpy.array([x, y, 0.])
-        self._original_movement = self._movement.copy()
-        # TODO delete self._original_movement (it is required for now, but won't
-        #      be once the game is finished)
+        self._movement: numpy.ndarray = numpy.array([0., 0., 0.])
+        self._set_random_movement()
 
     def to_json(self) -> dict:
         return {
@@ -33,12 +38,35 @@ class Ball(object):
             'acceleration': settings.BALL_ACCELERATION
         }
 
-    async def update_position(self,
-                              sio,
-                              time_delta: float,
-                              left_paddle: Paddle,
-                              right_paddle: Paddle,
-                              match_index: int):
+    def prepare_for_match(self):
+        self._position[0] = 0.
+        self._position[1] = 0.
+        self._set_random_movement()
+
+    def _set_random_movement(self):
+        min_x = 4.5
+        max_x = 6.5
+        if random.randint(0, 1) == 0:
+            self._movement[0] = random.uniform(-max_x, -min_x)
+        else:
+            self._movement[0] = random.uniform(min_x, max_x)
+
+        min_y = 1.8
+        max_y = 3.
+        if random.randint(0, 1) == 0:
+            self._movement[1] = random.uniform(-max_y, -min_y)
+        else:
+            self._movement[1] = random.uniform(min_y, max_y)
+
+    def get_movement(self) -> numpy.ndarray:
+        return self._movement
+
+    async def update(self,
+                     sio: socketio.AsyncServer,
+                     time_delta: float,
+                     left_paddle: Paddle,
+                     right_paddle: Paddle,
+                     match: Match):
         if self._movement[0] == 0.:
             return
 
@@ -55,7 +83,7 @@ class Ball(object):
             travel,
             left_paddle if self._movement[0] < 0. else right_paddle,
             time_delta,
-            match_index
+            match
         )
 
         if should_fix_position:
@@ -64,15 +92,15 @@ class Ball(object):
             await emit(sio, 'update_ball', rooms.ALL_PLAYERS,
                        {'position': vector_to_dict(self._position),
                         'movement': vector_to_dict(self._movement),
-                        'match_index': match_index,
+                        'match_index': match.get_index(),
                         'debug': 'update_position'})
 
     async def _handle_collisions(self,
-                                 sio,
+                                 sio: socketio.AsyncServer,
                                  travel: Segment2,
                                  paddle: Paddle,
                                  time_delta: float,
-                                 match_index: int) -> (bool, bool):
+                                 match: Match) -> (bool, bool):
         """ Returns (should_emit_update_ball: bool, should_fix_position: bool) """
 
         (collision_detected, should_emit_update_ball) = await self._handle_paddle_collision(
@@ -81,8 +109,8 @@ class Ball(object):
         if collision_detected:
             return should_emit_update_ball, True
 
-        if await self._handle_match_point(sio, match_index):
-            return True, False
+        if await self._handle_match_point(sio, match):
+            return False, False
 
         self._handle_board_collision()
         return False, True
@@ -122,28 +150,12 @@ class Ball(object):
             return True, True
         return True, False
 
-    async def _handle_match_point(self, sio, match_index: int):
+    async def _handle_match_point(self, sio: socketio.AsyncServer, match: Match) -> bool:
         if self._position[0] <= settings.BALL_BOUNDING_BOX.get_x_min():
-            self._position[0] = 0.
-            self._position[1] = 0.
-            self._movement = self._original_movement.copy()
-            await emit(sio, 'update_ball', rooms.ALL_PLAYERS,
-                       {'position': vector_to_dict(self._position),
-                        'movement': vector_to_dict(self._movement),
-                        'match_index': match_index})
-            # TODO Should send a match_update instead (not implemented yet)
-            # TODO should mark a point for left player
+            await match.player_marked_point(sio, 1)
             return True
         elif self._position[0] >= settings.BALL_BOUNDING_BOX.get_x_max():
-            self._position[0] = 0.
-            self._position[1] = 0.
-            self._movement = self._original_movement.copy()
-            await emit(sio, 'update_ball', rooms.ALL_PLAYERS,
-                       {'position': vector_to_dict(self._position),
-                        'movement': vector_to_dict(self._movement),
-                        'match_index': match_index})
-            # TODO Should send a match_update instead (not implemented yet)
-            # TODO should mark a point for right player
+            await match.player_marked_point(sio, 0)
             return True
         return False
 

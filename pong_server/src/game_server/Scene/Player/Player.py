@@ -28,9 +28,9 @@ class Player(object):
             'paddle': self._paddle.to_json()
         }
 
-    def update_position(self, time_delta: float):
-        self._paddle.update_position(time_delta)
-        self._board.update_position(time_delta)
+    def update(self, time_delta: float):
+        self._paddle.update(time_delta)
+        self._board.update(time_delta)
 
     def set_paddle_direction(self, direction: str):
         self._paddle.set_direction(direction)
