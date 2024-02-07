@@ -6,6 +6,6 @@ export GAME_SERVER_PATH=~/git/transcendence/pong_server/src/game_server/
 
 
 (cd src/game_creator/ && python3 manage.py test) || exit $?
-kill -9 $(pgrep '[P]ython')
+kill -9 `pgrep '[P]ython'`
 
 (cd src/game_creator/ && python3 manage.py runserver)

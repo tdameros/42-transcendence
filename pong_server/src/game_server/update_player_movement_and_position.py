@@ -1,4 +1,5 @@
 import numpy
+import socketio
 
 from Game import Game
 from Scene.PlayerFinder.PlayerLocation import PlayerLocation
@@ -33,7 +34,7 @@ def get_fixed_player_position(game: Game,
     return None
 
 
-async def update_player_direction_and_position(sio,
+async def update_player_direction_and_position(sio: socketio.AsyncServer,
                                                sid: str,
                                                game: Game,
                                                client_player_position_list: list[float],
