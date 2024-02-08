@@ -1,7 +1,9 @@
 import logging
 
+import socketio
 
-async def emit(sio,
+
+async def emit(sio: socketio.AsyncServer,
                event: str,
                room: str,
                message: any,

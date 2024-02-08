@@ -24,7 +24,7 @@ class Paddle(object):
             'move_speed': settings.PADDLE_MOVE_SPEED
         }
 
-    def update_position(self, time_delta: float):
+    def update(self, time_delta: float):
         self._position += self._movement * time_delta
 
         if self._position[1] <= settings.PADDLE_BOUNDING_BOX.get_y_min():

@@ -23,6 +23,11 @@ export class Ball {
     this.#movement = jsonToVector3(ballJson['movement']);
   }
 
+  prepareForMatch(ballMovementJson) {
+    this.#threeJSGroup.position.set(0., 0., this.#threeJSGroup.position.z);
+    this.#movement.set(ballMovementJson['x'], ballMovementJson['y'], ballMovementJson['z']);
+  }
+
   updateFrame(timeDelta, matchBoundingBox, leftPaddle, rightPaddle) {
     if (this.#movement.x === 0.) return;
 

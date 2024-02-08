@@ -15,5 +15,5 @@ class _Board(object):
             'size': vector_to_dict(settings.BOARD_SIZE)
         }
 
-    def update_position(self, time_delta: float):
+    def update(self, time_delta: float):
         pass

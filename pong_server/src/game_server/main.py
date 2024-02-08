@@ -17,11 +17,13 @@ from shared_code.setup_logging import setup_logging
 from update_player_movement_and_position import \
     update_player_direction_and_position
 
-sio = socketio.AsyncServer(cors_allowed_origins='*')
-app = web.Application()
+sio: socketio.AsyncServer = socketio.AsyncServer(cors_allowed_origins='*')
+app: web.Application = web.Application()
 sio.attach(app)
-should_exit = False
-exit_code = 0
+runner = web.AppRunner(app)
+
+should_exit: bool = False
+exit_code: int = 0
 
 game: Game | None = None
 
@@ -100,13 +102,15 @@ async def background_task():
     try:
         await wait_for_all_players_to_join()
 
+        await game.get_scene().start_game(sio)
+
         await game_loop()
 
     except Exception as e:
         try:  # Attempt graceful exit
             print(f'Error: in background_task: {e}')
             """ Do not use logging! This should always be printed as the game
-                creator will read it """
+                creator may read it """
             logging.critical(f'Error in background_task: {e}')
             global exit_code
             global should_exit
@@ -130,7 +134,6 @@ app.on_startup.append(start_background_task)
 
 
 async def start_server():
-    runner = web.AppRunner(app)
     await runner.setup()
 
     start_port = int(os.getenv('PONG_GAME_SERVERS_MIN_PORT'))
@@ -139,7 +142,7 @@ async def start_server():
 
     for port in range(start_port, end_port + 1):
         try:
-            server = web.TCPSite(runner, '0.0.0.0', port)
+            server = web.TCPSite(runner, '0.0.0.0', port=port)
             await server.start()
             return port
         except OSError:
@@ -151,6 +154,7 @@ async def start_server():
 async def main():
     try:
         setup_logging(f'Game Server {os.getpid()}: ')
+        logging.getLogger('aiohttp').setLevel(logging.WARNING)
         logging.debug(f'Starting Game Server({os.getpid()})')
 
         global game
@@ -159,8 +163,8 @@ async def main():
         port = await start_server()
         uri = f'http://localhost:{port}'  # TODO should be 42.shiftcode.fr in prod
         print(f'uri: {uri}')
-        """ Do not use logging! This should always be printed as the redirection
-            server will read it """
+        """ Do not use logging! This should always be printed as the game
+            creator will read it """
         sys.stdout.flush()
     except Exception as e:
         print(f'Error: {str(e)}')
@@ -174,9 +178,18 @@ async def main():
 
     while True:
         await sio.sleep(5)
-        if should_exit:  # set to True by background_task
-            exit(exit_code)
+        if should_exit:  # set to True by background_task()
+            logging.debug('Cleaning up before exiting')
+            loop = asyncio.get_running_loop()
+            tasks = [task for task in asyncio.all_tasks()
+                     if task is not asyncio.current_task()]
+            for task in tasks:
+                task.cancel()
+            await runner.cleanup()
+            loop.stop()
+            logging.info(f'Exiting with code {exit_code}')
+            return exit_code
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    exit(asyncio.run(main()))

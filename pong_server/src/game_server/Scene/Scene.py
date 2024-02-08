@@ -1,4 +1,7 @@
+import time
+
 import numpy
+import socketio
 
 import settings
 from Scene.Match import Match
@@ -13,9 +16,8 @@ class Scene(object):
 
         match_x_position: float = 0.
         for i in range(int(nb_of_players / 2)):
-            self._matches.append(Match(numpy.array([match_x_position,
-                                                    0.,
-                                                    0.])))
+            match_position = numpy.array([match_x_position, 0., 0.])
+            self._matches.append(Match(match_position, i))
             match_x_position += settings.BOARD_SIZE[0] * 2. + settings.BOARD_SIZE[0] / 2.
 
     def to_json(self):
@@ -23,9 +25,14 @@ class Scene(object):
             "matches": [match.to_json() for match in self._matches]
         }
 
-    async def update(self, sio, time_delta: float):
-        for i in range(len(self._matches)):
-            await self._matches[i].update_positions(sio, time_delta, i)
+    async def start_game(self, sio: socketio.AsyncServer):
+        for match in self._matches:
+            await match.start_game(sio)
+
+    async def update(self, sio: socketio.AsyncServer, time_delta: float):
+        current_time = time.time()
+        for match in self._matches:
+            await match.update(sio, time_delta, current_time)
 
     def get_match(self, index: int):
         return self._matches[index]

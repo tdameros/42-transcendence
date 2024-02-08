@@ -64,12 +64,14 @@
   >>                             'move_speed': float
   >>                         }
   >>                     },
-  >>                     ... (Should have 2 players)
+  >>                     ... (Should have at least 2 players)
   >>                 ],
   >>                 'ball': {
   >>                     'position': {'x': float, 'y': float, 'z': float},
   >>                     'movement': {'x': float, 'y': float, 'z': float},
   >>                     'radius': float
+  >>                     'ball_is_waiting': bool,
+  >>                     'ball_start_time': Optional[float] (Seconds since the Epoch),
   >>                 }
   >>             }
   >>         ]
@@ -100,6 +102,21 @@
   >> ```
   >
   >> Updates the position and direction of the player at index player_index 
+
+- ### `update_ball`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'match_index': int,
+  >>     'ball_movement': {'x': float, 'y': float, 'z': float}
+  >>     'ball_start_time': float (Seconds since the Epoch),
+  >> }
+  >> ```
+  >
+  >> For the ball at `match[match_index]`:  
+  >> Sets the ball position to `[0., 0., current_position.z]`.  
+  >> Sets the ball movement to `'ball_movement'`  
+  >> Stops the ball movement till `ball_start_time`
 
 - ### `update_ball`:
   >> Argument:

@@ -44,21 +44,33 @@ export class _GameSocketIO {
 
     this.#socketIO.on('scene', (data) => {
       console.log('game scene received');
-      // this.#engine.stopAnimationLoop();
-      this.#engine.scene = new Scene(data['scene']['matches'],
-          data['player_location']);
+      this.#engine.scene = new Scene(
+          data['scene']['matches'],
+          data['player_location'],
+      );
       this.#engine.startListeningForKeyHooks();
     });
 
     this.#socketIO.on('update_player', (data) => {
       console.log('update_player received');
       const playerLocation = data['player_location'];
-      this.#engine.scene
-          .setPlayerPaddleDirection(playerLocation,
-              data['direction']);
-      this.#engine.scene
-          .setPlayerPaddlePosition(playerLocation,
-              data['position']);
+      this.#engine.scene.setPlayerPaddleDirection(
+          playerLocation,
+          data['direction'],
+      );
+      this.#engine.scene.setPlayerPaddlePosition(
+          playerLocation,
+          data['position'],
+      );
+    });
+
+    this.#socketIO.on('prepare_ball_for_match', (data) => {
+      console.log('prepare_ball_for_match received');
+      const matchIndex = data['match_index'];
+      this.#engine.scene.matches[matchIndex].prepare_ball_for_match(
+          data['ball_start_time'],
+          data['ball_movement'],
+      );
     });
 
     this.#socketIO.on('update_ball', (data) => {

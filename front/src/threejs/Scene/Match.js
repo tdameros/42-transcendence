@@ -10,9 +10,13 @@ export class Match {
   #ball;
   #ballBoundingBox;
   #paddleBoundingBox;
+  #ballIsWaiting;
+  #ballStartTime;
 
   constructor(matchJson) {
     this.#ball = new Ball(matchJson['ball']);
+    this.#ballIsWaiting = matchJson['ball_is_waiting'];
+    this.#ballStartTime = matchJson['ball_start_time'];
 
     const playersJson = matchJson['players'];
     this.#players.push(new Player(playersJson[0]));
@@ -31,13 +35,25 @@ export class Match {
     this.#paddleBoundingBox = new PaddleBoundingBox(playersJson[0]);
   }
 
-  updateFrame(timeDelta) {
+  updateFrame(timeDelta, currentTime) {
     this.#players[0].updateFrame(timeDelta, this.#paddleBoundingBox);
     this.#players[1].updateFrame(timeDelta, this.#paddleBoundingBox);
-    this.#ball.updateFrame(timeDelta,
-        this.#ballBoundingBox,
-        this.#players[0].paddle,
-        this.#players[1].paddle);
+
+    if (this.#ballIsWaiting && currentTime >= this.#ballStartTime) {
+      this.#ballIsWaiting = false;
+    }
+    if (this.#ballIsWaiting === false) {
+      this.#ball.updateFrame(timeDelta,
+          this.#ballBoundingBox,
+          this.#players[0].paddle,
+          this.#players[1].paddle);
+    }
+  }
+
+  prepare_ball_for_match(ballStartTime, ballMovementJson) {
+    this.#ballIsWaiting = true;
+    this.#ballStartTime = ballStartTime * 1000;
+    this.#ball.prepareForMatch(ballMovementJson);
   }
 
   setBallMovement(movementJson) {

@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 
 import numpy
+import socketio
 
 import rooms as rooms
 from Scene.PlayerFinder.PlayerFinder import PlayerFinder
@@ -44,12 +45,12 @@ class Game(object):
     def get_sid_from_user_id(self, user_id: int) -> str | None:
         return self._player_sid_map.get(user_id)
 
-    async def add_user(self, user_id: int, sid: str, sio):
+    async def add_user(self, user_id: int, sid: str, sio: socketio.AsyncServer):
         self._player_sid_map[user_id] = sid
         self._player_finder.add_player(user_id, sid)
         await sio.enter_room(sid, rooms.ALL_PLAYERS)
 
-    async def remove_user(self, sid: str, sio):
+    async def remove_user(self, sid: str, sio: socketio.AsyncServer):
         try:
             user_id: int | None = self._user_id_map.pop(sid)
             if user_id is not None:
@@ -69,7 +70,7 @@ class Game(object):
         return self._player_finder.get_player_location_from_sid(sid)
 
     async def set_player_movement_and_position(self,
-                                               sio,
+                                               sio: socketio.AsyncServer,
                                                player_location: PlayerLocation,
                                                direction: str,
                                                player_position: numpy.ndarray,
