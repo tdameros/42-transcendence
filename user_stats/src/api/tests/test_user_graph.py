@@ -11,21 +11,21 @@ NOW = timezone.now()
 
 
 class GraphTest(TestCase):
-    def get_graph(self, user_id, start, end, num_points):
+    def get_graph(self, user_id, start, end, max_points):
         url_elo = reverse('user_graph_elo', kwargs={'user_id': user_id})
         url_win_rate = reverse('user_graph_win_rate', kwargs={'user_id': user_id})
         url_matches_played = reverse('user_graph_matches_played', kwargs={'user_id': user_id})
         query = {
             'start': start,
             'end': end,
-            'num_points': num_points,
+            'max_points': max_points,
         }
         if start is None:
             del query['start']
         if end is None:
             del query['end']
-        if num_points is None:
-            del query['num_points']
+        if max_points is None:
+            del query['max_points']
         response_elo = self.client.get(url_elo, query)
         response_win_rate = self.client.get(url_win_rate, query)
         response_matches_played = self.client.get(url_matches_played, query)
@@ -126,7 +126,7 @@ class GetGraph(GraphTest):
         self.assertEqual(response_matches_played.status_code, 400)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_invalid_num_points(self, mock_authenticate):
+    def test_invalid_max_points(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         response_elo, response_win_rate, response_matches_played = self.get_graph(
             1,
@@ -187,7 +187,7 @@ class GetGraph(GraphTest):
         self.assertEqual(response_matches_played.status_code, 400)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_invalid_start_end_num_points(self, mock_authenticate):
+    def test_invalid_start_end_max_points(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         response_elo, response_win_rate, response_matches_played = self.get_graph(
             1,
