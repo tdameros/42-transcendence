@@ -248,19 +248,20 @@
 
 #### Query
 
-> | name         | type | default | description                        | requirement |
-> |--------------|------|---------|------------------------------------|-------------|
-> | `start`      | Date | None    | ISO 8061 formatted date            | Required    |
-> | `end`        | Date | None    | ISO 8061 formatted date            | Required    |
-> | `num_points` | int  | None    | The numbers of values in the graph | Required    |
+> | name         | type | default | description                               | requirement |
+> |--------------|------|---------|-------------------------------------------|-------------|
+> | `start`      | date | none    | iso 8061 formatted date                   | required    |
+> | `end`        | date | none    | iso 8061 formatted date                   | required    |
+> | `max_points` | int  | None    | The maximum number of values in the graph | Required    |
 
 ### Response
 
 #### Body
 
-> | name    | type        | description |
-> |---------|-------------|-------------|
-> | `graph` | list[Graph] | Graph data  |
+> | name         | type        | description                   |
+> |--------------|-------------|-------------------------------|
+> | `graph`      | list[Graph] | Graph data                    |
+> | `num_points` | int         | Number of points in the graph |
 
 #### Graph
 
