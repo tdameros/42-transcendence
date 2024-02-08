@@ -19,7 +19,7 @@ class UserGraph:
     def get_graph_data_by_value(request: HttpRequest, user_id: int, field: str):
         start = parser.isoparse(request.GET.get('start'))
         end = parser.isoparse(request.GET.get('end'))
-        num_points = int(request.GET.get('num_points'))
+        max_points = int(request.GET.get('max_points'))
 
         if timezone.is_naive(start):
             start = timezone.make_aware(start)
@@ -32,7 +32,7 @@ class UserGraph:
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
         values = UserGraph.get_database_values(user, matches, last_match, end, field)
-        data = UserGraph.downsample_data(values, num_points)
+        data = UserGraph.downsample_data(values, max_points)
         body = {
             'graph': data,
             'num_points': len(data)
@@ -43,13 +43,13 @@ class UserGraph:
     def get_graph_data_by_date(request: HttpRequest, user_id: int, field: str):
         start = parser.isoparse(request.GET.get('start'))
         end = parser.isoparse(request.GET.get('end'))
-        num_points = int(request.GET.get('num_points'))
+        max_points = int(request.GET.get('max_points'))
 
         if timezone.is_naive(start):
             start = timezone.make_aware(start)
         if timezone.is_naive(end):
             end = timezone.make_aware(end)
-        intervals = UserGraph.get_database_intervals(start, end, num_points)
+        intervals = UserGraph.get_database_intervals(start, end, max_points)
         try:
             data = UserGraph.deltasample_data(user_id, intervals, field)
         except Exception as e:
@@ -125,7 +125,7 @@ class UserGraph:
         errors = []
         start = request.GET.get('start')
         end = request.GET.get('end')
-        num_points = request.GET.get('num_points')
+        max_points = request.GET.get('max_points')
 
         valid, error = UserGraph.validate_user_id(user_id)
         if not valid:
@@ -136,7 +136,7 @@ class UserGraph:
         valid, error = UserGraph.validate_date(end)
         if not valid:
             errors.append(error)
-        valid, error = UserGraph.validate_num_points(num_points)
+        valid, error = UserGraph.validate_max_points(max_points)
         if not valid:
             errors.append(error)
         valid, error = UserGraph.validate_date_order(start, end)
@@ -171,13 +171,13 @@ class UserGraph:
         return True, None
 
     @staticmethod
-    def validate_num_points(num_points: Any) -> (bool, Optional[str]):
+    def validate_max_points(num_points: Any) -> (bool, Optional[str]):
         if num_points is None:
-            return False, error.NUM_POINTS_REQUIRED
+            return False, error.MAX_POINTS_REQUIRED
         if not num_points.isdigit():
-            return False, error.NUM_POINTS_INVALID
+            return False, error.MAX_POINTS_INVALID
         if int(num_points) < 2:
-            return False, error.NUM_POINTS_INVALID
+            return False, error.MAX_POINTS_INVALID
         return True, None
 
     @staticmethod
