@@ -103,10 +103,10 @@ class MatchView(View):
         loser.elo = loser_elo
         winner.matches_played += 1
         winner.matches_won += 1
-        winner.win_rate = winner.matches_won / winner.matches_played
+        winner.win_rate = winner.matches_won / winner.matches_played * 100
         loser.matches_played += 1
         loser.matches_lost += 1
-        loser.win_rate = loser.matches_won / loser.matches_played
+        loser.win_rate = loser.matches_won / loser.matches_played * 100
         winner.save()
         loser.save()
 
