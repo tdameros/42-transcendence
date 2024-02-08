@@ -307,7 +307,7 @@
 > | `loser_id`     | int    | None    | Loser id                | Required    |
 > | `winner_score` | int    | None    | Winner score            | Required    |
 > | `loser_score`  | int    | None    | Loser score             | Required    |
-> | `date`         | String | None    | ISO 8601 formatted date | Required    |
+> | `date`         | String | None    | ISO 8601 formatted date | Optional    |
 
 ### Response
 
