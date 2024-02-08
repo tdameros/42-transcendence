@@ -1,9 +1,9 @@
 import json
 from typing import Any, Optional
 
-from django.utils import timezone
 from dateutil import parser
 from django.http import HttpRequest, JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -84,7 +84,6 @@ class MatchView(View):
         opponent_id = json_body['loser_id'] if result else json_body['winner_id']
         date = json_body.get('date')
         date = parser.isoparse(date) if date is not None else timezone.now()
-
 
         match.user = user
         match.opponent = User.objects.get(pk=opponent_id)
