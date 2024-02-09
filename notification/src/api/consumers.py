@@ -9,6 +9,9 @@ from common.src.jwt_managers import UserAccessJWTDecoder
 from api.models import Notification
 
 
+# # Get the number of channels in the group
+# group_channels = channel_layer.groups.get(f'{instance.owner_id}', {}).items()
+# print(f'Nb of channels in group {instance.owner_id}: {len(group_channels)}')
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         query_string = self.scope['query_string']
@@ -51,6 +54,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         notifications = await sync_to_async(list)(notifications)
         for notification in notifications:
             notification_data = {
+                'id': notification.id,
                 'title': notification.title,
                 'type': notification.type
             }

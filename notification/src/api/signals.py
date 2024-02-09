@@ -17,6 +17,7 @@ def notification_created(sender, instance, created, **kwargs):
             {
                 'type': 'send_notification',
                 'message': json.dumps({
+                    'id': instance.id,
                     'title': instance.title,
                     'type': instance.type
                 })
