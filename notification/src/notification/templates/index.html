@@ -98,33 +98,32 @@
     notifyScoket.onmessage = function (e) {
         let data = JSON.parse(e.data);
         data = JSON.parse(data.message)
-        const title = data.title;
-        console.log('Notification received: ' + title)
 
-        addNotification(data.id, title, data.type)
+        console.log('Notification received: ' + data.title)
+        addNotification(data)
     };
 
-    function addNotification(id, title, type, friend_id) {
-        let notification = document.createElement('li');
+    function addNotification(notification) {
+        let notificationElement = document.createElement('li');
         let titleElement = document.createElement('h4');
-        let buttonContainer = createButtons(id, type, friend_id);
+        let buttonContainer = createButtons(notification);
 
-        notification.setAttribute('id', id);
-        notification.className = 'notification';
-        notification.setAttribute('type', type);
-        titleElement.textContent = title;
+        notificationElement.setAttribute('id', notification.id);
+        notificationElement.className = 'notification';
+        notificationElement.setAttribute('type', notification.type);
+        titleElement.textContent = notification.title;
 
-        notification.appendChild(titleElement);
-        notification.appendChild(buttonContainer);
+        notificationElement.appendChild(titleElement);
+        notificationElement.appendChild(buttonContainer);
 
         let ulElement = document.getElementById('notify');
+        ulElement.appendChild(notificationElement);
 
-        ulElement.appendChild(notification);
         let count = document.getElementById('bellCount').getAttribute('data-count');
         document.getElementById('bellCount').setAttribute('data-count', parseInt(count) + 1);
     }
 
-    function createButtons(id, type, friend_id) {
+    function createButtons(notification) {
         const buttonContainer = document.createElement('div');
         const acceptButton = document.createElement('button');
         const declineButton = document.createElement('button');
@@ -136,52 +135,86 @@
         declineButton.textContent = 'Decline';
         declineButton.className = 'btn btn-decline btn-sm';
 
-        const acceptUri = 'https://localhost:8001/friends/';//acceptRouter(type);
-        const declineUri = 'https://localhost:8001/friends/';//declineRouter(type);
-        buttonAddListener(id, acceptButton, acceptUri, 'POST', friend_id);
-        buttonAddListener(id, declineButton, declineUri, 'DELETE', friend_id);
+        buttonAddListenerRouter(notification, acceptButton);
+        buttonAddListenerRouter(notification, declineButton);
         buttonContainer.appendChild(acceptButton);
         buttonContainer.appendChild(declineButton);
         return buttonContainer;
     }
 
-    function buttonAddListener(id, button, uri, method, friend_id) {
+    function buttonAddListenerRouter(notification, button) {
+        if (notification.type === 'friend_request') {
+            if (button.textContent === 'Accept') {
+                acceptFriendRequestListener(notification, button);
+            }
+            else if (button.textContent === 'Decline') {
+                declineFriendRequestListener(notification, button);
+            }
+        }
+    }
+
+    function acceptFriendRequestListener(notification, button) {
         button.addEventListener('click', (e) => {
-            // fetch(uri, {
-            //     method: method,
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': token,
-            //     },
-            //     body: JSON.stringify({friend_id: friend_id})
-            // }).then(response => {
-            //     if (!response.ok) {
-            //         //TODO: HANDLE ERROR
-            //         console.log("Error");
-            //         return;
-            //     }
-            //     return response.json();
-            // }).then(response => {
-            //     console.log(response)
-            // });
-            fetch('http://localhost:8000/notification/user/' + id + '/', {
-                method: 'DELETE',
+            fetch('http://localhost:8001/user/friends/', {
+                method: 'POST',
                 headers: {
-                    //TODO: Get access token from local storage
-                    'Authorization': '',
-                }
+                    'Content-Type': 'application/json',
+                    'Authorization': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzg1MDUyODksInVzZXJfaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.UTLsTUj5PqLoVpE93CY0zy3KaeQqmlqYss3GNtYVKyg07sSnIOzS06ZSWrEHFBpDGmPye8LjDvcIlrpes0-0pDnIVkqNjwiSeyOCJmbZAT3FyqBSszsYet4LNhdav7FgunuMnYEaNUHF-7xlWfUKxlzkfMv_sO_xUNjY2utn-XrzMjWuJoA0s5gvD37RLe4bwJNmuXxrTXRpG80jLakIFY6R9ny1owQktZU6NNCwu5mALqyj6QWSzVTzanEwSgnE8fkWxdVsH1z4xj-y5aI6zhTR04b0FCpOhKkeMJs1DVkkK2drDO3cnxjVqRGmmvr9p3AioVsCfkXSYpqQYA459A'
+                },
+                body: JSON.stringify({friend_id: notification.data})
             }).then(response => {
                 if (!response.ok) {
                     response.json().then(text => console.error(text['errors']));
+                    return;
                 }
-                else {
-                    const notif = document.getElementById(id)
-                    notif.remove();
-                    let count = document.getElementById('bellCount').getAttribute('data-count');
-                    document.getElementById('bellCount').setAttribute('data-count', parseInt(count) - 1);
-                }
-            })
+                return response.json();
+            }).then(response => {
+                console.log(response)
+                deleteNotification(notification.id);
+            });
         });
+    }
+
+    function declineFriendRequestListener(notification, button) {
+        button.addEventListener('click', (e) => {
+            fetch('http://localhost:8001/user/friends/', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzg1MDUyODksInVzZXJfaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.UTLsTUj5PqLoVpE93CY0zy3KaeQqmlqYss3GNtYVKyg07sSnIOzS06ZSWrEHFBpDGmPye8LjDvcIlrpes0-0pDnIVkqNjwiSeyOCJmbZAT3FyqBSszsYet4LNhdav7FgunuMnYEaNUHF-7xlWfUKxlzkfMv_sO_xUNjY2utn-XrzMjWuJoA0s5gvD37RLe4bwJNmuXxrTXRpG80jLakIFY6R9ny1owQktZU6NNCwu5mALqyj6QWSzVTzanEwSgnE8fkWxdVsH1z4xj-y5aI6zhTR04b0FCpOhKkeMJs1DVkkK2drDO3cnxjVqRGmmvr9p3AioVsCfkXSYpqQYA459A'
+                },
+                body: JSON.stringify({friend_id: notification.data})
+            }).then(response => {
+                if (!response.ok) {
+                    response.json().then(text => console.error(text['errors']));
+                    return;
+                }
+                return response.json();
+            }).then(response => {
+                console.log(response)
+                deleteNotification(notification.id);
+            });
+        });
+    }
+
+    function deleteNotification(notification_id) {
+        fetch('http://localhost:8000/notification/user/' + notification_id + '/', {
+            method: 'DELETE',
+            headers: {
+                //TODO: Get access token from local storage
+                'Authorization': '',
+            }
+        }).then(response => {
+            if (!response.ok) {
+                response.json().then(text => console.error(text['errors']));
+            }
+            else {
+                const notif = document.getElementById(notification_id)
+                notif.remove();
+                let count = document.getElementById('bellCount').getAttribute('data-count');
+                document.getElementById('bellCount').setAttribute('data-count', parseInt(count) - 1);
+            }
+        })
     }
 
 </script>
