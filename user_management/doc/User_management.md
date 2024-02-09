@@ -297,10 +297,11 @@ will return a list of user ids
 > ``` javascript
 > 
 > {
->     "id_list": ["1", "2", "3"]
+>     "id_list": [1, 2, 3]
 > }
 
-> NB : id_list must be a list of integers (JSON will convert them to strings)
+> NB : id_list could be a list of integers or strings (ex : ["1", "2", "3"])
+>
 > if a user is not found, it will not be in the response
 
 #### Responses
@@ -313,14 +314,14 @@ will return a list of user ids
         "2": "Aurel1243",
         "3": "Aurel121233"
     }
-
+]
 ```
 
 If you want to retrieve a username, you should do something like :
 ```py
 result.json().get(str(id))
 ```
-nb : here, "id" is an int. Since int can't be in JSON, you need to convert it to string.
+nb :I cannot respond with id as int because keys are converted to strings in the json response
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
@@ -448,7 +449,7 @@ This endpoint handles the callback after successful OAuth authentication and ret
 
 </details>
 
-## '/user/update-infos/'
+## `/user/update-infos/`
 
 
 ### Update user's information
