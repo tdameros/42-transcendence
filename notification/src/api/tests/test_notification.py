@@ -20,6 +20,7 @@ class PostUserNotificationTest(TestCase):
             'title': 'Friend request from John Doe',
             'type': 'friend_request',
             'user_list': [1],
+            'data': 4,
         }
 
         response, body = self.post_user_notification(data)
@@ -32,12 +33,14 @@ class PostUserNotificationTest(TestCase):
         self.assertEqual(notifications[0].title, data['title'])
         self.assertEqual(notifications[0].type, data['type'])
         self.assertEqual(notifications[0].owner_id, data['user_list'][0])
+        self.assertEqual(notifications[0].data, data['data'])
 
     def test_send_tournament_start(self):
         data = {
             'title': 'Tournament `Born2Smash` started',
             'type': 'tournament_start',
             'user_list': [1, 2, 3],
+            'data': 1,
         }
 
         response, body = self.post_user_notification(data)
@@ -50,12 +53,15 @@ class PostUserNotificationTest(TestCase):
         self.assertEqual(notifications[0].title, data['title'])
         self.assertEqual(notifications[0].type, data['type'])
         self.assertEqual(notifications[0].owner_id, data['user_list'][0])
+        self.assertEqual(notifications[0].data, data['data'])
         self.assertEqual(notifications[1].title, data['title'])
         self.assertEqual(notifications[1].type, data['type'])
         self.assertEqual(notifications[1].owner_id, data['user_list'][1])
+        self.assertEqual(notifications[1].data, data['data'])
         self.assertEqual(notifications[2].title, data['title'])
         self.assertEqual(notifications[2].type, data['type'])
         self.assertEqual(notifications[2].owner_id, data['user_list'][2])
+        self.assertEqual(notifications[2].data, data['data'])
 
     def test_invalid_title(self):
         data = {
@@ -190,7 +196,7 @@ class PostUserNotificationTest(TestCase):
             'title': 'Friend request from John Doe',
             'type': 'friend_request',
             'user_list': [1],
-            'data': 1,
+            'data': 'invalid_data',
         }
 
         response, body = self.post_user_notification(data)

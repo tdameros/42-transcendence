@@ -124,6 +124,6 @@ class UserNotificationView(View):
 
     @staticmethod
     def validate_data(data: any) -> Optional[str]:
-        if data is not None and not isinstance(data, str):
+        if data is not None and not isinstance(data, int):
             return error.INVALID_DATA_FORMAT
         return None
