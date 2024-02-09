@@ -1,4 +1,5 @@
 import json
+import base64
 from typing import Optional
 
 from django.http import JsonResponse, HttpRequest
@@ -9,15 +10,21 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from api.models import Notification
 from api import error_message as error
+from common.src.jwt_managers import user_authentication
 from notification import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+# TODO : uncomment the line below when notification are implemented in front
+# @method_decorator(user_authentication(['DELETE']), name='dispatch')
 class DeleteUserNotificationView(View):
     @staticmethod
     def delete(request: HttpRequest, notification_id: int) -> JsonResponse:
         try:
             notification = Notification.objects.get(id=notification_id)
+            # user_id = DeleteUserNotificationView.get_user_id(request)
+            # if notification.owner_id != user_id:
+            #     return JsonResponse({'errors': [error.NOTIFICATION_NOT_OWNER]}, status=400)
             notification.delete()
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.NOTIFICATION_NOT_FOUND]}, status=404)
@@ -25,6 +32,15 @@ class DeleteUserNotificationView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': 'Notification deleted'}, status=200)
+
+    @staticmethod
+    def get_user_id(request: HttpRequest) -> int:
+        jwt = request.headers.get('Authorization')
+        split_jwt = jwt.split('.')
+        payload = base64.b64decode(split_jwt[1] + '===')
+
+        payload_dict = json.loads(payload)
+        return int(payload_dict['user_id'])
 
 
 @method_decorator(csrf_exempt, name='dispatch')

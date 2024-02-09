@@ -14,3 +14,4 @@ INVALID_USER_LIST_FORMAT = 'User_list must be a list of integers'
 INVALID_DATA_FORMAT = 'Data must be a string'
 
 NOTIFICATION_NOT_FOUND = 'Notification not found'
+NOTIFICATION_NOT_OWNER = 'You are not the owner of this notification'

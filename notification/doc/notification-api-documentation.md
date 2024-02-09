@@ -33,3 +33,30 @@
 > | `500`       | `application/json` | {"errors": [...]}                    |
 
 </details>
+
+--------------------------------------------------------------------------------
+
+## `/notification/user/{notification_id}/`
+
+### Delete a notification
+
+<details>
+ <summary><code>DELETE</code> <code><b>/notification/user/{notification_id}/</b></code></summary>
+
+### Request
+
+#### Body
+
+None
+
+### Response
+
+#### Status code
+
+> | status code | content-type       | response                            |
+> |-------------|--------------------|-------------------------------------|
+> | `201`       | `application/json` | {"message": "Notification deleted"} |
+> | `400`       | `application/json` | {"errors": [...]}                   |
+> | `500`       | `application/json` | {"errors": [...]}                   |
+
+</details>
