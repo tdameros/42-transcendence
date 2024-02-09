@@ -115,7 +115,6 @@ class GetHistory(HistoryTest):
             'loser_id': 2,
             'winner_score': 10,
             'loser_score': 8,
-            'date': '2020-01-01T00:00:00+00:00',
         }
         for i in range(20):
             self.post_match(body)

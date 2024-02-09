@@ -3,6 +3,7 @@ from typing import Any, Optional
 
 from dateutil import parser
 from django.http import HttpRequest, JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -81,6 +82,8 @@ class MatchView(View):
         user_score = json_body['winner_score'] if result else json_body['loser_score']
         opponent_score = json_body['loser_score'] if result else json_body['winner_score']
         opponent_id = json_body['loser_id'] if result else json_body['winner_id']
+        date = json_body.get('date')
+        date = parser.isoparse(date) if date is not None else timezone.now()
 
         match.user = user
         match.opponent = User.objects.get(pk=opponent_id)
@@ -91,8 +94,8 @@ class MatchView(View):
         match.user_win_rate = user.win_rate
         match.user_matches_played = user.matches_played
         match.user_friends = user.friends
-        match.user_expected_result = MatchView.calculate_expected_result(user.elo, match.opponent.elo)
-        match.date = parser.isoparse(json_body['date'])
+        match.user_expected_result = MatchView.calculate_expected_result(user.elo, match.opponent.elo) * 100
+        match.date = date
         return match
 
     @staticmethod
@@ -149,10 +152,17 @@ class MatchView(View):
     @staticmethod
     def validate_date(date: Any) -> (bool, Optional[str]):
         if date is None:
-            return False, error.DATE_REQUIRED
+            return True, None
         try:
-            if parser.isoparse(date) is None:
+            date = parser.isoparse(date)
+            if date is None:
                 return False, error.DATE_INVALID
         except ValueError:
             return False, error.DATE_INVALID
+        try:
+            last_match = Match.objects.latest('date')
+            if date < last_match.date:
+                return False, error.DATE_INVALID
+        except Match.DoesNotExist:
+            pass
         return True, None
