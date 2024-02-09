@@ -3,22 +3,12 @@ import sys
 from typing import Optional
 
 import numpy
-import socketio
 
-import rooms
 import settings
-from Scene.Player.Paddle import Paddle
-from Scene.Segment2 import Segment2
-from shared_code.emit import emit
+from EventEmitter import EventEmitter
+from Game.Player.Paddle import Paddle
+from Segment2 import Segment2
 from vector_to_dict import vector_to_dict
-
-
-class Match(object):
-    def get_index(self) -> int:
-        pass
-
-    async def player_marked_point(self, sio: socketio.AsyncServer, player_index: int):
-        pass
 
 
 class Ball(object):
@@ -62,11 +52,10 @@ class Ball(object):
         return self._movement
 
     async def update(self,
-                     sio: socketio.AsyncServer,
+                     match,
                      time_delta: float,
                      left_paddle: Paddle,
-                     right_paddle: Paddle,
-                     match: Match):
+                     right_paddle: Paddle):
         if self._movement[0] == 0.:
             return
 
@@ -79,28 +68,22 @@ class Ball(object):
         travel: Segment2 = Segment2(previous_position, self._position)
 
         should_emit_update_ball, should_fix_position = await self._handle_collisions(
-            sio,
+            match,
             travel,
             left_paddle if self._movement[0] < 0. else right_paddle,
             time_delta,
-            match
         )
 
         if should_fix_position:
             self._position -= radius_compensator
         if should_emit_update_ball:
-            await emit(sio, 'update_ball', rooms.ALL_PLAYERS,
-                       {'position': vector_to_dict(self._position),
-                        'movement': vector_to_dict(self._movement),
-                        'match_index': match.get_index(),
-                        'debug': 'update_position'})
+            await EventEmitter.update_ball(match.LOCATION, self._position, self._movement)
 
     async def _handle_collisions(self,
-                                 sio: socketio.AsyncServer,
+                                 match,
                                  travel: Segment2,
                                  paddle: Paddle,
-                                 time_delta: float,
-                                 match: Match) -> (bool, bool):
+                                 time_delta: float) -> (bool, bool):
         """ Returns (should_emit_update_ball: bool, should_fix_position: bool) """
 
         (collision_detected, should_emit_update_ball) = await self._handle_paddle_collision(
@@ -109,7 +92,7 @@ class Ball(object):
         if collision_detected:
             return should_emit_update_ball, True
 
-        if await self._handle_match_point(sio, match):
+        if await self._handle_match_point(match):
             return False, False
 
         self._handle_board_collision()
@@ -150,12 +133,12 @@ class Ball(object):
             return True, True
         return True, False
 
-    async def _handle_match_point(self, sio: socketio.AsyncServer, match: Match) -> bool:
+    async def _handle_match_point(self, match) -> bool:
         if self._position[0] <= settings.BALL_BOUNDING_BOX.get_x_min():
-            await match.player_marked_point(sio, 1)
+            await match.player_marked_point(1)
             return True
         elif self._position[0] >= settings.BALL_BOUNDING_BOX.get_x_max():
-            await match.player_marked_point(sio, 0)
+            await match.player_marked_point(0)
             return True
         return False
 
