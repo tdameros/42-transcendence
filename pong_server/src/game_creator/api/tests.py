@@ -66,7 +66,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
 
         request_body = {
             'game_id': 1,
-            'players': [1, None, 45, None, 3],
+            'players': [1, None, 45, None],
             'request_issuer': 'tournament'
         }
 
