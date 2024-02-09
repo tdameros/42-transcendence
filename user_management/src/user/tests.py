@@ -594,8 +594,8 @@ class TestUserIdList(TestCase):
         # result = self.client.post(url, json.dumps(data), content_type='application/json')
         # self.assertEqual(result.status_code, 200)
         # self.assertTrue('errors' in result.json())
-        
-        
+
+
 class FriendsTest(TestCase):
 
     @patch('user.views.sign_up.SignUpView.post_user_stats')
