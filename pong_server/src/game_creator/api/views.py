@@ -64,8 +64,7 @@ class CreateGameView(View):
 
     @staticmethod
     def _get_players(json_body, errors) -> list[Optional[int]]:
-
-        players = json_body.get('players')
+        players: any = json_body.get('players')
         if players is None:
             errors.append(error_messages.PLAYERS_FIELD_MISSING)
             return []
@@ -74,21 +73,41 @@ class CreateGameView(View):
             errors.append(error_messages.PLAYERS_FIELD_IS_NOT_A_LIST)
             return []
 
-        correct_players: set[int] = set()
-        for index, player in enumerate(players):
-            if player is None:
-                continue
-            try:
-                if not isinstance(player, int):
-                    player = int(player)
-                if player in correct_players:
-                    errors.append(error_messages.player_is_found_multiple_times(player))
-                else:
-                    correct_players.add(player)
-            except ValueError:
-                errors.append(error_messages.player_is_not_an_optional_int(index))
+        if (len(players) & (len(players) - 1) != 0) and len(players) != 0:
+            errors.append(error_messages.LEN_PLAYERS_IS_NOT_A_POWER_OF_2)
+
+        validated_players: set[int] = set()
+        for i in range(0, len(players) - 1, 2):
+            CreateGameView._check_player(players, i, errors, validated_players)
+            CreateGameView._check_player(players, i + 1, errors, validated_players)
+            if players[i] is None and players[i + 1] is None:
+                errors.append(error_messages.BOTH_PLAYERS_ARE_NONE)
+        if len(players) % 2 == 1:
+            CreateGameView._check_player(players, len(players) - 1, errors, validated_players)
+        if len(validated_players) <= 1:
+            errors.append(error_messages.NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE)
 
         return players
+
+    @staticmethod
+    def _check_player(players: list[any],
+                      index: int,
+                      errors: list[str],
+                      validated_players: set[int]):
+        if players[index] is None:
+            return
+
+        try:
+            if not isinstance(players[index], int):
+                players[index] = int(players[index])
+        except ValueError:
+            errors.append(error_messages.player_is_not_an_optional_int(index))
+            return
+
+        if players[index] in validated_players:
+            errors.append(error_messages.player_is_found_multiple_times(players[index]))
+        else:
+            validated_players.add(players[index])
 
     @staticmethod
     def _get_request_issuer(json_body, errors) -> str:
@@ -101,8 +120,7 @@ class CreateGameView(View):
             errors.append(error_messages.REQUEST_ISSUER_IS_NOT_A_STRING)
             return ''
 
-        if (not request_issuer == 'tournament'
-                and not request_issuer == 'matchmaking'):
+        if request_issuer not in ('tournament', 'matchmaking'):
             errors.append(error_messages.REQUEST_ISSUER_IS_NOT_VALID)
             return ''
 
