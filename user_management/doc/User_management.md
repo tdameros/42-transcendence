@@ -536,7 +536,7 @@ Authorization: {access_token}
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
+> | `200`     | `application/json` | `{"friends": [{"id": 1, "status": accepted}, ...]}`  |
 > | `400`     | `application/json` | `{"errors": ["..."]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
@@ -598,7 +598,7 @@ all fields are mandatory
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
+> | `200`     | `application/json` | `{"message": "friend deleted"}`                      |
 > | `400`     | `application/json` | `{"errors": ["..."]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
