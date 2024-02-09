@@ -519,4 +519,87 @@ All fields mandatory:
 ****
 </details>
 
+## `/user/friends/`
 
+### Get user's friends
+
+This endpoint retrieves the user's friend list.
+
+<details>
+ <summary><code>GET</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"friends": [{"id": 1, "status": accepted}, ...]}`  |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Add a friend
+
+This endpoint add a friend to the user
+
+<details>
+ <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "friend_id": 1
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Delete a friend
+
+This endpoint delete a friend of the user
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "friend_id": 1
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend deleted"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>

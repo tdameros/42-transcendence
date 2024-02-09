@@ -4,6 +4,7 @@ from django.urls import path
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
+from user.views.friends import FriendsView
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.oauth import OAuth, OAuthCallback
@@ -35,6 +36,7 @@ urlpatterns = [
     path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('friends/', FriendsView.as_view(), name='friends'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 

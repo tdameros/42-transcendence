@@ -23,3 +23,12 @@ class PendingOAuth(models.Model):
     hashed_state = models.CharField(max_length=settings.OAUTH_STATE_MAX_LENGTH, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=settings.OAUTH_SOURCE_MAX_LENGTH)
+
+
+class Friend(models.Model):
+    PENDING = 0
+    ACCEPTED = 1
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend')
+    status = models.IntegerField(default=PENDING)
