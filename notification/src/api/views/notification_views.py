@@ -5,10 +5,26 @@ from django.http import JsonResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 from api.models import Notification
 from api import error_message as error
 from notification import settings
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class DeleteUserNotificationView(View):
+    @staticmethod
+    def delete(request: HttpRequest, notification_id: int) -> JsonResponse:
+        try:
+            notification = Notification.objects.get(id=notification_id)
+            notification.delete()
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [error.NOTIFICATION_NOT_FOUND]}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': 'Notification deleted'}, status=200)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
