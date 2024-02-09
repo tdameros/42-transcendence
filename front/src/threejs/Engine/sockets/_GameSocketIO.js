@@ -1,6 +1,8 @@
 import {Scene} from '../../Scene/Scene';
 
 import {io} from 'socket.io-client';
+import {PlayerLocation} from '../../Scene/PlayerLocation';
+import {sleep} from '../../sleep';
 
 export class _GameSocketIO {
   #engine;
@@ -44,39 +46,46 @@ export class _GameSocketIO {
 
     this.#socketIO.on('scene', (data) => {
       console.log('game scene received');
+
       this.#engine.scene = new Scene(
-          data['scene']['matches'],
+          data['scene'],
           data['player_location'],
       );
       this.#engine.startListeningForKeyHooks();
     });
 
-    this.#socketIO.on('update_player', (data) => {
-      console.log('update_player received');
-      const playerLocation = data['player_location'];
-      this.#engine.scene.setPlayerPaddleDirection(
-          playerLocation,
-          data['direction'],
-      );
-      this.#engine.scene.setPlayerPaddlePosition(
-          playerLocation,
-          data['position'],
-      );
+    this.#socketIO.on('update_paddle', async (data) => {
+      while (! (this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
+      console.log('update_paddle received');
+
+      const paddle = new PlayerLocation(data['player_location'])
+          .getPlayerFromScene(this.#engine.scene).paddle;
+      paddle.setDirection(data['direction']);
+      paddle.setPosition(data['position']);
     });
 
-    this.#socketIO.on('prepare_ball_for_match', (data) => {
+    this.#socketIO.on('prepare_ball_for_match', async (data) => {
+      while (! (this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
       console.log('prepare_ball_for_match received');
-      const matchIndex = data['match_index'];
-      this.#engine.scene.matches[matchIndex].prepare_ball_for_match(
+
+      const match = this.#engine.scene.getMatchFromLocation(data['match_location']);
+      match.prepare_ball_for_match(
           data['ball_start_time'],
           data['ball_movement'],
       );
     });
 
-    this.#socketIO.on('update_ball', (data) => {
+    this.#socketIO.on('update_ball', async (data) => {
+      while (! (this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
       console.log('update_ball received');
-      const matchIndex = data['match_index'];
-      const match = this.#engine.scene.matches[matchIndex];
+
+      const match = this.#engine.scene.getMatchFromLocation(data['match_location']);
       match.setBallMovement(data['movement']);
       match.setBallPosition(data['position']);
     });

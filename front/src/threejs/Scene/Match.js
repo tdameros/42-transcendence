@@ -6,6 +6,7 @@ import {BallBoundingBox, PaddleBoundingBox} from './boundingBoxes';
 
 export class Match {
   #threeJSGroup = new THREE.Group();
+  #index;
   #players = [];
   #ball;
   #ballBoundingBox;
@@ -13,7 +14,8 @@ export class Match {
   #ballIsWaiting;
   #ballStartTime;
 
-  constructor(matchJson) {
+  constructor(matchJson, index) {
+    this.#index = index;
     this.#ball = new Ball(matchJson['ball']);
     this.#ballIsWaiting = matchJson['ball_is_waiting'];
     this.#ballStartTime = matchJson['ball_start_time'];
