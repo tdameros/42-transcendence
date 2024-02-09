@@ -4,6 +4,7 @@ from django.urls import path
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
+from user.views.friends import FriendsView
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.oauth import OAuth, OAuthCallback
@@ -15,7 +16,6 @@ from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
 from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdView
 from user.views.username import UsernameView
-from user.views.friends import FriendsView
 from user_management import settings
 
 urlpatterns = [
