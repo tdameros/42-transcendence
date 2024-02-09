@@ -300,7 +300,7 @@ will return a list of user ids
 >     "id_list": ["1", "2", "3"]
 > }
 
-> NB : id_list must be a list of integers
+> NB : id_list must be a list of integers (JSON will convert them to strings)
 > if a user is not found, it will not be in the response
 
 #### Responses
@@ -310,15 +310,17 @@ will return a list of user ids
 
 [
     {
-        "id": 2,
-        "username": "Aurel1243"
-    },
-    {
-        "id": 3,
-        "username": "Aurel121233"
+        "2": "Aurel1243",
+        "3": "Aurel121233"
     }
-]
+
 ```
+
+If you want to retrieve a username, you should do something like :
+```py
+result.json().get(str(id))
+```
+nb : here, "id" is an int. Since int can't be in JSON, you need to convert it to string.
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|

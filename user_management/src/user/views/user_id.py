@@ -20,16 +20,18 @@ class UserIdView(View):
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class UserIdListView(View):
     @staticmethod
     def post(request):
-        id_list = json.loads(request.body).get('id_list')
-        if not isinstance(id_list, list):
-            return JsonResponse(data={'errors': ['id_list should be a list']}, status=400)
-        response = []
-        for user_id in id_list:
-            user = User.objects.filter(id=user_id).first()
-            if user is not None:
-                response.append({'id': user.id, 'username': user.username})
-        return JsonResponse(data=response, status=200, safe=False)
+        try:
+            id_list = json.loads(request.body).get('id_list')
+            if not isinstance(id_list, list):
+                return JsonResponse(data={'errors': ['id_list should be a list']}, status=400)
+
+            users = User.objects.filter(id__in=id_list)
+            response = {user.id: user.username for user in users}
+            return JsonResponse(data=response, status=200, safe=False)
+
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
