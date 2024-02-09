@@ -63,7 +63,7 @@ class EventHandler(object):
 
     @staticmethod
     def _get_update_paddle_args(player_data) -> (bool, Optional[float], Optional[str]):
-        """ Returns success, client_player_position, direction """
+        """ Returns success, client_paddle_position, direction """
         try:
             client_paddle_position = player_data['client_paddle_position']
             if not isinstance(client_paddle_position, (float, int)):

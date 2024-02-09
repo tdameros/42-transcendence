@@ -23,7 +23,7 @@
   >> Argument:
   >> ```
   >> {
-  >>     'client_player_position': float[3],
+  >>     'client_paddle_position': float (y position),
   >>     'direction': str ('up' | 'down' | 'none')
   >> }
   >> ``` 
