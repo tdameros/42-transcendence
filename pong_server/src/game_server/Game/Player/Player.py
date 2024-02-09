@@ -1,15 +1,22 @@
 import numpy
 
 import settings
-from Scene.Player._Board import _Board
-from Scene.Player.Paddle import Paddle
+from Game.Player._Board import _Board
+from Game.Player.Paddle import Paddle
+from Game.PlayerLocation import PlayerLocation
 from vector_to_dict import vector_to_dict
 
 
 class Player(object):
 
     def __init__(self,
+                 player_id: int,
+                 player_location: PlayerLocation,
                  is_player_on_the_right: bool):
+        # Storing player id for communication with matchmaking / tournament server
+        self.PLAYER_ID: int = player_id
+        self._player_location: PlayerLocation = player_location
+
         sign = 1. if is_player_on_the_right else -1.
         self._position: numpy.ndarray = numpy.array([settings.BOARD_SIZE[0] / 2. * sign,
                                                      0.,
@@ -32,17 +39,8 @@ class Player(object):
         self._paddle.update(time_delta)
         self._board.update(time_delta)
 
-    def set_paddle_direction(self, direction: str):
-        self._paddle.set_direction(direction)
-
-    def get_paddle_movement(self) -> numpy.ndarray:
-        return self._paddle.get_movement()
-
-    def set_paddle_position(self, position: numpy.ndarray):
-        self._paddle.set_position(position)
-
-    def get_paddle_position(self):
-        return self._paddle.get_position()
+    def get_location(self) -> PlayerLocation:
+        return self._player_location
 
     def get_paddle(self):
         return self._paddle

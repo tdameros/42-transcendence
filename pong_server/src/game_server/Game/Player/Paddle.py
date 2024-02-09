@@ -1,7 +1,7 @@
 import numpy
 
 import settings
-from Scene.Segment2 import Segment2
+from Segment2 import Segment2
 from vector_to_dict import vector_to_dict
 
 
@@ -53,6 +53,15 @@ class Paddle(object):
     def get_position(self):
         return self._position
 
+    def get_top_collision_segment(self):
+        return self._top_collision_segment
+
+    def get_front_collision_segment(self):
+        return self._front_collision_segment
+
+    def get_bottom_collision_segment(self):
+        return self._bottom_collision_segment
+
     def _set_collision_segments(self):
         x_left = (self._player_position[0] + self._position[0]
                   - settings.PADDLE_SIZE[0] * 0.5)
@@ -75,12 +84,3 @@ class Paddle(object):
             self._front_collision_segment = Segment2(top_left, bottom_left)
         else:
             self._front_collision_segment = Segment2(top_right, bottom_right)
-
-    def get_top_collision_segment(self):
-        return self._top_collision_segment
-
-    def get_front_collision_segment(self):
-        return self._front_collision_segment
-
-    def get_bottom_collision_segment(self):
-        return self._bottom_collision_segment
