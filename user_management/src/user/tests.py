@@ -8,7 +8,7 @@ import pyotp
 from django.test import TestCase
 from django.urls import reverse
 
-from user.models import User, Friend
+from user.models import Friend, User
 from user_management import settings
 from user_management.JWTManager import UserAccessJWTManager
 
@@ -585,11 +585,6 @@ class FriendsTest(TestCase):
         response = self.client.get(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
         return response
 
-    def get_id_from_username(self, username):
-        url = reverse('username', args=[username])
-        response = self.client.get(url)
-        return response.json()['id']
-
     def post_friends(self, access_token, friend_id):
         url = reverse('friends')
         response = self.client.post(
@@ -599,6 +594,20 @@ class FriendsTest(TestCase):
             HTTP_AUTHORIZATION=f'{access_token}'
         )
         return response
+
+    def delete_friends(self, access_token, friend_id):
+        url = reverse('friends')
+        response = self.client.delete(
+            url,
+            json.dumps({'friend_id': friend_id}),
+            HTTP_AUTHORIZATION=f'{access_token}',
+        )
+        return response
+
+    def get_id_from_username(self, username):
+        url = reverse('username', args=[username])
+        response = self.client.get(url)
+        return response.json()['id']
 
 
 class PostFriendsTest(FriendsTest):
@@ -735,4 +744,85 @@ class GetFriendsTest(FriendsTest):
         self.assertEqual(response.status_code, 401)
 
 
+class DeleteFriendsTest(FriendsTest):
 
+    def test_valid_pending(self):
+        user1 = {
+            'username': 'User1',
+            'email': 'user1@test.com',
+            'password': 'Validpass42*',
+        }
+        user2 = {
+            'username': 'User2',
+            'email': 'user2@test.com',
+            'password': 'Validpass42*',
+        }
+        token1 = self.create_user(user1)
+        self.create_user(user2)
+        friend_id = self.get_id_from_username('User2')
+        self.post_friends(token1, friend_id)
+        response = self.delete_friends(token1, friend_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], 'friend deleted')
+        friends = Friend.objects.filter(user_id=1, friend_id=2)
+        self.assertEqual(len(friends), 0)
+
+    def test_valid_accepted(self):
+        user1 = {
+            'username': 'User1',
+            'email': 'user1@test.com',
+            'password': 'Validpass42*',
+        }
+        user2 = {
+            'username': 'User2',
+            'email': 'user2@test.com',
+            'password': 'Validpass42*',
+        }
+        token1 = self.create_user(user1)
+        token2 = self.create_user(user2)
+        user_1_id = self.get_id_from_username('User1')
+        user_2_id = self.get_id_from_username('User2')
+        self.post_friends(token1, user_2_id)
+        self.post_friends(token2, user_1_id)
+        response = self.delete_friends(token1, user_2_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], 'friend deleted')
+        friends = Friend.objects.filter(user_id=1, friend_id=2)
+        self.assertEqual(len(friends), 0)
+        friends = Friend.objects.filter(user_id=2, friend_id=1)
+        self.assertEqual(len(friends), 0)
+
+    def test_valid_no_friends(self):
+        user1 = {
+            'username': 'User1',
+            'email': 'user1@test.com',
+            'password': 'Validpass42*',
+        }
+        user2 = {
+            'username': 'User2',
+            'email': 'user2@test.com',
+            'password': 'Validpass42*',
+        }
+        token1 = self.create_user(user1)
+        self.create_user(user2)
+        user_2_id = self.get_id_from_username('User2')
+        response = self.delete_friends(token1, user_2_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], 'friend deleted')
+
+    def test_invalid_user_id(self):
+        user1 = {
+            'username': 'User1',
+            'email': 'user1@test.com',
+            'password': 'Validpass42*',
+        }
+        token1 = self.create_user(user1)
+        response = self.delete_friends(token1, None)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['errors'], ['`friend_id` field required'])
+        response = self.delete_friends(token1, 'test')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['errors'], ['`friend_id` field must be an integer'])
+        response = self.delete_friends(token1, 3)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['errors'], ['User not found'])
