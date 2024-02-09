@@ -585,6 +585,11 @@ class FriendsTest(TestCase):
         response = self.client.get(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
         return response
 
+    def get_id_from_username(self, username):
+        url = reverse('username', args=[username])
+        response = self.client.get(url)
+        return response.json()['id']
+
     def post_friends(self, access_token, friend_id):
         url = reverse('friends')
         response = self.client.post(
@@ -612,7 +617,6 @@ class PostFriendsTest(FriendsTest):
         token1 = self.create_user(user1)
         self.create_user(user2)
         response = self.post_friends(token1, 2)
-        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
         friend = Friend.objects.get(user_id=1, friend_id=2)
@@ -651,9 +655,9 @@ class PostFriendsTest(FriendsTest):
         token1 = self.create_user(user1)
         response = self.post_friends(token1, 'test')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['Invalid friend_id'])
-        response = self.post_friends(token1, '3')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['errors'], ['`friend_id` field must be an integer'])
+        response = self.post_friends(token1, 3)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['User not found'])
 
     def test_invalid_already_sent(self):
@@ -697,16 +701,38 @@ class GetFriendsTest(FriendsTest):
         }
         token1 = self.create_user(user1)
         token2 = self.create_user(user2)
-        self.create_user(user3)
-        self.post_friends(token1, 2)
-        self.post_friends(token2, 1)
-        self.post_friends(token1, 3)
+        token3 = self.create_user(user3)
+        user_1_id = self.get_id_from_username('User1')
+        user_2_id = self.get_id_from_username('User2')
+        user_3_id = self.get_id_from_username('User3')
+        self.post_friends(token1, user_2_id)
+        self.post_friends(token1, user_3_id)
+        self.post_friends(token2, user_1_id)
+
         response = self.get_friends(token1)
-        print(response.json())
         self.assertEqual(response.status_code, 200)
         friends = response.json()['friends']
         self.assertEqual(len(friends), 2)
-        self.assertEqual(friends[0]['id'], 2)
+        self.assertEqual(friends[0]['id'], user_2_id)
         self.assertEqual(friends[0]['status'], 'accepted')
-        self.assertEqual(friends[1]['id'], 3)
+        self.assertEqual(friends[1]['id'], user_3_id)
         self.assertEqual(friends[1]['status'], 'pending')
+
+        response = self.get_friends(token2)
+        self.assertEqual(response.status_code, 200)
+        friends = response.json()['friends']
+        self.assertEqual(len(friends), 1)
+        self.assertEqual(friends[0]['id'], user_1_id)
+        self.assertEqual(friends[0]['status'], 'accepted')
+
+        response = self.get_friends(token3)
+        self.assertEqual(response.status_code, 200)
+        friends = response.json()['friends']
+        self.assertEqual(len(friends), 0)
+
+    def test_invalid(self):
+        response = self.get_friends('test')
+        self.assertEqual(response.status_code, 401)
+
+
+

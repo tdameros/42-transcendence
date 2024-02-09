@@ -36,8 +36,8 @@ urlpatterns = [
     path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
-    path('<str:username>/', UsernameView.as_view(), name='username'),
     path('friends/', FriendsView.as_view(), name='friends'),
+    path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
 if settings.DEBUG:

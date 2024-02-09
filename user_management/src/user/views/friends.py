@@ -19,12 +19,12 @@ class FriendsView(View):
         user_id = get_user_id(request)
         try:
             friends = Friend.objects.filter(user_id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse(data={'errors': ['User not found']}, status=404)
+        except Friend.DoesNotExist:
+            return JsonResponse(data={'errors': ['User not found test']}, status=404)
         body = {
             'friends': [
                 {
-                    'id': friend.id,
+                    'id': friend.friend_id,
                     'status': 'accepted' if friend.status == Friend.ACCEPTED else 'pending',
                 } for friend in friends
             ]
@@ -60,6 +60,7 @@ class FriendsView(View):
             return False, 'Friend request already sent'
         if related_friendship.exists():
             Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
+            related_friendship = related_friendship.first()
             related_friendship.status = Friend.ACCEPTED
             related_friendship.save()
         else:
@@ -85,4 +86,8 @@ class FriendsView(View):
             return False, '`friend_id` field required'
         if not isinstance(friend_id, int):
             return False, '`friend_id` field must be an integer'
+        try:
+            User.objects.get(id=friend_id)
+        except User.DoesNotExist:
+            return False, 'User not found'
         return True, None
