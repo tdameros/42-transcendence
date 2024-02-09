@@ -625,10 +625,12 @@ class PostFriendsTest(FriendsTest):
         }
         token1 = self.create_user(user1)
         self.create_user(user2)
-        response = self.post_friends(token1, 2)
+        user_id = self.get_id_from_username('User1')
+        friend_id = self.get_id_from_username('User2')
+        response = self.post_friends(token1, friend_id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
-        friend = Friend.objects.get(user_id=1, friend_id=2)
+        friend = Friend.objects.get(user_id=user_id, friend_id=friend_id)
         self.assertEqual(friend.status, Friend.PENDING)
 
     def test_valid_accepted(self):
@@ -644,14 +646,16 @@ class PostFriendsTest(FriendsTest):
         }
         token1 = self.create_user(user1)
         token2 = self.create_user(user2)
-        response = self.post_friends(token1, 2)
+        user_id = self.get_id_from_username('User1')
+        friend_id = self.get_id_from_username('User2')
+        response = self.post_friends(token1, friend_id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
-        response = self.post_friends(token2, 1)
+        response = self.post_friends(token2, user_id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
-        friend1 = Friend.objects.get(user_id=1, friend_id=2)
-        friend2 = Friend.objects.get(user_id=2, friend_id=1)
+        friend1 = Friend.objects.get(user_id=user_id, friend_id=friend_id)
+        friend2 = Friend.objects.get(user_id=user_id, friend_id=friend_id)
         self.assertEqual(friend1.status, Friend.ACCEPTED)
         self.assertEqual(friend2.status, Friend.ACCEPTED)
 
@@ -682,10 +686,12 @@ class PostFriendsTest(FriendsTest):
         }
         token1 = self.create_user(user1)
         self.create_user(user2)
-        response = self.post_friends(token1, 2)
+        friend_id = self.get_id_from_username('User2')
+        response = self.post_friends(token1, friend_id)
+        print(response.json())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
-        response = self.post_friends(token1, 2)
+        response = self.post_friends(token1, friend_id)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['Friend request already sent'])
 
