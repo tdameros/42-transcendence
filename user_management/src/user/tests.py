@@ -576,7 +576,7 @@ class TestUserIdList(TestCase):
         User.objects.create(username='Aurel4', email='aurel4@42.fr', password='Validpass42*')
 
         # get the list of id of the users
-
+        UserList = User.objects.all()
         id_list = [user.id for user in User.objects.all()]
         data = {
             'id_list': id_list
@@ -585,8 +585,8 @@ class TestUserIdList(TestCase):
         url = reverse('user-id-list')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 200)
-        for i in range(1, 5):
-            self.assertEqual(result.json().get(str(i)), User.objects.get(id=i).username)
+        for user in UserList:
+            self.assertEqual(result.json().get(str(user.id)), user.username)
         data = {
             'id_list': 'a'
         }
