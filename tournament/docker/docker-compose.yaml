@@ -7,15 +7,15 @@ services:
             context: nginx
             dockerfile: Dockerfile
         expose:
-            - "80"
             - "443"
         ports:
-            - "6001:80"
+            - "6001:443"
         depends_on:
             - tournament
         volumes:
             - tournament_static_volume:/app/static
             - tournament_media_volume:/app/media
+            - ssl_certs:/etc/nginx/ssl
         restart: on-failure
 
     tournament:
@@ -29,10 +29,11 @@ services:
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ tournament.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        gunicorn -c /app/gunicorn.conf.py"
         volumes:
             - tournament_code:/app/tournament
             - common_code:/app/common
+            - ssl_certs:/app/ssl
         expose:
             - "8000"
         depends_on:

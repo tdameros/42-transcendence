@@ -50,12 +50,18 @@ will return a refresh token when successful
 
 #### Body
 
-all fields are mandatory
+mandatory fields :
+- username
+- password
+
+optional fields :
+- 2fa_code : if the user has 2FA enabled, this field is mandatory
 
 > ``` javascript
 > {
 >     "username": "Aurel",
->     "password": "Validpass21*"
+>     "password": "Validpass21*",
+>     "2fa_code": "123456"
 > }
 > ```
 
@@ -249,11 +255,10 @@ all fields are mandatory
 </details>
 
 
-## `/user/{user-id}/`
+## `/user/id/{user-id}/`
 ### Get user non-sensitive information
 
-will return a user object when successful
-Might be extended to return more information in the future, if needed
+will return public user information
 
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
@@ -269,7 +274,34 @@ Might be extended to return more information in the future, if needed
 
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"ok": "ok"}`                                       |
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
+> | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+</details>
+
+
+## `/user/{username}/`
+### Get user non-sensitive information
+
+will return public user information
+
+<details>
+ <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
+
+### Parameters
+
+#### In the URL (mandatory)
+{username}
+>
+> NB : username must be a string
+>
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"id": "1", "username": "tdameros"}`                |
 > | `400`     | `application/json` | `{"errors": "AAA", errors details : "aaa" }`         |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
@@ -404,3 +436,170 @@ all other fields are optional and depend on the change_list
 > | `200`     | `application/json` | `{"ok": "ok"}`                                       |
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+
+</details>
+
+## `/user/2fa/enable`
+### Enable Two-Factor Authentication
+
+This endpoint enables Two-Factor Authentication for the user.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/enable</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `image/png`        | `png of the QR code the user needs to scan`          |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+</details>
+
+## `/user/2fa/disable`
+
+### Disable Two-Factor Authentication
+
+This endpoint disables Two-Factor Authentication for the user.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/disable</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "2fa disabled"}`                        |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+If the user already have 2FA disabled, the response will be :
+400 `{"errors": ["2FA is already disabled"]}`
+else
+200 `{'message': '2fa disabled'}`
+
+</details>
+
+## `/user/2fa/verify`
+
+
+### Verify Two-Factor Authentication
+
+This endpoint verifies the user's Two-Factor Authentication code.
+
+<details>
+ <summary><code>POST</code><code><b>/user/2fa/verify</b></code></summary>
+
+### Parameters
+
+#### Body
+
+All fields mandatory:
+> ``` javascript
+> {
+>    "code": "123456"
+> }
+> ```
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "2fa verified"}`                        |
+> | `400`     | `application/json` | `{"errors": ["...]}`                                 |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+****
+</details>
+
+## `/user/friends/`
+
+### Get user's friends
+
+This endpoint retrieves the user's friend list.
+
+<details>
+ <summary><code>GET</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"friends": [{"id": 1, "status": accepted}, ...]}`  |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Add a friend
+
+This endpoint add a friend to the user
+
+<details>
+ <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "friend_id": 1
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Delete a friend
+
+This endpoint delete a friend of the user
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "friend_id": 1
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend deleted"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>

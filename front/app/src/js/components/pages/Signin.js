@@ -11,6 +11,7 @@ export class Signin extends Component {
   render() {
     if (window.ApiClient.isAuth()) {
       window.router.redirect('/');
+      return false;
     }
     return (`
       <navbar-component disable-padding-top="true"></navbar-component>
@@ -64,10 +65,6 @@ export class Signin extends Component {
   style() {
     return (`
       <style>
-      .active {
-          font-family: 'JetBrains Mono', monospace;
-      }
-      
       #login {
           height: 100vh;
       }

@@ -150,22 +150,23 @@
 
 #### Body
 
-> | name      | type        | description     |
-> |-----------|-------------|-----------------|
-> | `history` | list[Match] | Matches history |
+> | name          | type        | description              |
+> |---------------|-------------|--------------------------|
+> | `history`     | list[Match] | Matches history          |
+> | `total_pages` | int         | The total number of page |
 
 #### Match
 
-> | name              | type   | description            |
-> |-------------------|--------|------------------------|
-> | `id`              | int    | Match id               |
-> | `opponent_id`     | int    | Opponent id            |
-> | `date`            | Date   | Match date             |
-> | `result`          | String | Match result           |
-> | `user_score`      | int    | User score             |
-> | `opponent_score`  | int    | Opponent score         |
-> | `elo_delta`       | int    | Elo won / lost         |
-> | `expected_result` | int    | Probability of winning |
+> | name              | type       | description            |
+> |-------------------|------------|------------------------|
+> | `id`              | int        | Match id               |
+> | `opponent_id`     | int / None | Opponent id            |
+> | `date`            | Date       | Match date             |
+> | `result`          | String     | Match result           |
+> | `user_score`      | int        | User score             |
+> | `opponent_score`  | int        | Opponent score         |
+> | `elo_delta`       | int        | Elo won / lost         |
+> | `expected_result` | int        | Probability of winning |
 
 #### Status code
 
@@ -209,6 +210,7 @@
 > | `elo`            | int  | Elo progression            |
 > | `win_rate`       | int  | Win rate progression       |
 > | `matches_played` | int  | Matches played progression |
+> | `friends`        | int  | Friends progression        |
 
 #### Status code
 
@@ -228,9 +230,57 @@
 ### User graph data
 
 <details>
- <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/</b></code></summary>
+ <summary><code>GET</code> <code><b>/statistics/user/{id}/graph/.../</b></code></summary>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/elo/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/win_rate/</b></code>
+
+ <code>GET</code> <code><b>/statistics/user/{id}/graph/matches_played/</b></code>
+
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description  | requirement |
+> |-----------------|--------|--------------|-------------|
+> | `Authorization` | String | Access token | Required    |
+
+#### Query
+
+> | name         | type | default | description                               | requirement |
+> |--------------|------|---------|-------------------------------------------|-------------|
+> | `start`      | date | none    | iso 8061 formatted date                   | required    |
+> | `end`        | date | none    | iso 8061 formatted date                   | required    |
+> | `max_points` | int  | None    | The maximum number of values in the graph | Required    |
+
+### Response
+
+#### Body
+
+> | name         | type        | description                   |
+> |--------------|-------------|-------------------------------|
+> | `graph`      | list[Graph] | Graph data                    |
+> | `num_points` | int         | Number of points in the graph |
+
+#### Graph
+
+> | name    | type | description |
+> |---------|------|-------------|
+> | `date`  | Date | Date        |
+> | `value` | int  | Value       |
+
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `404`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
 
 </details>
+
 
 --------------------------------------------------------------------------------
 
@@ -257,7 +307,7 @@
 > | `loser_id`     | int    | None    | Loser id                | Required    |
 > | `winner_score` | int    | None    | Winner score            | Required    |
 > | `loser_score`  | int    | None    | Loser score             | Required    |
-> | `date`         | String | None    | ISO 8601 formatted date | Required    |
+> | `date`         | String | None    | ISO 8601 formatted date | Optional    |
 
 ### Response
 

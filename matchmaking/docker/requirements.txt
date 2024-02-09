@@ -4,12 +4,15 @@ async-timeout==4.0.3
 attrs==23.2.0
 bidict==0.22.1
 certifi==2023.11.17
+cffi==1.16.0
 charset-normalizer==3.3.2
 colorlog==6.8.0
+cryptography==42.0.2
 frozenlist==1.4.1
 h11==0.14.0
 idna==3.6
 multidict==6.0.4
+pycparser==2.21
 PyJWT==2.8.0
 python-engineio==4.8.2
 python-socketio==5.11.0

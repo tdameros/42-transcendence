@@ -30,7 +30,8 @@ class UserProgressView(View):
         progress = {
             'elo': 0,
             'win_rate': 0,
-            'matches_played': 0
+            'matches_played': 0,
+            'friends': 0,
         }
         date = timezone.now() - datetime.timedelta(days=int(days))
         try:
@@ -38,7 +39,7 @@ class UserProgressView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         if match is None:
-            return JsonResponse({'progress': progress}, status=200)
+            return JsonResponse(progress, status=200)
         try:
             user = User.objects.get(pk=user_id)
         except Exception as e:
@@ -46,7 +47,8 @@ class UserProgressView(View):
         progress['elo'] = user.elo - match.user_elo
         progress['win_rate'] = float(user.win_rate) - float(match.user_win_rate)
         progress['matches_played'] = user.matches_played - match.user_matches_played
-        return JsonResponse({'progress': progress}, status=200)
+        progress['friends'] = user.friends - match.user_friends
+        return JsonResponse(progress, status=200)
 
     @staticmethod
     def validate_get_request(request: HttpRequest, user_id: int) -> (bool, Optional[list[str]]):

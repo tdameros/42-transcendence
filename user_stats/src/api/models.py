@@ -13,7 +13,7 @@ class User(models.Model):
 
 
 class Match(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user')
     opponent = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='opponent')
     user_score = models.IntegerField(null=True)
     opponent_score = models.IntegerField(null=True)
@@ -21,6 +21,7 @@ class Match(models.Model):
     user_elo = models.IntegerField(null=True)
     user_win_rate = models.FloatField(null=True)
     user_matches_played = models.IntegerField(null=True)
+    user_friends = models.IntegerField(null=True)
     user_elo_delta = models.IntegerField(null=True)
     user_expected_result = models.FloatField(null=True)
     date = models.DateTimeField(null=True)

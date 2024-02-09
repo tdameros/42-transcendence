@@ -7,20 +7,21 @@ services:
             context: nginx
             dockerfile: Dockerfile
         expose:
-            - "80"
             - "443"
         ports:
-            - "6002:80"
+            - "6002:443"
         depends_on:
             - user-management
         volumes:
             - user_management_static_volume:/app/static
             - user_management_media_volume:/app/media
+            - ssl_certs:/etc/nginx/ssl
         restart: on-failure
 
 
     user-management:
         networks:
+            - transcendence
             - user_management
         build:
             context: .
@@ -29,10 +30,11 @@ services:
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ user_management.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        gunicorn -c /app/gunicorn.conf.py"
         volumes:
             - user_management_code:/app/user_management
             - common_code:/app/common
+            - ssl_certs:/app/ssl
         expose:
             - "8000"
         depends_on:
