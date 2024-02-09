@@ -688,7 +688,6 @@ class PostFriendsTest(FriendsTest):
         self.create_user(user2)
         friend_id = self.get_id_from_username('User2')
         response = self.post_friends(token1, friend_id)
-        print(response.json())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'friend request sent')
         response = self.post_friends(token1, friend_id)

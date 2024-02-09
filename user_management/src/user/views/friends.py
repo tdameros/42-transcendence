@@ -19,8 +19,9 @@ class FriendsView(View):
         user_id = get_user_id(request)
         try:
             friends = Friend.objects.filter(user_id=user_id)
-        except Friend.DoesNotExist:
-            return JsonResponse(data={'errors': ['User not found test']}, status=404)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+
         body = {
             'friends': [
                 {
