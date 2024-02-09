@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from api import error_messages
+from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
 
@@ -37,9 +37,11 @@ class CreateGameView(View):
 
         errors = []
 
-        game_id = CreateGameView._get_game_id(json_body, errors)
-        players = CreateGameView._get_players(json_body, errors)
-        request_issuer = CreateGameView._get_request_issuer(json_body, errors)
+        request_issuer: str = CreateGameView._get_request_issuer(json_body, errors)
+        game_id: int = CreateGameView._get_game_id(json_body, errors)
+        players: list[Optional[int]] = CreateGameView._get_players(
+            json_body, errors, request_issuer
+        )
 
         if len(errors) > 0:
             raise JsonResponseException({'errors': errors}, status=400)
@@ -63,7 +65,7 @@ class CreateGameView(View):
             return -1
 
     @staticmethod
-    def _get_players(json_body, errors) -> list[Optional[int]]:
+    def _get_players(json_body, errors, request_issuer: str) -> list[Optional[int]]:
         players: any = json_body.get('players')
         if players is None:
             errors.append(error_messages.PLAYERS_FIELD_MISSING)
@@ -72,6 +74,9 @@ class CreateGameView(View):
         if not isinstance(players, list):
             errors.append(error_messages.PLAYERS_FIELD_IS_NOT_A_LIST)
             return []
+
+        if len(players) != 2 and request_issuer == settings.MATCHMAKING:
+            errors.append(error_messages.NEED_2_PLAYERS_FOR_MATCHMAKING)
 
         if (len(players) & (len(players) - 1) != 0) and len(players) != 0:
             errors.append(error_messages.LEN_PLAYERS_IS_NOT_A_POWER_OF_2)
@@ -120,7 +125,7 @@ class CreateGameView(View):
             errors.append(error_messages.REQUEST_ISSUER_IS_NOT_A_STRING)
             return ''
 
-        if request_issuer not in ('tournament', 'matchmaking'):
+        if request_issuer not in (settings.TOURNAMENT, settings.MATCHMAKING):
             errors.append(error_messages.REQUEST_ISSUER_IS_NOT_VALID)
             return ''
 

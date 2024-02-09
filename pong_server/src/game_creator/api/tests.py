@@ -6,6 +6,7 @@ from typing import Optional
 from django.urls import reverse
 
 import api.error_messages as error_messages
+from api import settings
 from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
 
@@ -59,7 +60,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, 2],
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.MATCHMAKING
         }, {
             'game_server_uri': f'http://localhost:{port}'
         }, 201)
@@ -71,7 +72,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, None, None, 4],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'game_server_uri': f'http://localhost:{port}'
         }, 201)
@@ -84,7 +85,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
     def test_missing_game_id(self):
         self.run_test({
             'players': [1, 2],
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.MATCHMAKING
         }, {
             'errors': [error_messages.GAME_ID_FIELD_MISSING]
         }, 400)
@@ -93,7 +94,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 'invalid',
             'players': [1, 2],
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.MATCHMAKING
         }, {
             'errors': [error_messages.GAME_ID_FIELD_IS_NOT_AN_INTEGER]
         }, 400)
@@ -101,7 +102,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
     def test_missing_players(self):
         self.run_test({
             'game_id': 1,
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.MATCHMAKING
         }, {
             'errors': [error_messages.PLAYERS_FIELD_MISSING]
         }, 400)
@@ -110,7 +111,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': 4,
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.MATCHMAKING
         }, {
             'errors': [error_messages.PLAYERS_FIELD_IS_NOT_A_LIST]
         }, 400)
@@ -119,7 +120,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': ['invalid', 2, 4, None],
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.player_is_not_an_optional_int(0)]
         }, 400)
@@ -129,7 +130,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [player_id, player_id, player_id + 1, None],
-            'request_issuer': 'matchmaking'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.player_is_found_multiple_times(player_id)]
         }, 400)
@@ -138,7 +139,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, 2, None, None],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.BOTH_PLAYERS_ARE_NONE]
         }, 400)
@@ -147,7 +148,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, None],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE]
         }, 400)
@@ -156,7 +157,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE]
         }, 400)
@@ -165,18 +166,27 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE]
         }, 400)
 
-    def test_players_size_not_power_of_2(self):
+    def test_players_len_not_power_of_2(self):
         self.run_test({
             'game_id': 1,
             'players': [1, 2, 3],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.LEN_PLAYERS_IS_NOT_A_POWER_OF_2]
+        }, 400)
+
+    def test_players_len_not_2_for_matchmaking(self):
+        self.run_test({
+            'game_id': 1,
+            'players': [1, 2, 3, 4],
+            'request_issuer': settings.MATCHMAKING
+        }, {
+            'errors': [error_messages.NEED_2_PLAYERS_FOR_MATCHMAKING]
         }, 400)
 
     def test_missing_request_issuer(self):
@@ -214,7 +224,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, 2],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.error_creating_game_server(
                 shared_error_messages.NO_AVAILABLE_PORTS)]
@@ -229,7 +239,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
         self.run_test({
             'game_id': 1,
             'players': [1, 2],
-            'request_issuer': 'tournament'
+            'request_issuer': settings.TOURNAMENT
         }, {
             'errors': [error_messages.popen_failed_to_run_command(
                 f"[Errno 2] No such file or directory: '{invalid_path}'")]

@@ -1,8 +1,11 @@
+from api import settings
+
 BAD_JSON_FORMAT = 'Invalid JSON format in request body'
 
 REQUEST_ISSUER_FIELD_MISSING = 'request_issuer field is missing'
 REQUEST_ISSUER_IS_NOT_A_STRING = 'request_issuer field is not a string'
-REQUEST_ISSUER_IS_NOT_VALID = "request_issuer field is not 'tournament' or 'matchmaking'"
+REQUEST_ISSUER_IS_NOT_VALID = (f"request_issuer field is not '{settings.TOURNAMENT}' "
+                               f"or '{settings.MATCHMAKING}'")
 
 GAME_ID_FIELD_MISSING = 'game_id field is missing'
 GAME_ID_FIELD_IS_NOT_AN_INTEGER = 'game_id field is not an integer'
@@ -14,6 +17,7 @@ NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE = ("Need at least 2 players that "
                                            "aren't None to create a game")
 LEN_PLAYERS_IS_NOT_A_POWER_OF_2 = 'len(players) should be a power of 2'
 BOTH_PLAYERS_ARE_NONE = 'Each pair of players should have at least one non-None player'
+NEED_2_PLAYERS_FOR_MATCHMAKING = 'Need len(players) == 2 for matchmaking'
 
 
 def player_is_found_multiple_times(player_id: int) -> str:
