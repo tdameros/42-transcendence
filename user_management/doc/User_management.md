@@ -559,7 +559,7 @@ all fields are mandatory
 
 ```json
 {
-    "friend_id": "1"
+    "friend_id": 1
 }
 ```
 
@@ -590,7 +590,7 @@ all fields are mandatory
 
 ```json
 {
-    "friend_id": "1"
+    "friend_id": 1
 }
 ```
 
