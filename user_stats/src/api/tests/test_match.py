@@ -37,7 +37,8 @@ class MatchTest(TestCase):
         self.assertEqual(match1.user_elo, winner.elo - match1.user_elo_delta)
         self.assertEqual(match1.user_win_rate, winner_before.win_rate)
         self.assertEqual(match1.user_matches_played, winner_before.matches_played)
-        self.assertEqual(match1.date, parser.isoparse(date))
+        if date is not None:
+            self.assertEqual(match1.date, parser.isoparse(date))
 
         self.assertEqual(match2.user_id, loser_id)
         self.assertEqual(match2.opponent_id, winner_id)
@@ -47,7 +48,8 @@ class MatchTest(TestCase):
         self.assertEqual(match2.user_elo, loser.elo - match2.user_elo_delta)
         self.assertEqual(match2.user_win_rate, loser_before.win_rate)
         self.assertEqual(match2.user_matches_played, loser_before.matches_played)
-        self.assertEqual(match2.date, parser.isoparse(date))
+        if date is not None:
+            self.assertEqual(match2.date, parser.isoparse(date))
 
 
 class PostMatch(MatchTest):
@@ -83,7 +85,7 @@ class PostMatch(MatchTest):
         body['winner_score'] = 1000
         body['loser_score'] = 999
         self.assert_match_integrity(body)
-        body['date'] = '2021-01-01T00:00:01+10'
+        body['date'] = '2021-01-02T00:00:01+10'
         self.assert_match_integrity(body)
         User.objects.create(
             id=3,
@@ -95,6 +97,15 @@ class PostMatch(MatchTest):
             friends=1000
         )
         body['winner_id'] = 3
+        self.assert_match_integrity(body)
+
+    def test_valid_match_no_date(self):
+        body = {
+            'winner_id': 1,
+            'loser_id': 2,
+            'winner_score': 10,
+            'loser_score': 5,
+        }
         self.assert_match_integrity(body)
 
     def test_invalid_match_id(self):
@@ -176,7 +187,10 @@ class PostMatch(MatchTest):
         }
         for key in body.keys():
             body_copy = body.copy()
-            del body_copy[key]
+            if key == 'date':
+                body_copy[key] = 'abc'
+            else:
+                del body_copy[key]
             response = self.post_match(body_copy)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(
@@ -184,7 +198,7 @@ class PostMatch(MatchTest):
                 [
                     error.SCORE_REQUIRED if key == 'winner_score' or key == 'loser_score'
                     else error.USER_ID_REQUIRED if key == 'winner_id' or key == 'loser_id'
-                    else error.DATE_REQUIRED
+                    else error.DATE_INVALID
                 ])
 
     def test_invalid_match_body_type(self):
