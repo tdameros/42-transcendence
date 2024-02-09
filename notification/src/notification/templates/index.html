@@ -104,30 +104,6 @@
         addNotification(data.id, title, data.type)
     };
 
-    function setMessage(message) {
-        // Create a new li element
-        var newLi = document.createElement('li');
-
-        // Create a new anchor element
-        var newAnchor = document.createElement('a');
-        newAnchor.className = 'dropdown-item text-wrap';
-        newAnchor.href = '#';
-        newAnchor.textContent = message;
-
-        // Append the anchor element to the li element
-        newLi.appendChild(newAnchor);
-
-        // Get the ul element with the id "notify"
-        var ulElement = document.getElementById('notify');
-
-        // Append the new li element to the ul element
-        ulElement.appendChild(newLi);
-
-        // getting object of count
-        count = document.getElementById('bellCount').getAttribute('data-count');
-        document.getElementById('bellCount').setAttribute('data-count', parseInt(count) + 1);
-    }
-
     function addNotification(id, title, type, friend_id) {
         let notification = document.createElement('li');
         let titleElement = document.createElement('h4');
@@ -169,7 +145,7 @@
         return buttonContainer;
     }
 
-    function buttonAddListener(id, button, uri, method, friend_id, token) {
+    function buttonAddListener(id, button, uri, method, friend_id) {
         button.addEventListener('click', (e) => {
             // fetch(uri, {
             //     method: method,
@@ -191,20 +167,21 @@
             fetch('http://localhost:8000/notification/user/' + id + '/', {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': token,
+                    //TODO: Get access token from local storage
+                    'Authorization': '',
                 }
             }).then(response => {
                 if (!response.ok) {
-                    //TODO: HANDLE ERROR
-                    console.log("Error");
+                    response.json().then(text => console.error(text['errors']));
+                }
+                else {
+                    const notif = document.getElementById(id)
+                    notif.remove();
+                    let count = document.getElementById('bellCount').getAttribute('data-count');
+                    document.getElementById('bellCount').setAttribute('data-count', parseInt(count) - 1);
                 }
             })
-            const notif = document.getElementById(id)
-            notif.remove();
-            let count = document.getElementById('bellCount').getAttribute('data-count');
-            document.getElementById('bellCount').setAttribute('data-count', parseInt(count) - 1);
         });
-         // document.querySelector('.button-container').removeChild(notif)
     }
 
 </script>
