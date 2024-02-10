@@ -1,11 +1,14 @@
 import json
+import requests
 from urllib.parse import parse_qs
 from typing import Optional
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 from common.src.jwt_managers import UserAccessJWTDecoder
+from notification import settings
 from api.models import Notification
 
 
@@ -63,3 +66,28 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 'message': json.dumps(notification_data)
             }
             await self.send(text_data=json.dumps(message_data))
+
+    async def send_friend_status(self, jwt):
+        friend_list = await sync_to_async(requests.get)(
+            settings.USER_MANAGEMENT_FRIEND_ENDPOINT,
+            headers={
+                'Authorization': jwt
+            }
+        )
+        if friend_list.status_code != 200:
+            await self.send(text_data=json.dumps({'message': 'Error while fetching friend list'}))
+            return
+        friend_list = await sync_to_async(list)(friend_list)
+        for friend in friend_list:
+            if friend['status'] == 'accepted':
+                friend_data = {
+                    'type': 'friend_status',
+                    'friend_id': friend['id'],
+                }
+                friend_connected = channel_layer.groups.get(f'{friend['id']}', {}).items()
+                if len(friend_connected) > 0:
+                    friend_data['status'] = 'online'
+                else:
+                    friend_data['status'] = 'offline'
+                message_data = {'message': json.dumps(friend_data)}
+                await self.send(text_data=json.dumps(message_data))

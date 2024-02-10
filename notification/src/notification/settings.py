@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from common.src import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,14 @@ SECRET_KEY = 'django-insecure-!kbu-23j9n_z@7w^#58+f_ilp%_4$!tcl5)d#fe=%dc+wz-v#s
 DEBUG = True
 
 TITLE_MAX_LENGTH = 255
+
+if DEBUG:
+    USER_MANAGEMENT_URL = 'http://localhost:8001/'
+else:
+    USER_MANAGEMENT_URL = settings.USER_MANAGEMENT_URL
+
+USER_MANAGEMENT_FRIEND_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/'
+
 
 ALLOWED_USER_NOTIFICATION_TYPES = ['friend_request', 'tournament_start']
 
