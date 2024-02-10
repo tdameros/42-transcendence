@@ -11,5 +11,5 @@ services:
         expose:
             - "3000"
         ports:
-            - "6000:3000"
+            - "6004:3000"
         restart: on-failure

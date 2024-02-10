@@ -32,13 +32,28 @@ export class BaseApiClient {
     if (this.refreshToken === null) {
       return false;
     }
-    if (!this.accessToken.isValid()) {
-      const isRefresh = await this.refreshAccessToken();
-      if (!isRefresh) {
-        return false;
-      }
+    if (await this.getValidAccessToken() === null) {
+      return false;
     }
     return true;
+    // if (!this.accessToken.isValid()) {
+    //   const isRefresh = await this.refreshAccessToken();
+    //   if (!isRefresh) {
+    //     return false;
+    //   }
+    // }
+    // return true;
+  }
+
+  async getValidAccessToken() {
+    if (this.accessToken.isValid()) {
+      return this.accessToken.jwt;
+    }
+    const isRefresh = await this.refreshAccessToken();
+    if (!isRefresh) {
+      return null;
+    }
+    return this.accessToken.jwt;
   }
 
   async refreshAccessToken() {
