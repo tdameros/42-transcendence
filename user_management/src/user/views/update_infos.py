@@ -15,7 +15,6 @@ class UserUpdateInfosManager:
     FIELD_VALIDATORS = {
         'username': {'validator': is_valid_username},
         'email': {'validator': is_valid_email},
-        'avatar': {'validator': lambda x: True},
         'password': {'validator': is_valid_password},
     }
 
