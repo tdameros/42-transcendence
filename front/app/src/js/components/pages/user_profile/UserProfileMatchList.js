@@ -230,7 +230,6 @@ export class UserProfileMatchList extends Component {
         return false;
       }
     } catch (error) {
-      console.log(error);
       ErrorPage.loadNetworkError();
       return false;
     }

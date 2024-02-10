@@ -1,7 +1,7 @@
 import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {Cookies} from '@js/Cookies.js';
-import {tournamentClient} from '@utils/api';
+import {tournamentClient, userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {TournamentsList} from './TournamentsList.js';
 
@@ -80,6 +80,9 @@ export class Tournaments extends Component {
           this.dispayFinishedTournaments);
       if (response.ok) {
         this.tournaments = body.tournaments;
+        if (!await this.#addAdminUsernamesInTournaments(this.tournaments)) {
+          return;
+        }
         this.tournamentsListComponent.updateTournamentsList(body.tournaments,
             body.page, body['nb-pages']);
         this.#addRowsEventListeners();
@@ -88,6 +91,29 @@ export class Tournaments extends Component {
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #addAdminUsernamesInTournaments(tournaments) {
+    const adminIds = tournaments.map(
+        (tournament) => tournament['admin-id'],
+    );
+    try {
+      const {response, body} = await userManagementClient.getUsernameList(
+          adminIds,
+      );
+      if (response.ok) {
+        tournaments.forEach((tournament) => {
+          tournament['admin-username'] = body[tournament['admin-id']];
+        });
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+      return false;
     }
   }
 
