@@ -2,16 +2,16 @@ import asyncio
 import json
 import logging
 from time import time
-from typing import Optional, Any
+from typing import Any, Optional
 
-import socketio
-import requests
-from aiohttp import web
-
-import src.settings as settings
-import src.error_message as error
 import common.src.settings as common_settings
+import requests
+import socketio
+from aiohttp import web
 from common.src.internal_requests import InternalRequests
+
+import src.error_message as error
+import src.settings as settings
 
 from .authenticate import authenticate_user
 from .logging import setup_logging
@@ -45,7 +45,7 @@ class Matchmaking:
                 if opponent is not None:
                     self.found_matches.append((player, opponent))
             for player, opponent in self.found_matches:
-                    await self.find_match(player, opponent)
+                await self.find_match(player, opponent)
             self.found_matches = []
             for player in self.player_to_remove:
                 logging.debug(f'Player removed from the queue: {player}')
@@ -111,7 +111,6 @@ class Matchmaking:
         logging.debug('send_error')
         data = {'error': error_message}
         await self.sio.emit('error', data, room=player.get('sid'))
-
 
     @staticmethod
     def get_elo_threshold(player: dict) -> int:

@@ -1,5 +1,5 @@
-from time import time
 import unittest
+from time import time
 
 from src.matchmaking import Matchmaking
 
