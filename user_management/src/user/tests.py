@@ -401,13 +401,19 @@ class Username(TestCase):
         user = User.objects.all().first()
         url = reverse('username', args=[user.username])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(user.username, result.json()['username'])
         self.assertEqual(user.id, result.json()['id'])
 
     def test_invalid_username(self):
+        User.objects.create(username='forjwt', email='a@a.fr', password='Validpass42*')
+        user_id = User.objects.all().first().id
         url = reverse('username', args=['invalid_username_123'])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user_id)[1]}')
         self.assertEqual(result.status_code, 404)
         self.assertTrue('errors' in result.json())
 
@@ -640,7 +646,7 @@ class FriendsTest(TestCase):
 
     def get_id_from_username(self, username):
         url = reverse('username', args=[username])
-        response = self.client.get(url)
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         return response.json()['id']
 
 

@@ -345,6 +345,8 @@ will return public user information
 
 ### Parameters
 
+Authorization: {access_token}
+
 #### In the URL (mandatory)
 {username}
 >
