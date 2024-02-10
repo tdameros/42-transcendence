@@ -36,4 +36,8 @@ export class Player {
   get paddle() {
     return this.#paddle;
   }
+
+  getPosition() {
+    return this.#threeJSGroup.position;
+  }
 }

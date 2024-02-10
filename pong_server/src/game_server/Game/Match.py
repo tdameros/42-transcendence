@@ -18,12 +18,12 @@ class _MatchPositionFinder(object):
     @staticmethod
     def get_position(match_location: MatchLocation) -> numpy.ndarray:
         match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position:
+        if match_position is not None:
             return match_position.copy()
 
         if match_location.game_round == 0:
-            x: float = (match_location.game_round * settings.MATCH_SIZE[0]
-                        + match_location.game_round * settings.MATCHES_X_OFFSET)
+            x: float = (match_location.match * settings.MATCH_SIZE[0]
+                        + match_location.match * settings.MATCHES_X_OFFSET)
             match_position = numpy.array([x, 0., 0.])
         else:
             match_below_left: MatchLocation = MatchLocation(match_location.game_round - 1,
@@ -43,7 +43,7 @@ class _MatchPositionFinder(object):
     @staticmethod
     def _get_x_position(match_location: MatchLocation) -> float:
         match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position:
+        if match_position is not None:
             return match_position[0]
         return _MatchPositionFinder.get_position(match_location)[0]
 
@@ -52,6 +52,7 @@ class Match(object):
     def __init__(self, match_location: MatchLocation):
         self.LOCATION: MatchLocation = match_location
         self._points: list[int] = [0, 0]
+        self._winner_index: Optional[int] = None
 
         self._position: numpy.ndarray = _MatchPositionFinder.get_position(match_location)
 
@@ -100,19 +101,18 @@ class Match(object):
         self._points[player_index] += 1
         # TODO Send point update to tournament / matchmaking
 
-        if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
-            await self._finish_match(player_index)
-            return
+        # TODO uncomment the following lines
+        # if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
+        #     self._winner_index = player_index
+        #     return
 
         await self._prepare_ball_for_match()
 
-    async def _finish_match(self, winner_index: int):
-        await self._prepare_ball_for_match()  # TODO Remove this line once the
-        #                                       function is implemented
+    def is_full(self) -> bool:
+        return self._players[0] is not None and self._players[1] is not None
 
-        pass
-        # TODO Tell the GameManager that the match is finished
-        # TODO Send match finish to tournament / matchmaking
+    def is_over(self) -> bool:
+        return self._winner_index is not None
 
     async def _prepare_ball_for_match(self):
         self._ball.prepare_for_match()
@@ -130,3 +130,6 @@ class Match(object):
 
     def get_position(self) -> numpy.ndarray:
         return self._position
+
+    def get_winner_index(self) -> Optional[int]:
+        return self._winner_index

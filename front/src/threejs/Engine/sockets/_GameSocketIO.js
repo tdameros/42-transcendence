@@ -90,6 +90,27 @@ export class _GameSocketIO {
       match.setBallPosition(data['position']);
     });
 
+    this.#socketIO.on('player_won_match', async (data) => {
+      while (! (this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
+      console.log('player_won_match received');
+
+      const winnerIndex = data['winner_index'];
+      const finishedMatchLocation = data['finished_match_location'];
+      this.#engine.scene.removeLooserFromMatch(finishedMatchLocation, 1 - winnerIndex);
+
+      const winner = this.#engine.scene.getMatchFromLocation(finishedMatchLocation)
+          .players[winnerIndex];
+
+      const newMatchJson = data['new_match_json'];
+      this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
+
+      this.#engine.scene.addWinnerToMatch(newMatchJson['location'], winner, winnerIndex);
+
+      this.#engine.scene.deleteMatch(finishedMatchLocation);
+    });
+
     this.#socketIO.connect();
   }
 

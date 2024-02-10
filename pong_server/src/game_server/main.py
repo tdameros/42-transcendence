@@ -12,29 +12,33 @@ from shared_code.setup_logging import setup_logging
 
 
 async def background_task():
-    try:
-        while not ClientManager.have_all_players_joined():
-            # TODO Add a time out and make the players that don't join forfeit
-            #      their games
-            await Server.sio.sleep(.3)
+    # try:
+    while not ClientManager.have_all_players_joined():
+        # TODO Add a time out and make the players that don't join forfeit
+        #      their games
+        await Server.sio.sleep(.3)
 
-        await GameManager.start_game()  # Blocks till the game is over
-        Server.should_stop = True
+    await GameManager.start_game()  # Blocks till the game is over
 
-    except Exception as e:
-        try:  # Attempt graceful exit
-            print(f'Error: in background_task: {e}')
-            """ Do not use logging! This should always be printed as the game
-                creator may read it """
-            logging.critical(f'Error in background_task: {e}')
-            Server.exit_code = 2
-            Server.should_stop = True
-            await Server.sio.sleep(30)
-            # If everything goes well, the process will exit(exit_code) before this line
-            # (see main())
-            exit(3)
-        except Exception:  # Graceful exit failed!
-            exit(4)
+    # TODO disconnect all clients
+
+    Server.should_stop = True
+
+    #
+    # except Exception as e:
+    #     try:  # Attempt graceful exit
+    #         print(f'Error: in background_task: {e}')
+    #         """ Do not use logging! This should always be printed as the game
+    #             creator may read it """
+    #         logging.critical(f'Error in background_task: {e}')
+    #         Server.exit_code = 2
+    #         Server.should_stop = True
+    #         await Server.sio.sleep(30)
+    #         # If everything goes well, the process will exit(exit_code) before this line
+    #         # (see main())
+    #         exit(3)
+    #     except Exception:  # Graceful exit failed!
+    #         exit(4)
 
 
 async def main() -> int:

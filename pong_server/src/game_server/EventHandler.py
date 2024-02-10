@@ -48,18 +48,23 @@ class EventHandler(object):
 
         user_id = ClientManager.get_user_id(sid)
         player = GameManager.get_player(user_id)
-        if player.get_location().is_looser:
-            return
 
         success, client_paddle_position, direction = (EventHandler
                                                       ._get_update_paddle_args(player_data))
         if not success:
             return
 
-        await AntiCheat.update_paddle_position_and_direction(client_paddle_position,
-                                                             direction,
-                                                             player,
-                                                             sid)
+        if player.get_location().is_looser:
+            paddle_position = player.get_paddle().get_position()
+            paddle_position[1] = client_paddle_position
+            await EventEmitter.update_paddle(
+                player.get_location(), direction, paddle_position, None
+            )
+        else:
+            await AntiCheat.update_paddle_position_and_direction(client_paddle_position,
+                                                                 direction,
+                                                                 player,
+                                                                 sid)
 
     @staticmethod
     def _get_update_paddle_args(player_data) -> (bool, Optional[float], Optional[str]):

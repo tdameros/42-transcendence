@@ -42,5 +42,14 @@ class Player(object):
     def get_location(self) -> PlayerLocation:
         return self._player_location
 
+    def set_location(self, player_location: PlayerLocation):
+        self._player_location = player_location
+
+    def get_position(self) -> numpy.ndarray:
+        return self._position
+
+    def set_position(self, position: numpy.ndarray):
+        self._position = position.copy()
+
     def get_paddle(self):
         return self._paddle

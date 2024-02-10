@@ -89,9 +89,9 @@ export class _KeyHookHandler {
   }
 
   async #onFocusLoss() {
-    await this.#stopMoving();
     this.#upKeyIsPressed = false;
     this.#downKeyIsPressed = false;
+    await this.#stopMoving();
   }
 
   async #stopMoving() {
@@ -101,9 +101,9 @@ export class _KeyHookHandler {
         'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'none',
       };
-      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'none';
       this.#engine.scene.setCurrentPlayerPaddleDirection('none');
+      await this.#engine.emit('update_paddle', arg);
     }
   }
 
@@ -114,9 +114,9 @@ export class _KeyHookHandler {
         'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'up',
       };
-      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'up';
       this.#engine.scene.setCurrentPlayerPaddleDirection('up');
+      await this.#engine.emit('update_paddle', arg);
     }
   }
 
@@ -127,9 +127,9 @@ export class _KeyHookHandler {
         'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'down',
       };
-      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'down';
       this.#engine.scene.setCurrentPlayerPaddleDirection('down');
+      await this.#engine.emit('update_paddle', arg);
     }
   }
 }

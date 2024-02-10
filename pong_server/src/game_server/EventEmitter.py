@@ -47,3 +47,13 @@ class EventEmitter(object):
             'position': vector_to_dict(position),
             'movement': vector_to_dict(movement)
         })
+
+    @staticmethod
+    async def player_won_match(finished_match_location: MatchLocation,
+                               winner_index: int,
+                               new_match_json: dict):
+        await Server.emit('player_won_match', rooms.ALL_PLAYERS, {
+            'finished_match_location': finished_match_location.to_json(),
+            'winner_index': winner_index,
+            'new_match_json': new_match_json,
+        })
