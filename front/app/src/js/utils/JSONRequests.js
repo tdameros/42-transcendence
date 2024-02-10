@@ -1,4 +1,3 @@
-
 export class JSONRequests {
   static async patch(url, params={}, headers={}) {
     const options = {
