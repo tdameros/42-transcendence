@@ -46,3 +46,12 @@ class AvatarView(View):
         save_image_from_base64(base64_string, user)
 
         return JsonResponse(data={'message': 'Avatar updated'}, status=200)
+
+    @staticmethod
+    def delete(request, username):
+        user = User.objects.filter(username=username).first()
+        if not user:
+            return JsonResponse(data={'error': 'User not found'}, status=404)
+        user.avatar = None
+        user.save()
+        return JsonResponse(data={'message': 'Avatar deleted'}, status=200)
