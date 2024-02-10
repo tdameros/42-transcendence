@@ -461,7 +461,7 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 1)
@@ -471,7 +471,7 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 0)
@@ -516,7 +516,7 @@ class TestsUserUpdateInfos(TestCase):
         # 4)
         self.assertEqual(result.status_code, 401)
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{access_token}')
+                                  HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 200)
         user = User.objects.filter(username='UpdatedUser').first()
         self.assertEqual(user.username, 'UpdatedUser')
@@ -533,7 +533,7 @@ class TestsUserUpdateInfos(TestCase):
 
         url = reverse('update-infos')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{access_token}')
+                                  HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 400)
         self.assertTrue('errors' in result.json())
         self.assertTrue(result.json()['errors'])
@@ -605,7 +605,7 @@ class TestUserIdList(TestCase):
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 401)
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         for user in UserList:
             self.assertEqual(result.json().get(str(user.id)), user.username)
         data = {

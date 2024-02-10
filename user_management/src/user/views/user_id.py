@@ -22,6 +22,7 @@ class UserIdView(View):
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
+
 @method_decorator(user_authentication(['POST']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class UserIdListView(View):
