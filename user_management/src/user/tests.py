@@ -658,6 +658,7 @@ class FriendsTest(TestCase):
     def get_id_from_username(self, username):
         url = reverse('username', args=[username])
         response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+        print(response.json())
         return response.json()['id']
 
 
