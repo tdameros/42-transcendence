@@ -33,7 +33,7 @@ class AvatarView(View):
         except Exception as e:
             return JsonResponse(data={'error': f'Invalid JSON : {e}'}, status=400)
         user = User.objects.filter(username=username).first()
-        base64_string = json_request.get('image')
+        base64_string = json_request.get('avatar')
         if not base64_string:
             return JsonResponse(data={'error': 'Image not found'}, status=400)
         if not user:
