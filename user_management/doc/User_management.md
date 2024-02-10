@@ -265,6 +265,8 @@ will return public user information
 
 ### Parameters
 
+Authorization: {access_token}
+
 #### In the URL (mandatory)
  {user_id}
 > 
@@ -291,6 +293,8 @@ will return a list of user ids
  <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
 
 ### Parameters
+
+Authorization: {access_token}
 
 #### Body
 
