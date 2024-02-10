@@ -1,6 +1,7 @@
 from django.conf.urls.static import static
 from django.urls import path
 
+from user.views.avatar import AvatarView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
@@ -16,7 +17,6 @@ from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
 from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdListView, UserIdView
 from user.views.username import UsernameView
-from user.views.avatar import AvatarView
 from user_management import settings
 
 urlpatterns = [
