@@ -132,7 +132,7 @@ else:
                 'NAME': 'mydatabase',
                 'USER': 'myuser',
                 'PASSWORD': 'mypassword',
-                'HOST': 'tournament-db',
+                'HOST': 'notification-db',
                 'PORT': '5432',
             }
         }

@@ -29,7 +29,8 @@ services:
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
-                        gunicorn --chdir src/ notification.wsgi:application -w 4 -b 0.0.0.0:8000"
+                        cd /app/src &&
+                        daphne -b 0.0.0.0 -p 8000 notification.asgi:application"
         volumes:
             - notification_code:/app/notification
             - common_code:/app/common

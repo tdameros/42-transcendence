@@ -1,5 +1,4 @@
 import json
-import requests
 from urllib.parse import parse_qs
 from typing import Optional
 
@@ -8,6 +7,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 
 from common.src.jwt_managers import UserAccessJWTDecoder
+from common.src.internal_requests import InternalRequests
 from notification import settings
 from api.models import Notification
 
@@ -94,7 +94,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @staticmethod
     async def get_friend_list(jwt):
-        friend_list = await sync_to_async(requests.get)(
+        friend_list = await sync_to_async(InternalRequests.get)(
             settings.USER_MANAGEMENT_FRIEND_ENDPOINT,
             headers={
                 'Authorization': jwt
