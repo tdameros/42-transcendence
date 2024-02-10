@@ -6,11 +6,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src.jwt_managers import user_authentication
 from user.models import User
+from user_management.JWTManager import get_user_id
 from user_management.settings import MEDIA_ROOT, STATIC_ROOT
 from user_management.utils import save_image_from_base64
 
 
+@method_decorator(user_authentication(['POST', 'GET', 'DELETE']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class AvatarView(View):
     @staticmethod
@@ -33,7 +36,11 @@ class AvatarView(View):
             json_request = json.loads(request.body.decode('utf-8'))
         except Exception as e:
             return JsonResponse(data={'error': f'Invalid JSON : {e}'}, status=400)
-        user = User.objects.filter(username=username).first()
+        user_id = get_user_id(request)
+        user = User.objects.filter(id=user_id).first()
+        if user.username != username:
+            return JsonResponse(data={'error': 'User not found'}, status=404)
+
         base64_string = json_request.get('avatar')
         if not base64_string:
             return JsonResponse(data={'error': 'Image not found'}, status=400)
@@ -44,13 +51,17 @@ class AvatarView(View):
         if not base64_string.startswith('data:image/png;base64,'):
             return JsonResponse(data={'error': 'Invalid image format'}, status=400)
         base64_string = base64_string.replace('data:image/png;base64,', '')
-        save_image_from_base64(base64_string, user)
-
+        success, error = save_image_from_base64(base64_string, user)
+        if not success:
+            return JsonResponse(data={'error': error}, status=400)
         return JsonResponse(data={'message': 'Avatar updated'}, status=200)
 
     @staticmethod
     def delete(request, username):
-        user = User.objects.filter(username=username).first()
+        user_id = get_user_id(request)
+        user = User.objects.filter(id=user_id).first()
+        if user.username != username:
+            return JsonResponse(data={'error': 'User not found'}, status=404)
         if not user:
             return JsonResponse(data={'error': 'User not found'}, status=404)
         file_to_delete = f'{MEDIA_ROOT}/{str(user.avatar)}'
