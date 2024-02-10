@@ -39,7 +39,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 2,
                     'is-private': False,
                     'status': 'Created',
-                    'admin_id': 1
+                    'admin-id': 1
                 },
             ]
         })
@@ -73,7 +73,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 2,
                     'is-private': False,
                     'status': 'Created',
-                    'admin_id': 1
+                    'admin-id': 1
                 },
                 {
                     'id': 3,
@@ -82,7 +82,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 0,
                     'is-private': False,
                     'status': 'Created',
-                    'admin_id': 2
+                    'admin-id': 2
                 },
                 {
                     'id': 4,
@@ -91,7 +91,7 @@ class TestMyActiveTournamentView(TestCase):
                     'nb-players': 0,
                     'is-private': False,
                     'status': 'Created',
-                    'admin_id': 2
+                    'admin-id': 2
                 }
             ]
         })
