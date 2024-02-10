@@ -1,5 +1,5 @@
-import {Component} from '../Component.js';
-import {ErrorPage} from '../../utils/ErrorPage.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 export class NotFound extends Component {
   constructor() {

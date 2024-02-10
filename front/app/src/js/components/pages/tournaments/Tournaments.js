@@ -1,6 +1,8 @@
-import {Component} from '../../Component.js';
-import {ErrorPage} from '../../../utils/ErrorPage.js';
-import {Cookies} from '../../../Cookies.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {Cookies} from '@js/Cookies.js';
+import {tournamentClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 import {TournamentsList} from './TournamentsList.js';
 
 export class Tournaments extends Component {
@@ -10,8 +12,8 @@ export class Tournaments extends Component {
 
 
   render() {
-    if (!window.ApiClient.isAuth()) {
-      window.router.redirect('/signin/');
+    if (!tournamentClient.isAuth()) {
+      getRouter().redirect('/signin/');
       return false;
     }
     return (`
@@ -72,7 +74,7 @@ export class Tournaments extends Component {
     this.dispayFinishedTournaments = Cookies.get(
         TournamentsList.finishedCheckBoxCookie) === 'true';
     try {
-      const {response, body} = await window.ApiClient.getTournaments(this.id,
+      const {response, body} = await tournamentClient.getTournaments(this.id,
           10,
           this.displayPrivateTournaments,
           this.dispayFinishedTournaments);
@@ -82,7 +84,7 @@ export class Tournaments extends Component {
             body.page, body['nb-pages']);
         this.#addRowsEventListeners();
       } else {
-        window.router.redirect('/signin/');
+        getRouter().redirect('/signin/');
       }
     } catch (error) {
       ErrorPage.loadNetworkError();

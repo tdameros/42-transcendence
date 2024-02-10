@@ -1,4 +1,3 @@
-
 export class Keys {
   static digitKeyMaxCode = 57;
   static digitKeyMinCode = 48;

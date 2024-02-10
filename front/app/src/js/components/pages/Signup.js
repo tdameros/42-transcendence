@@ -1,7 +1,9 @@
-import {Component} from '../Component.js';
-import {InputValidator} from '../../utils/InputValidator.js';
-import {BootstrapUtils} from '../../utils/BootstrapUtils.js';
-import {ErrorPage} from '../../utils/ErrorPage.js';
+import {Component} from '@components';
+import {InputValidator} from '@utils/InputValidator.js';
+import {BootstrapUtils} from '@utils/BootstrapUtils.js';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {userManagementClient} from '@utils/api/index.js';
+import {getRouter} from '@js/Router.js';
 
 export class Signup extends Component {
   constructor() {
@@ -17,8 +19,8 @@ export class Signup extends Component {
   }
 
   render() {
-    if (window.ApiClient.isAuth()) {
-      window.router.redirect('/');
+    if (userManagementClient.isAuth()) {
+      getRouter().redirect('/');
       return false;
     }
     return (`
@@ -145,7 +147,7 @@ export class Signup extends Component {
 
     this.haveAccount = this.querySelector('#have-account');
     super.addComponentEventListener(this.haveAccount, 'click', () =>
-      window.router.navigate('/signin/'),
+      getRouter().navigate('/signin/'),
     );
     this.alertForm = this.querySelector('#alert-form');
     this.signupBtn = this.querySelector('#signupBtn');
@@ -176,7 +178,7 @@ export class Signup extends Component {
 
   async #usernameExist() {
     try {
-      const {response, body} = await window.ApiClient.usernameExist(
+      const {response, body} = await userManagementClient.usernameExist(
           this.username.value,
       );
       if (response.ok && body.is_taken) {
@@ -216,7 +218,7 @@ export class Signup extends Component {
 
   async #emailExist() {
     try {
-      const {response, body} = await window.ApiClient.emailExist(
+      const {response, body} = await userManagementClient.emailExist(
           this.email.value,
       );
       if (response.ok && body.is_taken) {
@@ -327,12 +329,12 @@ export class Signup extends Component {
 
   async #signupHandler() {
     try {
-      const {response, body} = await window.ApiClient.signUp(
+      const {response, body} = await userManagementClient.signUp(
           this.username.value, this.email.value, this.password.value);
       if (response.ok) {
-        window.ApiClient.refreshToken = body.refresh_token;
-        await window.ApiClient.restoreCache();
-        window.router.navigate('/');
+        userManagementClient.refreshToken = body.refresh_token;
+        await userManagementClient.restoreCache();
+        getRouter().navigate('/');
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');

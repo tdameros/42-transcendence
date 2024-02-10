@@ -1,5 +1,5 @@
-import {Component} from '../Component.js';
-import {Theme} from '../../Theme.js';
+import {Component} from '@components';
+import {Theme} from '@js/Theme.js';
 
 export class ThemeButton extends Component {
   constructor() {
