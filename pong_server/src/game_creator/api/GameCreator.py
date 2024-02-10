@@ -2,9 +2,10 @@ import os
 import subprocess
 from typing import AnyStr, Optional
 
+import shared_code.error_messages
 from api import error_messages
 from api.JsonResponseException import JsonResponseException
-import shared_code.error_messages
+
 
 class GameCreator(object):
     @staticmethod
