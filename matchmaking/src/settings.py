@@ -5,12 +5,12 @@ DEBUG = False
 if DEBUG:
     LOG_LEVEL = logging.DEBUG
 else:
-    LOG_LEVEL = logging.INFO
+    LOG_LEVEL = logging.DEBUG
 
 if DEBUG:
     USER_STATS_URL = 'http://localhost:8000/'
 else:
-    USER_STATS_URL = 'http://user-management-nginx/'
+    USER_STATS_URL = 'http://user-stats-nginx/'
 
 USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
 

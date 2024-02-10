@@ -20,7 +20,7 @@ class Matchmaking:
         # TODO: change allowed origin to real client address
         # for now the allowed address is the test server
         self.sio = socketio.AsyncServer(
-            cors_allowed_origins=['http://localhost:5000'],
+            cors_allowed_origins='*',
             logger=False,
             engineio_logger=False,
         )
