@@ -1,4 +1,5 @@
 import json
+import os
 
 from django.http import FileResponse, JsonResponse
 from django.utils.decorators import method_decorator
@@ -52,6 +53,12 @@ class AvatarView(View):
         user = User.objects.filter(username=username).first()
         if not user:
             return JsonResponse(data={'error': 'User not found'}, status=404)
+        file_to_delete = f'{MEDIA_ROOT}/{str(user.avatar)}'
         user.avatar = None
         user.save()
+        try:
+            os.remove(file_to_delete)
+        except Exception as e:
+            return JsonResponse(data={'error': f'Error deleting file : {e}'}, status=500)
+
         return JsonResponse(data={'message': 'Avatar deleted'}, status=200)

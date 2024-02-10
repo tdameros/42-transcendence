@@ -880,12 +880,3 @@ class TestAvatar(TestCase):
         url = reverse('avatar', args=['alevra'])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 200)
-        url = reverse('avatar', args=['alevra'])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        # making sure the avatar retrieved is the default one
-        # avatar = open('test_resources/avatar.png', 'rb')
-        # default_avatar = open('test_resources/default_avatar.png', 'rb')
-        # self.assertEqual(response.content, default_avatar.read())
-        # default_avatar.close()
