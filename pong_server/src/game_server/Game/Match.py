@@ -18,7 +18,7 @@ class _MatchPositionFinder(object):
     @staticmethod
     def get_position(match_location: MatchLocation) -> numpy.ndarray:
         match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position:
+        if match_position is not None:
             return match_position.copy()
 
         if match_location.game_round == 0:
@@ -43,7 +43,7 @@ class _MatchPositionFinder(object):
     @staticmethod
     def _get_x_position(match_location: MatchLocation) -> float:
         match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position:
+        if match_position is not None:
             return match_position[0]
         return _MatchPositionFinder.get_position(match_location)[0]
 

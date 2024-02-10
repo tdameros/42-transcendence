@@ -15,8 +15,8 @@ class GameManager(object):
 
     _loosers: list[Player] = []
     _matches: list[Match] = []
-    #             dict[tuple[game_round, index_in_round], Match]
-    _match_table: dict[tuple[int, int], Match] = {}
+    #             dict[MatchLocation, Match]
+    _match_table: dict[MatchLocation, Match] = {}
     #            dict[player_id, Player]
     _player_map: dict[int, Player] = {}
 
@@ -81,7 +81,7 @@ class GameManager(object):
 
     @staticmethod
     def get_match(match_location: MatchLocation) -> Optional[Match]:
-        return GameManager._match_table.get((match_location.game_round, match_location.match))
+        return GameManager._match_table.get(match_location)
 
     @staticmethod
     def get_player(player_id: int) -> Player:
@@ -89,13 +89,18 @@ class GameManager(object):
 
     @staticmethod
     def _create_player(player_id: int, player_location: PlayerLocation):
-        match = GameManager.get_match(player_location.match_location)
-        if not match:
-            match_location = player_location.match_location
-            match = Match(match_location)
-            GameManager._matches.append(match)
-            GameManager._match_table[(match_location.game_round, match_location.match)] = match
+        match = GameManager._get_or_create_match(player_location.match_location)
 
         player = Player(player_id, player_location, bool(player_location.player_index))
         GameManager._player_map[player_id] = player
         match.set_player(player_location.player_index, player)
+
+    @staticmethod
+    def _get_or_create_match(match_location: MatchLocation) -> Match:
+        match = GameManager.get_match(match_location)
+        if not match:
+            match = Match(match_location)
+            GameManager._matches.append(match)
+            GameManager._match_table[match_location] = match
+        return match
+
