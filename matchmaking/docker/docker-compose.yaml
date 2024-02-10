@@ -5,11 +5,14 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: python -m src.matchmaking
+        command: sh -c "cp -r /app/matchmaking /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python -m src.matchmaking"
         volumes:
-            - matchmaking_code:/app/src/
+            - matchmaking_code:/app/matchmaking
+            - common_code:/app/common
         expose:
             - "3000"
         ports:
-            - "6000:3000"
+            - "6004:3000"
         restart: on-failure

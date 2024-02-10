@@ -40,6 +40,10 @@ import {
   Navbar,
 } from './Navbar';
 
+import {
+  Game,
+} from './game';
+
 customElements.define('github-button-component', GithubButton);
 customElements.define('intra-button-component', IntraButton);
 customElements.define('theme-button-component', ThemeButton);
@@ -84,6 +88,8 @@ customElements.define('alert-component', Alert);
 customElements.define('error-component', Error);
 
 customElements.define('navbar-component', Navbar);
+
+customElements.define('game-component', Game);
 
 export {
   Component,
