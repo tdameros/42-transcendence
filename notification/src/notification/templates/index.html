@@ -144,12 +144,16 @@
 
     function buttonAddListenerRouter(notification, button) {
         if (notification.type === 'friend_request') {
-            if (button.textContent === 'Accept') {
+            if (button.textContent === 'Accept')
                 acceptFriendRequestListener(notification, button);
-            }
-            else if (button.textContent === 'Decline') {
+            else if (button.textContent === 'Decline')
                 declineFriendRequestListener(notification, button);
-            }
+        }
+        else if (notification.type === 'tournament_start') {
+            if (button.textContent === 'Accept')
+                acceptTournamentRequestListener(notification, button);
+            else if (button.textContent === 'Decline')
+                declineTournamentRequestListener(notification, button);
         }
     }
 
@@ -194,6 +198,19 @@
                 console.log(response)
                 deleteNotification(notification.id);
             });
+        });
+    }
+
+    function acceptTournamentRequestListener(notification, button) {
+        button.addEventListener('click', (e) => {
+            window.location.href = 'http://localhost:8001/tournament/' + notification.data + '/';
+            deleteNotification(notification.id);
+        });
+    }
+
+    function declineTournamentRequestListener(notification, button) {
+        button.addEventListener('click', (e) => {
+            deleteNotification(notification.id);
         });
     }
 
