@@ -1,7 +1,9 @@
-import {Component} from '../../Component.js';
-import {ErrorPage} from '../../../utils/ErrorPage.js';
-import {TournamentBracket} from './TournamentBracket.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {TournamentBracket} from '@pages';
 import {Modal} from 'bootstrap';
+import {tournamentClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -95,16 +97,16 @@ export class TournamentDetails extends Component {
   async loadTournamentDetails(tournamentId) {
     this.#loadPlaceholder();
     try {
-      const {response, body} = await window.ApiClient.getTournament(
+      const {response, body} = await tournamentClient.getTournament(
           tournamentId,
       );
       if (response.ok) {
-        this.userId = window.ApiClient.userId;
+        this.userId = tournamentClient.userId;
         this.tournamentId = tournamentId;
         this.tournament = body;
         await this.#loadContent();
       } else {
-        window.router.redirect('/signin/');
+        getRouter().redirect('/signin/');
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
@@ -215,7 +217,7 @@ export class TournamentDetails extends Component {
 
   async #loadBracket() {
     try {
-      const {response, body} = await window.ApiClient.getTournamentMatches(
+      const {response, body} = await tournamentClient.getTournamentMatches(
           this.tournamentId,
       );
       if (response.ok) {
@@ -225,7 +227,7 @@ export class TournamentDetails extends Component {
         this.body.innerHTML = '';
         this.body.appendChild(bracket);
       } else {
-        window.router.redirect('/signin/');
+        getRouter().redirect('/signin/');
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
@@ -240,7 +242,7 @@ export class TournamentDetails extends Component {
 
   async #generateMatches() {
     try {
-      const {response, body} = await window.ApiClient.generateMatches(
+      const {response, body} = await tournamentClient.generateMatches(
           this.tournamentId,
       );
       if (response.ok) {
@@ -258,7 +260,7 @@ export class TournamentDetails extends Component {
 
   async #startTournament() {
     try {
-      const {response, body} = await window.ApiClient.startTournament(
+      const {response, body} = await tournamentClient.startTournament(
           this.tournamentId,
       );
       if (response.ok) {
@@ -274,11 +276,11 @@ export class TournamentDetails extends Component {
 
   async #deleteBtnHandler() {
     try {
-      const {response, body} = await window.ApiClient.deleteTournament(
+      const {response, body} = await tournamentClient.deleteTournament(
           this.tournamentId,
       );
       if (response.ok) {
-        window.router.navigate('/tournaments/');
+        getRouter().navigate('/tournaments/');
       } else {
         this.alertModal.setAttribute('alert-message', body['errors'][0]);
         this.alertModal.setAttribute('alert-display', 'true');
@@ -303,7 +305,7 @@ export class TournamentDetails extends Component {
     const nickname = this.joinModalNickname.value;
     const password = this.modalPassword.value;
     try {
-      const {response, body} = await window.ApiClient.joinTournament(
+      const {response, body} = await tournamentClient.joinTournament(
           this.tournamentId, nickname, password,
       );
       if (response.ok) {

@@ -1,4 +1,4 @@
-import {Component} from '../Component.js';
+import {Component} from '@components';
 
 export class GithubButton extends Component {
   constructor() {

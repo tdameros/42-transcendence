@@ -20,6 +20,16 @@ import {
   ResetPasswordNew,
 } from './reset_password';
 
+import {
+  UserProfile,
+  UserProfileChart,
+  UserProfileChartsCards,
+  UserProfileHeader,
+  UserProfileMatchList,
+  UserProfileStatsCard,
+  UserProfileStatsCards,
+} from './user_profile';
+
 export {
   ResetPassword,
   ResetPasswordCode,
@@ -30,6 +40,13 @@ export {
   TournamentDetails,
   Tournaments,
   TournamentsList,
+  UserProfile,
+  UserProfileChart,
+  UserProfileChartsCards,
+  UserProfileHeader,
+  UserProfileMatchList,
+  UserProfileStatsCard,
+  UserProfileStatsCards,
   Home,
   Multiplayer,
   NotFound,

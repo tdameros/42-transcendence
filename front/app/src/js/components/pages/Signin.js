@@ -1,5 +1,7 @@
-import {Component} from '../Component.js';
-import {ErrorPage} from '../../utils/ErrorPage.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {userManagementClient} from '@utils/api/index.js';
+import {getRouter} from '@js/Router.js';
 
 export class Signin extends Component {
   constructor() {
@@ -9,8 +11,8 @@ export class Signin extends Component {
   }
 
   render() {
-    if (window.ApiClient.isAuth()) {
-      window.router.redirect('/');
+    if (userManagementClient.isAuth()) {
+      getRouter().redirect('/');
       return false;
     }
     return (`
@@ -84,11 +86,11 @@ export class Signin extends Component {
   postRender() {
     this.forgotPassword = this.querySelector('#forgot-password');
     super.addComponentEventListener(this.forgotPassword, 'click', () => {
-      window.router.navigate('/reset-password/');
+      getRouter().navigate('/reset-password/');
     });
     this.donthaveAccount = this.querySelector('#dont-have-account');
     super.addComponentEventListener(this.donthaveAccount, 'click', () => {
-      window.router.navigate('/signup/');
+      getRouter().navigate('/signup/');
     });
     this.signinBtn = this.querySelector('#signin-btn');
     super.addComponentEventListener(this.signinBtn, 'click', (event) => {
@@ -130,17 +132,19 @@ export class Signin extends Component {
 
   async #signin() {
     try {
-      const {response, body} = await window.ApiClient.signIn(this.email.value,
-          this.password.value);
+      const {response, body} = await userManagementClient.signIn(
+          this.email.value, this.password.value,
+      );
       if (response.ok) {
-        window.ApiClient.refreshToken = body.refresh_token;
-        await window.ApiClient.restoreCache();
-        window.router.navigate('/');
+        userManagementClient.refreshToken = body.refresh_token;
+        await userManagementClient.restoreCache();
+        getRouter().navigate('/');
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
       }
     } catch (error) {
+      console.error(error);
       ErrorPage.loadNetworkError();
     }
   }

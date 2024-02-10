@@ -1,4 +1,4 @@
-import {Cookies} from './Cookies';
+import {Cookies} from '@js/Cookies.js';
 
 export class Theme {
   static defaultTheme = 'light';
