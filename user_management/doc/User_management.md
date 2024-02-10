@@ -562,6 +562,9 @@ This endpoint verifies the user's Two-Factor Authentication code.
 #### Body
 
 All fields mandatory:
+
+Authorization: {access_token}
+
 > ``` javascript
 > {
 >    "code": "123456"
