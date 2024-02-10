@@ -1,12 +1,12 @@
 import logging
 from typing import Optional
 
-import common.src.settings as common_settings
 import jwt
 import requests
-from common.src.internal_requests import InternalRequests
 
+import common.src.settings as common_settings
 import src.error_message as error
+from common.src.internal_requests import InternalRequests
 
 
 def authenticate_user(auth: str) -> (Optional[dict], list):

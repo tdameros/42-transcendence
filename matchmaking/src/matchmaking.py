@@ -4,14 +4,14 @@ import logging
 from time import time
 from typing import Any, Optional
 
-import common.src.settings as common_settings
 import requests
 import socketio
 from aiohttp import web
-from common.src.internal_requests import InternalRequests
 
+import common.src.settings as common_settings
 import src.error_message as error
 import src.settings as settings
+from common.src.internal_requests import InternalRequests
 
 from .authenticate import authenticate_user
 from .logging import setup_logging
