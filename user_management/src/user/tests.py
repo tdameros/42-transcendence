@@ -863,7 +863,11 @@ class TestAvatar(TestCase):
         access_token = UserAccessJWTManager.generate_jwt(user.id)[1]
         url = reverse('avatar', args=['alevra'])
 
-        avatar = open('test_resources/avatar.png', 'rb')
+        if settings.DEBUG:
+            path = 'test_resources/avatar.png'
+        else:
+            path = 'user/test_resources/avatar.png'
+        avatar = open(path, 'rb')
         base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
         base64_avatar = f'data:image/png;base64,{base64_avatar}'
         avatar.close()
