@@ -33,18 +33,6 @@ export class Player {
     return this.#threeJSGroup;
   }
 
-  setPaddleDirection(direction) {
-    this.#paddle.setDirection(direction);
-  }
-
-  setPaddlePosition(positionJson) {
-    this.#paddle.setPosition(positionJson);
-  }
-
-  getPaddlePosition() {
-    return this.#paddle.getPosition();
-  }
-
   get paddle() {
     return this.#paddle;
   }
