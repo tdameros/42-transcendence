@@ -70,10 +70,51 @@ class GameManager(object):
 
             for match in GameManager._matches:
                 await match.update(current_time, time_delta)
+                if match.is_over():
+                    await GameManager.match_was_won(match)
             await Server.sio.sleep(0.01)
 
             if False:  # TODO: Check if the game is over
                 return
+
+    @staticmethod
+    async def match_was_won(match: Match):
+        # TODO check if it was the final match
+
+        winner_index: int = match.get_winner_index()
+
+        GameManager._handle_match_looser(match, 1 - winner_index)
+
+        new_match: Match = GameManager._get_or_create_match(MatchLocation(
+            match.LOCATION.game_round + 1, match.LOCATION.match // 2
+        ))
+
+        GameManager._handle_match_winner(match, winner_index, new_match)
+
+        await EventEmitter.player_won_match(match.LOCATION, winner_index, new_match.to_json())
+        if new_match.is_full():
+            await new_match.start_match()
+
+        GameManager._delete_match(match)
+
+    @staticmethod
+    def _handle_match_looser(match: Match, looser_index: int):
+        looser: Player = match.get_player(looser_index)
+        # Adding the match position to the looser position to make the position global
+        # instead of relative to the match
+        looser.set_position(looser.get_position() + match.get_position())
+        looser.set_location(PlayerLocation(-1, -1, len(GameManager._loosers), True))
+        GameManager._loosers.append(looser)
+
+    @staticmethod
+    def _handle_match_winner(match: Match,
+                             winner_index: int,
+                             new_match: Match):
+        winner: Player = match.get_player(winner_index)
+        winner.set_location(PlayerLocation(
+            new_match.LOCATION.game_round, new_match.LOCATION.match, match.LOCATION.match % 2
+        ))
+        new_match.set_player(winner.get_location().player_index, winner)
 
     @staticmethod
     def has_game_started() -> bool:
@@ -104,3 +145,8 @@ class GameManager(object):
             GameManager._match_table[match_location] = match
         return match
 
+    @staticmethod
+    def _delete_match(match: Match):
+        GameManager._matches.remove(match)
+        del GameManager._match_table[match.LOCATION]
+        del match

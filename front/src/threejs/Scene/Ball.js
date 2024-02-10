@@ -25,7 +25,9 @@ export class Ball {
 
   prepareForMatch(ballMovementJson) {
     this.#threeJSGroup.position.set(0., 0., this.#threeJSGroup.position.z);
-    this.#movement.set(ballMovementJson['x'], ballMovementJson['y'], ballMovementJson['z']);
+    this.#movement.set(ballMovementJson['x'],
+        ballMovementJson['y'],
+        ballMovementJson['z']);
   }
 
   updateFrame(timeDelta, matchBoundingBox, leftPaddle, rightPaddle) {
@@ -46,8 +48,8 @@ export class Ball {
 
     if (this.#handleCollisions(travel,
         matchBoundingBox,
-        this.#movement.x < 0. ? leftPaddle : rightPaddle,
-        timeDelta)) {
+            this.#movement.x < 0. ? leftPaddle : rightPaddle,
+            timeDelta)) {
       this.#threeJSGroup.position.sub(radiusCompensator);
     }
   }

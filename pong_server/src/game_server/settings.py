@@ -21,4 +21,4 @@ PADDLE_MOVE_SPEED: float = 9.
 PADDLE_X_POSITION: float = BOARD_SIZE[0] * 0.5 - BALL_RADIUS * 1.5 - PADDLE_SIZE[0] * 0.5
 PADDLE_BOUNDING_BOX: PaddleBoundingBox = PaddleBoundingBox()
 
-POINTS_TO_WIN_MATCH: int = 5
+POINTS_TO_WIN_MATCH: int = 1  # TODO change this back

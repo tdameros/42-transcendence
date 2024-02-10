@@ -34,15 +34,15 @@ class Ball(object):
         self._set_random_movement()
 
     def _set_random_movement(self):
-        min_x = 4.5
-        max_x = 6.5
+        min_x = 7.
+        max_x = 12.
         if random.randint(0, 1) == 0:
             self._movement[0] = random.uniform(-max_x, -min_x)
         else:
             self._movement[0] = random.uniform(min_x, max_x)
 
-        min_y = 1.8
-        max_y = 3.
+        min_y = 4.
+        max_y = 5.
         if random.randint(0, 1) == 0:
             self._movement[1] = random.uniform(-max_y, -min_y)
         else:
