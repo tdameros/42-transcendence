@@ -18,7 +18,10 @@ from user_management.utils import save_image_from_base64
 class AvatarView(View):
     @staticmethod
     def get(request, username):
-        user = User.objects.filter(username=username).first()
+        try:
+            user = User.objects.filter(username=username).first()
+        except Exception as e:
+            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
         if not user:
             return JsonResponse(data={'error': 'User not found'}, status=404)
         if not user.avatar:
@@ -36,8 +39,11 @@ class AvatarView(View):
             json_request = json.loads(request.body.decode('utf-8'))
         except Exception as e:
             return JsonResponse(data={'error': f'Invalid JSON : {e}'}, status=400)
-        user_id = get_user_id(request)
-        user = User.objects.filter(id=user_id).first()
+        try:
+            user_id = get_user_id(request)
+            user = User.objects.filter(id=user_id).first()
+        except Exception as e:
+            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
         if user.username != username:
             return JsonResponse(data={'error': 'User not found'}, status=404)
 
@@ -58,8 +64,11 @@ class AvatarView(View):
 
     @staticmethod
     def delete(request, username):
-        user_id = get_user_id(request)
-        user = User.objects.filter(id=user_id).first()
+        try:
+            user_id = get_user_id(request)
+            user = User.objects.filter(id=user_id).first()
+        except Exception as e:
+            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
         if user.username != username:
             return JsonResponse(data={'error': 'User not found'}, status=404)
         if not user:
