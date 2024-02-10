@@ -12,13 +12,16 @@ export class Segment2 {
   intersect(segment2) {
     const t1Top = (segment2.end.x - segment2.begin.x) *
             (this.#begin.y - segment2.begin.y) -
-            (segment2.end.y - segment2.begin.y) * (this.#begin.x - segment2.begin.x);
+            (segment2.end.y - segment2.begin.y) *
+                (this.#begin.x - segment2.begin.x);
     const t2Top = (segment2.begin.y - this.#begin.y) *
             (this.#begin.x - this.#end.x) -
-            (segment2.begin.x - this.#begin.x) * (this.#begin.y - this.#end.y);
+            (segment2.begin.x - this.#begin.x) *
+                (this.#begin.y - this.#end.y);
     const bottom = (segment2.end.y - segment2.begin.y) *
             (this.#end.x - this.#begin.x) -
-            (segment2.end.x - segment2.begin.x) * (this.#end.y - this.#begin.y);
+            (segment2.end.x - segment2.begin.x) *
+                (this.#end.y - this.#begin.y);
 
     if (bottom === 0) {
       return {point: null, t: null};
@@ -35,8 +38,9 @@ export class Segment2 {
     }
 
     return {
-      point: new THREE.Vector2(this.#begin.x + t1 * (this.#end.x - this.#begin.x),
-          this.#begin.y + t1 * (this.#end.y - this.#begin.y)),
+      point: new THREE.Vector2(this.#begin.x + t1 *
+          (this.#end.x - this.#begin.x),
+      this.#begin.y + t1 * (this.#end.y - this.#begin.y)),
       t: t1,
     };
   }

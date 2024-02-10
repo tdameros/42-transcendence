@@ -1,8 +1,8 @@
-import {Scene} from '../../Scene/Scene';
+import {Scene} from '../Scene/Scene.js';
 
 import {io} from 'socket.io-client';
-import {PlayerLocation} from '../../Scene/PlayerLocation';
-import {sleep} from '../../sleep';
+import {PlayerLocation} from '../Scene/PlayerLocation.js';
+import {sleep} from '../sleep.js';
 
 import {userManagementClient} from '@utils/api/index.js';
 
@@ -73,7 +73,8 @@ export class _GameSocketIO {
       }
       console.log('prepare_ball_for_match received');
 
-      const match = this.#engine.scene.getMatchFromLocation(data['match_location']);
+      const match = this.#engine.scene
+          .getMatchFromLocation(data['match_location']);
       match.prepare_ball_for_match(
           data['ball_start_time'],
           data['ball_movement'],
@@ -86,7 +87,8 @@ export class _GameSocketIO {
       }
       console.log('update_ball received');
 
-      const match = this.#engine.scene.getMatchFromLocation(data['match_location']);
+      const match = this.#engine.scene
+          .getMatchFromLocation(data['match_location']);
       match.setBallMovement(data['movement']);
       match.setBallPosition(data['position']);
     });
@@ -99,15 +101,20 @@ export class _GameSocketIO {
 
       const winnerIndex = data['winner_index'];
       const finishedMatchLocation = data['finished_match_location'];
-      this.#engine.scene.removeLooserFromMatch(finishedMatchLocation, 1 - winnerIndex);
+      this.#engine.scene.removeLooserFromMatch(
+          finishedMatchLocation, 1 - winnerIndex,
+      );
 
-      const winner = this.#engine.scene.getMatchFromLocation(finishedMatchLocation)
+      const winner = this.#engine.scene
+          .getMatchFromLocation(finishedMatchLocation)
           .players[winnerIndex];
 
       const newMatchJson = data['new_match_json'];
       this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
 
-      this.#engine.scene.addWinnerToMatch(newMatchJson['location'], winner, winnerIndex);
+      this.#engine.scene.addWinnerToMatch(
+          newMatchJson['location'], winner, winnerIndex,
+      );
 
       this.#engine.scene.deleteMatch(finishedMatchLocation);
     });

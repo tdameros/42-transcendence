@@ -75,7 +75,9 @@ export class Multiplayer extends Component {
   }
 
   #addCancelButton() {
-    this.cancel.innerHTML = '<button type="button" id="cancel-button" class="btn btn-danger">Cancel</button>';
+    this.cancel.innerHTML = `
+      <button type="button" id="cancel-button" class="btn btn-danger">Cancel</button>
+    `;
     const cancelButton = document.querySelector('#cancel-button');
 
     this.addComponentEventListener(cancelButton, 'click', () => {
@@ -103,7 +105,8 @@ export class Multiplayer extends Component {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-    const secondsStr = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+    const secondsStr = remainingSeconds < 10 ?
+        '0' + remainingSeconds : remainingSeconds;
     return minutesStr + ':' + secondsStr;
   }
 

@@ -89,6 +89,8 @@ customElements.define('error-component', Error);
 
 customElements.define('navbar-component', Navbar);
 
+customElements.define('game-component', Game);
+
 export {
   Component,
   GithubButton,

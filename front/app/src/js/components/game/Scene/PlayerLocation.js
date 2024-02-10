@@ -7,7 +7,9 @@ export class PlayerLocation {
 
   constructor(playerLocationJson) {
     this.#isLooser = playerLocationJson['is_looser'];
-    this.#matchKey = Scene.convertMatchLocationToKey(playerLocationJson['match_location']);
+    this.#matchKey = Scene.convertMatchLocationToKey(
+        playerLocationJson['match_location'],
+    );
     this.#playerIndex = playerLocationJson['player_index'];
   }
 

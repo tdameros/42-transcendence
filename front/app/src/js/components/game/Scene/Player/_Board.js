@@ -5,8 +5,10 @@ export class _Board {
 
   constructor(boardJson) {
     const size = boardJson['size'];
-    this.#threeJsonBoard = new THREE.Mesh(new THREE.PlaneGeometry(size['x'], size['y']),
-        new THREE.MeshStandardMaterial({color: 0x222277}));
+    this.#threeJsonBoard = new THREE.Mesh(
+        new THREE.PlaneGeometry(size['x'], size['y']),
+        new THREE.MeshStandardMaterial({color: 0x222277}),
+    );
     this.#threeJsonBoard.position.set(0., 0., 0.);
     this.#threeJsonBoard.castShadow = false;
     this.#threeJsonBoard.receiveShadow = true;

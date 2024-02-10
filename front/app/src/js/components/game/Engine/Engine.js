@@ -1,7 +1,7 @@
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
-import {_GameSocketIO} from "./sockets/_GameSocketIO";
+import {_GameSocketIO} from './_GameSocketIO.js';
 
 export class Engine {
   #threeJS;
@@ -26,7 +26,8 @@ export class Engine {
 
   emit(event, data) {
     if (this.#socket === null) {
-      console.log('Error: Socket is null: Failed to send event(', event, '): ', data);
+      console.log('Error: Socket is null: Failed to send event(', event, '): ',
+          data);
       return;
     }
 

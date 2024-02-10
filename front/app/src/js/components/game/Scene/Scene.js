@@ -33,7 +33,9 @@ export class Scene {
     this.#currentPlayerLocation = new PlayerLocation(playerLocationJson);
 
     const playerJson = matchesJson[0]['players'][0];
-    this.#ballBoundingBox = new BallBoundingBox(playerJson, matchesJson[0]['ball']['radius']);
+    this.#ballBoundingBox = new BallBoundingBox(
+        playerJson, matchesJson[0]['ball']['radius'],
+    );
     this.#paddleBoundingBox = new PaddleBoundingBox(playerJson);
   }
 
@@ -41,7 +43,10 @@ export class Scene {
     const currentTime = Date.now();
     for (const match of this.#matches) {
       match.updateFrame(
-          timeDelta, currentTime, this.#paddleBoundingBox, this.#ballBoundingBox,
+          timeDelta,
+          currentTime,
+          this.#paddleBoundingBox,
+          this.#ballBoundingBox,
       );
     }
 

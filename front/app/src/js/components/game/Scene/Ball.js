@@ -97,7 +97,8 @@ export class Ball {
       this.#movement.y = -this.#movement.y * this.#acceleration;
     }
     this.#threeJSGroup.position
-        .add(this.#movement.clone().multiplyScalar(timeDelta * (1. - closestT)));
+        .add(this.#movement.clone()
+            .multiplyScalar(timeDelta * (1. - closestT)));
     return true;
   }
 
@@ -116,13 +117,15 @@ export class Ball {
 
   #handleBoardCollision(matchBoundingBox) {
     if (this.#threeJSGroup.position.y < matchBoundingBox.y_min) {
-      const oppositeMovement = (matchBoundingBox.y_min - this.#threeJSGroup.position.y) *
+      const oppositeMovement =
+          (matchBoundingBox.y_min - this.#threeJSGroup.position.y) *
                 this.#acceleration;
       this.#threeJSGroup.position.y = matchBoundingBox.y_min + oppositeMovement;
 
       this.#movement.y = -this.#movement.y * this.#acceleration;
     } else if (this.#threeJSGroup.position.y > matchBoundingBox.y_max) {
-      const oppositeMovement = (matchBoundingBox.y_max - this.#threeJSGroup.position.y) *
+      const oppositeMovement =
+          (matchBoundingBox.y_max - this.#threeJSGroup.position.y) *
                 this.#acceleration;
       this.#threeJSGroup.position.y = matchBoundingBox.y_max + oppositeMovement;
 
