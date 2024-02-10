@@ -1,7 +1,7 @@
 import {Component} from '@components';
 import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
-import {min} from '@popperjs/core/lib/utils/math.js';
+import {getRouter} from '@js/Router';
 
 export class Multiplayer extends Component {
   constructor() {
@@ -49,6 +49,18 @@ export class Multiplayer extends Component {
     this.sio.on('match', (data) => {
       const json = JSON.parse(data);
       console.log(json);
+      const port = json['port'];
+      getRouter().navigate(`/game/${port}/`);
+      // console.log(json);
+    });
+
+    this.sio.on('disconnect', () => {
+      console.log('disconnected');
+      this.#stopQueueTimer();
+    });
+
+    this.sio.on('error', (err) => {
+      console.log(err);
     });
   }
 

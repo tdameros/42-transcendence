@@ -16,7 +16,8 @@ export class Game extends Component {
   }
 
   postRender() {
-    this.start_game(`http://localhost:${this.getAttribute('port')}/`);
+    console.log(`PORT FOUND : ${this.getAttribute('port')}`);
+    this.start_game(`http://localhost:${this.getAttribute('port')}`);
   }
 
   start_game(URI) {

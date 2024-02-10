@@ -10,9 +10,9 @@ export class _GameSocketIO {
   #engine;
   #socketIO;
 
-  constructor(engine, uri) {
+  constructor(engine, URI) {
     this.#engine = engine;
-    this.#initGameSocketIO(uri);
+    this.#initGameSocketIO(URI);
   }
 
   #initGameSocketIO(URI) {

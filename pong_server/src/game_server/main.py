@@ -57,7 +57,7 @@ async def main() -> int:
                                        int(os.getenv('PONG_GAME_SERVERS_MIN_PORT')),
                                        int(os.getenv('PONG_GAME_SERVERS_MAX_PORT')))
 
-        print(f'uri: http://localhost:{port}')  # TODO should be 42.shiftcode.fr in prod
+        print(f'port: {port}')
         """ Do not use logging! This should always be printed as the game
             creator will read it """
         sys.stdout.flush()

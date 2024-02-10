@@ -17,5 +17,5 @@ DEBUG_USER_STATS_URL = 'http://localhost:8001/'
 USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
 DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'
 
-GAME_CREATOR_URL = 'http://pong-server-nginx/'
+GAME_CREATOR_URL = 'https://pong-server-nginx/'
 GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'

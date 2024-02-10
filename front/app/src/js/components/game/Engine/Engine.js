@@ -17,7 +17,7 @@ export class Engine {
   }
 
   connectToServer(URI) {
-    this.#socket = new _GameSocketIO(URI);
+    this.#socket = new _GameSocketIO(this, URI);
   }
 
   renderFrame() {

@@ -17,9 +17,9 @@ class CreateGameView(View):
         try:
             game_id, players, request_issuer = CreateGameView._get_args(request)
 
-            game_server_uri = GameCreator.create_game_server(game_id, players)
+            port = GameCreator.create_game_server(game_id, players)
 
-            return JsonResponse({'game_server_uri': game_server_uri},
+            return JsonResponse({'port': port},
                                 status=201)
 
         except JsonResponseException as json_response_exception:

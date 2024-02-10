@@ -5,7 +5,7 @@ DEBUG = False
 if DEBUG:
     LOG_LEVEL = logging.DEBUG
 else:
-    LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = logging.WARNING
 
 if DEBUG:
     USER_STATS_URL = 'http://localhost:8000/'

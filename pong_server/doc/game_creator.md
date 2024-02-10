@@ -24,8 +24,8 @@
 
 #### Status code
 
-> | status code | content-type       | response                 | example                                                                        |
-> |-------------|--------------------|--------------------------|--------------------------------------------------------------------------------|
-> | `201`       | `application/json` | {'game_server_uri': str} | {'game_server_uri': 'http://localhost:60000'}                                  |
-> | `400`       | `application/json` | {'errors': list[str]}    | {'errors': ['game_id field is missing', 'players[1] is not an Optional[int]']} |
-> | `500`       | `application/json` | {'errors': list[str]}    | {'errors': ['Error creating game server: reason']}                             |
+> | status code | content-type       | response              | example                                                                        |
+> |-------------|--------------------|-----------------------|--------------------------------------------------------------------------------|
+> | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                                                |
+> | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['game_id field is missing', 'players[1] is not an Optional[int]']} |
+> | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']}                             |

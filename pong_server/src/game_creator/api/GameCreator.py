@@ -4,18 +4,18 @@ from typing import AnyStr, Optional
 
 from api import error_messages
 from api.JsonResponseException import JsonResponseException
-
+import shared_code.error_messages
 
 class GameCreator(object):
     @staticmethod
-    def create_game_server(game_id: int, players: list[Optional[int]]) -> str:
+    def create_game_server(game_id: int, players: list[Optional[int]]) -> int:
         process: subprocess.Popen = GameCreator._start_server(game_id, players)
 
         while process.poll() is None:
             line = process.stdout.readline()
-            uri = GameCreator._parse_subprocess_line(line)
-            if uri is not None:
-                return uri
+            port: Optional[int] = GameCreator._parse_subprocess_line(line)
+            if port is not None:
+                return port
 
         remaining_output = process.communicate()[0]
         for line in remaining_output.splitlines():
@@ -39,15 +39,17 @@ class GameCreator(object):
             raise JsonResponseException({'errors': [error]}, status=500)
 
     @staticmethod
-    def _parse_subprocess_line(line: AnyStr) -> Optional[str]:
+    def _parse_subprocess_line(line: AnyStr) -> Optional[int]:
         if not line:
             return None
 
-        if line.startswith('uri: '):
-            return line[len('uri: '):-1]
+        if line.startswith('port: '):
+            return line[len('port: '):-1]
 
         if line.startswith('Error: '):
             error = error_messages.error_creating_game_server(line[len('Error: '):-1])
+            if error == shared_code.error_messages.NO_AVAILABLE_PORTS:
+                raise JsonResponseException({'errors': [error]}, status=503)
             raise JsonResponseException({'errors': [error]}, status=500)
 
         return None
