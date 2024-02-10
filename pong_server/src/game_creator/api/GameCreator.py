@@ -45,12 +45,16 @@ class GameCreator(object):
             return None
 
         if line.startswith('port: '):
-            return line[len('port: '):-1]
+            return int(line[len('port: '):-1])
 
         if line.startswith('Error: '):
-            error = error_messages.error_creating_game_server(line[len('Error: '):-1])
+            error = line[len('Error: '):-1]
             if error == shared_code.error_messages.NO_AVAILABLE_PORTS:
-                raise JsonResponseException({'errors': [error]}, status=503)
-            raise JsonResponseException({'errors': [error]}, status=500)
+                raise JsonResponseException({
+                    'errors': [error]
+                }, status=503)
+            raise JsonResponseException({
+                'errors': [error_messages.error_creating_game_server(error)]
+            }, status=500)
 
         return None

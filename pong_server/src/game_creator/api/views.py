@@ -17,7 +17,7 @@ class CreateGameView(View):
         try:
             game_id, players, request_issuer = CreateGameView._get_args(request)
 
-            port = GameCreator.create_game_server(game_id, players)
+            port: int = GameCreator.create_game_server(game_id, players)
 
             return JsonResponse({'port': port},
                                 status=201)

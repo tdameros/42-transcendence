@@ -62,7 +62,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
             'players': [1, 2],
             'request_issuer': settings.MATCHMAKING
         }, {
-            'game_server_uri': f'http://localhost:{port}'
+            'port': port
         }, 201)
 
     def test_valid_tournament_request(self):
@@ -74,7 +74,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
             'players': [1, None, None, 4],
             'request_issuer': settings.TOURNAMENT
         }, {
-            'game_server_uri': f'http://localhost:{port}'
+            'port': port
         }, 201)
 
     def test_invalid_json(self):
@@ -226,9 +226,8 @@ class PostCreateGameTest(TestCaseNoDatabase):
             'players': [1, 2],
             'request_issuer': settings.TOURNAMENT
         }, {
-            'errors': [error_messages.error_creating_game_server(
-                shared_error_messages.NO_AVAILABLE_PORTS)]
-        }, 500)
+            'errors': [shared_error_messages.NO_AVAILABLE_PORTS]
+        }, 503)
 
         s.close()
 
