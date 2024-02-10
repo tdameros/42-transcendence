@@ -40,46 +40,59 @@
   >> debug_message: str
   >> ```
   >
-  >> Prints debug_message on `console.warn`
+  >> Prints debug_message on `console.log`
 
 - ### `scene`:
   >> Argument:
   >> ```
   >> {
   >>     'scene': {
-  >>         'matches': [
+  >>         "matches": [
   >>             {
-  >>                 'position': {'x': float, 'y': float, 'z': float},
-  >>                 'players': [
+  >>                 "location": {
+  >>                     "game_round": int,
+  >>                     "match": int
+  >>                 },
+  >>                 "position": {"x": float, "y": float, "z": float},
+  >>                 "players": [
   >>                     {
-  >>                         'position': {'x': float, 'y': float, 'z': float},
-  >>                         'move_speed': float,
-  >>                         'board': {
-  >>                             'size': {'x': float, 'y': float, 'z': float}
+  >>                         "position": {"x": float, "y": float, "z": float}, // Relative to the match
+  >>                         "move_speed": float,
+  >>                         "board": {
+  >>                             // Position is [0, 0, 0] relative to the player
+  >>                             "size": {"x": float, "y": float, "z": float}
   >>                         },
-  >>                         'paddle': {
-  >>                             'size': {'x': float, 'y': float, 'z': float},
-  >>                             'position': {'x': float, 'y': float, 'z': float},
-  >>                             'movement': {'x': float, 'y': float, 'z': float},
-  >>                             'move_speed': float
+  >>                         "paddle": {
+  >>                             "size": {"x": float, "y": float, "z": float},
+  >>                             "position": {"x": float, "y": float, "z": float}, // Relative to the player
+  >>                             "movement": {"x": float, "y": float, "z": float},
+  >>                             "move_speed": float
   >>                         }
   >>                     },
-  >>                     ... (Should have at least 2 players)
+  >>                     ... second player
   >>                 ],
-  >>                 'ball': {
-  >>                     'position': {'x': float, 'y': float, 'z': float},
-  >>                     'movement': {'x': float, 'y': float, 'z': float},
-  >>                     'radius': float
-  >>                     'ball_is_waiting': bool,
-  >>                     'ball_start_time': Optional[float] (Seconds since the Epoch),
-  >>                 }
+  >>                 "ball": {
+  >>                     "position": {"x": float, "y": float, "z": float}, // Relative to the match
+  >>                     "movement": {"x": float, "y": float, "z": float},
+  >>                     "radius": float,
+  >>                     "acceleration": float
+  >>                 },
+  >>                 "ball_is_waiting": bool,
+  >>                 "ball_start_time": Optinal[float] (Seconds since the Epoch)
   >>             }
-  >>         ]
-  >>     },
+  >>         ],
   >> 
+  >>         "loosers": [
+  >>             (List of players with the same structure as the players in the matches exept the position is global)
+  >>         ]
+  >>     }
+  >>
   >>     'player_location': { // Location of current client
-  >>         'is_in_a_match': bool,
-  >>         'match_index': int,
+  >>         'is_looser': bool,
+  >>         'match_location': {
+  >>             'game_round': int,
+  >>             'match': int
+  >>         },
   >>         'player_index': int
   >>     }
   >> }
@@ -92,8 +105,11 @@
   >> ```
   >> {
   >>     'player_location': {
-  >>         'is_in_a_match': bool,
-  >>         'match_index': int,
+  >>         'is_looser': bool,
+  >>         'match_location': {
+  >>             'game_round': int,
+  >>             'match': int
+  >>         },
   >>         'player_index': int
   >>     },
   >>     'direction': str ('up' | 'down' | 'none'),
@@ -103,17 +119,20 @@
   >
   >> Updates the position and direction of the player at index player_index 
 
-- ### `update_ball`:
+- ### `prepare_ball_for_match`:
   >> Argument:
   >> ```
   >> {
-  >>     'match_index': int,
+  >>     'match_location': {
+  >>         'game_round': int,
+  >>         'match': int
+  >>     },
   >>     'ball_movement': {'x': float, 'y': float, 'z': float}
   >>     'ball_start_time': float (Seconds since the Epoch),
   >> }
   >> ```
   >
-  >> For the ball at `match[match_index]`:  
+  >> For the ball at `matches[match_location]`:  
   >> Sets the ball position to `[0., 0., current_position.z]`.  
   >> Sets the ball movement to `'ball_movement'`  
   >> Stops the ball movement till `ball_start_time`
@@ -122,8 +141,11 @@
   >> Argument:
   >> ```
   >> {
-  >>     'match_index': int,
-  >>     'position': {'x': float, 'y': float, 'z': float}
+  >>     'match_location': {
+  >>         'game_round': int,
+  >>         'match': int
+  >>     },
+  >>     'position': {'x': float, 'y': float, 'z': float},
   >>     'movement': {'x': float, 'y': float, 'z': float}
   >> }
   >> ```

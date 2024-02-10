@@ -2,109 +2,24 @@ import asyncio
 import logging
 import os
 import sys
+from typing import Optional
 
-import socketio
-from aiohttp import web
-from socketio.exceptions import ConnectionRefusedError
-
-from Clock import Clock
-from Game import Game
-from shared_code import error_messages
-from shared_code.emit import emit
-from shared_code.get_json_web_token import get_json_web_token
-from shared_code.get_query_string import get_query_string
+from ClientManager import ClientManager
+from EventHandler import EventHandler
+from Game.GameManager import GameManager
+from Server import Server
 from shared_code.setup_logging import setup_logging
-from update_player_movement_and_position import \
-    update_player_direction_and_position
-
-sio: socketio.AsyncServer = socketio.AsyncServer(cors_allowed_origins='*')
-app: web.Application = web.Application()
-sio.attach(app)
-runner = web.AppRunner(app)
-
-should_exit: bool = False
-exit_code: int = 0
-
-game: Game | None = None
-
-
-async def add_user_to_game(user_id: int, sid: str):
-    if not game.is_user_part_of_game(user_id):
-        raise Exception('You are not part of this game')
-
-    previous_sid: str | None = game.get_sid_from_user_id(user_id)
-    if previous_sid is not None:
-        await sio.disconnect(previous_sid)
-
-    await game.add_user(user_id, sid, sio)
-
-
-@sio.event
-async def connect(sid, environ, auth):
-    logging.info(f'{sid} connected')
-
-    try:
-        query_string = get_query_string(environ)
-        json_web_token = get_json_web_token(query_string)
-        await add_user_to_game(json_web_token['user_id'], sid)
-        if game.has_started:
-            await emit(sio, 'scene', sid,
-                       {'scene': game.get_scene().to_json(),
-                        'player_location': game.get_player_location(sid).to_json()})
-    except Exception as e:
-        raise ConnectionRefusedError(str(e))
-
-
-@sio.event
-async def disconnect(sid):
-    await game.remove_user(sid, sio)
-
-
-@sio.event
-async def update_player(sid, player_data):
-    try:
-        client_player_position = player_data['client_player_position']
-        direction = player_data['direction']
-    except KeyError:
-        return
-    await update_player_direction_and_position(sio,
-                                               sid,
-                                               game,
-                                               client_player_position,
-                                               direction)
-
-
-async def wait_for_all_players_to_join():
-    while not game.have_all_players_joined():
-        # TODO Add a time out and make the players that don't join forfeit
-        #      their games
-        await sio.sleep(.3)
-
-    scene = game.get_scene().to_json()
-    for player in game.PLAYERS_LIST:
-        player_sid = game.get_sid_from_user_id(player)
-        player_location = game.get_player_location(player_sid)
-        if player_sid is not None:
-            await emit(sio, 'scene', player_sid,
-                       {'scene': scene,
-                        'player_location': player_location.to_json()})
-    game.has_started = True
-
-
-async def game_loop():
-    clock = Clock()
-    while True:
-        await game.get_scene().update(sio, clock.get_delta())
-        await sio.sleep(0.01)
 
 
 async def background_task():
     try:
-        await wait_for_all_players_to_join()
+        while not ClientManager.have_all_players_joined():
+            # TODO Add a time out and make the players that don't join forfeit
+            #      their games
+            await Server.sio.sleep(.3)
 
-        await game.get_scene().start_game(sio)
-
-        await game_loop()
+        await GameManager.start_game()  # Blocks till the game is over
+        Server.should_stop = True
 
     except Exception as e:
         try:  # Attempt graceful exit
@@ -112,11 +27,9 @@ async def background_task():
             """ Do not use logging! This should always be printed as the game
                 creator may read it """
             logging.critical(f'Error in background_task: {e}')
-            global exit_code
-            global should_exit
-            exit_code = 2
-            should_exit = True
-            await sio.sleep(30)
+            Server.exit_code = 2
+            Server.should_stop = True
+            await Server.sio.sleep(30)
             # If everything goes well, the process will exit(exit_code) before this line
             # (see main())
             exit(3)
@@ -124,45 +37,24 @@ async def background_task():
             exit(4)
 
 
-# The app arguments is not used but is required by
-#   app.on_startup.append(start_background_task)
-async def start_background_task(app):
-    sio.start_background_task(background_task)
-
-
-app.on_startup.append(start_background_task)
-
-
-async def start_server():
-    await runner.setup()
-
-    start_port = int(os.getenv('PONG_GAME_SERVERS_MIN_PORT'))
-    end_port = int(os.getenv('PONG_GAME_SERVERS_MAX_PORT'))
-    logging.debug(f'start_port: {start_port}, end_port: {end_port}')
-
-    for port in range(start_port, end_port + 1):
-        try:
-            server = web.TCPSite(runner, '0.0.0.0', port=port)
-            await server.start()
-            return port
-        except OSError:
-            continue
-
-    raise Exception(error_messages.NO_AVAILABLE_PORTS)
-
-
-async def main():
+async def main() -> int:
     try:
         setup_logging(f'Game Server {os.getpid()}: ')
         logging.getLogger('aiohttp').setLevel(logging.WARNING)
         logging.debug(f'Starting Game Server({os.getpid()})')
 
-        global game
-        game = Game(sys.argv[1:])
+        players: list[Optional[int]] = [int(player) if player != 'None' else None
+                                        for player in sys.argv[2:]]
+        GameManager.init(players)
 
-        port = await start_server()
-        uri = f'http://localhost:{port}'  # TODO should be 42.shiftcode.fr in prod
-        print(f'uri: {uri}')
+        Server.init(background_task)
+        ClientManager.init([player for player in players if player is not None])
+        EventHandler.init()
+        port: int = await Server.start('0.0.0.0',
+                                       int(os.getenv('PONG_GAME_SERVERS_MIN_PORT')),
+                                       int(os.getenv('PONG_GAME_SERVERS_MAX_PORT')))
+
+        print(f'uri: http://localhost:{port}')  # TODO should be 42.shiftcode.fr in prod
         """ Do not use logging! This should always be printed as the game
             creator will read it """
         sys.stdout.flush()
@@ -171,24 +63,12 @@ async def main():
         """ Do not use logging! This should always be printed as the game
             creator will read it """
         sys.stdout.flush()
-        logging.error(f'failed to start: {str(e)}')
-        exit(1)
+        logging.critical(f'failed to start: {str(e)}')
+        return 1
 
-    logging.info(f'started with uri {uri}')
-
-    while True:
-        await sio.sleep(5)
-        if should_exit:  # set to True by background_task()
-            logging.debug('Cleaning up before exiting')
-            loop = asyncio.get_running_loop()
-            tasks = [task for task in asyncio.all_tasks()
-                     if task is not asyncio.current_task()]
-            for task in tasks:
-                task.cancel()
-            await runner.cleanup()
-            loop.stop()
-            logging.info(f'Exiting with code {exit_code}')
-            return exit_code
+    exit_code: int = await Server.wait_for_server_to_stop()
+    logging.info(f'Exiting with code {exit_code}')
+    return exit_code
 
 
 if __name__ == '__main__':

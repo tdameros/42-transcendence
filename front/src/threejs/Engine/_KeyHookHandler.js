@@ -98,10 +98,10 @@ export class _KeyHookHandler {
     if (this.#serverKnownMovement !== 'none') {
       const scene = this.#engine.scene;
       const arg = {
-        'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+        'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'none',
       };
-      await this.#engine.emit('update_player', arg);
+      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'none';
       this.#engine.scene.setCurrentPlayerPaddleDirection('none');
     }
@@ -111,10 +111,10 @@ export class _KeyHookHandler {
     if (this.#serverKnownMovement !== 'up') {
       const scene = this.#engine.scene;
       const arg = {
-        'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+        'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'up',
       };
-      await this.#engine.emit('update_player', arg);
+      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'up';
       this.#engine.scene.setCurrentPlayerPaddleDirection('up');
     }
@@ -124,10 +124,10 @@ export class _KeyHookHandler {
     if (this.#serverKnownMovement !== 'down') {
       const scene = this.#engine.scene;
       const arg = {
-        'client_player_position': scene.getCurrentPlayerPaddlePositionAsArray(),
+        'client_paddle_position': scene.getCurrentPlayerPaddlePositionY(),
         'direction': 'down',
       };
-      await this.#engine.emit('update_player', arg);
+      await this.#engine.emit('update_paddle', arg);
       this.#serverKnownMovement = 'down';
       this.#engine.scene.setCurrentPlayerPaddleDirection('down');
     }

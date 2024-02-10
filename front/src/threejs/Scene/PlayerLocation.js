@@ -1,15 +1,20 @@
+import {Scene} from './Scene';
+
 export class PlayerLocation {
-  #isInAMatch;
-  #matchIndex;
+  #looser;
+  #matchKey;
   #playerIndex;
 
   constructor(playerLocationJson) {
-    this.#isInAMatch = playerLocationJson['is_in_a_match'];
-    this.#matchIndex = playerLocationJson['match_index'];
+    this.#looser = playerLocationJson['looser'];
+    this.#matchKey = Scene.convertMatchLocationToKey(playerLocationJson['match_location']);
     this.#playerIndex = playerLocationJson['player_index'];
   }
 
   getPlayerFromScene(scene) {
-    return scene.matches[this.#matchIndex].players[this.#playerIndex];
+    if (this.#looser) {
+      return scene.loosers[this.#playerIndex];
+    }
+    return scene.getMatchFromKey(this.#matchKey).players[this.#playerIndex];
   }
 }
