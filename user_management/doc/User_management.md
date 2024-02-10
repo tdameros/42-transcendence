@@ -652,3 +652,79 @@ all fields are mandatory
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 </details>
+
+## `/user/avatar/`
+
+This endpoint allows the user to get and update his avatar.
+
+### Get user's avatar
+
+<details>
+ <summary><code>GET</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+NB : any access_token can be used to get the avatar of any user
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `image/png`        | `png of the user's avatar`                           |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+
+### Update user's avatar
+
+<details>
+ <summary><code>POST</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "avatar": "base64 of the new avatar"
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "avatar updated"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Delete user's avatar
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "avatar deleted"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+

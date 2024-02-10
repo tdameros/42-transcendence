@@ -4,9 +4,9 @@ import string
 from io import BytesIO
 
 import requests
-from PIL import Image
 from django.core.files import File
 from django.core.files.base import ContentFile
+from PIL import Image
 
 from user.models import User
 from user_management import settings
@@ -39,7 +39,7 @@ def download_image_from_url(url, model_instance):
 def save_image_from_base64(base64_string, model_instance):
     if not base64_string:
         return False, 'Image not found'
-    try :
+    try:
         img = Image.open(BytesIO(base64.b64decode(base64_string)))
         img_io = BytesIO()
         img.save(img_io, format='PNG')
