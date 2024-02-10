@@ -27,7 +27,7 @@ class ProgressTest(TestCase):
     def assert_progress_validity(self, user_id, elo, win_rate, matches_played, days=None):
         response = self.get_progress(user_id, days)
         self.assertEqual(response.status_code, 200)
-        progress = response.json()['progress']
+        progress = response.json()
         if elo is not None:
             self.assertEqual(progress['elo'], elo)
         if win_rate is not None:
@@ -71,7 +71,7 @@ class GetProgress(ProgressTest):
         }
         self.post_match(body)
 
-        progress = self.assert_progress_validity(1, None, 1, 1)
+        progress = self.assert_progress_validity(1, None, 100, 1)
         self.assertGreater(progress['elo'], 0)
 
         progress = self.assert_progress_validity(2, None, 0, 1)
@@ -96,7 +96,7 @@ class GetProgress(ProgressTest):
         body['date'] = date.isoformat()
         self.post_match(body)
 
-        progress = self.assert_progress_validity(1, None, 1, 3)
+        progress = self.assert_progress_validity(1, None, 100, 3)
         self.assertGreater(progress['elo'], 0)
 
         progress = self.assert_progress_validity(2, None, 0, 3)
@@ -202,7 +202,7 @@ class GetProgress(ProgressTest):
         progress = self.assert_progress_validity(2, None, 0, 3, 11)
         self.assertLess(progress['elo'], 0)
 
-        progress = self.assert_progress_validity(1, None, 1, 4, 100)
+        progress = self.assert_progress_validity(1, None, 100, 4, 100)
         self.assertGreater(progress['elo'], 0)
         progress = self.assert_progress_validity(2, None, 0, 4, 100)
         self.assertLess(progress['elo'], 0)

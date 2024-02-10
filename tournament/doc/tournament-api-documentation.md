@@ -408,17 +408,14 @@ None
 Start a match
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/start</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/start</b></code></summary>
 
 ### Parameters
 
 #### Body
 
-All fields are optional
-
-- The status of the match
-- The first player
-- The second player
+- The first player (user_id)
+- The second player (user_id)
 
 > ```javascript
 > {
@@ -438,13 +435,13 @@ All fields are optional
 Add one point to a player
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/add-point</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/add-point</b></code></summary>
 
 ### Parameters
 
 #### Body
 
-- The player to add a point
+- The player to add a point (user_id)
 
 > ```javascript
 > {
@@ -464,13 +461,13 @@ Add one point to a player
 End a match
 
 <details>
- <summary><code>POST</code> <code><b>/tournament/{id}/match/{match-id}/end</b></code></summary>
+ <summary><code>POST</code> <code><b>/tournament/{id}/match/end</b></code></summary>
 
 ### Parameters
 
 #### Body
 
-- Winner of the match
+- Winner of the match (user_id)
 
 > ```javascript
 > {

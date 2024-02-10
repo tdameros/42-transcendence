@@ -43,6 +43,10 @@ EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 MAX_USERNAME_SEARCH_RESULTS = 10
 
+# 2fa
+TOTP_SECRET_MAX_LENGTH = 32
+TOTP_CONFIG_URL_MAX_LENGTH = 100
+
 # OAuth
 OAUTH_STATE_MAX_LENGTH = 32
 OAUTH_SOURCE_MAX_LENGTH = 100
@@ -95,7 +99,10 @@ REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if os.getenv('DEBUG') == 'True':
+    DEBUG = True
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 

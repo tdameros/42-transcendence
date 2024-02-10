@@ -21,6 +21,7 @@ class Match(models.Model):
     user_elo = models.IntegerField(null=True)
     user_win_rate = models.FloatField(null=True)
     user_matches_played = models.IntegerField(null=True)
+    user_friends = models.IntegerField(null=True)
     user_elo_delta = models.IntegerField(null=True)
     user_expected_result = models.FloatField(null=True)
     date = models.DateTimeField(null=True)

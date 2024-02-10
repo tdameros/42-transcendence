@@ -38,5 +38,5 @@ PAGE_SIZE_INVALID = 'page_size invalid'
 
 DAYS_INVALID = 'days invalid'
 
-NUM_POINTS_REQUIRED = 'num_points required'
-NUM_POINTS_INVALID = 'num_points invalid'
+MAX_POINTS_REQUIRED = 'max_points required'
+MAX_POINTS_INVALID = 'max_points invalid'
