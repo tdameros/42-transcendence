@@ -6,9 +6,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src.jwt_managers import user_authentication
 from user.models import User
 
 
+@method_decorator(user_authentication(['POST']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class SearchUsernameView(View):
     @staticmethod

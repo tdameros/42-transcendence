@@ -436,6 +436,9 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)

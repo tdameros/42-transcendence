@@ -374,6 +374,8 @@ will return a list of usernames that contains the searched username
 
 ### Parameters
 
+Authorization: {access_token}
+
 #### Body
 
 > ``` javascript
