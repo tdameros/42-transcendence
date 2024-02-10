@@ -449,6 +449,9 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
@@ -457,7 +460,8 @@ class TestsSearchUsername(TestCase):
             'username': 'Felix2'
         }
         url = reverse('search-username')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 1)
@@ -466,7 +470,8 @@ class TestsSearchUsername(TestCase):
             'username': 'Felix111'
         }
         url = reverse('search-username')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 0)
@@ -500,7 +505,6 @@ class TestsUserUpdateInfos(TestCase):
 
         # 3)
         data = {
-            'access_token': access_token,
             'change_list': ['username', 'email', 'password'],
             'username': 'UpdatedUser',
             'email': 'updateduser@gmail.com',
@@ -510,6 +514,9 @@ class TestsUserUpdateInfos(TestCase):
         result = self.client.post(url, json.dumps(data), content_type='application/json')
 
         # 4)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 200)
         user = User.objects.filter(username='UpdatedUser').first()
         self.assertEqual(user.username, 'UpdatedUser')
@@ -525,7 +532,8 @@ class TestsUserUpdateInfos(TestCase):
         }
 
         url = reverse('update-infos')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 400)
         self.assertTrue('errors' in result.json())
         self.assertTrue(result.json()['errors'])

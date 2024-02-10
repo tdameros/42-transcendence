@@ -469,6 +469,8 @@ will return 200 if successful
 
 ### Parameters
 
+Authorization: {access_token}
+
 #### Body
 
 mandatory field : change_list, access_token
@@ -476,7 +478,6 @@ all other fields are optional and depend on the change_list
 
 > ``` javascript
 > {
->   "access_token": "d2d040fj..."
 >   "change_list": ["username", "email", "password"]
 >    "username": "NewUsername",
 >    "email": "newemail@asdf.fr",

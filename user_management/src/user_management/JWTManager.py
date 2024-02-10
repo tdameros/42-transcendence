@@ -78,6 +78,7 @@ class UserAccessJWTManager:
         return True, user_id, None
 
 
+
 def get_user_id(request: HttpRequest) -> int:
     jwt = request.headers.get('Authorization')
     split_jwt = jwt.split('.')
