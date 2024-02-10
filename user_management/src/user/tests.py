@@ -379,6 +379,8 @@ class UserId(TestCase):
         user = User.objects.all().first()
         url = reverse('user-id', args=[user.id])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(user.username, result.json()['username'])
         self.assertEqual(user.id, result.json()['id'])
@@ -584,6 +586,11 @@ class TestUserIdList(TestCase):
 
         url = reverse('user-id-list')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 401)
+        Aurel1 = User.objects.get(username='Aurel1')
+
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         for user in UserList:
             self.assertEqual(result.json().get(str(user.id)), user.username)
