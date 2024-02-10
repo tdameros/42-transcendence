@@ -33,9 +33,9 @@ jobs:
                   pip install -r matchmaking/docker/requirements.txt
 
             - name: Copy common
-              working-directory: matchmaking/src/
+              working-directory: matchmaking/
               run: |
-                cp -r ../../common .
+                cp -r ../common .
 
             - name: Run PEP8 check
               working-directory: matchmaking/src/
