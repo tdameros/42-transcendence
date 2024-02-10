@@ -12,9 +12,7 @@ from notification import settings
 from api.models import Notification
 
 
-# # Get the number of channels in the group
-# group_channels = channel_layer.groups.get(f'{instance.owner_id}', {}).items()
-# print(f'Nb of channels in group {instance.owner_id}: {len(group_channels)}')
+# TODO: the customer must send each new jwt
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         query_string = self.scope['query_string']
@@ -24,6 +22,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             print(error)
             await self.close()
             return
+        self.jwt = query_params['Authorization'][0]
         self.group_name = f'{payload["user_id"]}'
         await self.channel_layer.group_add(
             self.group_name,
@@ -31,6 +30,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
         await self.accept()
         await self.send_active_notifications()
+        await self.send_friend_status(self.jwt, payload['user_id'])
 
     async def disconnect(self, close_code):
         if hasattr(self, 'group_name'):
@@ -38,6 +38,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 self.group_name,
                 self.channel_name
             )
+            group_channels = get_channel_layer().groups.get(self.group_name, {}).items()
+            if len(group_channels) == 0:
+                friend_list = await self.get_friend_list(self.jwt)
+                for friend in friend_list:
+                    await self.send_user_status(int(self.group_name), friend['id'], 'offline')
 
     async def send_notification(self, event):
         await self.send(text_data=json.dumps({'message': event['message']}))
@@ -67,17 +72,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             }
             await self.send(text_data=json.dumps(message_data))
 
-    async def send_friend_status(self, jwt):
-        friend_list = await sync_to_async(requests.get)(
-            settings.USER_MANAGEMENT_FRIEND_ENDPOINT,
-            headers={
-                'Authorization': jwt
-            }
-        )
-        if friend_list.status_code != 200:
-            await self.send(text_data=json.dumps({'message': 'Error while fetching friend list'}))
+    async def send_friend_status(self, jwt, user_id):
+        friend_list = await self.get_friend_list(jwt)
+        if friend_list is None:
             return
-        friend_list = await sync_to_async(list)(friend_list)
+        channel_layer = get_channel_layer()
         for friend in friend_list:
             if friend['status'] == 'accepted':
                 friend_data = {
@@ -91,3 +90,33 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     friend_data['status'] = 'offline'
                 message_data = {'message': json.dumps(friend_data)}
                 await self.send(text_data=json.dumps(message_data))
+                await self.send_user_status(user_id, friend['id'], 'online')
+
+    @staticmethod
+    async def get_friend_list(jwt):
+        friend_list = await sync_to_async(requests.get)(
+            settings.USER_MANAGEMENT_FRIEND_ENDPOINT,
+            headers={
+                'Authorization': jwt
+            }
+        )
+        if friend_list.status_code != 200:
+            return None
+        friend_list = await sync_to_async(friend_list.json)()
+        return friend_list['friends']
+
+    @staticmethod
+    async def send_user_status(user_id, friend_id, status):
+        channel_layer = get_channel_layer()
+        friend_data = {
+            'type': 'friend_status',
+            'friend_id': user_id,
+            'status': status
+        }
+        await channel_layer.group_send(
+            f'{friend_id}',
+            {
+                'type': 'send_notification',
+                'message': json.dumps(friend_data)
+            }
+        )

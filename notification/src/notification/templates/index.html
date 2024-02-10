@@ -82,6 +82,7 @@
         + window.location.host
         + '/ws/notification/'
         + '?Authorization=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzg1MDUyODksInVzZXJfaWQiOjEsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.UTLsTUj5PqLoVpE93CY0zy3KaeQqmlqYss3GNtYVKyg07sSnIOzS06ZSWrEHFBpDGmPye8LjDvcIlrpes0-0pDnIVkqNjwiSeyOCJmbZAT3FyqBSszsYet4LNhdav7FgunuMnYEaNUHF-7xlWfUKxlzkfMv_sO_xUNjY2utn-XrzMjWuJoA0s5gvD37RLe4bwJNmuXxrTXRpG80jLakIFY6R9ny1owQktZU6NNCwu5mALqyj6QWSzVTzanEwSgnE8fkWxdVsH1z4xj-y5aI6zhTR04b0FCpOhKkeMJs1DVkkK2drDO3cnxjVqRGmmvr9p3AioVsCfkXSYpqQYA459A'
+        // + '?Authorization=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzg2ODAyNjIsInVzZXJfaWQiOjIsInRva2VuX3R5cGUiOiJhY2Nlc3MifQ.Sf_OZ71GQ7KiEUoNJUrQZlfStMk-CgOpNyB_4HVNW7r-mtXQoFd3Bl3yy0nJ714B-ccEeV9E65z81va1aFDmpr2di8WtI5Pagp5HmGJKMK5mGG_9V_-zODMr_l9ihm0PySWXrAzH-oQ84o-pPFLxDbXB8N5epuQh3ZaFxSg6pNe299sYDW-LtRccD15HpPWPaxxd6wWAkRFbHouONsU-4OZQn6KG-s0et9ePIKxTL9wD6cXb_riHkGUFPbOHTaW-95FfqmNY9vElzxwz__L1AEeefMi-Oh9AN0AzFVCuVKop1WeJMRgxeVlcexeJUzFJqKdHl7djVPqqDyBw52DNpQ'
     );
 
     // on socket open
@@ -99,8 +100,13 @@
         let data = JSON.parse(e.data);
         data = JSON.parse(data.message)
 
-        console.log('Notification received: ' + data.title)
-        addNotification(data)
+        if (data.type === 'friend_status')
+            // TODO: handle status in front
+            console.log('Friend status received: ' + data.friend_id + ' ' + data.status)
+        else {
+            console.log('Notification received: ' + data.title)
+            addNotification(data)
+        }
     };
 
     function addNotification(notification) {
