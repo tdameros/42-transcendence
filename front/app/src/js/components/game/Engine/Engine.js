@@ -1,6 +1,5 @@
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
-import {_RedirectionSocketIO} from './sockets/_RedirectionSocketIO';
 import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
 import {_GameSocketIO} from "./sockets/_GameSocketIO";
 
@@ -17,9 +16,8 @@ export class Engine {
     this.#socket = null;
   }
 
-  connectToServer() {
-    // this.#socket = new _RedirectionSocketIO(this);
-    this.#socket = new _GameSocketIO(this, 'http://localhost:6004'); // TODO:add URI
+  connectToServer(URI) {
+    this.#socket = new _GameSocketIO(URI);
   }
 
   renderFrame() {

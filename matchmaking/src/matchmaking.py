@@ -2,12 +2,16 @@ import asyncio
 import json
 import logging
 from time import time
-from typing import Optional
+from typing import Optional, Any
 
 import socketio
+import requests
 from aiohttp import web
 
 import src.settings as settings
+import src.error_message as error
+import common.src.settings as common_settings
+from common.src.internal_requests import InternalRequests
 
 from .authenticate import authenticate_user
 from .logging import setup_logging
@@ -34,15 +38,12 @@ class Matchmaking:
     def start(self) -> None:
         web.run_app(self.app, host=settings.MATCHMAKING_HOST, port=settings.MATCHMAKING_PORT)
 
-    # TODO: Send proper match notification when game creation is implemented
     async def matchmaking(self) -> None:
         while True:
             for player in self.queue:
                 opponent = self.search_opponent(player)
                 if opponent is not None:
-                    self.queue.remove(player)
-                    self.queue.remove(opponent)
-                    await self.send_match(player, opponent)
+                    self.find_match()
             await asyncio.sleep(2)
 
     def search_opponent(self, player: dict) -> Optional[dict]:
@@ -60,20 +61,47 @@ class Matchmaking:
                     closest_opponent = opponent
         return closest_opponent if match_found else None
 
-    async def send_match(self, player1: dict, player2: dict) -> None:
-        data = [
-            {
-                'user_id': player1.get('user_id'),
-                'elo': player1.get('elo'),
-            },
-            {
-                'user_id': player2.get('user_id'),
-                'elo': player2.get('elo'),
-            }
-        ]
+    def find_match(self, player_1, player_2):
+        data = {
+            'request_issuer': 'matchmaking',
+            'game_id': 0,
+            'players': [
+                player_1.user_id,
+                player_2.user_id,
+            ]
+        }
+        try:
+            response = InternalRequests.post(
+                f'{common_settings.GAME_CREATOR_CREATE_GAME_ENDPOINT}',
+                data=data,
+            )
+        except requests.exceptions.RequestException as e:
+            logging.debug(e)
+            self.disconnect_player(player_1, player_2, error.GAME_CREATOR_CONNECT_ERROR)
+            return
+        if not response.ok:
+            logging.debug(response.text)
+            self.disconnect_player(player_1, player_2, error.GAME_CREATOR_CREATE_GAME_ERROR)
+            return
+        self.queue.remove(player_1)
+        self.queue.remove(player_2)
+        self.send_match_uri(player_1, player_2, response.json)
+
+    async def send_match_uri(self, player1: dict, player2: dict, data: Any) -> None:
         data = json.dumps(data)
         await self.sio.emit('match', data, room=player1.get('sid'))
         await self.sio.emit('match', data, room=player2.get('sid'))
+
+    def disconnect_player(self, player_1: dict, player_2: dict, error_message: str):
+        self.send_error(player_1, error_message)
+        self.send_error(player_2, error_message)
+        self.sio.disconnect(player_1.get('sid'))
+        self.sio.disconnect(player_2.get('sid'))
+
+    async def send_error(self, player: dict, error_message: str) -> None:
+        data = {'error': error_message}
+        await self.sio.emit('error', data, room=player.get('sid'))
+
 
     @staticmethod
     def get_elo_threshold(player: dict) -> int:

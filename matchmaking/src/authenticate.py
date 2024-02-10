@@ -4,9 +4,9 @@ from typing import Optional
 import jwt
 import requests
 
-import src.settings as settings
 from common.src.internal_requests import InternalRequests
 import common.src.settings as common_settings
+import src.error_message as error
 
 def authenticate_user(auth: str) -> (Optional[dict], list):
     if auth is None:
@@ -50,9 +50,9 @@ def request_user_elo(user_id: int, token: str) -> (bool, Optional[int], Optional
         response = InternalRequests.get(f'{common_settings.USER_STATS_USER_ENDPOINT}{user_id}/', headers=headers)
     except requests.exceptions.RequestException as e:
         logging.debug(e)
-        return False, None, 'Could not connect to user stats'
+        return False, None, error.USER_STATS_CONNECT_ERROR
     if not response.ok:
-        logging.error(response.text)
-        return False, None, 'Could not get user elo'
+        logging.debug(response.text)
+        return False, None, error.USER_STATS_ELO_ERROR
     user_data = response.json()
     return True, user_data.get('elo'), None

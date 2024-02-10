@@ -40,6 +40,10 @@ import {
   Navbar,
 } from './Navbar';
 
+import {
+  Game,
+} from './game';
+
 customElements.define('github-button-component', GithubButton);
 customElements.define('intra-button-component', IntraButton);
 customElements.define('theme-button-component', ThemeButton);
