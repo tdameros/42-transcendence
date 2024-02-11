@@ -10,12 +10,18 @@ services:
             - "443"
         ports:
             - "6001:443"
-        depends_on:
-            - tournament
         volumes:
             - tournament_static_volume:/app/static
             - tournament_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
+        depends_on:
+            tournament:
+                condition: service_healthy
         restart: on-failure
 
     tournament:
@@ -36,8 +42,14 @@ services:
             - ssl_certs:/app/ssl
         expose:
             - "8000"
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
         depends_on:
-            - tournament-db
+            tournament-db:
+                condition: service_healthy
         restart: on-failure
 
     tournament-db:
@@ -50,4 +62,9 @@ services:
             POSTGRES_PASSWORD: mypassword
         volumes:
             - tournament_postgres_volume:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U myuser" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
         restart: on-failure

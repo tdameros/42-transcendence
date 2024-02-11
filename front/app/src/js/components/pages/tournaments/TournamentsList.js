@@ -1,5 +1,5 @@
-import {Component} from '../../Component.js';
-import {Cookies} from '../../../Cookies.js';
+import {Component} from '@components';
+import {Cookies} from '@js/Cookies.js';
 
 export class TournamentsList extends Component {
   static privateCheckBoxId = 'private-check-box';
@@ -108,6 +108,7 @@ export class TournamentsList extends Component {
     this.tbody.innerHTML = this.#generateTrTournaments(tournaments);
     this.pagination.innerHTML = this.#generatePagination(page, nbPages);
   }
+
   #generatePagination(currentPage, totalPages) {
     const maxPagesToShow = 3;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
@@ -183,7 +184,10 @@ export class TournamentsList extends Component {
         ${tournament['name']}
       </td>
       <td>
-        <a class="text-primary text-decoration-none">${tournament['admin']}</a>
+        <a class="text-primary text-decoration-none"
+           onclick="window.router.navigate('/profile/${tournament['admin-username']}/')">
+           ${tournament['admin-username']}
+        </a>
       </td>
       ${this.#generateStatus(tournament['status'])}
       ${this.#generatePlayers(

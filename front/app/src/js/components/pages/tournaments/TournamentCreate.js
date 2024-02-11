@@ -1,5 +1,7 @@
-import {Component} from '../../Component.js';
-import {ErrorPage} from '../../../utils/ErrorPage.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {tournamentClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 
 export class TournamentCreate extends Component {
   constructor() {
@@ -8,8 +10,8 @@ export class TournamentCreate extends Component {
   }
 
   render() {
-    if (!window.ApiClient.isAuth()) {
-      window.router.redirect('/signin/');
+    if (!tournamentClient.isAuth()) {
+      getRouter().redirect('/signin/');
       return false;
     }
     return (`
@@ -126,11 +128,11 @@ export class TournamentCreate extends Component {
     const isPrivate = this.privateSwitch.checked;
     const password = this.password.value;
     try {
-      const {response, body} = await window.ApiClient.createTournament(
+      const {response, body} = await tournamentClient.createTournament(
           name, maxPlayers, isPrivate, password,
       );
       if (response.ok) {
-        window.router.navigate(`/tournaments/`);
+        getRouter().navigate(`/tournaments/`);
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');

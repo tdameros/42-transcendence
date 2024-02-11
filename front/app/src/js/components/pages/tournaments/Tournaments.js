@@ -1,6 +1,8 @@
-import {Component} from '../../Component.js';
-import {ErrorPage} from '../../../utils/ErrorPage.js';
-import {Cookies} from '../../../Cookies.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {Cookies} from '@js/Cookies.js';
+import {tournamentClient, userManagementClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 import {TournamentsList} from './TournamentsList.js';
 
 export class Tournaments extends Component {
@@ -10,8 +12,8 @@ export class Tournaments extends Component {
 
 
   render() {
-    if (!window.ApiClient.isAuth()) {
-      window.router.redirect('/signin/');
+    if (!tournamentClient.isAuth()) {
+      getRouter().redirect('/signin/');
       return false;
     }
     return (`
@@ -72,20 +74,46 @@ export class Tournaments extends Component {
     this.dispayFinishedTournaments = Cookies.get(
         TournamentsList.finishedCheckBoxCookie) === 'true';
     try {
-      const {response, body} = await window.ApiClient.getTournaments(this.id,
+      const {response, body} = await tournamentClient.getTournaments(this.id,
           10,
           this.displayPrivateTournaments,
           this.dispayFinishedTournaments);
       if (response.ok) {
         this.tournaments = body.tournaments;
+        if (!await this.#addAdminUsernamesInTournaments(this.tournaments)) {
+          return;
+        }
         this.tournamentsListComponent.updateTournamentsList(body.tournaments,
             body.page, body['nb-pages']);
         this.#addRowsEventListeners();
       } else {
-        window.router.redirect('/signin/');
+        getRouter().redirect('/signin/');
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #addAdminUsernamesInTournaments(tournaments) {
+    const adminIds = tournaments.map(
+        (tournament) => tournament['admin-id'],
+    );
+    try {
+      const {response, body} = await userManagementClient.getUsernameList(
+          adminIds,
+      );
+      if (response.ok) {
+        tournaments.forEach((tournament) => {
+          tournament['admin-username'] = body[tournament['admin-id']];
+        });
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+      return false;
     }
   }
 

@@ -1,4 +1,4 @@
-import {Component} from '../Component.js';
+import {Component} from '@components';
 
 export class Singleplayer extends Component {
   constructor() {

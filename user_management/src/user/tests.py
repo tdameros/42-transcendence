@@ -566,6 +566,36 @@ class TestsTwoFa(TestCase):
         self.assertEqual(result.status_code, 200)
 
 
+class TestUserIdList(TestCase):
+    def test_user_id_list(self):
+        # create a user
+
+        User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel2', email='aurel2@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel3', email='aurel3@42.fr', password='Validpass42*')
+        User.objects.create(username='Aurel4', email='aurel4@42.fr', password='Validpass42*')
+
+        # get the list of id of the users
+        UserList = User.objects.all()
+        id_list = [user.id for user in User.objects.all()]
+        data = {
+            'id_list': id_list
+        }
+
+        url = reverse('user-id-list')
+        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        for user in UserList:
+            self.assertEqual(result.json().get(str(user.id)), user.username)
+        data = {
+            'id_list': 'a'
+        }
+        url = reverse('user-id-list')
+        # result = self.client.post(url, json.dumps(data), content_type='application/json')
+        # self.assertEqual(result.status_code, 200)
+        # self.assertTrue('errors' in result.json())
+
+
 class FriendsTest(TestCase):
 
     @patch('user.views.sign_up.SignUpView.post_user_stats')

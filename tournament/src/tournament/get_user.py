@@ -11,12 +11,6 @@ def get_jwt(request: HttpRequest) -> str:
     return request.headers.get('Authorization')
 
 
-def get_username_by_id(user_id: int, jwt: str) -> str:
-    headers = {'Authorization': jwt}
-    response = requests.get(f'{settings.USER_MANAGEMENT_USER_ENDPOINT}{user_id}/', headers=headers)
-    return response.json()['username']
-
-
 def get_user_id(request: HttpRequest) -> int:
     jwt = request.headers.get('Authorization')
     split_jwt = jwt.split('.')

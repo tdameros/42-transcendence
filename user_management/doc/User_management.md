@@ -281,6 +281,55 @@ will return public user information
 
 </details>
 
+## `/user/id-list/`
+
+### Get a list of user ids
+
+will return a list of user ids
+
+<details>
+ <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
+
+### Parameters
+
+#### Body
+
+> ``` javascript
+> 
+> {
+>     "id_list": [1, 2, 3]
+> }
+
+> NB : id_list could be a list of integers or strings (ex : ["1", "2", "3"])
+>
+> if a user is not found, it will not be in the response
+
+#### Responses
+
+200 :
+```javascript
+
+[
+    {
+        "2": "Aurel1243",
+        "3": "Aurel121233"
+    }
+]
+```
+
+If you want to retrieve a username, you should do something like :
+```py
+result.json().get(str(id))
+```
+nb :I cannot respond with id as int because keys are converted to strings in the json response
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `...`                                                |
+> | `400`     | `application/json` | `{"errors": ["AAA"]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
 
 ## `/user/{username}/`
 ### Get user non-sensitive information
@@ -400,7 +449,7 @@ This endpoint handles the callback after successful OAuth authentication and ret
 
 </details>
 
-## '/user/update-infos/'
+## `/user/update-infos/`
 
 
 ### Update user's information

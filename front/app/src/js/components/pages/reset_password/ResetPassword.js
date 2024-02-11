@@ -1,12 +1,14 @@
-import {Component} from '../../Component.js';
+import {Component} from '@components';
+import {userManagementClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 
 export class ResetPassword extends Component {
   constructor() {
     super();
   }
   render() {
-    if (window.ApiClient.isAuth()) {
-      window.router.redirect('/');
+    if (userManagementClient.isAuth()) {
+      getRouter().redirect('/');
       return false;
     }
     return (`

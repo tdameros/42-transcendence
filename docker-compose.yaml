@@ -67,6 +67,10 @@ services:
         extends:
             file: pong_server/docker/docker-compose.yaml
             service: pong-server
+    pong-server-nginx:
+        extends:
+            file: pong_server/docker/docker-compose.yaml
+            service: pong-server-nginx
 
     # Notification
     notification:
@@ -90,6 +94,9 @@ networks:
         driver: bridge
 
     tournament:
+        driver: bridge
+
+    pong_server:
         driver: bridge
 
     transcendence:
@@ -178,6 +185,8 @@ volumes:
             type: none
             o: bind
             device: pong_server/src/
+    pong_server_static_volume:
+    pong_server_media_volume:
 
     # Notification
     notification_postgres_volume:

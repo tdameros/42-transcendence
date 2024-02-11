@@ -40,9 +40,11 @@ jobs:
             - name: Check imports
               working-directory: matchmaking/src/
               run: |
+                cp -r ../../common .
                   isort . --check-only
 
             - name: Run unit tests
               working-directory: matchmaking/
               run: |
+                  cp -r ../common .
                   python -m unittest test/test.py
