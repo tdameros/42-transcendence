@@ -7,7 +7,7 @@ services:
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/matchmaking /app/src &&
                         cp -r /app/common /app/src/common &&
-                        python -m src.matchmaking"
+                        python -m src.main"
         volumes:
             - matchmaking_code:/app/matchmaking
             - common_code:/app/common
