@@ -22,7 +22,7 @@ class StartMatchView(View):
 
         try:
             body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         try:
@@ -97,7 +97,7 @@ class EndMatchView(View):
 
         try:
             body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         try:
@@ -206,10 +206,9 @@ class AddPointView(View):
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
         # TODO: add service authentication when implemented
-
         try:
             body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         try:

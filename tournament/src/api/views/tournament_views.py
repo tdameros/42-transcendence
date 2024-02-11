@@ -51,7 +51,7 @@ class TournamentView(View):
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         valid_tournament, errors = TournamentView.is_valid_tournament(json_request)

@@ -50,7 +50,7 @@ class TournamentPlayersView(View):
 
         try:
             json_request = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         user_nickname = json_request.get('nickname')

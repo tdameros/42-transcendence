@@ -16,7 +16,7 @@ class SearchUsernameView(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             search_query = json_request.get('username')
-        except json.JSONDecodeError:
+        except:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         if search_query is None or search_query == '':
             return JsonResponse(data={'errors': ['Username not found']}, status=400)

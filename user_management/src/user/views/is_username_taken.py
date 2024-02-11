@@ -14,6 +14,10 @@ class IsUsernameTakenView(View):
     def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
+        except:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+
+        try:
             username = json_request.get('username')
             if username is None:
                 return JsonResponse(data={'is_taken': True}, status=400)
@@ -21,7 +25,5 @@ class IsUsernameTakenView(View):
             if users.exists():
                 return JsonResponse(data={'is_taken': True}, status=200)
             return JsonResponse(data={'is_taken': False}, status=200)
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
