@@ -33,6 +33,10 @@ generate_ssl_certificate:
 	mkdir -p ssl/certs
 	docker run -v ./ssl/certs:/app/ssl ssl_certificate_generator
 
+.PHONY: generate_env
+generate_env:
+	python3 ./common/src/generate_env.py
+
 .PHONY: up
 up: create_volume_path
 	$(DOCKER_COMPOSE) up --detach --build
