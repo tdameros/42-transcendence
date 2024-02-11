@@ -1,23 +1,4 @@
 services:
-    notification-nginx:
-        networks:
-            - transcendence
-            - notification
-        build:
-            context: nginx
-            dockerfile: Dockerfile
-        expose:
-            - "80"
-            - "443"
-        ports:
-            - "6005:80"
-        depends_on:
-            - notification
-        volumes:
-            - notification_static_volume:/app/static
-            - notification_media_volume:/app/media
-        restart: on-failure
-
     notification:
         networks:
             - transcendence
@@ -30,12 +11,13 @@ services:
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
                         cd /app/src &&
-                        daphne -b 0.0.0.0 -p 8000 notification.asgi:application"
+                        daphne -e ssl:443:privateKey=/app/ssl/private.key:certKey=/app/ssl/certificate.crt notification.asgi:application"
         volumes:
             - notification_code:/app/notification
             - common_code:/app/common
-        expose:
-            - "8000"
+            - ssl_certs:/app/ssl
+        ports:
+            - "6005:443"
         depends_on:
             - notification-db
         restart: on-failure
