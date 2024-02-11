@@ -10,12 +10,18 @@ services:
             - "443"
         ports:
             - "6002:443"
-        depends_on:
-            - user-management
         volumes:
             - user_management_static_volume:/app/static
             - user_management_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
+        depends_on:
+            user-management:
+                condition: service_healthy
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
         restart: on-failure
 
 
@@ -37,8 +43,14 @@ services:
             - ssl_certs:/app/ssl
         expose:
             - "8000"
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
         depends_on:
-            - user-management-db
+            user-management-db:
+                condition: service_healthy
         restart: on-failure
 
 
@@ -52,4 +64,9 @@ services:
             POSTGRES_PASSWORD: mypassword
         volumes:
             - user_management_postgres_volume:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U myuser" ]
+            interval: 5s
+            timeout: 5s
+            retries: 12
         restart: on-failure
