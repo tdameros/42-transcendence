@@ -20,7 +20,7 @@ class MatchView(View):
     def post(request: HttpRequest):
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError as e:
+        except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         valid, errors = MatchView.validate_post_request(json_body)
         if not valid:

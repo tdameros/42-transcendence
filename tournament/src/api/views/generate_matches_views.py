@@ -38,9 +38,12 @@ class GenerateMatchesView(View):
             return JsonResponse({'errors': [error_message]}, status=status_code)
 
         try:
-            players = GenerateMatchesView.sort_players(request, players)
-        except json.JSONDecodeError:
+            body = json.loads(request.body.decode('utf8'))
+        except Exception:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        try:
+            players = GenerateMatchesView.sort_players(request, players, body)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
         matches = GenerateMatchesView.generate_matches(players, tournament)
@@ -54,8 +57,7 @@ class GenerateMatchesView(View):
         return JsonResponse(MatchUtils.matches_to_json(matches), status=200)
 
     @staticmethod
-    def sort_players(request: HttpRequest, players: list[Player]) -> list[Player]:
-        body = json.loads(request.body.decode('utf8'))
+    def sort_players(request: HttpRequest, players: list[Player], body: dict) -> list[Player]:
         is_random = body.get('random')
         if isinstance(is_random, bool) and is_random:
             random.shuffle(players)
