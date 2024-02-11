@@ -43,6 +43,7 @@ class DeleteUserNotificationView(View):
         return int(payload_dict['user_id'])
 
 
+# TODO: add service authentication when implemented
 @method_decorator(csrf_exempt, name='dispatch')
 class UserNotificationView(View):
     @staticmethod

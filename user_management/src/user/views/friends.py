@@ -7,6 +7,8 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from common.src.jwt_managers import user_authentication
+from common.src.internal_requests import InternalRequests
+from common.src import settings
 from user.models import Friend, User
 from user_management.JWTManager import get_user_id
 
@@ -83,6 +85,7 @@ class FriendsView(View):
             related_friendship.save()
         else:
             Friend.objects.create(user_id=user_id, friend_id=friend_id)
+            FriendsView.send_friend_request_notification(user_id, friend_id)
         return True, None
 
     @staticmethod
@@ -121,3 +124,20 @@ class FriendsView(View):
         except User.DoesNotExist:
             return False, 'User not found'
         return True, None
+
+    @staticmethod
+    def send_friend_request_notification(user_id: int, friend_id: int):
+        user = User.objects.get(id=user_id)
+        notification_data = {
+            'title': f'Friend request from {user.username}',
+            'type': 'friend_request',
+            'user_list': [friend_id],
+            'data': user_id,
+        }
+        response = InternalRequests.post(
+            url=settings.USER_NOTIFICATION_ENDPOINT,
+            data=json.dumps(notification_data)
+            #TODO: Add authentication headers
+        )
+        if response.status_code != 201:
+            raise Exception(f'Failed to send friend request notification : {response.text}')
