@@ -48,19 +48,20 @@ TOTP_SECRET_MAX_LENGTH = 32
 TOTP_CONFIG_URL_MAX_LENGTH = 100
 
 # OAuth
-OAUTH_STATE_MAX_LENGTH = 32
+OAUTH_STATE_MAX_LENGTH = 256
+OAUTH_STATE_RANDOM_STRING_LENGTH = 16
 OAUTH_SOURCE_MAX_LENGTH = 100
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
-GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
-GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
-GITHUB_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/github'
+GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize/'
+GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token/'
+GITHUB_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/github/'
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
 
 FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
-FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize'
-FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token'
-FT_API_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/42api'
+FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize/'
+FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token/'
+FT_API_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/42api/'
 FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 

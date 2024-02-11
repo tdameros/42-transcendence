@@ -15,12 +15,29 @@ export class UserManagementClient extends BaseApiClient {
     'user-username': 'user/:username/',
     'search-username': 'user/search-username/',
     'user-id-list': 'user/id-list/',
+    'oauth': 'user/oauth/:oauth-service/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  async getOAuthIntra(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
+  async getOAuthGithub(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
   }
 
   async getUsernameList(IDList) {

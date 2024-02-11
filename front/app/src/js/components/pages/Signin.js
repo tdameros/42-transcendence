@@ -2,17 +2,26 @@ import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {userManagementClient} from '@utils/api/index.js';
 import {getRouter} from '@js/Router.js';
+import {Cookies} from '@js/Cookies.js';
+import {JWT} from '@utils/JWT.js';
 
 export class Signin extends Component {
   constructor() {
     super();
     this.isValidEmailInput = false;
     this.isValidPasswordInput = false;
+
+    this.error = false;
+    this.errorMessage = '';
   }
 
   render() {
     if (userManagementClient.isAuth()) {
       getRouter().redirect('/');
+      return false;
+    }
+    const {render} = this.#OAuthReturn();
+    if (!render) {
       return false;
     }
     return (`
@@ -113,6 +122,27 @@ export class Signin extends Component {
         this.#togglePasswordVisibility);
 
     this.alertForm = this.querySelector('#alert-form');
+    if (this.error) {
+      this.alertForm.setAttribute('alert-message', this.errorMessage);
+      this.alertForm.setAttribute('alert-display', 'true');
+      this.error = false;
+    }
+  }
+
+  reRender() {
+    this.innerHTML = this.render() + this.style();
+    this.postRender();
+  }
+
+  #renderLoader() {
+    return (`
+      <navbar-component disable-padding-top="true"></navbar-component>
+      <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+          <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+      </div>
+    `);
   }
 
   #emailHandler() {
@@ -136,16 +166,49 @@ export class Signin extends Component {
           this.email.value, this.password.value,
       );
       if (response.ok) {
-        userManagementClient.refreshToken = body.refresh_token;
-        await userManagementClient.restoreCache();
-        getRouter().navigate('/');
+        this.#loadAndCache(body.refresh_token);
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
       }
     } catch (error) {
-      console.error(error);
       ErrorPage.loadNetworkError();
+    }
+  }
+
+  #OAuthReturn() {
+    if (!this.#isOAuthError()) {
+      return {render: true};
+    }
+    const refreshToken = Cookies.get('refresh_token');
+    Cookies.remove('refresh_token');
+    if (new JWT(refreshToken).isValid()) {
+      this.#loadAndCache(refreshToken);
+      return {render: false};
+    }
+    return {render: true};
+  }
+
+  #isOAuthError() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('error')) {
+      this.error = true;
+      this.errorMessage = params.get('error');
+      return false;
+    }
+    return true;
+  }
+
+  async #loadAndCache(refreshToken) {
+    this.innerHTML = this.#renderLoader();
+    userManagementClient.refreshToken = refreshToken;
+    if (!await userManagementClient.restoreCache()) {
+      userManagementClient.logout();
+      this.error = true;
+      this.errorMessage = 'Error, failed to store cache';
+      this.reRender();
+    } else {
+      getRouter().navigate('/');
     }
   }
 

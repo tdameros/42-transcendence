@@ -4,6 +4,8 @@ import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {userManagementClient} from '@utils/api/index.js';
 import {getRouter} from '@js/Router.js';
+import {Cookies} from '@js/Cookies.js';
+import {JWT} from '@utils/JWT.js';
 
 export class Signup extends Component {
   constructor() {
@@ -16,11 +18,18 @@ export class Signup extends Component {
     this.InputValidEmail = false;
     this.InputValidPassword = false;
     this.InputValidConfirmPassword = false;
+
+    this.error = false;
+    this.errorMessage = '';
   }
 
   render() {
     if (userManagementClient.isAuth()) {
       getRouter().redirect('/');
+      return false;
+    }
+    const {render} = this.#OAuthReturn();
+    if (!render) {
       return false;
     }
     return (`
@@ -160,6 +169,27 @@ export class Signup extends Component {
       event.preventDefault();
       this.#signupHandler();
     });
+    if (this.error) {
+      this.alertForm.setAttribute('alert-message', this.errorMessage);
+      this.alertForm.setAttribute('alert-display', 'true');
+      this.error = false;
+    }
+  }
+
+  reRender() {
+    this.innerHTML = this.render() + this.style();
+    this.postRender();
+  }
+
+  #renderLoader() {
+    return (`
+      <navbar-component disable-padding-top="true"></navbar-component>
+      <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+          <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+      </div>
+    `);
   }
 
 
@@ -332,15 +362,49 @@ export class Signup extends Component {
       const {response, body} = await userManagementClient.signUp(
           this.username.value, this.email.value, this.password.value);
       if (response.ok) {
-        userManagementClient.refreshToken = body.refresh_token;
-        await userManagementClient.restoreCache();
-        getRouter().navigate('/');
+        await this.#loadAndCache(body.refresh_token);
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
+    }
+  }
+
+  #OAuthReturn() {
+    if (!this.#isOAuthError()) {
+      return {render: true};
+    }
+    const refreshToken = Cookies.get('refresh_token');
+    Cookies.remove('refresh_token');
+    if (new JWT(refreshToken).isValid()) {
+      this.#loadAndCache(refreshToken);
+      return {render: false};
+    }
+    return {render: true};
+  }
+
+  #isOAuthError() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('error')) {
+      this.error = true;
+      this.errorMessage = params.get('error');
+      return false;
+    }
+    return true;
+  }
+
+  async #loadAndCache(refreshToken) {
+    this.innerHTML = this.#renderLoader();
+    userManagementClient.refreshToken = refreshToken;
+    if (!await userManagementClient.restoreCache()) {
+      userManagementClient.logout();
+      this.error = true;
+      this.errorMessage = 'Error, failed to store cache';
+      this.reRender();
+    } else {
+      getRouter().navigate('/');
     }
   }
 }

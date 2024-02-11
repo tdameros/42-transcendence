@@ -1,4 +1,5 @@
 import {Component} from '@components';
+import {userManagementClient} from '@utils/api';
 
 export class GithubButton extends Component {
   constructor() {
@@ -33,8 +34,35 @@ export class GithubButton extends Component {
     super.addComponentEventListener(this.btn, 'click', this.#connectGithub);
   }
 
-  #connectGithub() {
-    // TODO: implement github oauth
-    console.log('connect github');
+  reRender() {
+    this.innerHTML = this.render() + this.style();
+    this.postRender();
+  }
+
+  renderLoader() {
+    return (`
+      <button id="github-btn" class="btn btn-lg mb-2 light-hover w-100" type="submit">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="sr-only">Loading...</span>
+      </button>
+    `);
+  }
+
+  async #connectGithub() {
+    this.innerHTML = this.renderLoader() + this.style();
+    try {
+      const source = window.location.origin + window.location.pathname;
+      const {response, body} = await userManagementClient.getOAuthGithub(
+          source,
+      );
+      if (response.ok) {
+        window.location.href = body['redirection_url'];
+      } else {
+        this.reRender();
+      }
+    } catch (e) {
+      console.error(e);
+      this.reRender();
+    }
   }
 }
