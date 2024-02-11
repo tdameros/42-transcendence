@@ -77,6 +77,7 @@
 {% block js_script %}
 <script>
     // setup chat scoket
+    // TODO: catch promise error when request fails
     const notifyScoket = new WebSocket(
         'wss://'
         + window.location.host
@@ -165,7 +166,7 @@
 
     function acceptFriendRequestListener(notification, button) {
         button.addEventListener('click', (e) => {
-            fetch('http://localhost:8001/user/friends/', {
+            fetch('https://localhost:6002/user/friends/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -187,7 +188,7 @@
 
     function declineFriendRequestListener(notification, button) {
         button.addEventListener('click', (e) => {
-            fetch('http://localhost:8001/user/friends/', {
+            fetch('https://localhost:6002/user/friends/', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -209,7 +210,7 @@
 
     function acceptTournamentRequestListener(notification, button) {
         button.addEventListener('click', (e) => {
-            window.location.href = 'http://localhost:8001/tournament/' + notification.data + '/';
+            window.location.href = 'https://localhost:6001/tournament/' + notification.data + '/';
             deleteNotification(notification.id);
         });
     }
@@ -221,7 +222,7 @@
     }
 
     function deleteNotification(notification_id) {
-        fetch('http://localhost:8000/notification/user/' + notification_id + '/', {
+        fetch('https://localhost:6005/notification/user/' + notification_id + '/', {
             method: 'DELETE',
             headers: {
                 //TODO: Get access token from local storage
