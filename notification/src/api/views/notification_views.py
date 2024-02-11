@@ -50,7 +50,7 @@ class UserNotificationView(View):
     def post(request: HttpRequest) -> JsonResponse:
         try:
             body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except Exception:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         title = body.get('title')
