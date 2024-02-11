@@ -15,7 +15,7 @@ class RefreshJWT(View):
     def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
-        except:
+        except Exception:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
         try:

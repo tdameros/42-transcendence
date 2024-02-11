@@ -27,7 +27,7 @@ class UserIdListView(View):
     def post(request):
         try:
             id_list = json.loads(request.body).get('id_list')
-        except:
+        except Exception:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         try:
             if not isinstance(id_list, list):
