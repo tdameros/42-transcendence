@@ -33,6 +33,7 @@ services:
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/user_stats /app/src &&
                         cp -r /app/common /app/src/common &&
+                        pip install --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
                         gunicorn -c /app/gunicorn.conf.py"

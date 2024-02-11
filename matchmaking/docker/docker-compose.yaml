@@ -7,6 +7,7 @@ services:
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/matchmaking /app/src &&
                         cp -r /app/common /app/src/common &&
+                        pip install --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python -m src.matchmaking"
         volumes:
             - matchmaking_code:/app/matchmaking
