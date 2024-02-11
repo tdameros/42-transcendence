@@ -76,6 +76,12 @@ class ServiceAccessJWT(JWTManager):
     )
 
     @staticmethod
+    def generate_jwt() -> (bool, str | None, list[str] | None):
+        """ returns: Success, jwt, [error messages] """
+
+        return ServiceAccessJWT.JWT_MANAGER.generate_jwt({})
+
+    @staticmethod
     def authenticate(token: str) -> (bool, list[str] | None):
         """ returns: Success, error message """
 
@@ -89,7 +95,7 @@ def user_authentication(methods):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            if methods is None or request.method in methods:
+            if request.method in methods:
                 token = request.headers.get('Authorization')
                 valid, user, errors = UserAccessJWTDecoder.authenticate(token)
                 if not valid:
@@ -103,7 +109,7 @@ def service_authentication(methods):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            if methods is None or request.method in methods:
+            if request.method in methods:
                 token = request.headers.get('Authorization')
                 valid, errors = ServiceAccessJWT.authenticate(token)
                 if not valid:
