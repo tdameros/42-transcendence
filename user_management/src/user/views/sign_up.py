@@ -10,7 +10,6 @@ import common.src.settings as common
 from common.src.internal_requests import InternalRequests
 from common.src.jwt_managers import ServiceAccessJWT
 from user.models import User
-from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (is_valid_email, is_valid_password,
                                    is_valid_username)
