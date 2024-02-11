@@ -1,11 +1,11 @@
 import os
 
 COMMON_ENV_FILE = 'common/src/.env'
-# add you env file here :P
+# add your env file here :P
 
 env_files = [
     COMMON_ENV_FILE,
-    # add you env file here :D
+    # add your env file here :D
 ]
 
 for env_file in env_files:
