@@ -39,7 +39,7 @@ class GenerateMatchesView(View):
 
         try:
             body = json.loads(request.body.decode('utf8'))
-        except:
+        except Exception:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         try:
