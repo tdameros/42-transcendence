@@ -1,5 +1,5 @@
-from .server import Server
 from .logging import setup_logging
+from .server import Server
 
 if __name__ == '__main__':
     setup_logging()
