@@ -100,9 +100,6 @@ export class ResetPasswordEmail extends Component {
   }
 
   #loadCodeComponent() {
-    // const newComponent = document.createElement(
-    //     'reset-password-code-component',
-    // );
     const codeComponent = new ResetPasswordCode();
     codeComponent.email = this.email.value;
     this.innerHTML = '';
