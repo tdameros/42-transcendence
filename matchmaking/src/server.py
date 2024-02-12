@@ -1,9 +1,9 @@
 import json
-import socketio
 import logging
-import requests
 from typing import Any
 
+import requests
+import socketio
 from aiohttp import web
 
 import common.src.settings as common_settings
@@ -12,8 +12,9 @@ import src.settings as settings
 from common.src.internal_requests import InternalRequests
 
 from .authenticate import authenticate_user
-from .player import Player
 from .matchmaking import Matchmaking
+from .player import Player
+
 
 class Server:
     def __init__(self):

@@ -1,10 +1,11 @@
 import asyncio
 from time import time
-from typing import Optional, Any
+from typing import Any, Optional
 
 import src.settings as settings
 
 from .player import Player
+
 
 class Matchmaking:
 
@@ -56,4 +57,3 @@ class Matchmaking:
     @staticmethod
     def elo_gap(player1: Player, player2: Player) -> int:
         return abs(player1.elo - player2.elo)
-
