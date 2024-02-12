@@ -17,6 +17,9 @@ class SignUpView(View):
     def post(self, request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        try:
             validation_errors = self.signup_infos_validation(json_request)
             if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=400)
@@ -31,8 +34,6 @@ class SignUpView(View):
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'refresh_token': refresh_token}, status=201)
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
 

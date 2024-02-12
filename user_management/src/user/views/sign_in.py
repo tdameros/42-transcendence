@@ -31,6 +31,10 @@ class SignInView(View):
     def post(self, request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+
+        try:
             validation_errors = SignInView.signin_infos_validation(json_request)
             if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=401)
@@ -38,9 +42,6 @@ class SignInView(View):
             if user.has_2fa:
                 return handle_2fa_code(user, json_request)
             return return_refresh_token(user)
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
-
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
 
