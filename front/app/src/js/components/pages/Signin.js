@@ -161,6 +161,7 @@ export class Signin extends Component {
   }
 
   async #signin() {
+    this.#startLoadButton();
     try {
       const {response, body} = await userManagementClient.signIn(
           this.email.value, this.password.value,
@@ -168,6 +169,7 @@ export class Signin extends Component {
       if (response.ok) {
         this.#loadAndCache(body.refresh_token);
       } else {
+        this.#resetLoadButton();
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
       }
@@ -221,5 +223,18 @@ export class Signin extends Component {
     this.passwordEyeIcon.children[0].classList.toggle('bi-eye-fill');
     this.passwordEyeIcon.children[0].classList.toggle('bi-eye-slash-fill');
     this.passwordHiden = !this.passwordHiden;
+  }
+
+  #startLoadButton() {
+    this.signinBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span class="sr-only">Loading...</span>
+    `;
+    this.signinBtn.disabled = true;
+  }
+
+  #resetLoadButton() {
+    this.signinBtn.innerHTML = 'Sign in';
+    this.signinBtn.disabled = false;
   }
 }

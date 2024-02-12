@@ -10,6 +10,8 @@ export class UserManagementClient extends BaseApiClient {
     'username-exist': 'user/username-exist/',
     'email-exist': 'user/email-exist/',
     'forgot-password-send-code': 'user/forgot-password/send-code/',
+    'forgot-password-check-code': 'user/forgot-password/check-code/',
+    'forgot-password-change': 'user/forgot-password/change-password/',
     'refresh-access-token': 'user/refresh-access-jwt/',
     'user-id': 'user/id/:id/',
     'user-username': 'user/:username/',
@@ -103,11 +105,30 @@ export class UserManagementClient extends BaseApiClient {
     return await JSONRequests.post(URL, body);
   }
 
-  async forgotPasswordSendCode(email) {
+  async sendResetPasswordCode(email) {
     const body = {
       email: email,
     };
     const URL = `${this.URL}/${this.URIs['forgot-password-send-code']}`;
+    return await JSONRequests.post(URL, body);
+  }
+
+  async checkResetPasswordCode(email, code) {
+    const body = {
+      email: email,
+      code: code,
+    };
+    const URL = `${this.URL}/${this.URIs['forgot-password-check-code']}`;
+    return await JSONRequests.post(URL, body);
+  }
+
+  async changePassword(email, code, newPassword) {
+    const body = {
+      'email': email,
+      'code': code,
+      'new_password': newPassword,
+    };
+    const URL = `${this.URL}/${this.URIs['forgot-password-change']}`;
     return await JSONRequests.post(URL, body);
   }
 }

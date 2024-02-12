@@ -358,12 +358,14 @@ export class Signup extends Component {
   }
 
   async #signupHandler() {
+    this.#startLoadButton();
     try {
       const {response, body} = await userManagementClient.signUp(
           this.username.value, this.email.value, this.password.value);
       if (response.ok) {
         await this.#loadAndCache(body.refresh_token);
       } else {
+        this.#resetLoadButton();
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
       }
@@ -406,5 +408,18 @@ export class Signup extends Component {
     } else {
       getRouter().navigate('/');
     }
+  }
+
+  #startLoadButton() {
+    this.signupBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span class="sr-only">Loading...</span>
+    `;
+    this.signupBtn.disabled = true;
+  }
+
+  #resetLoadButton() {
+    this.signupBtn.innerHTML = 'Sign up';
+    this.signupBtn.disabled = false;
   }
 }
