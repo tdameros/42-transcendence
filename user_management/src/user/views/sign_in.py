@@ -19,10 +19,10 @@ def return_refresh_token(user):
 def handle_2fa_code(user, json_request):
     twofa_code = json_request.get('2fa_code')
     if twofa_code is None:
-        return JsonResponse(data={'errors': ['2fa_code is required']}, status=401)
+        return JsonResponse(data={'errors': ['2fa_code is required'], '2fa': True}, status=401)
     if user.verify_2fa(twofa_code):
         return return_refresh_token(user)
-    return JsonResponse(data={'errors': ['Invalid 2fa code']}, status=401)
+    return JsonResponse(data={'errors': ['Invalid 2fa code'], '2fa': True}, status=401)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
