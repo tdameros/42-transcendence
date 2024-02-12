@@ -70,10 +70,11 @@ export class UserManagementClient extends BaseApiClient {
     return await this.postAuthRequest(URL, body);
   }
 
-  async signIn(username, password) {
+  async signIn(username, password, twoFactorCode=null) {
     const body = {
-      username: username,
-      password: password,
+      'username': username,
+      'password': password,
+      '2fa_code': twoFactorCode,
     };
     const URL = `${this.URL}/${this.URIs['signin']}`;
     return await JSONRequests.post(URL, body);

@@ -7,7 +7,7 @@ import {getRouter} from '@js/Router.js';
 import {Cookies} from '@js/Cookies.js';
 import {JWT} from '@utils/JWT.js';
 
-export class Signup extends Component {
+export class SignUp extends Component {
   constructor() {
     super();
     this.passwordHiden = true;

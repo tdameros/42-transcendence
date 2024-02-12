@@ -3,6 +3,7 @@ import {InputValidator} from '@utils/InputValidator.js';
 import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
+import {ResetPasswordCode} from './ResetPasswordCode.js';
 
 export class ResetPasswordEmail extends Component {
   constructor() {
@@ -99,12 +100,13 @@ export class ResetPasswordEmail extends Component {
   }
 
   #loadCodeComponent() {
-    const newComponent = document.createElement(
-        'reset-password-code-component',
-    );
-    newComponent.email = this.email.value;
+    // const newComponent = document.createElement(
+    //     'reset-password-code-component',
+    // );
+    const codeComponent = new ResetPasswordCode();
+    codeComponent.email = this.email.value;
     this.innerHTML = '';
-    this.appendChild(newComponent);
+    this.appendChild(codeComponent);
   }
 
   #startLoadButton() {

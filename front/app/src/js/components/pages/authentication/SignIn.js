@@ -5,7 +5,7 @@ import {getRouter} from '@js/Router.js';
 import {Cookies} from '@js/Cookies.js';
 import {JWT} from '@utils/JWT.js';
 
-export class Signin extends Component {
+export class SignIn extends Component {
   constructor() {
     super();
     this.isValidEmailInput = false;
@@ -26,49 +26,51 @@ export class Signin extends Component {
     }
     return (`
       <navbar-component disable-padding-top="true"></navbar-component>
-      <div id="login"
-           class="d-flex justify-content-center align-items-center rounded-3">
-          <div class="login-card card m-3">
-              <div class="card-body m-2">
-                  <h2 class="card-title text-center m-5">Sign in</h2>
-                  <form id="signin-form">
-                      <div class="form-group mb-4">
-                          <input type="text" class="form-control" id="email"
-                                 placeholder="Username">
-                          <div id="email-feedback" class="invalid-feedback">
-                              Please enter a valid email.
-                          </div>
-                      </div>
-                      
-                      <div class="form-group mb-4">
-                          <div class="input-group">
-                              <input type="password" class="form-control"
-                                     id="password"
-                                     placeholder="Password">
-                              <span id="password-eye"
-                                    class="input-group-text dynamic-hover">
-                                  <i class="bi bi-eye-fill"></i>
-                              </span>
-                          </div>
-                      </div>
-                      <alert-component id="alert-form" alert-dispaly="false">
-                      </alert-component>
-                      <div class="d-flex justify-content-between mb-3">
-                          <a id="dont-have-account">Don't have an account?</a>
-                          <a id="forgot-password">Forgot pasword?</a>
-                      </div>
-                      <div class="row d-flex justify-content-center">
-                          <button id="signin-btn" class="btn btn-primary" disabled>Sign in
-                          </button>
-                      </div>
-                  </form>
-                  <hr class="my-4">
-                  <div class="row">
-                    <github-button-component class="p-0"></github-button-component>
-                    <intra-button-component class="p-0"></intra-button-component>
-                  </div>
-              </div>
-          </div>
+      <div id="container">
+        <div id="login"
+             class="d-flex justify-content-center align-items-center rounded-3">
+            <div class="login-card card m-3">
+                <div class="card-body m-2">
+                    <h2 class="card-title text-center m-5">Sign in</h2>
+                    <form id="signin-form">
+                        <div class="form-group mb-4">
+                            <input type="text" class="form-control" id="email"
+                                   placeholder="Username">
+                            <div id="email-feedback" class="invalid-feedback">
+                                Please enter a valid email.
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <div class="input-group">
+                                <input type="password" class="form-control"
+                                       id="password"
+                                       placeholder="Password">
+                                <span id="password-eye"
+                                      class="input-group-text dynamic-hover">
+                                    <i class="bi bi-eye-fill"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <alert-component id="alert-form" alert-dispaly="false">
+                        </alert-component>
+                        <div class="d-flex justify-content-between mb-3">
+                            <a id="dont-have-account">Don't have an account?</a>
+                            <a id="forgot-password">Forgot pasword?</a>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <button id="signin-btn" class="btn btn-primary" disabled>Sign in
+                            </button>
+                        </div>
+                    </form>
+                    <hr class="my-4">
+                    <div class="row">
+                      <github-button-component class="p-0"></github-button-component>
+                      <intra-button-component class="p-0"></intra-button-component>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
     `);
   }
@@ -169,6 +171,10 @@ export class Signin extends Component {
       if (response.ok) {
         this.#loadAndCache(body.refresh_token);
       } else {
+        if (body.hasOwnProperty('2fa') && body['2fa'] === true) {
+          this.#loadTwoFactorComponent();
+          return;
+        }
         this.#resetLoadButton();
         this.alertForm.setAttribute('alert-message', body.errors[0]);
         this.alertForm.setAttribute('alert-display', 'true');
@@ -176,6 +182,17 @@ export class Signin extends Component {
     } catch (error) {
       ErrorPage.loadNetworkError();
     }
+  }
+
+  #loadTwoFactorComponent() {
+    const twoFactorComponent = document.createElement(
+        'two-factor-auth-component',
+    );
+    twoFactorComponent.email = this.email.value;
+    twoFactorComponent.password = this.password.value;
+    const container = this.querySelector('#container');
+    container.innerHTML = '';
+    container.appendChild(twoFactorComponent);
   }
 
   #OAuthReturn() {

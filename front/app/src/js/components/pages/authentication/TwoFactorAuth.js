@@ -2,21 +2,22 @@ import {Component} from '@components';
 import {Keys} from '@utils/Keys.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
-import {ResetPasswordNew} from './ResetPasswordNew.js';
+import {getRouter} from '@js/Router.js';
+import {SignIn} from './SignIn.js';
 
-export class ResetPasswordCode extends Component {
+export class TwoFactorAuth extends Component {
   constructor() {
     super();
   }
 
   render() {
     return (`
-      <div id="reset-password"
+      <div id="two-factor-auth"
            class="d-flex justify-content-center align-items-center rounded-3">
-          <div class="reset-password-card card m-3">
+          <div class="two-factor-card card m-3">
               <div class="card-body m-2">
-                  <h2 class="card-title text-center m-5">Reset password</h2>
-                  <p class="text-center">Enter the 6-digit code received by email</p>
+                  <h2 class="card-title text-center m-5">Two-Factor Authentication</h2>
+                  <p class="text-center">Enter the 6-digit code received by your mobile application</p>
                   <form id="form">
                       <div class="d-flex justify-content-center mb-4">
                           <i class="bi bi-shield-lock-fill"
@@ -44,7 +45,7 @@ export class ResetPasswordCode extends Component {
                       </div>
                       <alert-component id="alert-form" alert-display="false"></alert-component>
                       <div class="row d-flex justify-content-center">
-                          <button id="sendCodeBtn" type="submit" class="btn btn-primary" disabled>Send code</button>
+                          <button id="send-code-btn" type="submit" class="btn btn-primary" disabled>Send code</button>
                       </div>
                   </form>
               </div>
@@ -60,11 +61,11 @@ export class ResetPasswordCode extends Component {
       margin: 0 0.2rem;
       }
       
-      #reset-password {
+      #two-factor-auth {
           height: 100vh;
       }
       
-      .reset-password-card {
+      .two-factor-card {
           width: 550px;
       }
       </style>
@@ -79,9 +80,25 @@ export class ResetPasswordCode extends Component {
       super.addComponentEventListener(input, 'paste',
           this.#handlePaste);
     }
-    this.sendCodeBtn = this.querySelector('#sendCodeBtn');
+    this.sendCodeBtn = this.querySelector('#send-code-btn');
     super.addComponentEventListener(this.sendCodeBtn, 'click', this.#sendCode);
     this.alertForm = this.querySelector('#alert-form');
+  }
+
+  reRender() {
+    this.innerHTML = this.render() + this.style();
+    this.postRender();
+  }
+
+  #renderLoader() {
+    return (`
+      <navbar-component disable-padding-top="true"></navbar-component>
+      <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+          <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+      </div>
+    `);
   }
 
   #handleInputChange(event) {
@@ -128,12 +145,11 @@ export class ResetPasswordCode extends Component {
     this.#startLoadButton();
     this.code = Array.from(this.inputs).map((input) => input.value).join('');
     try {
-      const {response, body} =
-          await userManagementClient.checkResetPasswordCode(
-              this.email, this.code,
-          );
+      const {response, body} = await userManagementClient.signIn(
+          this.email, this.password, this.code,
+      );
       if (response.ok) {
-        this.#loadNewPasswordComponent();
+        this.#loadAndCache(body['refresh_token']);
       } else {
         this.#resetLoadButton();
         this.alertForm.setAttribute('alert-message', body.errors[0]);
@@ -144,12 +160,19 @@ export class ResetPasswordCode extends Component {
     }
   }
 
-  #loadNewPasswordComponent() {
-    const newPasswordComponent = new ResetPasswordNew();
-    newPasswordComponent.email = this.email;
-    newPasswordComponent.code = this.code;
-    this.innerHTML = '';
-    this.appendChild(newPasswordComponent);
+  async #loadAndCache(refreshToken) {
+    this.innerHTML = this.#renderLoader();
+    userManagementClient.refreshToken = refreshToken;
+    if (!await userManagementClient.restoreCache()) {
+      userManagementClient.logout();
+      const signinComponent = new SignIn();
+      signinComponent.error = true;
+      signinComponent.errorMessage = 'Failed to restore cache';
+      this.innerHTML = '';
+      this.appendChild(signinComponent);
+    } else {
+      getRouter().navigate('/');
+    }
   }
 
   #focusPreviousInput(input) {
