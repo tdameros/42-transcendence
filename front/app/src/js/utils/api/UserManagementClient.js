@@ -10,17 +10,36 @@ export class UserManagementClient extends BaseApiClient {
     'username-exist': 'user/username-exist/',
     'email-exist': 'user/email-exist/',
     'forgot-password-send-code': 'user/forgot-password/send-code/',
+    'forgot-password-check-code': 'user/forgot-password/check-code/',
+    'forgot-password-change': 'user/forgot-password/change-password/',
     'refresh-access-token': 'user/refresh-access-jwt/',
     'user-id': 'user/id/:id/',
     'user-username': 'user/:username/',
     'search-username': 'user/search-username/',
     'user-id-list': 'user/id-list/',
+    'oauth': 'user/oauth/:oauth-service/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  async getOAuthIntra(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
+  async getOAuthGithub(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
   }
 
   async getUsernameList(IDList) {
@@ -51,10 +70,11 @@ export class UserManagementClient extends BaseApiClient {
     return await this.postAuthRequest(URL, body);
   }
 
-  async signIn(username, password) {
+  async signIn(username, password, twoFactorCode=null) {
     const body = {
-      username: username,
-      password: password,
+      'username': username,
+      'password': password,
+      '2fa_code': twoFactorCode,
     };
     const URL = `${this.URL}/${this.URIs['signin']}`;
     return await JSONRequests.post(URL, body);
@@ -86,11 +106,30 @@ export class UserManagementClient extends BaseApiClient {
     return await JSONRequests.post(URL, body);
   }
 
-  async forgotPasswordSendCode(email) {
+  async sendResetPasswordCode(email) {
     const body = {
       email: email,
     };
     const URL = `${this.URL}/${this.URIs['forgot-password-send-code']}`;
+    return await JSONRequests.post(URL, body);
+  }
+
+  async checkResetPasswordCode(email, code) {
+    const body = {
+      email: email,
+      code: code,
+    };
+    const URL = `${this.URL}/${this.URIs['forgot-password-check-code']}`;
+    return await JSONRequests.post(URL, body);
+  }
+
+  async changePassword(email, code, newPassword) {
+    const body = {
+      'email': email,
+      'code': code,
+      'new_password': newPassword,
+    };
+    const URL = `${this.URL}/${this.URIs['forgot-password-change']}`;
     return await JSONRequests.post(URL, body);
   }
 }
