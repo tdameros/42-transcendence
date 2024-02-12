@@ -23,7 +23,7 @@ class ForgotPasswordSendCodeView(View):
 
             try:
                 json_request = json.loads(request.body.decode('utf-8'))
-            except json.JSONDecodeError:
+            except Exception:
                 return JsonResponse(data={'errors': ['Invalid JSON format in the request body : decode error']},
                                     status=400)
 
@@ -81,7 +81,7 @@ class ForgotPasswordCheckCodeView(View):
         try:
             try:
                 json_request = json.loads(request.body.decode('utf-8'))
-            except json.JSONDecodeError:
+            except Exception:
                 return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
 
             try:
@@ -122,7 +122,7 @@ class ForgotPasswordChangePasswordView(View):
     def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError:
+        except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         try:
             user_email = json_request['email']
