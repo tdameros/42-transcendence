@@ -20,7 +20,8 @@ def notification_created(sender, instance, created, **kwargs):
                     'id': instance.id,
                     'title': instance.title,
                     'type': instance.type,
-                    'data': instance.data
+                    'data': instance.data,
+                    'new_notification': True
                 })
             }
         )

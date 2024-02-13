@@ -96,7 +96,6 @@
         console.log('Socket closed unexpectedly');
     };
 
-    // on receiving message on group
     notifyScoket.onmessage = function (e) {
         let data = JSON.parse(e.data);
         data = JSON.parse(data.message)

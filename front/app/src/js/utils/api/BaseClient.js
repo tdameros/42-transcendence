@@ -21,6 +21,10 @@ export class BaseApiClient {
   }
 
   async restoreCache() {
+    const notificationComponent = document.querySelector('notification-component');
+    if (notificationComponent) {
+      await notificationComponent.tryConnect();
+    }
     const userId = new JWT(this.refreshToken).payload.user_id;
     try {
       const {response, body} = await userManagementClient.getUserById(userId);
@@ -83,6 +87,10 @@ export class BaseApiClient {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
     this.accessToken = new JWT(null);
+    const notificationComponent = document.querySelector('notification-component');
+    if (notificationComponent) {
+      notificationComponent.disconnect();
+    }
   }
 
   get username() {
