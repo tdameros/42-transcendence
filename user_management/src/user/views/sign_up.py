@@ -1,6 +1,5 @@
 import json
 
-import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -12,7 +11,7 @@ from common.src.jwt_managers import ServiceAccessJWT
 from user.models import User
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (is_valid_email, is_valid_password,
-                                   is_valid_username)
+                                   is_valid_username, post_user_stats)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -30,7 +29,7 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=json_request['password'])
-            valid, errors = self.post_user_stats(user.id)
+            valid, errors = post_user_stats(user.id)
             if not valid:
                 user.delete()
                 return JsonResponse(data={'errors': errors}, status=500)

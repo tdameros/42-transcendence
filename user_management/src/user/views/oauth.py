@@ -12,7 +12,7 @@ from user.models import PendingOAuth, User
 from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (download_image_from_url,
-                                   generate_random_string)
+                                   generate_random_string, post_user_stats)
 
 
 class OAuthFactory:
@@ -47,7 +47,8 @@ class OAuth(View):
         source = request.GET.get('source')
         if source is None:
             return JsonResponse(data={'errors': ['No source provided']}, status=400)
-
+        if not source.endswith('/'):
+            source += '/'
         oauth_handler = OAuthFactory.create_oauth_handler(auth_service)
         if oauth_handler:
             return oauth_handler.handle_auth(request, source)
@@ -64,11 +65,11 @@ class GitHubOAuth(BaseOAuth):
     @staticmethod
     def get_github_authorization_url(state):
         return (
-            f"{settings.GITHUB_AUTHORIZE_URL}"
-            f"?client_id={settings.GITHUB_CLIENT_ID}"
-            f"&redirect_uri={settings.GITHUB_REDIRECT_URI}"
-            f"&state={state}"
-            f"&scope=user:email"
+            f'{settings.GITHUB_AUTHORIZE_URL}'
+            f'?client_id={settings.GITHUB_CLIENT_ID}'
+            f'&redirect_uri={settings.GITHUB_REDIRECT_URI}'
+            f'&state={state}'
+            f'&scope=user:email'
         )
 
 
@@ -81,11 +82,11 @@ class FtApiOAuth(BaseOAuth):
     @staticmethod
     def get_ft_api_authorization_url(state):
         return (
-            f"{settings.FT_API_AUTHORIZE_URL}"
-            f"?client_id={settings.FT_API_CLIENT_ID}"
-            f"&redirect_uri={settings.FT_API_REDIRECT_URI}"
-            f"&response_type=code"
-            f"&state={state}"
+            f'{settings.FT_API_AUTHORIZE_URL}'
+            f'?client_id={settings.FT_API_CLIENT_ID}'
+            f'&redirect_uri={settings.FT_API_REDIRECT_URI}'
+            f'&response_type=code'
+            f'&state={state}'
         )
 
 
@@ -113,37 +114,41 @@ class OAuthCallback(View):
         source = self.get_source_url(state)
         self.set_params(auth_service)
         if self.check_state(state) is False:
-            return redirect(f"{source}/?error=invalid_state")
+            return redirect(f'{source}?error=Invalid State')
         self.flush_pending_oauth(state)
         access_token = self.get_access_token(code)
         if not access_token:
-            return JsonResponse(data={'errors': ['Failed to retrieve access token']}, status=400)
-
+            return redirect(f'{source}?error=Failed to retrieve access token')
         login, avatar_url, email = self.get_user_infos(access_token, auth_service)
-        user = self.create_or_get_user(login, email, avatar_url)
+        user, error = self.create_or_get_user(login, email, avatar_url)
         if not user:
-            return JsonResponse(data={'errors': ['Failed to create or get user']}, status=400)
-
+            return redirect(f'{source}?error={error}')
         success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
         if not success:
-            return JsonResponse(data={'errors': errors}, status=400)
-
+            return redirect(f'{source}?error=${errors}')
         response = redirect(source)
         response.set_cookie('refresh_token', refresh_token)
-
         return response
 
     @staticmethod
     def create_or_get_user(login, email, avatar_url):
         user = User.objects.filter(email=email).first()
-
         if user is None:
-            user = User.objects.create(username=login, email=email, password=None)
+            search_user = User.objects.filter(username=login).first()
+            if search_user:
+                return None, 'User already exists with this username'
+            try:
+                user = User.objects.create(username=login, email=email, password=None)
+            except Exception:
+                return None, 'Failed to create user'
+            valid, errors = post_user_stats(user.id)
+            if not valid:
+                user.delete()
+                return None, 'Failed to post user stats'
             if not download_image_from_url(avatar_url, user):
-                return None
+                return None, 'Failed to download profile picture'
             user.save()
-
-        return user
+        return user, None
 
     @staticmethod
     def get_user_infos(access_token, auth_service):

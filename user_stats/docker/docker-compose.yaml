@@ -18,7 +18,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 12
+            retries: 5
         depends_on:
             user-stats:
                 condition: service_healthy
@@ -47,7 +47,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 12
+            retries: 5
         depends_on:
             user-stats-db:
                 condition: service_healthy
@@ -64,8 +64,8 @@ services:
         volumes:
             - user_stats_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U myuser" ]
+            test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
             interval: 5s
             timeout: 5s
-            retries: 12
+            retries: 5
         restart: on-failure
