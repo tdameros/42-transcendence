@@ -82,6 +82,12 @@ class ServiceAccessJWT(JWTManager):
         return ServiceAccessJWT.JWT_MANAGER.generate_jwt({})
 
     @staticmethod
+    def decode_jwt(encoded_jwt: str) -> (bool, dict | None, list[str] | None):
+        """ returns: Success, payload, error message """
+
+        return ServiceAccessJWT.JWT_MANAGER.decode_jwt(encoded_jwt)
+
+    @staticmethod
     def authenticate(token: str) -> (bool, list[str] | None):
         """ returns: Success, error message """
 

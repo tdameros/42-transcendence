@@ -9,8 +9,7 @@ from django.core.files.base import ContentFile
 from PIL import Image
 
 import common.src.settings as common
-from common.src.internal_requests import InternalRequests
-from common.src.jwt_managers import ServiceAccessJWT
+from common.src.internal_requests import InternalAuthRequests
 from user.models import User
 from user_management import settings
 
@@ -100,11 +99,9 @@ def is_valid_password(password):
 
 
 def post_user_stats(user_id: int) -> (bool, list):
-    valid, token, errors = ServiceAccessJWT.generate_jwt()
     try:
-        response = InternalRequests.post(
+        response = InternalAuthRequests.post(
             f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
-            headers={'Authorization': token},
             data=json.dumps({})
         )
     except requests.exceptions.RequestException:
