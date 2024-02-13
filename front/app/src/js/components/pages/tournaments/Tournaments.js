@@ -41,6 +41,7 @@ export class Tournaments extends Component {
     this.tournamentDetailsComponent = document.querySelector(
         'tournament-details-component',
     );
+    this.tournamentDetailsComponent.parent = this;
     this.privateCheckBox = this.querySelector(`#${
       TournamentsList.privateCheckBoxId
     }`);
@@ -53,22 +54,22 @@ export class Tournaments extends Component {
         this.#finishedCheckBoxHandler);
     this.tournamentsListSelectedRow = null;
     this.tournaments = [];
-    this.#updateTournamentsList();
+    this.updateTournamentsList();
   }
 
   #privateCheckBoxHandler() {
     Cookies.add(TournamentsList.privateCheckBoxCookie,
         this.privateCheckBox.checked);
-    this.#updateTournamentsList();
+    this.updateTournamentsList();
   }
 
   #finishedCheckBoxHandler() {
     Cookies.add(TournamentsList.finishedCheckBoxCookie,
         this.finishedCheckBox.checked);
-    this.#updateTournamentsList();
+    this.updateTournamentsList();
   }
 
-  async #updateTournamentsList() {
+  async updateTournamentsList() {
     this.displayPrivateTournaments = Cookies.get(
         TournamentsList.privateCheckBoxCookie) === 'true';
     this.dispayFinishedTournaments = Cookies.get(
@@ -150,7 +151,11 @@ export class Tournaments extends Component {
           this.#selectTournamentHandler);
     });
     if (this.rows.length > 0) {
-      this.rows[0].click();
+      if (this.tournamentsListSelectedRow) {
+        this.tournamentsListSelectedRow.click();
+      } else {
+        this.rows[0].click();
+      }
     } else {
       this.tournamentDetailsComponent.loadNoTournament();
     }
