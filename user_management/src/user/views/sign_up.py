@@ -1,10 +1,14 @@
 import json
 
+import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+import common.src.settings as common
+from common.src.internal_requests import InternalRequests
+from common.src.jwt_managers import ServiceAccessJWT
 from user.models import User
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (is_valid_email, is_valid_password,
@@ -36,6 +40,23 @@ class SignUpView(View):
             return JsonResponse(data={'refresh_token': refresh_token}, status=201)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
+
+    @staticmethod
+    def post_user_stats(user_id: int) -> (bool, list):
+        valid, token, errors = ServiceAccessJWT.generate_jwt()
+        if not valid:
+            return False, errors
+        try:
+            response = InternalRequests.post(
+                f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
+                data=json.dumps({}),
+                headers={'Authorization': token}
+            )
+        except requests.exceptions.RequestException:
+            return False, ['Could not access user-stats']
+        if not response.ok:
+            return False, ['Could not create user in user-stats']
+        return True, None
 
     @staticmethod
     def signup_infos_validation(json_request):

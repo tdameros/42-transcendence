@@ -67,6 +67,30 @@ class UserAccessJWTDecoder:
         return True, decoded_payload, None
 
 
+class ServiceAccessJWT(JWTManager):
+    JWT_MANAGER = JWTManager(
+        settings.SERVICE_KEY,
+        settings.SERVICE_KEY,
+        settings.SERVICE_ACCESS_ALGORITHM,
+        settings.SERVICE_EXPIRATION_TIME,
+    )
+
+    @staticmethod
+    def generate_jwt() -> (bool, str | None, list[str] | None):
+        """ returns: Success, jwt, [error messages] """
+
+        return ServiceAccessJWT.JWT_MANAGER.generate_jwt({})
+
+    @staticmethod
+    def authenticate(token: str) -> (bool, list[str] | None):
+        """ returns: Success, error message """
+
+        success, decoded_payload, error_decode = ServiceAccessJWT.JWT_MANAGER.decode_jwt(token)
+        if not success:
+            return False, error_decode
+        return True, None
+
+
 def user_authentication(methods):
     def decorator(view_func):
         @wraps(view_func)
@@ -74,6 +98,20 @@ def user_authentication(methods):
             if request.method in methods:
                 token = request.headers.get('Authorization')
                 valid, user, errors = UserAccessJWTDecoder.authenticate(token)
+                if not valid:
+                    return JsonResponse({'errors': errors}, status=401)
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+
+def service_authentication(methods):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if request.method in methods:
+                token = request.headers.get('Authorization')
+                valid, errors = ServiceAccessJWT.authenticate(token)
                 if not valid:
                     return JsonResponse({'errors': errors}, status=401)
             return view_func(request, *args, **kwargs)
