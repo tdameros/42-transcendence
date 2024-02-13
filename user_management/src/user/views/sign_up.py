@@ -1,5 +1,6 @@
 import json
 
+import requests
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
