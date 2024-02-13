@@ -22,9 +22,16 @@ export class BaseApiClient {
 
   async restoreCache() {
     const userId = new JWT(this.refreshToken).payload.user_id;
-    const {response, body} = await userManagementClient.getUserById(userId);
-    if (response.ok) {
-      localStorage.setItem('username', body.username);
+    try {
+      const {response, body} = await userManagementClient.getUserById(userId);
+      if (response.ok) {
+        localStorage.setItem('username', body.username);
+      } else {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 

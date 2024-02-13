@@ -29,7 +29,7 @@ class UserView(View):
         # TODO: add service authentication when implemented
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError as e:
+        except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         valid, errors = UserView.validate_update_request(json_body, user_id)
         if not valid:
@@ -51,7 +51,7 @@ class UserView(View):
         # TODO: add service authentication when implemented
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError as e:
+        except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         valid, errors = UserView.validate_update_request(json_body, user_id)
         if not valid:
