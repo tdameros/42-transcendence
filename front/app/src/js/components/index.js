@@ -42,6 +42,10 @@ import {
 } from './Navbar';
 
 import {
+  Notification,
+} from './Notification.js';
+
+import {
   Game,
 } from './game';
 
@@ -92,6 +96,8 @@ customElements.define('navbar-component', Navbar);
 
 customElements.define('game-component', Game);
 
+customElements.define('notification-component', Notification);
+
 export {
   Component,
   GithubButton,
@@ -123,4 +129,5 @@ export {
   Alert,
   Error,
   Navbar,
+  Notification,
 };

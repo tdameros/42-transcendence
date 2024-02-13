@@ -67,6 +67,25 @@ export class Navbar extends Component {
             display: none;
             z-index: 2; /* Pour que les suggestions apparaissent au-dessus du contenu */
         }
+        
+        #notification-results {
+            position: absolute;
+            width: 300px;
+            top: 40px;
+            left: -280px;
+            background-color: white;
+            border: 1px solid #ddd;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 2; /* Pour que les suggestions apparaissent au-dessus du contenu */
+        }
+        
+        @media (max-width: 1000px) {
+            #notification-results {
+                left: 0px;
+            }
+        }
 
         .result-item {
             padding: 10px;
@@ -94,6 +113,39 @@ export class Navbar extends Component {
       .nav-link {
           font-family: 'JetBrains Mono Light', monospace;
       }
+      
+      .bi-bell-fill[data-count]:after {
+          position: absolute;
+          right: 0%;
+          top: 1%;
+          content: attr(data-count);
+          font-size: 36%;
+          padding: .6em;
+          border-radius: 999px;
+          line-height: .75em;
+          color: white;
+          background: rgba(255, 0, 0, .85);
+          text-align: center;
+          min-width: 2em;
+          font-weight: bold;
+      }
+ 
+      .button-container {
+          display: flex;
+          justify-content: space-around;
+
+      }
+      
+      .btn-little {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      border-radius: 0.2rem;
+        }
+        
+      .notification:hover {
+        background-color: var(--bs-secondary-bg);
+      }
       </style>
     `);
   }
@@ -106,12 +158,18 @@ export class Navbar extends Component {
   }
   #logPart() {
     const username = userManagementClient.username;
+    const notificationComponent = document.querySelector('notification-component');
+    console.log(notificationComponent.notifications);
     return (`
-      <div id="log-part"  class="d-flex align-items-center">
-          <a class="mx-2">
-            <i class="bi bi-bell-fill text-dark-emphasis"></i>
-          </a>
-          <div class="dropdown mx-2">
+<div id="log-part" class="d-flex align-items-center">
+    <div>
+    <div class="position-relative z-1 me-2 ms-2">
+        <i id="bellCount" class="bi-bell-fill fs-5" data-count="0"></i>
+        <div id="notification-results" class="rounded">
+        </div>
+    </div>
+    </div>
+    <div class="dropdown mx-2">
               <span class="dropdown-toggle" id="dropdownMenuLink"
                     data-bs-toggle="dropdown" aria-expanded="false">
                   <img id="nav-profile-img" src="/img/tdameros.jpg" alt="profile image"
@@ -119,14 +177,14 @@ export class Navbar extends Component {
                        style="width: 40px; height: 40px;">
                   <span id="nav-username">@${username}</span>
               </span>
-              <ul class="dropdown-menu dropdown-menu-end"
-                  aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
-                  <li><a class="dropdown-item">Settings</a></li>
-                  <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
-              </ul>
-          </div>
-      </div>
+        <ul class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="dropdownMenuLink">
+            <li><a class="dropdown-item" onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
+            <li><a class="dropdown-item">Settings</a></li>
+            <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
+        </ul>
+    </div>
+</div>
     `);
   }
 
@@ -183,6 +241,8 @@ export class Navbar extends Component {
           this.searchForm, 'submit', this.#searchFormHandler,
       );
     }
+    this.bell = this.querySelector('#bellCount');
+    super.addComponentEventListener(this.bell, 'click', this.#toggleNotification);
   }
 
   async #searchBarHandler(event) {
@@ -255,5 +315,103 @@ export class Navbar extends Component {
     }
     navLink.text = linkId.charAt(0).toUpperCase() + linkId.slice(1);
     return (navLink.outerHTML);
+  }
+
+  #toggleNotification() {
+    const notificationResults = this.querySelector('#notification-results');
+    if (notificationResults.style.display === 'none') {
+      notificationResults.style.display = 'block';
+      notificationResults.innerHTML = `
+          <div id="1" class="p-2 rounded notification result-item">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="d-flex align-items-center mb-1">
+                    <img src="/img/tdameros.jpg" alt="profile image"
+                           class="rounded-circle me-2"
+                           style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
+                    <p class="mb-0 text-muted" style="font-size: 0.8rem;"><a class="text-primary text-decoration-none">Edelage</a> wants to be friends with you</p>
+              </div>
+            </div>
+            <div class="button-container">
+                  <button class="btn btn-little btn-success w-100 me-1">Accept</button>
+                  <button class="btn btn-little btn-danger w-100 ms-1">Decline</button>
+              </div>
+          </div> 
+      `;
+    } else {
+      notificationResults.style.display = 'none';
+    }
+  }
+
+  addNotification(notification) {
+    this.notificationList = this.querySelector('#notification-list');
+    if (!this.notificationList) {
+      this.#createNotificationList();
+      this.notificationList = this.querySelector('#notification-list');
+    }
+    this.notificationList.innerHTML += this.#renderNotification(notification);
+    const count = document.getElementById('bellCount').getAttribute('data-count');
+    document.getElementById('bellCount').setAttribute('data-count', parseInt(count) + 1);
+  }
+
+  #createNotificationList(notification) {
+    this.notificationListContainer = this.querySelector('#notification-list-container');
+    this.notificationListContainer.innerHTML = `
+      <ul id="notification-list" class="dropdown-menu text-wrap" id="notify"
+          style="width: 300px !important;">
+      </ul>
+    `;
+  }
+
+  #renderNotifications(notifications) {
+    // if (!notifications) {
+    //   return '';
+    // }
+    // const notificationsRender = notifications.map((notification) => {
+    //   return this.#renderNotification(notification);
+    // }).join('');
+    // return (`
+    //   <ul id="notification-list" class="dropdown-menu text-wrap" id="notify"
+    //       style="width: 300px !important;">
+    //       ${notificationsRender}
+    //   </ul>
+    // `);
+    return (notifications.map((notification) => {
+      return this.#renderNotification(notification);
+    }).join(''));
+  }
+
+  #renderNotification(notification) {
+    return (`
+      <div id="${notification.id}" class="p-2 rounded notification result-item">
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="d-flex align-items-center mb-1">
+                <img src="/img/tdameros.jpg" alt="profile image"
+                       class="rounded-circle me-2"
+                       style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
+                <p class="mb-0 text-muted" style="font-size: 0.8rem;"><a class="text-primary text-decoration-none">Edelage</a> wants to be friends with you</p>
+          </div>
+        </div>
+        <div class="button-container">
+              <button class="btn btn-little btn-success w-100 me-1">Accept</button>
+              <button class="btn btn-little btn-danger w-100 ms-1">Decline</button>
+          </div>
+      </div> 
+    `);
+    // return (`
+    //   <li id="${notification.id}" class="p-2 rounded notification">
+    //     <div class="d-flex justify-content-start align-items-center">
+    //         <div class="d-flex align-items-center mb-1">
+    //             <img src="/img/tdameros.jpg" alt="profile image"
+    //                    class="rounded-circle me-2"
+    //                    style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
+    //             <p class="mb-0 text-muted" style="font-size: 0.8rem;"><a class="text-primary text-decoration-none">Edelage</a> wants to be friends with you</p>
+    //       </div>
+    //     </div>
+    //     <div class="button-container">
+    //           <button class="btn btn-little btn-success w-100 me-1">Accept</button>
+    //           <button class="btn btn-little btn-danger w-100 ms-1">Decline</button>
+    //       </div>
+    //   </li>
+    // `);
   }
 }
