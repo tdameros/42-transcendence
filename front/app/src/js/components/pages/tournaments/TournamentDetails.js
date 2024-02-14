@@ -311,6 +311,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         this.joinModal.hide();
         await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
       } else {
         this.joinModalAlert.setAttribute('alert-message', body['errors'][0]);
         this.joinModalAlert.setAttribute('alert-display', 'true');

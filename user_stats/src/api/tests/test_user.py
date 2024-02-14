@@ -10,22 +10,30 @@ from user_stats import settings
 
 
 class UserTest(TestCase):
-    def get_user(self, user_id: int):
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def get_user(self, user_id: int, mock_authenticate):
+        mock_authenticate.return_value = (True, {'id': 0}, None)
         url = reverse('user', kwargs={'user_id': user_id})
         response = self.client.get(url)
         return response
 
-    def post_user(self, user_id: int, body: dict):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_user(self, user_id: int, body: dict, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
         url = reverse('user', kwargs={'user_id': user_id})
         response = self.client.post(url, json.dumps(body), content_type='application/json')
         return response
 
-    def patch_user(self, user_id: int, body: dict):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def patch_user(self, user_id: int, body: dict, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
         url = reverse('user', kwargs={'user_id': user_id})
         response = self.client.patch(url, json.dumps(body), content_type='application/json')
         return response
 
-    def delete_user(self, user_id: int):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def delete_user(self, user_id: int, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
         url = reverse('user', kwargs={'user_id': user_id})
         response = self.client.delete(url)
         return response
@@ -59,16 +67,13 @@ class UserTest(TestCase):
 
 class GetUserTest(UserTest):
 
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_valid_default(self, mock_authenticate):
+    def test_valid_default(self):
         user1 = User.objects.create(id=0)
-        mock_authenticate.return_value = (True, {'id': 0}, None)
         response = self.get_user(user1.id)
         self.assertEqual(response.status_code, 200)
         self.assert_equal_user(user1, response)
 
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_valid_custom(self, mock_authenticate):
+    def test_valid_custom(self):
         user2 = User.objects.create(
             id=0,
             elo=1000,
@@ -78,15 +83,12 @@ class GetUserTest(UserTest):
             win_rate=0.5,
             friends=5
         )
-        mock_authenticate.return_value = (True, {'id': 0}, None)
         response = self.get_user(user2.id)
         self.assertEqual(response.status_code, 200)
         self.assert_equal_user(user2, response)
 
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_invalid_user_not_found(self, mock_authenticate):
+    def test_invalid_user_not_found(self):
         User.objects.create(id=0)
-        mock_authenticate.return_value = (True, {'id': 0}, None)
         response = self.get_user(1)
         body = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response.status_code, 404)
