@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from api.models import Notification
 from api import error_message as error
-from common.src.jwt_managers import user_authentication
+from common.src.jwt_managers import user_authentication, service_authentication
 from notification import settings
 
 
@@ -43,7 +43,7 @@ class DeleteUserNotificationView(View):
         return int(payload_dict['user_id'])
 
 
-# TODO: add service authentication when implemented
+@method_decorator(service_authentication(['POST']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class UserNotificationView(View):
     @staticmethod
