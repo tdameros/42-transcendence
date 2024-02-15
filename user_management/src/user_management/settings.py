@@ -98,6 +98,9 @@ i16cG6lJDF0tN7qwIIDcKYs=
 REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
+# avatar
+MAX_IMAGE_SIZE = 1000000
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.getenv('DEBUG') == 'True':
     DEBUG = True

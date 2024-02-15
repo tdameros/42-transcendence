@@ -887,3 +887,21 @@ class TestAvatar(TestCase):
         url = reverse('avatar', args=['alevra'])
         response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(response.status_code, 200)
+
+        # test with too big avatar
+        if settings.DEBUG:
+            path = 'test_resources/too_big_avatar.png'
+        else:
+            path = 'user/test_resources/too_big_avatar.png'
+        avatar = open(path, 'rb')
+        base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
+        base64_avatar = f'data:image/png;base64,{base64_avatar}'
+        avatar.close()
+        data = {
+            'avatar': base64_avatar
+        }
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(response.status_code, 400)

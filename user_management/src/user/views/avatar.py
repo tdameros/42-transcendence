@@ -1,5 +1,7 @@
+import base64
 import json
 import os
+import sys
 
 from django.http import FileResponse, JsonResponse
 from django.utils.decorators import method_decorator
@@ -8,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from common.src.jwt_managers import user_authentication
 from user.models import User
+from user_management import settings
 from user_management.JWTManager import get_user_id
 from user_management.settings import MEDIA_ROOT, STATIC_ROOT
 from user_management.utils import save_image_from_base64
@@ -57,6 +60,12 @@ class AvatarView(View):
         if not base64_string.startswith('data:image/png;base64,'):
             return JsonResponse(data={'error': 'Invalid image format'}, status=400)
         base64_string = base64_string.replace('data:image/png;base64,', '')
+        image_data = base64.b64decode(base64_string)
+
+        if sys.getsizeof(image_data) > settings.MAX_IMAGE_SIZE:
+            return JsonResponse(data={
+                'error': f'Image too big (max {settings.MAX_IMAGE_SIZE / 1000000} Mb, '
+                         f'your image is {sys.getsizeof(image_data) / 1000000} Mb)'}, status=400)
         success, error = save_image_from_base64(base64_string, user)
         if not success:
             return JsonResponse(data={'error': error}, status=400)
