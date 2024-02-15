@@ -28,12 +28,10 @@ class GetTournamentTest(TestCase):
 
         return response, body
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_tournament(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_get_tournament(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         response, body = self.get_tournament(1)
 
         self.assertEqual(response.status_code, 200)
@@ -49,23 +47,19 @@ class GetTournamentTest(TestCase):
             'user-id': i
         } for i in range(1, 14)])
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_tournament_not_found(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_get_tournament_not_found(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         response, body = self.get_tournament(50)
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(body['errors'], ['tournament with id `50` does not exist'])
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_tournament_no_player(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_get_tournament_no_player(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         response, body = self.get_tournament(2)
 
         self.assertEqual(response.status_code, 200)
@@ -77,12 +71,10 @@ class GetTournamentTest(TestCase):
         self.assertEqual(body['status'], 'Created')
         self.assertEqual(body['players'], [])
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_get_tournament_finished(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_get_tournament_finished(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         response, body = self.get_tournament(4)
 
         self.assertEqual(response.status_code, 200)
@@ -101,12 +93,10 @@ class DeleteTournamentTest(TestCase):
         Tournament.objects.create(id=2, name='Test2', admin_id=2, status=Tournament.FINISHED)
         Tournament.objects.create(id=3, name='Test3', admin_id=2, status=Tournament.IN_PROGRESS)
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_delete_tournament(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_delete_tournament(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         url = reverse('manage-tournament', args=[1])
         response = self.client.delete(url, headers=get_fake_headers(1))
 
@@ -116,12 +106,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 2)
         self.assertEqual(body['message'], 'tournament `Test1` successfully deleted')
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_delete_tournament_already_finished(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_delete_tournament_already_finished(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         url = reverse('manage-tournament', args=[2])
         response = self.client.delete(url, headers=get_fake_headers(2))
 
@@ -131,12 +119,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 2)
         self.assertEqual(body['message'], 'tournament `Test2` successfully deleted')
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_delete_tournament_already_in_progress(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_delete_tournament_already_in_progress(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
 
         url = reverse('manage-tournament', args=[3])
 
@@ -147,12 +133,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 3)
         self.assertEqual(body['errors'], ['you cannot delete `Test3` because the tournament has already started'])
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_delete_tournament_not_found(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_delete_tournament_not_found(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         url = reverse('manage-tournament', args=[50])
         response = self.client.delete(url, headers=get_fake_headers(1))
 
@@ -162,12 +146,10 @@ class DeleteTournamentTest(TestCase):
         self.assertEqual(Tournament.objects.count(), 3)
         self.assertEqual(body['errors'], ['tournament with id `50` does not exist'])
 
-    @patch('api.views.manage_tournament_views.get_username_by_id')
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_delete_tournament_not_owner(self, mock_authenticate_request, mock_get_username_by_id):
+    def test_delete_tournament_not_owner(self, mock_authenticate_request):
         user = {'id': 1, 'username': 'admin'}
         mock_authenticate_request.return_value = (True, user, None)
-        mock_get_username_by_id.return_value = user['username']
         url = reverse('manage-tournament', args=[2])
         response = self.client.delete(url, headers=get_fake_headers(1))
 

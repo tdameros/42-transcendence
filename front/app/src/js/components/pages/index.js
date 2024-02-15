@@ -1,9 +1,20 @@
 import {Home} from './Home.js';
 import {Multiplayer} from './Multiplayer.js';
-import {Signin} from './Signin.js';
-import {Signup} from './Signup.js';
 import {Singleplayer} from './Singleplayer.js';
 import {NotFound} from './NotFound.js';
+
+import {
+  SignIn,
+  SignUp,
+  TwoFactorAuth,
+} from './authentication';
+
+import {
+  ResetPassword,
+  ResetPasswordCode,
+  ResetPasswordEmail,
+  ResetPasswordNew,
+} from './reset_password';
 
 import {
   TournamentBracket,
@@ -14,13 +25,19 @@ import {
 } from './tournaments';
 
 import {
-  ResetPassword,
-  ResetPasswordCode,
-  ResetPasswordEmail,
-  ResetPasswordNew,
-} from './reset_password';
+  UserProfile,
+  UserProfileChart,
+  UserProfileChartsCards,
+  UserProfileHeader,
+  UserProfileMatchList,
+  UserProfileStatsCard,
+  UserProfileStatsCards,
+} from './user_profile';
 
 export {
+  SignIn,
+  SignUp,
+  TwoFactorAuth,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -30,10 +47,15 @@ export {
   TournamentDetails,
   Tournaments,
   TournamentsList,
+  UserProfile,
+  UserProfileChart,
+  UserProfileChartsCards,
+  UserProfileHeader,
+  UserProfileMatchList,
+  UserProfileStatsCard,
+  UserProfileStatsCards,
   Home,
   Multiplayer,
   NotFound,
-  Signin,
-  Signup,
   Singleplayer,
 };

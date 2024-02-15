@@ -14,7 +14,7 @@ from api.models import Tournament
 from api.views.tournament_views import TournamentView
 from common.src.jwt_managers import user_authentication
 from tournament import settings
-from tournament.get_user import get_user_id, get_username_by_id
+from tournament.get_user import get_user_id
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -68,8 +68,6 @@ class StartTournamentView(View):
 class ManageTournamentView(View):
     @staticmethod
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        jwt = request.headers.get('Authorization')
-
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
@@ -82,23 +80,20 @@ class ManageTournamentView(View):
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
-        try:
-            tournament_data = {
-                'id': tournament.id,
-                'name': tournament.name,
-                'max-players': tournament.max_players,
-                'nb-players': len(tournament_players),
-                'players': [{
-                    'nickname': player.nickname,
-                    'user-id': player.user_id,
-                    'rank': player.rank
-                } for player in tournament_players],
-                'is-private': tournament.is_private,
-                'status': TournamentView.status_to_string(tournament.status),
-                'admin': get_username_by_id(tournament.admin_id, jwt)
-            }
-        except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=500)
+        tournament_data = {
+            'id': tournament.id,
+            'name': tournament.name,
+            'max-players': tournament.max_players,
+            'nb-players': len(tournament_players),
+            'players': [{
+                'nickname': player.nickname,
+                'user-id': player.user_id,
+                'rank': player.rank
+            } for player in tournament_players],
+            'is-private': tournament.is_private,
+            'status': TournamentView.status_to_string(tournament.status),
+            'admin-id': tournament.admin_id
+        }
 
         return JsonResponse(tournament_data, status=200)
 
@@ -138,7 +133,7 @@ class ManageTournamentView(View):
 
         try:
             body = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError:
+        except Exception:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         try:

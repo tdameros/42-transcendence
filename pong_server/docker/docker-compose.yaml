@@ -1,12 +1,52 @@
 services:
+
+    pong-server-nginx:
+        networks:
+            - transcendence
+            - pong_server
+        expose:
+            - "443"
+        ports:
+            - "${PONG_GAME_CREATOR_NGINX_PORT}:443"
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        volumes:
+            - pong_server_static_volume:/app/static
+            - pong_server_media_volume:/app/media
+            - ssl_certs:/etc/nginx/ssl
+        depends_on:
+            pong-server:
+                condition: service_healthy
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        restart: on-failure
+
     pong-server:
         networks:
             - transcendence
+            - pong_server
+        ports:
+            - '${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}:${PONG_GAME_SERVERS_MIN_PORT}-${PONG_GAME_SERVERS_MAX_PORT}'
+        expose:
+            - "8000"
         build:
+            args:
+                - GAME_SERVER_PATH=/app/src/game_server/
+                - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
+                - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
             context: .
             dockerfile: Dockerfile
-        # TODO make and exec server
-        command: bash -c "cd /app/src && cat /dev/null"
         volumes:
-            - pong_server_code:/app/src/
+            - pong_server_code:/app/pong_server_code/
+            - ssl_certs:/app/ssl
+        command: /app/run.sh
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         restart: on-failure

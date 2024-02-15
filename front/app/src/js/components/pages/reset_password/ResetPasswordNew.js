@@ -1,6 +1,8 @@
-import {Component} from '../../Component.js';
-import {InputValidator} from '../../../utils/InputValidator.js';
-import {BootstrapUtils} from '../../../utils/BootstrapUtils.js';
+import {Component} from '@components';
+import {InputValidator} from '@utils/InputValidator.js';
+import {BootstrapUtils} from '@utils/BootstrapUtils.js';
+import {userManagementClient} from '@utils/api';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 export class ResetPasswordNew extends Component {
   constructor() {
@@ -53,10 +55,11 @@ export class ResetPasswordNew extends Component {
                               </div>
                           </div>
                       </div>
+                      <alert-component id="alert-form" alert-display="false"></alert-component>
+                      <div class="row d-flex justify-content-center">
+                          <button id="confirm-btn" type="submit" class="btn btn-primary" disabled>Change password</button>
+                      </div>
                   </form>
-                  <div class="row d-flex justify-content-center">
-                      <button id="confirm-btn" type="submit" class="btn btn-primary" disabled>Change password</button>
-                  </div>
               </div>
           </div>
         </div>
@@ -100,8 +103,32 @@ export class ResetPasswordNew extends Component {
     super.addComponentEventListener(this.confirmPasswordEyeIcon, 'click',
         this.#toggleConfirmPasswordVisibility);
     this.confirmBtn = this.querySelector('#confirm-btn');
-    super.addComponentEventListener(this.confirmBtn, 'click',
-        this.#confirmBtnHandler);
+    this.alertForm = this.querySelector('#alert-form');
+    this.form = this.querySelector('#form');
+    super.addComponentEventListener(this.form, 'submit', (event) => {
+      event.preventDefault();
+      this.#confirmBtnHandler();
+    });
+  }
+
+  #successRender() {
+    return (`
+      <div id="reset-password"
+           class="d-flex justify-content-center align-items-center rounded-3">
+          <div class="reset-password-card card m-3">
+              <div class="card-body m-2">
+                  <h2 class="card-title
+                      text-center m-5">Password changed</h2>
+                  <div class="alert alert-success text-center" role="alert">
+                      Your password has been changed!
+                  </div>
+                  <div class="row d-flex justify-content-center">
+                      <button onclick="window.router.navigate('/signin/')" class="btn btn-primary">Sign in</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    `);
   }
 
 
@@ -185,7 +212,33 @@ export class ResetPasswordNew extends Component {
       this.InputValidConfirmPassword);
   }
 
-  #confirmBtnHandler() {
-    console.log('confirmBtnHandler');
+  async #confirmBtnHandler() {
+    this.#startLoadButton();
+    try {
+      const {response, body} = await userManagementClient.changePassword(
+          this.email, this.code, this.password.value);
+      if (response.ok) {
+        this.innerHTML = this.#successRender() + this.style();
+      } else {
+        this.#resetLoadButton();
+        this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-display', 'true');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  #startLoadButton() {
+    this.confirmBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span class="sr-only">Loading...</span>
+    `;
+    this.confirmBtn.disabled = true;
+  }
+
+  #resetLoadButton() {
+    this.confirmBtn.innerHTML = 'Change password';
+    this.confirmBtn.disabled = false;
   }
 }

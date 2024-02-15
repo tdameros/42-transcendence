@@ -1,18 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import '../css/style.css';
+import '@css/style.css';
 
 import 'bootstrap';
 
-import './components';
+import '@components';
+
 import {Router, Route} from './Router.js';
 import {Theme} from './Theme.js';
-import {ApiClient} from './utils/ApiClient.js';
 
 Theme.init();
-
-const client = new ApiClient();
-window.ApiClient = client;
 
 const app = document.querySelector('#app');
 
@@ -26,6 +23,8 @@ const router = new Router(app, [
   new Route('/reset-password/', 'reset-password-component'),
   new Route('/oauth/:refresh-token/', 'oauth-component'),
   new Route('/tournaments/create/', 'tournament-create-component'),
+  new Route('/profile/:username/', 'user-profile-component'),
+  new Route('/game/:port/', 'game-component'),
   new Route('/', 'home-component'),
   new Route('', 'notfound-component'),
 ]);

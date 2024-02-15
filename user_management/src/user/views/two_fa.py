@@ -57,7 +57,10 @@ class Verify2fa(View):
 
         if not user.has_2fa:
             return JsonResponse(data={'errors': ['2fa not enabled']}, status=400)
-        json_request = json.loads(request.body.decode('utf-8'))
+        try:
+            json_request = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         code = json_request.get('code')
         if not code:
             return JsonResponse(data={'errors': ['code not provided']}, status=400)

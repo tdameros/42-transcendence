@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from user_management.views import hello
+from user_management.views import HealthCheckView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', hello),
     path('user/', include("user.urls")),
+    path('health/', HealthCheckView.as_view(), name='health'),
 ]

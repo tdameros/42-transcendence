@@ -81,7 +81,7 @@ export class InputValidator {
   static isValidSecurePassword(password) {
     const uppercaseRegex = /[A-Z]/;
     const numberRegex = /[0-9]/;
-    const specialCharacterRegex = /[!@#$%^&*()_+]/;
+    const specialCharacterRegex = /[^\w\s]/g;
     const missingRequirements = [];
 
     if (password.length < InputValidator.passwordMinLength) {

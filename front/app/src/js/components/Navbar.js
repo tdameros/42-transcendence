@@ -1,4 +1,6 @@
-import {Component} from './Component.js';
+import {Component} from '@components';
+import {userManagementClient} from '@utils/api/index.js';
+import {getRouter} from '@js/Router.js';
 
 export class Navbar extends Component {
   constructor() {
@@ -33,10 +35,15 @@ export class Navbar extends Component {
                   </ul>
                   <div class="d-flex mb-2 mb-lg-0">
                       <theme-button-component></theme-button-component>
-                      <form class="d-flex" role="search">
-                          <input class="form-control ms-2 me-2" type="search"
-                                 placeholder="Search" aria-label="Search">
-                      </form>
+                      <div class="position-relative z-1 me-2 ms-2">
+                        <form id="search-form" class="d-flex" role="search">
+                            <input id="search-bar" class="form-control" type="search"
+                                   placeholder="Search" aria-label="Search" autocomplete="off">
+                        </form>
+                        <div id="search-results" class="rounded">
+                        </div>
+                      </div>
+
                   </div>
                   <div class="d-flex">
                       ${this.#logNavPart()}
@@ -50,6 +57,25 @@ export class Navbar extends Component {
   style() {
     return (`
       <style>
+        #search-results {
+            position: absolute;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 2; /* Pour que les suggestions apparaissent au-dessus du contenu */
+        }
+
+        .result-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background-color: #f4f4f4;
+        }
       nav {
           box-shadow: rgba(0, 82, 224, 0.1) 0px 6px 12px 0px;
       }
@@ -73,12 +99,13 @@ export class Navbar extends Component {
   }
 
   #logNavPart() {
-    if (window.ApiClient.isAuth()) {
+    if (userManagementClient.isAuth()) {
       return (this.#logPart());
     }
     return (this.#logOutPart());
   }
   #logPart() {
+    const username = userManagementClient.username;
     return (`
       <div id="log-part"  class="d-flex align-items-center">
           <a class="mx-2">
@@ -90,11 +117,11 @@ export class Navbar extends Component {
                   <img id="nav-profile-img" src="/img/tdameros.jpg" alt="profile image"
                        class="rounded-circle"
                        style="width: 40px; height: 40px;">
-                  <span id="nav-username">@${localStorage.getItem('username')}</span>
+                  <span id="nav-username">@${username}</span>
               </span>
               <ul class="dropdown-menu dropdown-menu-end"
                   aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item">Profil</a></li>
+                  <li><a class="dropdown-item" onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
                   <li><a class="dropdown-item">Settings</a></li>
                   <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
               </ul>
@@ -140,15 +167,82 @@ export class Navbar extends Component {
     if (logout) {
       super.addComponentEventListener(logout, 'click', this.#logout);
     }
+    this.searchBar = this.querySelector('#search-bar');
+    if (this.searchBar) {
+      super.addComponentEventListener(
+          this.searchBar, 'input', this.#searchBarHandler,
+      );
+      super.addComponentEventListener(
+          document, 'click', this.#DOMClickHandler,
+      );
+    }
+    this.searchResults = this.querySelector('#search-results');
+    this.searchForm = this.querySelector('#search-form');
+    if (this.searchForm) {
+      super.addComponentEventListener(
+          this.searchForm, 'submit', this.#searchFormHandler,
+      );
+    }
   }
 
+  async #searchBarHandler(event) {
+    if (event.target.value.length < 3) {
+      this.searchResults.style.display = 'none';
+      return;
+    }
+    try {
+      const {response, body} = await userManagementClient.searchUsername(
+          event.target.value,
+      );
+      this.searchResults.innerHTML = '';
+      if (response.ok) {
+        this.searchResults.innerHTML = this.#renderSearchResults(body['users']);
+        if (body['users'].length > 0) {
+          this.searchResults.style.display = 'block';
+        } else {
+          this.searchResults.style.display = 'none';
+        }
+      }
+    } catch (error) {
+      ;
+    }
+  }
+
+  #renderSearchResults(users) {
+    return (users.slice(0, 3).map((username) => {
+      return (`
+      <div class="result-item p-1" onclick="window.router.navigate('/profile/${username}/')" username="${username}">
+        <img src="/img/tdameros.jpg" alt="profile image" class="rounded-circle" style="width: 40px; height: 40px;">
+        ${username}
+      </div>
+    `);
+    }).join(''));
+  }
+
+  #DOMClickHandler(event) {
+    if (this.searchResults &&
+      !this.searchResults.contains(event.target) &&
+      event.target !== this.searchBar) {
+      this.searchResults.style.display = 'none';
+    }
+  }
+
+  #searchFormHandler(event) {
+    event.preventDefault();
+    const username = this.searchBar.value;
+    if (username.length > 0) {
+      getRouter().navigate(`/profile/${username}/`);
+    }
+  }
+
+
   #navigate(event) {
-    window.router.navigate(`/${event.target.id}/`);
+    getRouter().navigate(`/${event.target.id}/`);
   }
 
   #logout() {
-    window.ApiClient.logout();
-    window.router.navigate('/');
+    userManagementClient.logout();
+    getRouter().navigate('/');
   }
 
   #generateNavLink(linkId) {

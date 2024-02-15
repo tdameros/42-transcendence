@@ -1,5 +1,8 @@
-import {Component} from '../../Component.js';
-import {Keys} from '../../../utils/Keys.js';
+import {Component} from '@components';
+import {Keys} from '@utils/Keys.js';
+import {userManagementClient} from '@utils/api';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {ResetPasswordNew} from './ResetPasswordNew.js';
 
 export class ResetPasswordCode extends Component {
   constructor() {
@@ -39,10 +42,11 @@ export class ResetPasswordCode extends Component {
                                  pattern="[\\d]*" tabindex="6" placeholder="·"
                                  autocomplete="off">
                       </div>
+                      <alert-component id="alert-form" alert-display="false"></alert-component>
+                      <div class="row d-flex justify-content-center">
+                          <button id="sendCodeBtn" type="submit" class="btn btn-primary" disabled>Send code</button>
+                      </div>
                   </form>
-                  <div class="row d-flex justify-content-center">
-                      <button id="sendCodeBtn" type="submit" class="btn btn-primary" disabled>Send code</button>
-                  </div>
               </div>
           </div>
         </div>
@@ -77,6 +81,7 @@ export class ResetPasswordCode extends Component {
     }
     this.sendCodeBtn = this.querySelector('#sendCodeBtn');
     super.addComponentEventListener(this.sendCodeBtn, 'click', this.#sendCode);
+    this.alertForm = this.querySelector('#alert-form');
   }
 
   #handleInputChange(event) {
@@ -120,9 +125,31 @@ export class ResetPasswordCode extends Component {
   }
 
   async #sendCode() {
-    const newComponent = document.createElement('reset-password-new-component');
+    this.#startLoadButton();
+    this.code = Array.from(this.inputs).map((input) => input.value).join('');
+    try {
+      const {response, body} =
+          await userManagementClient.checkResetPasswordCode(
+              this.email, this.code,
+          );
+      if (response.ok) {
+        this.#loadNewPasswordComponent();
+      } else {
+        this.#resetLoadButton();
+        this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-display', 'true');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  #loadNewPasswordComponent() {
+    const newPasswordComponent = new ResetPasswordNew();
+    newPasswordComponent.email = this.email;
+    newPasswordComponent.code = this.code;
     this.innerHTML = '';
-    this.appendChild(newComponent);
+    this.appendChild(newPasswordComponent);
   }
 
   #focusPreviousInput(input) {
@@ -141,5 +168,18 @@ export class ResetPasswordCode extends Component {
       return nextInput;
     }
     return null;
+  }
+
+  #startLoadButton() {
+    this.sendCodeBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span class="sr-only">Loading...</span>
+    `;
+    this.sendCodeBtn.disabled = true;
+  }
+
+  #resetLoadButton() {
+    this.sendCodeBtn.innerHTML = 'Send code';
+    this.sendCodeBtn.disabled = false;
   }
 }

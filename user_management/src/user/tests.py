@@ -37,7 +37,7 @@ class TestsSignup(TestCase):
         if expected_errors:
             self.assertEqual(result.json()['errors'], expected_errors)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_valid_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
@@ -59,7 +59,7 @@ class TestsSignup(TestCase):
                                  expected_status,
                                  has_refresh_token)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
@@ -86,7 +86,7 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_valid_email(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
@@ -103,7 +103,7 @@ class TestsSignup(TestCase):
             username = 'Aurel' + str(random.randint(0, 100000))  # To avoid `username already taken` error
             self.run_signup_test(name, username, email, password, expected_status, has_refresh_token)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_email(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
@@ -136,7 +136,7 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_valid_password(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         has_refresh_token = True
@@ -156,7 +156,7 @@ class TestsSignup(TestCase):
                                  expected_status,
                                  has_refresh_token)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_password(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         has_refresh_token = False
@@ -187,7 +187,7 @@ class TestsSignup(TestCase):
                                  has_refresh_token,
                                  expected_errors)
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signup_not_a_json(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         string = 'This is not a JSON'
@@ -199,7 +199,7 @@ class TestsSignup(TestCase):
 
 class TestsSignin(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_signin(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -228,7 +228,7 @@ class TestsSignin(TestCase):
 
 class TestsUsernameExist(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_username_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -259,7 +259,7 @@ class TestsUsernameExist(TestCase):
 
 class TestsRefreshJWT(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_refresh_jwt(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -336,7 +336,7 @@ class TestsRefreshJWT(TestCase):
 
 class TestsEmailExist(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_email_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -367,7 +367,7 @@ class TestsEmailExist(TestCase):
 
 class UserId(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_user_id(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -387,7 +387,7 @@ class UserId(TestCase):
 
 class Username(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         data_preparation = {
@@ -413,7 +413,7 @@ class Username(TestCase):
 
 class TestsSearchUsername(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_search_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         for i in range(1, 20):
@@ -469,7 +469,7 @@ class TestsUserUpdateInfos(TestCase):
     4) finally, check if the user infos have been updated with /user/user-id
     5) test invalid data"""
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_user_update_infos(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         # 1)
@@ -523,7 +523,7 @@ class TestsUserUpdateInfos(TestCase):
 
 class TestsTwoFa(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def test_two_fa(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
 
@@ -592,7 +592,7 @@ class TestUserIdList(TestCase):
 
 class FriendsTest(TestCase):
 
-    @patch('user.views.sign_up.SignUpView.post_user_stats')
+    @patch('user.views.sign_up.post_user_stats')
     def create_user(self, body, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         url = reverse('signup')

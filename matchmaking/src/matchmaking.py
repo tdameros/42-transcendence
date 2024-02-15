@@ -1,121 +1,59 @@
 import asyncio
-import json
-import logging
 from time import time
-from typing import Optional
-
-import socketio
-from aiohttp import web
+from typing import Any, Optional
 
 import src.settings as settings
 
-from .authenticate import authenticate_user
-from .logging import setup_logging
+from .player import Player
 
 
 class Matchmaking:
 
-    def __init__(self):
+    def __init__(self, server: Any):
+        self.server = server
         self.queue = []
-        # TODO: change allowed origin to real client address
-        # for now the allowed address is the test server
-        self.sio = socketio.AsyncServer(
-            cors_allowed_origins=['http://localhost:5000'],
-            logger=False,
-            engineio_logger=False,
-        )
-        self.app = web.Application()
-        self.sio.attach(self.app)
-        self.sio.on('connect')(self.connect)
-        self.sio.on('disconnect')(self.disconnect)
-        self.sio.on('queue_info')(self.queue_info)
-        self.app.on_startup.append(self.start_matchmaking)
+        self.found_matches = []
 
-    def start(self) -> None:
-        web.run_app(self.app, host=settings.MATCHMAKING_HOST, port=settings.MATCHMAKING_PORT)
-
-    # TODO: Send proper match notification when game creation is implemented
-    async def matchmaking(self) -> None:
+    async def routine(self) -> None:
         while True:
-            for player in self.queue:
-                opponent = self.search_opponent(player)
+            for index, player in enumerate(self.queue):
+                opponent = self.search_opponent(player, index)
                 if opponent is not None:
-                    self.queue.remove(player)
-                    self.queue.remove(opponent)
-                    await self.send_match(player, opponent)
+                    self.found_matches.append((player, opponent))
+            for player, opponent in self.found_matches:
+                await self.server.send_match(player, opponent)
+            self.found_matches = []
             await asyncio.sleep(2)
 
-    def search_opponent(self, player: dict) -> Optional[dict]:
-        match_found = False
+    def search_opponent(self, player: Player, index: int) -> Optional[Player]:
+        if index == len(self.queue) - 1:
+            return None
+        closest_opponent = None
         elo_threshold = self.get_elo_threshold(player)
-
-        for opponent in self.queue:
-            if opponent == player:
-                continue
+        for opponent in self.queue[index + 1:]:
             if Matchmaking.elo_gap(player, opponent) < elo_threshold:
-                if not match_found:
+                if closest_opponent is None:
                     closest_opponent = opponent
-                    match_found = True
                 elif Matchmaking.elo_gap(player, opponent) < Matchmaking.elo_gap(player, closest_opponent):
                     closest_opponent = opponent
-        return closest_opponent if match_found else None
+        return closest_opponent
 
-    async def send_match(self, player1: dict, player2: dict) -> None:
-        data = [
-            {
-                'user_id': player1.get('user_id'),
-                'elo': player1.get('elo'),
-            },
-            {
-                'user_id': player2.get('user_id'),
-                'elo': player2.get('elo'),
-            }
-        ]
-        data = json.dumps(data)
-        await self.sio.emit('match', data, room=player1.get('sid'))
-        await self.sio.emit('match', data, room=player2.get('sid'))
+    def add_player(self, player: Player) -> None:
+        self.queue.append(player)
+
+    def remove_player(self, sid) -> None:
+        for player in self.queue:
+            if player.sid == sid:
+                self.queue.remove(player)
+                return
 
     @staticmethod
-    def get_elo_threshold(player: dict) -> int:
-        elapsed_time = time() - player.get('timestamp')
+    def get_elo_threshold(player: Player) -> int:
+        elapsed_time = time() - player.timestamp
         threshold_factor = elapsed_time / settings.THRESHOLD_TIME
         elo_threshold = settings.ELO_THRESHOLD * threshold_factor
-
         return elo_threshold
 
     @staticmethod
-    def elo_gap(player1: dict, player2: dict) -> int:
-        return abs(player1.get('elo') - player2.get('elo'))
-
-    async def start_matchmaking(self, app: web.Application) -> None:
-        self.sio.start_background_task(self.matchmaking)
-
-    async def connect(self, sid, environ, auth):
-        logging.debug(f'New connection: {sid}')
-        user, errors = authenticate_user(auth)
-        if user is None:
-            logging.debug(str(errors))
-            raise socketio.exceptions.ConnectionRefusedError(str(errors))
-        player = {
-            'sid': sid,
-            'user_id': user['id'],
-            'elo': user['elo'],
-            'timestamp': time(),
-        }
-        self.queue.append(player)
-        logging.debug(f'User added to the queue: {user}')
-        return True
-
-    def disconnect(self, sid):
-        for user in self.queue:
-            if user.get('sid') == sid:
-                self.queue.remove(user)
-
-    async def queue_info(self, sid, data):
-        await self.sio.emit('queue_info', json.dumps(self.queue), room=sid)
-
-
-if __name__ == '__main__':
-    setup_logging()
-    matchmaking = Matchmaking()
-    matchmaking.start()
+    def elo_gap(player1: Player, player2: Player) -> int:
+        return abs(player1.elo - player2.elo)

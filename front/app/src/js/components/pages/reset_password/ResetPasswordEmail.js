@@ -1,6 +1,9 @@
-import {Component} from '../../Component.js';
-import {InputValidator} from '../../../utils/InputValidator.js';
-import {BootstrapUtils} from '../../../utils/BootstrapUtils.js';
+import {Component} from '@components';
+import {InputValidator} from '@utils/InputValidator.js';
+import {BootstrapUtils} from '@utils/BootstrapUtils.js';
+import {userManagementClient} from '@utils/api';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {ResetPasswordCode} from './ResetPasswordCode.js';
 
 export class ResetPasswordEmail extends Component {
   constructor() {
@@ -13,7 +16,7 @@ export class ResetPasswordEmail extends Component {
           <div class="reset-password-card card m-3">
               <div class="card-body m-2">
                   <h2 class="card-title text-center m-5">Reset password</h2>
-                  <form>
+                  <form id="reset-password-form">
                       <div class="d-flex justify-content-center mb-4">
                           <i class="bi bi-envelope-at-fill"
                              style="font-size: 5rem;"></i>
@@ -25,10 +28,11 @@ export class ResetPasswordEmail extends Component {
                               Please enter a valid email.
                           </div>
                       </div>
-                  </form>
+                  <alert-component id="alert-form" alert-display="false"></alert-component>
                   <div class="row d-flex justify-content-center">
                       <button id="sendEmailBtn" type="submit" class="btn btn-primary" disabled>Send email</button>
                   </div>
+                  </form>
               </div>
           </div>
       </div>
@@ -54,8 +58,12 @@ export class ResetPasswordEmail extends Component {
     super.addComponentEventListener(this.email, 'input',
         this.#emailHandler);
     this.sendEmailBtn = this.querySelector('#sendEmailBtn');
-    super.addComponentEventListener(this.sendEmailBtn, 'click',
-        this.#sendEmail);
+    this.form = this.querySelector('#reset-password-form');
+    super.addComponentEventListener(this.form, 'submit', (event) => {
+      event.preventDefault();
+      this.#sendEmail();
+    });
+    this.alertForm = this.querySelector('#alert-form');
   }
 
   #emailHandler() {
@@ -74,10 +82,40 @@ export class ResetPasswordEmail extends Component {
   }
 
   async #sendEmail() {
-    const newComponent = document.createElement(
-        'reset-password-code-component',
-    );
+    this.#startLoadButton();
+    try {
+      const {response, body} = await userManagementClient.sendResetPasswordCode(
+          this.email.value,
+      );
+      if (response.ok) {
+        this.#loadCodeComponent();
+      } else {
+        this.#resetLoadButton();
+        this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-display', 'true');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  #loadCodeComponent() {
+    const codeComponent = new ResetPasswordCode();
+    codeComponent.email = this.email.value;
     this.innerHTML = '';
-    this.appendChild(newComponent);
+    this.appendChild(codeComponent);
+  }
+
+  #startLoadButton() {
+    this.sendEmailBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span class="sr-only">Loading...</span>
+    `;
+    this.sendEmailBtn.disabled = true;
+  }
+
+  #resetLoadButton() {
+    this.sendEmailBtn.innerHTML = 'Send email';
+    this.sendEmailBtn.disabled = false;
   }
 }

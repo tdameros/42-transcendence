@@ -2,7 +2,11 @@ export class Router {
   #routes;
   #app;
 
-  constructor(app, routes= [] ) {
+  constructor(app, routes = []) {
+    if (Router.instance) {
+      return Router.instance;
+    }
+    Router.instance = this;
     this.#routes = [];
     Object.assign(this.#routes, routes);
     this.#app = app;
@@ -112,4 +116,8 @@ export class Route {
     const parsedPath = this.path.replace(/:[a-zA-Z]+/g, '([a-zA-Z0-9-]+)');
     this.pathRegex = new RegExp(`^${parsedPath}$`);
   }
+}
+
+export function getRouter() {
+  return Router.instance;
 }

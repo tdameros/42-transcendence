@@ -149,6 +149,9 @@ GitHub.sublime-settings
 # PyCharm #
 .idea/
 
+# MacOS #
+.DS_Store
+
 # Node.js #
 node_modules/
 package-lock.json

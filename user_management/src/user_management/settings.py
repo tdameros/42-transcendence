@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
 import os
 from pathlib import Path
 
@@ -39,7 +38,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'perfectpongproplayer@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 MAX_USERNAME_SEARCH_RESULTS = 10
 
@@ -48,19 +47,20 @@ TOTP_SECRET_MAX_LENGTH = 32
 TOTP_CONFIG_URL_MAX_LENGTH = 100
 
 # OAuth
-OAUTH_STATE_MAX_LENGTH = 32
+OAUTH_STATE_MAX_LENGTH = 256
+OAUTH_STATE_RANDOM_STRING_LENGTH = 16
 OAUTH_SOURCE_MAX_LENGTH = 100
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
-GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
-GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
-GITHUB_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/github'
+GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize/'
+GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token/'
+GITHUB_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/github/'
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
 
 FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
-FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize'
-FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token'
-FT_API_REDIRECT_URI = 'http://localhost:8000/user/oauth/callback/42api'
+FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize/'
+FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token/'
+FT_API_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/42api/'
 FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
