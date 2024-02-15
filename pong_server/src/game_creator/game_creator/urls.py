@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.urls import include, path
 
+from game_creator.views import HealthCheckView
+
 urlpatterns = [
     path('create_game/', include('api.urls')),
+    path('health/', HealthCheckView.as_view()),
 ]

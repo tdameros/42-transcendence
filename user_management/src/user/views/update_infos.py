@@ -72,11 +72,12 @@ class UpdateInfos(View):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
             user_id = get_user_id(request)
+        except Exception:
+            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
+        try:
             success, errors = UserUpdateInfosManager.update_infos(user_id, json_request)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             return JsonResponse(data={'ok': 'ok'}, status=200)
-        except json.JSONDecodeError:
-            return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)

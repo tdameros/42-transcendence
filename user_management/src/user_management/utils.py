@@ -1,3 +1,4 @@
+import json
 import secrets
 import string
 from io import BytesIO
@@ -7,6 +8,8 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from PIL import Image
 
+import common.src.settings as common
+from common.src.internal_requests import InternalAuthRequests
 from user.models import User
 from user_management import settings
 
@@ -92,4 +95,17 @@ def is_valid_password(password):
         return False, 'Password missing digit'
     if not any(char in '!@#$%^&*()-_+=' for char in password):
         return False, 'Password missing special character'
+    return True, None
+
+
+def post_user_stats(user_id: int) -> (bool, list):
+    try:
+        response = InternalAuthRequests.post(
+            f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
+            data=json.dumps({})
+        )
+    except requests.exceptions.RequestException:
+        return False, ['Could not access user-stats']
+    if not response.ok:
+        return False, ['Could not create user in user-stats']
     return True, None

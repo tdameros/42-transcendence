@@ -37,7 +37,7 @@ class FriendsView(View):
         user_id = get_user_id(request)
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError:
+        except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         valid, errors = FriendsView.validate_friend_request(json_body)
         if not valid:
@@ -57,7 +57,7 @@ class FriendsView(View):
 
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError:
+        except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         valid, errors = FriendsView.validate_friend_request(json_body)
         if not valid:

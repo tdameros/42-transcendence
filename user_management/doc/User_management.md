@@ -70,7 +70,7 @@ optional fields :
 > | http code | content-type               | response                                             |
 > |-----------|----------------------------|------------------------------------------------------|
 > | `201`     | `application/json`         | `{"refresh_token": "eyJhbGci.."}`                    |
-> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."]}`                  |
+> | `401`     | `application/json`         | `{"errors": [ "AAA","BBB", "..."], '2fa': true}`     |
 > | `500`     | `application/json`         | `{"errors": ['An unexpected error occurred : ...']}` |
 
 </details>

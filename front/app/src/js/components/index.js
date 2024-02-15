@@ -7,6 +7,9 @@ import {
 } from './buttons';
 
 import {
+  SignIn,
+  SignUp,
+  TwoFactorAuth,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -26,8 +29,6 @@ import {
   Home,
   Multiplayer,
   NotFound,
-  Signin,
-  Signup,
   Singleplayer,
 } from './pages';
 
@@ -48,11 +49,14 @@ customElements.define('github-button-component', GithubButton);
 customElements.define('intra-button-component', IntraButton);
 customElements.define('theme-button-component', ThemeButton);
 
+customElements.define('two-factor-auth-component', TwoFactorAuth);
+customElements.define('signin-component', SignIn);
+customElements.define('signup-component', SignUp);
+
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
 customElements.define('reset-password-email-component', ResetPasswordEmail);
 customElements.define('reset-password-new-component', ResetPasswordNew);
-
 
 customElements.define('tournament-bracket-component', TournamentBracket);
 customElements.define('tournament-create-component', TournamentCreate);
@@ -63,10 +67,7 @@ customElements.define('tournaments-component', Tournaments);
 customElements.define('home-component', Home);
 customElements.define('multiplayer-component', Multiplayer);
 customElements.define('notfound-component', NotFound);
-customElements.define('signin-component', Signin);
-customElements.define('signup-component', Signup);
 customElements.define('singleplayer-component', Singleplayer);
-
 
 customElements.define('user-profile-component', UserProfile);
 customElements.define('user-profile-chart-component', UserProfileChart);
@@ -96,6 +97,9 @@ export {
   GithubButton,
   IntraButton,
   ThemeButton,
+  SignIn,
+  SignUp,
+  TwoFactorAuth,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -115,8 +119,6 @@ export {
   Home,
   Multiplayer,
   NotFound,
-  Signin,
-  Signup,
   Singleplayer,
   Alert,
   Error,

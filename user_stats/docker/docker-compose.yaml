@@ -10,12 +10,18 @@ services:
             - "443"
         ports:
             - "6003:443"
-        depends_on:
-            - user-stats
         volumes:
             - user_stats_static_volume:/app/static
             - user_stats_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        depends_on:
+            user-stats:
+                condition: service_healthy
         restart: on-failure
 
     user-stats:
@@ -27,6 +33,7 @@ services:
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/user_stats /app/src &&
                         cp -r /app/common /app/src/common &&
+                        pip install --root-user-action=ignore --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
                         gunicorn -c /app/gunicorn.conf.py"
@@ -36,8 +43,14 @@ services:
             - ssl_certs:/app/ssl
         expose:
             - "8000"
+        healthcheck:
+            test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         depends_on:
-            - user-stats-db
+            user-stats-db:
+                condition: service_healthy
         restart: on-failure
 
     user-stats-db:
@@ -50,4 +63,9 @@ services:
             POSTGRES_PASSWORD: mypassword
         volumes:
             - user_stats_postgres_volume:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         restart: on-failure

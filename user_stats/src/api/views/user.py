@@ -9,11 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
 from api.models import User
-from common.src.jwt_managers import user_authentication
+from common.src.jwt_managers import service_authentication, user_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET']), name='dispatch')
+@method_decorator(service_authentication(['POST', 'PATCH', 'DELETE']), name='dispatch')
 class UserView(View):
 
     @staticmethod
@@ -26,10 +27,9 @@ class UserView(View):
 
     @staticmethod
     def post(request: HttpRequest, user_id: int):
-        # TODO: add service authentication when implemented
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError as e:
+        except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         valid, errors = UserView.validate_update_request(json_body, user_id)
         if not valid:
@@ -48,10 +48,9 @@ class UserView(View):
 
     @staticmethod
     def patch(request: HttpRequest, user_id: int):
-        # TODO: add service authentication when implemented
         try:
             json_body = json.loads(request.body.decode('utf-8'))
-        except json.JSONDecodeError as e:
+        except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
         valid, errors = UserView.validate_update_request(json_body, user_id)
         if not valid:
@@ -67,7 +66,6 @@ class UserView(View):
 
     @staticmethod
     def delete(request: HttpRequest, user_id: int):
-        # TODO: add service authentication when implemented
         valid, error_msg = UserView.validate_user_id(user_id)
         if not valid:
             return JsonResponse({'errors': [error_msg]}, status=400)

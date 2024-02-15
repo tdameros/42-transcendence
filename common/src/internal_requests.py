@@ -1,4 +1,8 @@
+import datetime
+
 import requests
+
+from common.src.jwt_managers import ServiceAccessJWT
 
 
 class InternalRequests:
@@ -27,3 +31,55 @@ class InternalRequests:
     def patch(url, data=None, **kwargs):
         kwargs.setdefault('verify', False)
         return requests.patch(url, data=data, **kwargs)
+
+
+class InternalAuthRequests:
+    service_token = None
+
+    @staticmethod
+    def post(url, data=None, json=None, headers=None, **kwargs):
+        InternalAuthRequests.update_service_token()
+        headers = headers or {}
+        headers['Authorization'] = InternalAuthRequests.service_token
+        return InternalRequests.post(url, data=data, json=json, headers=headers, **kwargs)
+
+    @staticmethod
+    def get(url, headers=None, **kwargs):
+        InternalAuthRequests.update_service_token()
+        headers = headers or {}
+        headers['Authorization'] = InternalAuthRequests.service_token
+        return InternalRequests.get(url, headers=headers, **kwargs)
+
+    @staticmethod
+    def put(url, data=None, headers=None, **kwargs):
+        InternalAuthRequests.update_service_token()
+        headers = headers or {}
+        headers['Authorization'] = InternalAuthRequests.service_token
+        return InternalRequests.put(url, data=data, headers=headers, **kwargs)
+
+    @staticmethod
+    def delete(url, headers=None, **kwargs):
+        InternalAuthRequests.update_service_token()
+        headers = headers or {}
+        headers['Authorization'] = InternalAuthRequests.service_token
+        return InternalRequests.delete(url, headers=headers, **kwargs)
+
+    @staticmethod
+    def patch(url, data=None, headers=None, **kwargs):
+        InternalAuthRequests.update_service_token()
+        headers = headers or {}
+        headers['Authorization'] = InternalAuthRequests.service_token
+        return InternalRequests.patch(url, data=data, headers=headers, **kwargs)
+
+    @staticmethod
+    def update_service_token():
+        valid, token, errors = ServiceAccessJWT.decode_jwt(
+            InternalAuthRequests.service_token
+        )
+        if not valid:
+            valid, InternalAuthRequests.service_token, errors = ServiceAccessJWT.generate_jwt()
+        else:
+            expiration_time = token.get('exp')
+            now = datetime.datetime.now(datetime.UTC)
+            if now + datetime.timedelta(seconds=10) < expiration_time:
+                valid, InternalAuthRequests.service_token, errors = ServiceAccessJWT.generate_jwt()
