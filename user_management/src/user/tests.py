@@ -880,7 +880,7 @@ class TestAvatar(TestCase):
 
         self.assertEqual(response.status_code, 200)
         url = reverse('avatar', args=['alevra'])
-        response = self.client.get(url, HTTP_AUTHORIZATION=f'{access_token}')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('image/png' in response['Content-Type'])
 

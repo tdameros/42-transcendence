@@ -13,7 +13,7 @@ from user_management.settings import MEDIA_ROOT, STATIC_ROOT
 from user_management.utils import save_image_from_base64
 
 
-@method_decorator(user_authentication(['POST', 'GET', 'DELETE']), name='dispatch')
+@method_decorator(user_authentication(['POST', 'DELETE']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class AvatarView(View):
     @staticmethod
