@@ -62,6 +62,7 @@ export class Notification extends Component {
   onClose() {
     // on socket close
     console.log('Socket closed');
+    this.webSocket = null;
   }
 
   onError() {
@@ -87,7 +88,7 @@ export class Notification extends Component {
     if (userManagementClient.isAuth() && UserManagementClient.accessToken.getTimeRemainingInSeconds() < 60 * 15) {
       if (await userManagementClient.refreshAccessToken()) {
         const messageData = {
-          'access_token': userManagementClient.getValidAccessToken(),
+          'access_token': await userManagementClient.getValidAccessToken(),
         };
         if (this.webSocket !== null) {
           this.webSocket.send(JSON.stringify(messageData));

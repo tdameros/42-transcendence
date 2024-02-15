@@ -45,23 +45,19 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     await self.send_user_status(int(self.group_name), friend['id'], 'offline')
 
     async def receive(self, text_data):
-        import logging
-
         try:
             data = json.loads(text_data)
         except Exception:
             await self.disconnect(0)
             await self.close()
-        logging.critical(data)
         access_token = data.get('access_token')
         if access_token is not None and access_token is not '':
             success, payload, error = UserAccessJWTDecoder.authenticate(access_token)
             if not success:
                 await self.disconnect(0)
                 await self.close()
+                return
             self.jwt = access_token
-
-            logging.critical(f'new access token: {self.jwt}')
 
     async def send_notification(self, event):
         await self.send(text_data=json.dumps({'message': event['message']}))
