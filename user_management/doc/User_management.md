@@ -415,6 +415,9 @@ It returns a redirection URL to the OAuth service's authorization endpoint.
 > | `200`     | `application/json` | `{"redirection_url": "https://oauth-service.com/authorize?client_id=XXX&redirect_uri=YYY&state=ZZZ&scope=user:email"}` |
 > | `400`     | `application/json` | `{"errors": ["Unknown auth service"]}`                                                                                 |
 
+NB : if the user cancel oauth2, it will be redirect to the source URI specified, with an error message in the query parameters 
+and no refresh token will be created
+
 </details>
 
 ## `/user/oauth/callback/{auth-service}/`
