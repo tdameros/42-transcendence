@@ -73,7 +73,7 @@ class StartTournamentView(View):
             'type': 'tournament_start',
             'user_list': players_id,
             # TODO: send tournament port instead of tournament id
-            'data': tournament.id
+            'data': f'{tournament.id}'
         }
 
         response = InternalRequests.post(
