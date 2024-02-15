@@ -437,8 +437,9 @@ class TestsSearchUsername(TestCase):
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 401)
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
@@ -451,7 +452,7 @@ class TestsSearchUsername(TestCase):
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 401)
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
@@ -461,7 +462,7 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 1)
@@ -471,7 +472,7 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 0)
@@ -589,7 +590,7 @@ class TestUserIdList(TestCase):
     def test_user_id_list(self):
         # create a user
 
-        User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel2', email='aurel2@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel3', email='aurel3@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel4', email='aurel4@42.fr', password='Validpass42*')
@@ -605,7 +606,7 @@ class TestUserIdList(TestCase):
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 401)
         result = self.client.post(url, json.dumps(data), content_type='application/json',
-                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         for user in UserList:
             self.assertEqual(result.json().get(str(user.id)), user.username)
         data = {
@@ -657,8 +658,8 @@ class FriendsTest(TestCase):
 
     def get_id_from_username(self, username):
         url = reverse('username', args=[username])
-        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
-        print(response.json())
+        first_id_in_db = User.objects.all().first().id
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(first_id_in_db)[1]}')
         return response.json()['id']
 
 
