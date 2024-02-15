@@ -132,7 +132,7 @@ class FriendsView(View):
             'title': f'Friend request from {user.username}',
             'type': 'friend_request',
             'user_list': [friend_id],
-            'data': user_id,
+            'data': f'{user_id}',
         }
         response = InternalRequests.post(
             url=settings.USER_NOTIFICATION_ENDPOINT,

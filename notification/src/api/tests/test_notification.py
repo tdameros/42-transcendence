@@ -20,7 +20,7 @@ class PostUserNotificationTest(TestCase):
             'title': 'Friend request from John Doe',
             'type': 'friend_request',
             'user_list': [1],
-            'data': 4,
+            'data': '4',
         }
 
         response, body = self.post_user_notification(data)
@@ -40,7 +40,7 @@ class PostUserNotificationTest(TestCase):
             'title': 'Tournament `Born2Smash` started',
             'type': 'tournament_start',
             'user_list': [1, 2, 3],
-            'data': 1,
+            'data': '1',
         }
 
         response, body = self.post_user_notification(data)
@@ -196,7 +196,7 @@ class PostUserNotificationTest(TestCase):
             'title': 'Friend request from John Doe',
             'type': 'friend_request',
             'user_list': [1],
-            'data': 'invalid_data',
+            'data': 1,
         }
 
         response, body = self.post_user_notification(data)
