@@ -2,6 +2,8 @@ import logging
 
 DEBUG = False
 
+APPEND_SLASH = False
+
 if DEBUG:
     LOG_LEVEL = logging.DEBUG
 else:
