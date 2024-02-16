@@ -10,7 +10,7 @@ from django.urls import reverse
 
 from user.models import Friend, User
 from user_management import settings
-from user_management.JWTManager import UserAccessJWTManager
+from user_management.JWTManager import UserAccessJWTManager, UserRefreshJWTManager
 
 
 class TestsSignup(TestCase):
@@ -879,3 +879,11 @@ class TestDeletedUser(TestCase):
         self.assertEqual(response.json()['message'], 'Account deleted')
         self.assertEqual(User.objects.filter(username='Aurel1').count(), 0)
         self.assertEqual(Friend.objects.filter(user_id=Aurel1.id).count(), 0)
+
+        refresh_token = UserRefreshJWTManager.generate_jwt(Aurel1.id)[1]
+        url = reverse('refresh-access-jwt')
+        data = {
+            'refresh_token': refresh_token
+        }
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertNotEqual(response.status_code, 200)
