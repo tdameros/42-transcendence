@@ -5,8 +5,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src.jwt_managers import user_authentication
 from user.models import User
-from user_management.JWTManager import UserAccessJWTManager
+from user_management.JWTManager import get_user_id
 from user_management.utils import (is_valid_email, is_valid_password,
                                    is_valid_username)
 
@@ -62,21 +63,17 @@ class UserUpdateInfosManager:
             return False, [f'An unexpected error occurred while updating user information: {e}']
 
 
+@method_decorator(user_authentication(['POST']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class UpdateInfos(View):
     @staticmethod
     def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
+            user_id = get_user_id(request)
         except Exception:
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
         try:
-            access_token = json_request.get('access_token')
-            if access_token is None:
-                return JsonResponse(data={'errors': ['Access token not found']}, status=400)
-            success, user_id, errors = UserAccessJWTManager.authenticate(access_token)
-            if success is False:
-                return JsonResponse(data={'errors': errors}, status=400)
             success, errors = UserUpdateInfosManager.update_infos(user_id, json_request)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)

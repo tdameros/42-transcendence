@@ -263,7 +263,9 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### In the URL (mandatory)
  {user_id}
@@ -290,7 +292,9 @@ will return a list of user ids
 <details>
  <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -339,7 +343,9 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### In the URL (mandatory)
 {username}
@@ -366,7 +372,9 @@ will return a list of usernames that contains the searched username
 <details>
  <summary><code>POST</code><code><b>/user/search-username/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -462,7 +470,9 @@ will return 200 if successful
 <details>
  <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -471,7 +481,6 @@ all other fields are optional and depend on the change_list
 
 > ``` javascript
 > {
->   "access_token": "d2d040fj..."
 >   "change_list": ["username", "email", "password"]
 >    "username": "NewUsername",
 >    "email": "newemail@asdf.fr",
@@ -500,7 +509,7 @@ This endpoint enables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/enable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -523,7 +532,7 @@ This endpoint disables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/disable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -551,11 +560,14 @@ This endpoint verifies the user's Two-Factor Authentication code.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/verify</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
 All fields mandatory:
+
 > ``` javascript
 > {
 >    "code": "123456"
@@ -580,7 +592,7 @@ This endpoint retrieves the user's friend list.
 <details>
  <summary><code>GET</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -601,7 +613,7 @@ This endpoint add a friend to the user
 <details>
  <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -632,7 +644,7 @@ This endpoint delete a friend of the user
 <details>
  <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
