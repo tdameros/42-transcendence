@@ -1,3 +1,4 @@
+import base64
 import json
 import random
 from datetime import datetime, timedelta
@@ -587,13 +588,6 @@ class TestUserIdList(TestCase):
         self.assertEqual(result.status_code, 200)
         for user in UserList:
             self.assertEqual(result.json().get(str(user.id)), user.username)
-        data = {
-            'id_list': 'a'
-        }
-        url = reverse('user-id-list')
-        # result = self.client.post(url, json.dumps(data), content_type='application/json')
-        # self.assertEqual(result.status_code, 200)
-        # self.assertTrue('errors' in result.json())
 
 
 class FriendsTest(TestCase):
@@ -861,3 +855,53 @@ class DeleteFriendsTest(FriendsTest):
         response = self.delete_friends(token1, 3)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['User not found'])
+
+
+class TestAvatar(TestCase):
+    def test_avatar(self):
+        user = User.objects.create(username='alevra', email='aurel1@42.fr', password='Validpass42*')
+        access_token = UserAccessJWTManager.generate_jwt(user.id)[1]
+        url = reverse('avatar', args=['alevra'])
+
+        if settings.DEBUG:
+            path = 'test_resources/avatar.png'
+        else:
+            path = 'user/test_resources/avatar.png'
+        avatar = open(path, 'rb')
+        base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
+        base64_avatar = f'data:image/png;base64,{base64_avatar}'
+        avatar.close()
+        data = {
+            'avatar': base64_avatar
+        }
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(response.status_code, 200)
+        url = reverse('avatar', args=['alevra'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('image/png' in response['Content-Type'])
+
+        url = reverse('avatar', args=['alevra'])
+        response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
+        self.assertEqual(response.status_code, 200)
+
+        # test with too big avatar
+        if settings.DEBUG:
+            path = 'test_resources/too_big_avatar.png'
+        else:
+            path = 'user/test_resources/too_big_avatar.png'
+        avatar = open(path, 'rb')
+        base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
+        base64_avatar = f'data:image/png;base64,{base64_avatar}'
+        avatar.close()
+        data = {
+            'avatar': base64_avatar
+        }
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(response.status_code, 400)

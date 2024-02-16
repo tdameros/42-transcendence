@@ -100,6 +100,9 @@ i16cG6lJDF0tN7qwIIDcKYs=
 REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
+# avatar
+MAX_IMAGE_SIZE = 1000000
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.getenv('DEBUG') == 'True':
     DEBUG = True
@@ -230,6 +233,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'user/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
