@@ -1,6 +1,7 @@
 from django.conf.urls.static import static
 from django.urls import path
 
+from user.views.delete_account import DeleteAccountView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
@@ -38,6 +39,7 @@ urlpatterns = [
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
     path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('friends/', FriendsView.as_view(), name='friends'),
+    path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 

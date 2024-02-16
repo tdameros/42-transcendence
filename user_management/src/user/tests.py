@@ -861,3 +861,21 @@ class DeleteFriendsTest(FriendsTest):
         response = self.delete_friends(token1, 3)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['User not found'])
+
+class TestDeletedUser(TestCase):
+
+    @patch('requests.delete')
+    @patch('requests.post')
+    def test_deleted_user(self, mock_post, mock_delete):
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        url = reverse('delete-account')
+        access_token = UserAccessJWTManager.generate_jwt(Aurel1.id)[1]
+
+        mock_delete.return_value.status_code = 200
+        mock_post.return_value.status_code = 200
+        response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], 'Account deleted')
+        self.assertEqual(User.objects.filter(username='Aurel1').count(), 0)
+        self.assertEqual(Friend.objects.filter(user_id=Aurel1.id).count(), 0)

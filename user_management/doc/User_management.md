@@ -652,3 +652,27 @@ all fields are mandatory
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 </details>
+
+
+## `/user/delete-account/`
+
+### Anonymize user's account
+
+This endpoint anonymizes the user's account.
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/delete-account/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "account deleted"}`                     |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
