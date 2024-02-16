@@ -263,7 +263,7 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -292,7 +292,7 @@ will return a list of user ids
 <details>
  <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -343,7 +343,7 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -372,7 +372,7 @@ will return a list of usernames that contains the searched username
 <details>
  <summary><code>POST</code><code><b>/user/search-username/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -467,7 +467,7 @@ will return 200 if successful
 <details>
  <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -506,7 +506,7 @@ This endpoint enables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/enable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -529,7 +529,7 @@ This endpoint disables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/disable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -557,13 +557,13 @@ This endpoint verifies the user's Two-Factor Authentication code.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/verify</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
 All fields mandatory:
-
-Authorization: {access_token}
 
 > ``` javascript
 > {
@@ -589,7 +589,7 @@ This endpoint retrieves the user's friend list.
 <details>
  <summary><code>GET</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -610,7 +610,7 @@ This endpoint add a friend to the user
 <details>
  <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -641,7 +641,7 @@ This endpoint delete a friend of the user
 <details>
  <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
