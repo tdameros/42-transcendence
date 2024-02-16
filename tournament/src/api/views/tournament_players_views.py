@@ -165,7 +165,7 @@ class TournamentPlayersView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(user_authentication(['GET']), name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
 class AnonymizePlayerView(View):
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
