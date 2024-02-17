@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from user.models import User
 from user_management.JWTManager import (UserAccessJWTManager,
                                         UserRefreshJWTManager)
 
@@ -25,6 +26,10 @@ class RefreshJWT(View):
             success, user_id, errors = UserRefreshJWTManager.authenticate(refresh_token)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
+            if user_id is None:
+                return JsonResponse(data={'errors': ['User not found']}, status=404)
+            if User.objects.get(id=user_id).account_deleted:
+                return JsonResponse(data={'errors': ['User deleted']}, status=404)
             success, access_token, errors = UserAccessJWTManager.generate_jwt(user_id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)

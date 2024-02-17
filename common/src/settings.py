@@ -22,6 +22,8 @@ SERVICE_EXPIRATION_TIME = 1
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
 
+TOURNAMENT_URL = 'https://tournament-nginx/'
+
 USER_STATS_URL = 'https://user-stats-nginx/'
 DEBUG_USER_STATS_URL = 'http://localhost:8001/'
 

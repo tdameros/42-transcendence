@@ -77,6 +77,8 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/2fa/verify](../user_management/doc/User_management.md#user2faverify)
 
+> ### [/user/friends/](../user_management/doc/User_management.md#userfriends)
+
 > ### [/user/avatar/](../user_management/doc/User_management.md#useravatar)
 
 ## User Stats 

@@ -14,6 +14,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from common.src import settings as common_settings
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -109,6 +111,12 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
+
+# tournament URL
+if DEBUG:
+    TOURNAMENT_URL = 'http://localhost:8000/'
+else:
+    TOURNAMENT_URL = common_settings.TOURNAMENT_URL
 ALLOWED_HOSTS = ['*']
 
 # Application definition
