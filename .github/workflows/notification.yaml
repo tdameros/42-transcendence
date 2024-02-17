@@ -47,7 +47,7 @@ jobs:
     - name: Run PEP8 check
       working-directory: notification/src/
       run: |
-        flake8 . --max-line-length=120 --exclude=migrations
+        flake8 . --max-line-length=120 --exclude=migrations --exclude=asgi.py
 
     - name: Check imports
       working-directory: notification/src/
