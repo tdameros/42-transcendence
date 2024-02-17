@@ -660,7 +660,9 @@ class FriendsTest(TestCase):
 
 class PostFriendsTest(FriendsTest):
 
-    def test_valid_pending(self):
+    @patch('requests.post')
+    def test_valid_pending(self, mock_notif):
+        mock_notif.return_value.status_code = 201
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',
@@ -681,7 +683,9 @@ class PostFriendsTest(FriendsTest):
         friend = Friend.objects.get(user_id=user_id, friend_id=friend_id)
         self.assertEqual(friend.status, Friend.PENDING)
 
-    def test_valid_accepted(self):
+    @patch('requests.post')
+    def test_valid_accepted(self, mock_notif):
+        mock_notif.return_value.status_code = 201
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',
@@ -721,7 +725,9 @@ class PostFriendsTest(FriendsTest):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['User not found'])
 
-    def test_invalid_already_sent(self):
+    @patch('requests.post')
+    def test_invalid_already_sent(self, mock_notif):
+        mock_notif.return_value.status_code = 201
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',
