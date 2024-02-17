@@ -15,16 +15,15 @@ from notification import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-# TODO : uncomment the line below when notification are implemented in front
-# @method_decorator(user_authentication(['DELETE']), name='dispatch')
+@method_decorator(user_authentication(['DELETE']), name='dispatch')
 class DeleteUserNotificationView(View):
     @staticmethod
     def delete(request: HttpRequest, notification_id: int) -> JsonResponse:
         try:
             notification = Notification.objects.get(id=notification_id)
-            # user_id = DeleteUserNotificationView.get_user_id(request)
-            # if notification.owner_id != user_id:
-            #     return JsonResponse({'errors': [error.NOTIFICATION_NOT_OWNER]}, status=400)
+            user_id = DeleteUserNotificationView.get_user_id(request)
+            if notification.owner_id != user_id:
+                return JsonResponse({'errors': [error.NOTIFICATION_NOT_OWNER]}, status=400)
             notification.delete()
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [error.NOTIFICATION_NOT_FOUND]}, status=404)
@@ -43,7 +42,7 @@ class DeleteUserNotificationView(View):
         return int(payload_dict['user_id'])
 
 
-# TODO: add service authentication when implemented
+@method_decorator(service_authentication(['POST']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class UserNotificationView(View):
     @staticmethod

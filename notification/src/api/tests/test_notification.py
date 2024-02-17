@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -7,7 +9,9 @@ from notification import settings
 
 
 class PostUserNotificationTest(TestCase):
-    def post_user_notification(self, data):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_user_notification(self, data, mock_authenticate_request):
+        mock_authenticate_request.return_value = (True, None)
         url = reverse('user-notification')
 
         response = self.client.post(url, data, content_type='application/json')
