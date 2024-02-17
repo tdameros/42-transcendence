@@ -43,6 +43,10 @@ up: create_volume_path
 down:
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
 
+.PHONY: reup
+reup: down
+	$(MAKE) up
+
 .PHONY: start
 start:
 	$(DOCKER_COMPOSE) start
