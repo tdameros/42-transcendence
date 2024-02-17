@@ -79,6 +79,8 @@ this documentation details the different endpoints of each microservice.
 
 > ### [/user/friends/](../user_management/doc/User_management.md#userfriends)
 
+> ### [/user/avatar/](../user_management/doc/User_management.md#useravatar)
+
 ## User Stats 
 > ### [/statistics/user/{id}](../user_stats/doc/user-stats-documentation.md#statisticsuserid)
 
