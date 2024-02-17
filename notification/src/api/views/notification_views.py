@@ -2,6 +2,8 @@ import base64
 import json
 from typing import Optional
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
@@ -63,11 +65,29 @@ class UserNotificationView(View):
 
         try:
             for user_id in user_list:
-                Notification.objects.create(title=title, type=type, owner_id=user_id, data=data)
+                notification = Notification.objects.create(title=title, type=type, owner_id=user_id, data=data)
+                UserNotificationView.send_new_notification(notification)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': 'Notification created'}, status=201)
+
+    @staticmethod
+    def send_new_notification(instance: Notification) -> None:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'{instance.owner_id}',
+            {
+                'type': 'send_notification',
+                'message': json.dumps({
+                    'id': instance.id,
+                    'title': instance.title,
+                    'type': instance.type,
+                    'data': instance.data,
+                    'new_notification': True
+                })
+            }
+        )
 
     @staticmethod
     def validate_body(title: any, type: any, user_list: any, data: any) -> tuple[bool, Optional[list[str]]]:
