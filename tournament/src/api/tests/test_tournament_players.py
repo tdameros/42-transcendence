@@ -341,10 +341,10 @@ class AnonymizePlayer(TestCase):
         for i in range(0, 16):
             Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=second_tournament)
 
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
     def test_anonymize_player(self, mock_authenticate_request):
         user = {'id': 1}
-        mock_authenticate_request.return_value = (True, user, None)
+        mock_authenticate_request.return_value = (True, None)
 
         url = reverse('player')
         response = self.client.post(url, headers=get_fake_headers(1))
@@ -355,10 +355,9 @@ class AnonymizePlayer(TestCase):
         for player in players:
             self.assertEqual(player.nickname, 'deleted_user')
 
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
     def test_no_player_to_anonymize(self, mock_authenticate_request):
-        user = {'id': 50}
-        mock_authenticate_request.return_value = (True, user, None)
+        mock_authenticate_request.return_value = (True, None)
 
         url = reverse('player')
         response = self.client.post(url, headers=get_fake_headers(50))
