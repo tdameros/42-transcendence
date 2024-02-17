@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
 from api.models import Player, Tournament
-from common.src.jwt_managers import user_authentication, service_authentication
+from common.src.jwt_managers import service_authentication, user_authentication
 from tournament import settings
 from tournament.get_user import get_user_id
 
