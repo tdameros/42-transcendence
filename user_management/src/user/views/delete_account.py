@@ -45,4 +45,6 @@ class DeleteAccountView(View):
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         anonymize_user(user)
+        user.account_deleted = True
+        user.save()
         return JsonResponse(data={'message': 'Account deleted'}, status=200)

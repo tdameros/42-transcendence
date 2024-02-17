@@ -897,7 +897,8 @@ class TestDeletedUser(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['message'], 'Account deleted')
         self.assertEqual(User.objects.filter(username='Aurel1').count(), 0)
-        self.assertEqual(Friend.objects.filter(user_id=Aurel1.id).count(), 0)
+        Aurel1 = User.objects.filter(id=Aurel1.id).first()
+        self.assertTrue(Aurel1.account_deleted)
 
         refresh_token = UserRefreshJWTManager.generate_jwt(Aurel1.id)[1]
         url = reverse('refresh-access-jwt')

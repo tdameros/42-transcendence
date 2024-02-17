@@ -47,12 +47,6 @@ class UserRefreshJWTManager:
             return False, None, ['User does not exist']
         return True, user_id, None
 
-    @classmethod
-    def is_a_deleted_user(cls, user_id):
-        user = User.objects.get(id=user_id)
-        if user.username.startswith('Deleted User'):
-            return True
-
 
 class UserAccessJWTManager:
     # Never provide the public key as we must use common.UserAccessJWTDecoder to decode
