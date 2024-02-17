@@ -11,7 +11,8 @@ from django.urls import reverse
 
 from user.models import Friend, User
 from user_management import settings
-from user_management.JWTManager import UserAccessJWTManager, UserRefreshJWTManager
+from user_management.JWTManager import (UserAccessJWTManager,
+                                        UserRefreshJWTManager)
 
 
 class TestsSignup(TestCase):
@@ -905,6 +906,7 @@ class TestDeletedUser(TestCase):
         }
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertNotEqual(response.status_code, 200)
+
 
 class TestAvatar(TestCase):
     def test_avatar(self):

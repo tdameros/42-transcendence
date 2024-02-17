@@ -1,8 +1,8 @@
 from django.conf.urls.static import static
 from django.urls import path
 
-from user.views.delete_account import DeleteAccountView
 from user.views.avatar import AvatarView
+from user.views.delete_account import DeleteAccountView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
