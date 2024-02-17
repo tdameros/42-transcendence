@@ -78,8 +78,9 @@ class InternalAuthRequests:
         )
         if not valid:
             valid, InternalAuthRequests.service_token, errors = ServiceAccessJWT.generate_jwt()
-        else:
-            expiration_time = token.get('exp')
-            now = datetime.datetime.now(datetime.UTC)
-            if now + datetime.timedelta(seconds=10) < expiration_time:
-                valid, InternalAuthRequests.service_token, errors = ServiceAccessJWT.generate_jwt()
+            return
+        expiration_time = token.get('exp')
+        expiration_time = datetime.datetime.fromtimestamp(expiration_time, datetime.UTC)
+        now = datetime.datetime.now(datetime.UTC)
+        if now + datetime.timedelta(seconds=10) > expiration_time:
+            valid, InternalAuthRequests.service_token, errors = ServiceAccessJWT.generate_jwt()
