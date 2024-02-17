@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_message as error
 from api.models import Player, Tournament
-from common.src.jwt_managers import user_authentication
+from common.src.jwt_managers import user_authentication, service_authentication
 from tournament import settings
 from tournament.get_user import get_user_id
 
@@ -165,7 +165,7 @@ class TournamentPlayersView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(user_authentication(['POST']), name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class AnonymizePlayerView(View):
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:

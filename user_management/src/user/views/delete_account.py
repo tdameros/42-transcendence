@@ -3,7 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from common.src.internal_requests import InternalRequests
+from common.src.internal_requests import InternalAuthRequests, InternalRequests
 from common.src.jwt_managers import user_authentication
 from user.models import User
 from user_management import settings
@@ -23,8 +23,7 @@ def delete_tournament(user, access_token):
     request = InternalRequests.delete(f'{settings.TOURNAMENT_URL}tournament/', headers={'Authorization': access_token})
     if request.status_code != 200:
         raise Exception(f'Error deleting tournaments : {request.json()}')
-    request = InternalRequests.post(f'{settings.TOURNAMENT_URL}tournament/player/anonymize/',
-                                    headers={'Authorization': access_token})
+    request = InternalAuthRequests.post(f'{settings.TOURNAMENT_URL}tournament/player/anonymize/')
     if request.status_code != 200:
         raise Exception(f'Error anonymizing players : {request.json()}')
 
