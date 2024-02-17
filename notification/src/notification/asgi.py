@@ -18,7 +18,6 @@ django_asgi_app = get_asgi_application()
 
 from api.routing import websocket_urlpatterns
 
-
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AllowedHostsOriginValidator(

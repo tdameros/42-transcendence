@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+
 from common.src import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'notification.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['notification/templates'],
+        'DIRS': [''],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

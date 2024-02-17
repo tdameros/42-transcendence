@@ -1,16 +1,16 @@
-import json
 import base64
+import json
 from typing import Optional
 
-from django.http import JsonResponse, HttpRequest
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
 
-from api.models import Notification
 from api import error_message as error
-from common.src.jwt_managers import user_authentication
+from api.models import Notification
+from common.src.jwt_managers import service_authentication, user_authentication
 from notification import settings
 
 

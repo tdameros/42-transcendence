@@ -3,8 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
-from api.models import Notification
 from api import error_message as error
+from api.models import Notification
 from notification import settings
 
 

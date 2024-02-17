@@ -1,15 +1,15 @@
 import json
-from urllib.parse import parse_qs
 from typing import Optional
+from urllib.parse import parse_qs
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 
-from common.src.jwt_managers import UserAccessJWTDecoder
-from common.src.internal_requests import InternalRequests
-from notification import settings
 from api.models import Notification
+from common.src.internal_requests import InternalRequests
+from common.src.jwt_managers import UserAccessJWTDecoder
+from notification import settings
 
 
 # TODO: the customer must send each new jwt
@@ -51,7 +51,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             await self.disconnect(0)
             await self.close()
         access_token = data.get('access_token')
-        if access_token is not None and access_token is not '':
+        if access_token is not None and access_token != '':
             success, payload, error = UserAccessJWTDecoder.authenticate(access_token)
             if not success:
                 await self.disconnect(0)
