@@ -18,12 +18,30 @@ export class UserManagementClient extends BaseApiClient {
     'search-username': 'user/search-username/',
     'user-id-list': 'user/id-list/',
     'oauth': 'user/oauth/:oauth-service/',
+    'add-friend': 'user/friends/',
+    'delete-friend': 'user/friends/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  async addFriend(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['add-friend']}`;
+    return await this.postAuthRequest(URL, body);
+  }
+
+  async deleteFriend(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['delete-friend']}`;
+    return await this.deleteAuthRequest(URL, body);
   }
 
   async getOAuthIntra(source) {
