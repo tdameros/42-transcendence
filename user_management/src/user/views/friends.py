@@ -6,9 +6,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from common.src.jwt_managers import user_authentication
-from common.src.internal_requests import InternalRequests
 from common.src import settings
+from common.src.internal_requests import InternalRequests
+from common.src.jwt_managers import user_authentication
 from user.models import Friend, User
 from user_management.JWTManager import get_user_id
 
@@ -137,7 +137,7 @@ class FriendsView(View):
         response = InternalRequests.post(
             url=settings.USER_NOTIFICATION_ENDPOINT,
             data=json.dumps(notification_data)
-            #TODO: Add authentication headers
+            # TODO: Add authentication headers
         )
         if response.status_code != 201:
             raise Exception(f'Failed to send friend request notification : {response.text}')
