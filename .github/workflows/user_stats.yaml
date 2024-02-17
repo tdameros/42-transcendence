@@ -36,12 +36,19 @@ jobs:
       with:
         python-version: '3.12'
 
+    - name: Copy common
+      working-directory: user_stats/src/
+      run: |
+        cp -r ../../common .
+
     - name: Install dependencies
+      working-directory: user_stats/
       run: |
         python -m pip install --upgrade pip
         pip install flake8
         pip install isort
-        pip install -r user_stats/docker/requirements.txt
+        pip install -r docker/requirements.txt
+        pip install -r src/common/docker/requirements.txt
 
     - name: Run PEP8 check
       working-directory: user_stats/src/
@@ -51,7 +58,6 @@ jobs:
     - name: Check imports
       working-directory: user_stats/src/
       run: |
-        cp -r ../../common/ .
         isort . --check-only
 
     - name: Run Django migrations

@@ -109,6 +109,9 @@ class OAuthCallback(View):
             self.redirect_uri = settings.FT_API_REDIRECT_URI
 
     def get(self, request, auth_service):
+        if request.GET.get('error'):
+            return redirect(f'{self.get_source_url(request.GET.get("state"))}?error='
+                            f'Could not authenticate with {auth_service}')
         code = request.GET.get('code')
         state = request.GET.get('state')
         source = self.get_source_url(state)

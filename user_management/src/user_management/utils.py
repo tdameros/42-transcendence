@@ -1,3 +1,4 @@
+import base64
 import json
 import secrets
 import string
@@ -9,7 +10,7 @@ from django.core.files.base import ContentFile
 from PIL import Image
 
 import common.src.settings as common
-from common.src.internal_requests import InternalRequests
+from common.src.internal_requests import InternalAuthRequests
 from user.models import User
 from user_management import settings
 
@@ -36,6 +37,22 @@ def download_image_from_url(url, model_instance):
         return True
     else:
         return False
+
+
+def save_image_from_base64(base64_string, model_instance):
+    if not base64_string:
+        return False, 'Image not found'
+    try:
+        img = Image.open(BytesIO(base64.b64decode(base64_string)))
+        img_io = BytesIO()
+        img.save(img_io, format='PNG')
+        img_file = ContentFile(img_io.getvalue())
+        random_suffixes = generate_random_string(10)
+        model_instance.avatar.delete()
+        model_instance.avatar.save(f'{model_instance.id}_{random_suffixes}.png', File(img_file), save=True)
+    except Exception as e:
+        return False, str(e)
+    return True, None
 
 
 def is_valid_username(username):
@@ -100,7 +117,7 @@ def is_valid_password(password):
 
 def post_user_stats(user_id: int) -> (bool, list):
     try:
-        response = InternalRequests.post(
+        response = InternalAuthRequests.post(
             f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
             data=json.dumps({})
         )

@@ -14,6 +14,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from common.src import settings as common_settings
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -64,6 +66,8 @@ FT_API_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/42api/'
 FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
+APPEND_SLASH = False
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'  # TODO ask Tom if we can delete this
 REFRESH_KEY = 'WE_SOULD_ALSO_CHANGE_THIS_KEY'  # TODO change this key
@@ -98,12 +102,21 @@ i16cG6lJDF0tN7qwIIDcKYs=
 REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
+# avatar
+MAX_IMAGE_SIZE = 1000000
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.getenv('DEBUG') == 'True':
     DEBUG = True
 else:
     DEBUG = False
 
+
+# tournament URL
+if DEBUG:
+    TOURNAMENT_URL = 'http://localhost:8000/'
+else:
+    TOURNAMENT_URL = common_settings.TOURNAMENT_URL
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -228,6 +241,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'user/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

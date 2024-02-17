@@ -1,6 +1,8 @@
 from django.conf.urls.static import static
 from django.urls import path
 
+from user.views.avatar import AvatarView
+from user.views.delete_account import DeleteAccountView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
@@ -35,9 +37,11 @@ urlpatterns = [
     path('2fa/enable/', Enable2fa.as_view(), name='enable-2fa'),
     path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
-    path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
-    path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('friends/', FriendsView.as_view(), name='friends'),
+    path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
+    path('id-list/', UserIdListView.as_view(), name='user-id-list'),
+    path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
+    path('avatar/<str:username>/', AvatarView.as_view(), name='avatar'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 

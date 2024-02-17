@@ -263,7 +263,9 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{user_id}/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### In the URL (mandatory)
  {user_id}
@@ -290,7 +292,9 @@ will return a list of user ids
 <details>
  <summary><code>POST</code><code><b>/user/id_list/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -339,7 +343,9 @@ will return public user information
 <details>
  <summary><code>GET</code><code><b>/user/{username}/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### In the URL (mandatory)
 {username}
@@ -366,7 +372,9 @@ will return a list of usernames that contains the searched username
 <details>
  <summary><code>POST</code><code><b>/user/search-username/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -415,6 +423,9 @@ It returns a redirection URL to the OAuth service's authorization endpoint.
 > | `200`     | `application/json` | `{"redirection_url": "https://oauth-service.com/authorize?client_id=XXX&redirect_uri=YYY&state=ZZZ&scope=user:email"}` |
 > | `400`     | `application/json` | `{"errors": ["Unknown auth service"]}`                                                                                 |
 
+NB : if the user cancel oauth2, it will be redirect to the source URI specified, with an error message in the query parameters 
+and no refresh token will be created
+
 </details>
 
 ## `/user/oauth/callback/{auth-service}/`
@@ -459,7 +470,9 @@ will return 200 if successful
 <details>
  <summary><code>POST</code><code><b>/user/update-infos/</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
@@ -468,7 +481,6 @@ all other fields are optional and depend on the change_list
 
 > ``` javascript
 > {
->   "access_token": "d2d040fj..."
 >   "change_list": ["username", "email", "password"]
 >    "username": "NewUsername",
 >    "email": "newemail@asdf.fr",
@@ -497,7 +509,7 @@ This endpoint enables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/enable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -520,7 +532,7 @@ This endpoint disables Two-Factor Authentication for the user.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/disable</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -548,11 +560,14 @@ This endpoint verifies the user's Two-Factor Authentication code.
 <details>
  <summary><code>POST</code><code><b>/user/2fa/verify</b></code></summary>
 
-### Parameters
+### Headers
+
+Authorization: {access_token}
 
 #### Body
 
 All fields mandatory:
+
 > ``` javascript
 > {
 >    "code": "123456"
@@ -577,7 +592,7 @@ This endpoint retrieves the user's friend list.
 <details>
  <summary><code>GET</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -598,7 +613,7 @@ This endpoint add a friend to the user
 <details>
  <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -629,7 +644,7 @@ This endpoint delete a friend of the user
 <details>
  <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -648,6 +663,101 @@ all fields are mandatory
 > | http code | content-type       | response                                             |
 > |-----------|--------------------|------------------------------------------------------|
 > | `200`     | `application/json` | `{"message": "friend deleted"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+
+## `/user/delete-account/`
+
+### Anonymize user's account
+
+This endpoint anonymizes the user's account.
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/delete-account/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "account deleted"}`                     |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+## `/user/avatar/`
+
+This endpoint allows the user to get and update his avatar.
+
+### Get user's avatar
+
+<details>
+ <summary><code>GET</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `image/png`        | `png of the user's avatar`                           |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+
+### Update user's avatar
+
+<details>
+ <summary><code>POST</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Body
+
+all fields are mandatory
+
+```json
+{
+    "avatar": "base64 of the new avatar"
+}
+```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "avatar updated"}`                      |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+### Delete user's avatar
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/avatar/</b></code></summary>
+
+### Parameters
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "avatar deleted"}`                      |
 > | `400`     | `application/json` | `{"errors": ["..."]}`                                |
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 

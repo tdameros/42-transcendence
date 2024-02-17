@@ -28,6 +28,22 @@ export class UserManagementClient extends BaseApiClient {
     this.URIs = UserManagementClient.URIs;
   }
 
+  async getOAuthIntra(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
+  async getOAuthGithub(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
   async addFriend(userId) {
     const body = {
       'friend_id': userId,

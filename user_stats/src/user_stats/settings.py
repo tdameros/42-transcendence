@@ -47,6 +47,8 @@ ACCESS_PUBLIC_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18i
 
 DECODE_ALGORITHM = 'HS256'
 
+APPEND_SLASH = False
+
 ALLOWED_HOSTS = ['*']
 
 
