@@ -7,6 +7,19 @@ import {
 } from './buttons';
 
 import {
+  ConnectedNavbar,
+  DisconnectedNavbar,
+  Navbar,
+  NotificationNav,
+  SearchNav,
+} from './navbar';
+
+import {
+  Notification,
+  ToastNotifications,
+} from './notifications';
+
+import {
   SignIn,
   SignUp,
   TwoFactorAuth,
@@ -38,16 +51,22 @@ import {
 } from './utilities';
 
 import {
-  Navbar,
-} from './Navbar';
-
-import {
   Game,
 } from './game';
+
 
 customElements.define('github-button-component', GithubButton);
 customElements.define('intra-button-component', IntraButton);
 customElements.define('theme-button-component', ThemeButton);
+
+customElements.define('connected-navbar-component', ConnectedNavbar);
+customElements.define('disconnected-navbar-component', DisconnectedNavbar);
+customElements.define('navbar-component', Navbar);
+customElements.define('notification-nav-component', NotificationNav);
+customElements.define('search-nav-component', SearchNav);
+
+customElements.define('notification-component', Notification);
+customElements.define('toast-notifications-component', ToastNotifications);
 
 customElements.define('two-factor-auth-component', TwoFactorAuth);
 customElements.define('signin-component', SignIn);
@@ -88,9 +107,8 @@ customElements.define(
 customElements.define('alert-component', Alert);
 customElements.define('error-component', Error);
 
-customElements.define('navbar-component', Navbar);
-
 customElements.define('game-component', Game);
+
 
 export {
   Component,
@@ -123,4 +141,5 @@ export {
   Alert,
   Error,
   Navbar,
+  Notification,
 };
