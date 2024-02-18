@@ -7,45 +7,9 @@ import settings
 from EventEmitter import EventEmitter
 from Game.Ball import Ball
 from Game.MatchLocation import MatchLocation
+from Game.MatchPositionCalculator import MatchPositionCalculator
 from Game.Player.Player import Player
 from vector_to_dict import vector_to_dict
-
-
-class _MatchPositionFinder(object):
-    # This is a cache to avoid calculating the same position multiple times
-    match_positions: dict[MatchLocation, numpy.ndarray] = {}
-
-    @staticmethod
-    def get_position(match_location: MatchLocation) -> numpy.ndarray:
-        match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position is not None:
-            return match_position.copy()
-
-        if match_location.game_round == 0:
-            x: float = (match_location.match * settings.MATCH_SIZE[0]
-                        + match_location.match * settings.MATCHES_X_OFFSET)
-            match_position = numpy.array([x, 0., 0.])
-        else:
-            match_below_left: MatchLocation = MatchLocation(match_location.game_round - 1,
-                                                            match_location.match * 2)
-            match_below_right: MatchLocation = MatchLocation(match_below_left.game_round,
-                                                             match_below_left.match + 1)
-            x: float = ((_MatchPositionFinder._get_x_position(match_below_left)
-                         + _MatchPositionFinder._get_x_position(match_below_right))
-                        / 2)
-            y: float = (match_location.game_round * settings.MATCH_SIZE[1]
-                        + match_location.game_round * settings.MATCHES_Y_OFFSET)
-            match_position = numpy.array([x, y, 0.])
-
-        _MatchPositionFinder.match_positions[match_location] = match_position
-        return match_position.copy()
-
-    @staticmethod
-    def _get_x_position(match_location: MatchLocation) -> float:
-        match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position is not None:
-            return match_position[0]
-        return _MatchPositionFinder.get_position(match_location)[0]
 
 
 class Match(object):
@@ -54,7 +18,7 @@ class Match(object):
         self._points: list[int] = [0, 0]
         self._winner_index: Optional[int] = None
 
-        self._position: numpy.ndarray = _MatchPositionFinder.get_position(match_location)
+        self._position: numpy.ndarray = MatchPositionCalculator.get_position(match_location)
 
         self._players: list[Optional[Player]] = [None, None]
 
@@ -62,20 +26,23 @@ class Match(object):
         self._ball_is_waiting: bool = True
         self._ball_start_time: Optional[float] = None
 
-    def to_json(self) -> dict:
+    def to_json(self, should_include_players: bool = True) -> dict:
         if self._ball_start_time is None:
             ball_start_time = None
         else:
             ball_start_time = self._ball_start_time
 
-        return {
+        result: dict = {
             'location': self.LOCATION.to_json(),
             'position': vector_to_dict(self._position),
-            'players': [player.to_json() if player else None for player in self._players],
             'ball': self._ball.to_json(),
             'ball_is_waiting': self._ball_is_waiting,
             'ball_start_time': ball_start_time,
         }
+        if should_include_players:
+            result['players'] = [player.to_json() if player else None
+                                 for player in self._players]
+        return result
 
     async def start_match(self):
         await self._prepare_ball_for_match()
@@ -99,12 +66,11 @@ class Match(object):
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
-        # TODO Send point update to tournament / matchmaking
+        # TODO Send point update to tournament
 
-        # TODO uncomment the following lines
-        # if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
-        #     self._winner_index = player_index
-        #     return
+        if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
+            self._winner_index = player_index
+            return
 
         await self._prepare_ball_for_match()
 

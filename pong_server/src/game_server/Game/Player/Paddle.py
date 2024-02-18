@@ -62,6 +62,11 @@ class Paddle(object):
     def get_bottom_collision_segment(self):
         return self._bottom_collision_segment
 
+    def set_paddle_is_on_the_right(self, paddle_is_on_the_right: bool):
+        if paddle_is_on_the_right != self._paddle_is_on_the_right:
+            self._position[0] *= -1
+            self._paddle_is_on_the_right = paddle_is_on_the_right
+
     def _set_collision_segments(self):
         x_left = (self._player_position[0] + self._position[0]
                   - settings.PADDLE_SIZE[0] * 0.5)

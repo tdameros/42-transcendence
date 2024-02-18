@@ -23,7 +23,7 @@ class Player(object):
                                                      0.])
         self._paddle: Paddle = Paddle(numpy.array([settings.PADDLE_X_POSITION * sign,
                                                    0.,
-                                                   settings.PADDLE_SIZE[2] / 2.]),
+                                                   settings.PADDLE_SIZE[2] / 2. + 0.001]),
                                       self._position)
         self._board: _Board = _Board()
 
@@ -43,6 +43,9 @@ class Player(object):
         return self._player_location
 
     def set_location(self, player_location: PlayerLocation):
+        if self._player_location.player_index != player_location.player_index:
+            self._position[0] *= -1
+            self._paddle.set_paddle_is_on_the_right(bool(player_location.player_index))
         self._player_location = player_location
 
     def get_position(self) -> numpy.ndarray:

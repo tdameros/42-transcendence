@@ -40,3 +40,8 @@ class ClientManager(object):
         del ClientManager._sid_map[user_id]
         del ClientManager._user_id_map[sid]
         await Server.sio.leave_room(sid, rooms.ALL_PLAYERS)
+
+    @staticmethod
+    async def disconnect_all_users():
+        while len(ClientManager._user_id_map) != 0:
+            await Server.sio.disconnect(list(ClientManager._sid_map.values())[0])
