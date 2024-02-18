@@ -606,37 +606,6 @@ Authorization: {access_token}
 
 </details>
 
-### Add a friend
-
-This endpoint add a friend to the user
-
-<details>
- <summary><code>POST</code><code><b>/user/friends/</b></code></summary>
-
-### Headers
-
-Authorization: {access_token}
-
-#### Body
-
-all fields are mandatory
-
-```json
-{
-    "friend_id": 1
-}
-```
-
-#### Responses
-
-> | http code | content-type       | response                                             |
-> |-----------|--------------------|------------------------------------------------------|
-> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
-> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
-> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
-
-</details>
-
 ### Delete a friend
 
 This endpoint delete a friend of the user
@@ -648,15 +617,11 @@ This endpoint delete a friend of the user
 
 Authorization: {access_token}
 
-#### Body
+#### Query
 
-all fields are mandatory
-
-```json
-{
-    "friend_id": 1
-}
-```
+> | name        | data type | description | type      |
+> |-------------|-----------|-------------|-----------|
+> | `friend_id` | int       | Friend's id | Required  |
 
 #### Responses
 
@@ -668,6 +633,104 @@ all fields are mandatory
 
 </details>
 
+## `/user/friends/request/`
+
+### Send a friend request
+
+This endpoint send a friend request
+
+<details>
+ <summary><code>POST</code><code><b>/user/friends/request/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Body
+
+All fields mandatory:
+
+> ```json
+> {
+>    "friend_id": 1
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend request sent"}`                 |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+## `/user/friends/accept/`
+
+### Accept a friend request
+
+This endpoint is used to accept a friend request
+
+<details>
+ <summary><code>POST</code><code><b>/user/friends/accept/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Body
+
+All fields mandatory:
+
+> ```json
+> {
+>    "friend_id": 1
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend request accepted"}`             |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
+## `/user/friends/decline/`
+
+### Decline a friend request
+
+This endpoint is used to decline a friend request
+
+<details>
+ <summary><code>POST</code><code><b>/user/friends/decline/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Body
+
+All fields mandatory:
+
+> ```json
+> {
+>    "friend_id": 1
+> }
+> ```
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "friend request declined"}`             |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
 
 ## `/user/delete-account/`
 
