@@ -2,6 +2,7 @@ import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
 import {_GameSocketIO} from './_GameSocketIO.js';
+import {Scene} from '@components/game/Scene/Scene.js';
 
 export class Engine {
   #threeJS;
@@ -52,6 +53,21 @@ export class Engine {
 
   set socket(socket) {
     this.#socket = socket;
+  }
+
+  get threeJS() {
+    return this.#threeJS;
+  }
+
+  updateCamera(cameraPosition, cameraLookAt) {
+    this.#threeJS.setCameraPosition(cameraPosition);
+    this.#threeJS.setCameraLookAt(cameraLookAt);
+  }
+
+  resizeHandler() {
+    if (this.#scene instanceof Scene) {
+      this.#scene.updateCamera();
+    }
   }
 
   startListeningForKeyHooks() {

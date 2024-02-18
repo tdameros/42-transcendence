@@ -1,5 +1,6 @@
 from typing import Optional
 
+import settings
 from ClientManager import ClientManager
 from Clock import Clock
 from EventEmitter import EventEmitter
@@ -19,6 +20,8 @@ class GameManager(object):
     _match_table: dict[MatchLocation, Match] = {}
     #            dict[player_id, Player]
     _player_map: dict[int, Player] = {}
+    _matches_middle_x: float
+    _matches_middle_y: float
 
     @staticmethod
     def init(players: list[Optional[int]]):
@@ -40,11 +43,21 @@ class GameManager(object):
                     players[i + 1],
                     PlayerLocation(0, match_index, 1))
 
+        GameManager._set_matches_bounding_box(len(players) // 2)
+
     @staticmethod
     def get_scene() -> dict:
         return {
             'matches': [match.to_json() for match in GameManager._matches],
-            'loosers': [player.to_json() for player in GameManager._loosers]
+            'loosers': [player.to_json() for player in GameManager._loosers],
+            'matches_middle': {
+                'x': GameManager._matches_middle_x,
+                'y': GameManager._matches_middle_y,
+            },
+            'match_half_width': settings.MATCH_SIZE[0] * 0.5,
+            'match_half_height': settings.MATCH_SIZE[1] * 0.5,
+            'matches_x_offset': settings.MATCHES_X_OFFSET,
+            'matches_y_offset': settings.MATCHES_Y_OFFSET,
         }
 
     @staticmethod
@@ -150,3 +163,19 @@ class GameManager(object):
         GameManager._matches.remove(match)
         del GameManager._match_table[match.LOCATION]
         del match
+
+    @staticmethod
+    def _set_matches_bounding_box(nb_of_matches: int):
+        matches_size: float = settings.MATCH_SIZE[0] * nb_of_matches
+        offsets_size: float = settings.MATCHES_X_OFFSET * (nb_of_matches - 1)
+        total_len: float = (settings.BASE_OFFSET * 2.
+                            + matches_size
+                            + offsets_size)
+        GameManager._matches_middle_x = total_len * .5
+
+        matches_size: float = settings.MATCH_SIZE[1] * nb_of_matches
+        offsets_size: float = settings.MATCHES_Y_OFFSET * (nb_of_matches - 1)
+        total_len: float = (settings.BASE_OFFSET * 2.
+                            + matches_size
+                            + offsets_size)
+        GameManager._matches_middle_y = total_len * .5
