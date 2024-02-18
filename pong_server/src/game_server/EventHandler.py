@@ -25,7 +25,16 @@ class EventHandler(object):
 
         user_id = get_json_web_token(get_query_string(environ))['user_id']
         if user_id not in ClientManager.CLIENTS_IDS:
-            raise ConnectionRefusedError('You are not part of this game')
+            raise ConnectionRefusedError({
+                'message': 'You are not part of this game',
+                'status': 1
+            })
+
+        if GameManager.is_game_over():
+            raise ConnectionRefusedError({
+                'message': 'The game is over',
+                'status': 0
+            })
 
         previous_sid = ClientManager.get_user_sid(user_id)
         if previous_sid:
@@ -43,7 +52,7 @@ class EventHandler(object):
 
     @staticmethod
     async def _update_paddle(sid: str, player_data):
-        if not GameManager.has_game_started():
+        if not GameManager.has_game_started() or GameManager.is_game_over():
             return
 
         user_id = ClientManager.get_user_id(sid)
@@ -68,7 +77,8 @@ class EventHandler(object):
 
     @staticmethod
     def _get_update_paddle_args(player_data) -> (bool, Optional[float], Optional[str]):
-        """ Returns success, client_paddle_position, direction """
+        """ This is not an event handler, but it is used by one
+            Returns success, client_paddle_position, direction """
         try:
             client_paddle_position = player_data['client_paddle_position']
             if not isinstance(client_paddle_position, (float, int)):

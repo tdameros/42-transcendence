@@ -13,6 +13,7 @@ from Server import Server
 
 class GameManager(object):
     _has_game_started: bool = False
+    _is_game_over: bool = False
 
     _loosers: list[Player] = []
     _matches: list[Match] = []
@@ -80,19 +81,27 @@ class GameManager(object):
         clock = Clock()
         while True:
             current_time, time_delta = clock.get_time()
+            finished_matches: list[Match] = []
 
             for match in GameManager._matches:
                 await match.update(current_time, time_delta)
                 if match.is_over():
-                    await GameManager.match_was_won(match)
-            await Server.sio.sleep(0.01)
+                    finished_matches.append(match)
 
-            if False:  # TODO: Check if the game is over
+            for match in finished_matches:
+                await GameManager.match_was_won(match)
+
+            await Server.sio.sleep(0.01)
+            if GameManager._is_game_over:
                 return
 
     @staticmethod
     async def match_was_won(match: Match):
-        # TODO check if it was the final match
+        if len(GameManager._matches) == 1:
+            # TODO send game over to game-stats / tournament
+            GameManager._is_game_over = True
+            await EventEmitter.game_over(match.get_winner_index())
+            return
 
         winner_index: int = match.get_winner_index()
 
@@ -104,7 +113,9 @@ class GameManager(object):
 
         GameManager._handle_match_winner(match, winner_index, new_match)
 
-        await EventEmitter.player_won_match(match.LOCATION, winner_index, new_match.to_json())
+        await EventEmitter.player_won_match(
+            match.LOCATION, winner_index, new_match.to_json(should_include_players=False)
+        )
         if new_match.is_full():
             await new_match.start_match()
 
@@ -140,6 +151,10 @@ class GameManager(object):
     @staticmethod
     def get_player(player_id: int) -> Player:
         return GameManager._player_map.get(player_id)
+
+    @staticmethod
+    def is_game_over() -> bool:
+        return GameManager._is_game_over
 
     @staticmethod
     def _create_player(player_id: int, player_location: PlayerLocation):

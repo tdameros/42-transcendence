@@ -26,20 +26,23 @@ class Match(object):
         self._ball_is_waiting: bool = True
         self._ball_start_time: Optional[float] = None
 
-    def to_json(self) -> dict:
+    def to_json(self, should_include_players: bool = True) -> dict:
         if self._ball_start_time is None:
             ball_start_time = None
         else:
             ball_start_time = self._ball_start_time
 
-        return {
+        result: dict = {
             'location': self.LOCATION.to_json(),
             'position': vector_to_dict(self._position),
-            'players': [player.to_json() if player else None for player in self._players],
             'ball': self._ball.to_json(),
             'ball_is_waiting': self._ball_is_waiting,
             'ball_start_time': ball_start_time,
         }
+        if should_include_players:
+            result['players'] = [player.to_json() if player else None
+                                 for player in self._players]
+        return result
 
     async def start_match(self):
         await self._prepare_ball_for_match()
@@ -63,12 +66,11 @@ class Match(object):
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
-        # TODO Send point update to tournament / matchmaking
+        # TODO Send point update to tournament
 
-        # TODO uncomment the following lines
-        # if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
-        #     self._winner_index = player_index
-        #     return
+        if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
+            self._winner_index = player_index
+            return
 
         await self._prepare_ball_for_match()
 

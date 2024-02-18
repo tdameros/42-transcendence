@@ -8,8 +8,6 @@ pylint () {
     )
 }
 
+pylint src/shared_code
 pylint src/game_creator
 pylint src/game_server
-pylint src/shared_code
-
-pylint src/redirection_server_deprecated

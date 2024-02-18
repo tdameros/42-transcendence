@@ -27,7 +27,7 @@ export class Scene {
 
     const matchesJson = sceneJson['matches'];
     for (const matchJson of matchesJson) {
-      const newMatch = new Match(matchJson);
+      const newMatch = new Match(matchJson, true);
       this.#matches.push(newMatch);
       this.#addMatchToMatchMap(newMatch, matchJson['location']);
       this.#threeJSScene.add(newMatch.threeJSGroup);
@@ -77,35 +77,35 @@ export class Scene {
 
   removeLooserFromMatch(matchLocationJson, looserIndex) {
     const match = this.getMatchFromLocation(matchLocationJson);
-    const looser = match.popPlayer(looserIndex);
-    if (looser === null) {
-      return;
-    }
-
+    const looser = match.players[looserIndex];
     if (this.#currentPlayerLocation.getPlayerFromScene(this) === looser) {
       this.#currentPlayerLocation = new PlayerLocation({
-        'looser': true,
+        'is_looser': true,
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
     }
+    match.removePlayer(looserIndex);
 
     looser.getPosition().add(match.getPosition());
     this.#threeJSScene.add(looser.threeJSGroup);
     this.#loosers.push(looser);
   }
 
-  addWinnerToMatch(matchLocationJson, winner, winnerIndex) {
+  addWinnerToMatch(matchLocationJson, winner, winnerIndex, newWinnerIndex) {
     if (this.#currentPlayerLocation.getPlayerFromScene(this) === winner) {
       this.#currentPlayerLocation = new PlayerLocation({
-        'looser': true,
+        'is_looser': false,
         'match_location': matchLocationJson,
-        'player_index': winnerIndex,
+        'player_index': newWinnerIndex,
       });
     }
 
+    if (winnerIndex !== newWinnerIndex) {
+      winner.changeSide();
+    }
     const match = this.getMatchFromLocation(matchLocationJson);
-    match.addPlayer(winner, winnerIndex);
+    match.addPlayer(winner, newWinnerIndex);
   }
 
   getCurrentPlayerPaddlePositionY() {
@@ -181,8 +181,7 @@ export class Scene {
   }
 
   getMatchFromLocation(locationJson) {
-    const key = Scene.convertMatchLocationToKey(locationJson);
-    return this.getMatchFromKey(key);
+    return this.getMatchFromKey(Scene.convertMatchLocationToKey(locationJson));
   }
 
   deleteMatch(locationJson) {
@@ -202,7 +201,7 @@ export class Scene {
       return;
     }
 
-    match = new Match(matchJson);
+    match = new Match(matchJson, false);
     this.#matches.push(match);
     this.#matches_map[key] = match;
     this.#threeJSScene.add(match.threeJSGroup);

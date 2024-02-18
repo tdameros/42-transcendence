@@ -20,7 +20,9 @@ async def background_task():
 
         await GameManager.start_game()  # Blocks till the game is over
 
-        # TODO disconnect all clients
+        await Server.sio.sleep(10)  # Give the clients time to receive the game_over event
+
+        await ClientManager.disconnect_all_users()
 
         Server.should_stop = True
 
@@ -48,6 +50,7 @@ async def main() -> int:
 
         players: list[Optional[int]] = [int(player) if player != 'None' else None
                                         for player in sys.argv[2:]]
+        logging.info(f'Players: {players}')
         GameManager.init(players)
 
         Server.init(background_task)

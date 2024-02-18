@@ -57,3 +57,9 @@ class EventEmitter(object):
             'winner_index': winner_index,
             'new_match_json': new_match_json,
         })
+
+    @staticmethod
+    async def game_over(winner_index: int):
+        await Server.emit('game_over', rooms.ALL_PLAYERS, {
+            'winner_index': winner_index
+        })

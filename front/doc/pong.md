@@ -152,3 +152,29 @@
   >> ```
   >
   >> Updates the position and movement of the ball in the match at index match_index
+
+- ### `player_won_match`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'finished_match_location': {
+  >>         'game_round': int,
+  >>         'match': int
+  >>     },
+  >>     'winner_index': int,
+  >>     'new_match_json': (Same as the match in the scene but without the 'players' field)
+  >> }
+  >> ```
+  >
+  >> If it doesn't exist, creates a new match with the `new_match_json`  
+  >> Adds the player at [winner_index] to the match to the new match  
+  >> Adds the player at [1 - winner_index] to the loosers list
+ 
+- ### `game_over`:
+  >> ```
+  >> {
+  >>     'winner_index': int
+  >> }
+  >> ```
+  >
+  >> Work in progress

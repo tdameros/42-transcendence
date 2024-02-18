@@ -40,4 +40,11 @@ export class Player {
   getPosition() {
     return this.#threeJSGroup.position;
   }
+
+  changeSide() {
+    this.#threeJSGroup.position.set(this.#threeJSGroup.position.x * -1.,
+        this.#threeJSGroup.position.y,
+        this.#threeJSGroup.position.z);
+    this.#paddle.changeSide();
+  }
 }
