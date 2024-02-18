@@ -15,7 +15,7 @@ class Ball(object):
     def __init__(self):
         self._position: numpy.ndarray = numpy.array([0.,
                                                      0.,
-                                                     settings.BALL_RADIUS / 2.])
+                                                     settings.BALL_RADIUS])
 
         self._movement: numpy.ndarray = numpy.array([0., 0., 0.])
         self._set_random_movement()
