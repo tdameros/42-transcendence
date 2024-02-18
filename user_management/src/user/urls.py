@@ -6,7 +6,10 @@ from user.views.delete_account import DeleteAccountView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
-from user.views.friends import FriendsView
+from user.views.friends import (FriendsView,
+                                FriendsRequestView,
+                                FriendsAcceptView,
+                                FriendsDeclineView,)
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.oauth import OAuth, OAuthCallback
@@ -38,6 +41,9 @@ urlpatterns = [
     path('2fa/disable/', Disable2fa.as_view(), name='disable-2fa'),
     path('2fa/verify/', Verify2fa.as_view(), name='verify-2fa'),
     path('friends/', FriendsView.as_view(), name='friends'),
+    path('friends/request/', FriendsRequestView.as_view(), name='friends-request'),
+    path('friends/accept/', FriendsAcceptView.as_view(), name='friends-accept'),
+    path('friends/decline/', FriendsDeclineView.as_view(), name='friends-decline'),
     path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
     path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),

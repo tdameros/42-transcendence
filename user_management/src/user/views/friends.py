@@ -13,7 +13,34 @@ from user_management.JWTManager import get_user_id
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET', 'POST', 'DELETE']), name='dispatch')
-class FriendsView(View):
+class FriendsBaseView(View):
+    @staticmethod
+    def validate_friend_id(friend_id: Any) -> (bool, Optional[str]):
+        if friend_id is None:
+            return False, '`friend_id` field required'
+        if not isinstance(friend_id, int):
+            return False, '`friend_id` field must be an integer'
+        try:
+            User.objects.get(id=friend_id)
+        except User.DoesNotExist:
+            return False, 'Friend not found'
+        return True, None
+
+    @staticmethod
+    def validate_friend_id_query(friend_id: Any) -> (bool, Optional[str]):
+        if friend_id is None:
+            return False, '`friend_id` query parameter required'
+        if not friend_id.isdigit():
+            return False, '`friend_id` query parameter must be an integer'
+        friend_id = int(friend_id)
+        try:
+            User.objects.get(id=friend_id)
+        except User.DoesNotExist:
+            return False, 'Friend not found'
+        return True, None
+
+
+class FriendsView(FriendsBaseView):
     @staticmethod
     def get(request: HttpRequest):
         user_id = get_user_id(request)
@@ -33,91 +60,128 @@ class FriendsView(View):
         return JsonResponse(data=body, status=200)
 
     @staticmethod
+    def delete(request: HttpRequest):
+        user_id = get_user_id(request)
+        friend_id = request.GET.get('friend_id')
+
+        valid, error = FriendsView.validate_friend_id_query(friend_id)
+        if not valid:
+            return JsonResponse(data={'errors': [error]}, status=400)
+
+        friend_id = int(friend_id)
+        try:
+            valid, error = FriendsView.delete_friend(user_id, friend_id)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+        if not valid:
+            return JsonResponse(data={'errors': [error]}, status=400)
+        return JsonResponse(data={'message': 'friend deleted'}, status=200)
+
+    @staticmethod
+    def delete_friend(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+        user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
+        related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
+        if user_friendship is None or related_friendship is None:
+            return False, 'Friend not found'
+        user_friendship.delete()
+        related_friendship.delete()
+        return True, None
+
+class FriendsRequestView(View):
+    @staticmethod
     def post(request: HttpRequest):
         user_id = get_user_id(request)
         try:
             json_body = json.loads(request.body.decode('utf-8'))
         except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
-        valid, errors = FriendsView.validate_friend_request(json_body)
+        friend_id = json_body.get('friend_id')
+        valid, error = FriendsView.validate_friend_id(friend_id)
         if not valid:
-            return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'errors': [error]}, status=400)
 
         try:
-            valid, error = FriendsView.process_post_request(json_body, user_id)
+            valid, error = FriendsRequestView.post_friend_request(user_id, friend_id)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
-        return JsonResponse(data={'message': 'friend request sent'}, status=200)
+        return JsonResponse(data={'message': 'friend request sent'}, status=201)
 
     @staticmethod
-    def delete(request: HttpRequest):
-        user_id = get_user_id(request)
+    def post_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+        user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id)
+        if user_friendship.exists():
+            status = 'accepted' if user_friendship.first().status == Friend.ACCEPTED else 'pending'
+            return False, f'Friend status: {status}'
+        Friend.objects.create(user_id=user_id, friend_id=friend_id)
+        return True, None
 
+class FriendsAcceptView(View):
+    @staticmethod
+    def post(request: HttpRequest):
+        user_id = get_user_id(request)
         try:
             json_body = json.loads(request.body.decode('utf-8'))
         except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
-        valid, errors = FriendsView.validate_friend_request(json_body)
-        if not valid:
-            return JsonResponse(data={'errors': errors}, status=400)
-
-        try:
-            FriendsView.process_delete_request(json_body, user_id)
-        except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
-        return JsonResponse(data={'message': 'friend deleted'}, status=200)
-
-    @staticmethod
-    def process_post_request(json_body: Any, user_id: int) -> (bool, Optional[list[str]]):
-        friend_id = json_body['friend_id']
-        user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id)
-        related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id)
-        if user_friendship.exists():
-            return False, 'Friend request already sent'
-        if related_friendship.exists():
-            Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
-            related_friendship = related_friendship.first()
-            related_friendship.status = Friend.ACCEPTED
-            related_friendship.save()
-        else:
-            Friend.objects.create(user_id=user_id, friend_id=friend_id)
-        return True, None
-
-    @staticmethod
-    def process_delete_request(json_body: Any, user_id: int) -> (bool, Optional[list[str]]):
-        friend_id = json_body['friend_id']
-        user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id)
-        related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id)
-        if user_friendship.exists():
-            user_friendship = user_friendship.first()
-            user_friendship.delete()
-        if related_friendship.exists():
-            related_friendship = related_friendship.first()
-            related_friendship.delete()
-
-    @staticmethod
-    def validate_friend_request(json_body: Any) -> (bool, Optional[list[str]]):
-        errors = []
         friend_id = json_body.get('friend_id')
-
         valid, error = FriendsView.validate_friend_id(friend_id)
         if not valid:
-            errors.append(error)
+            return JsonResponse(data={'errors': [error]}, status=400)
 
-        if errors:
-            return False, errors
-        return True, None
+        try:
+            valid, error = FriendsAcceptView.accept_friend_request(user_id, friend_id)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+        if not valid:
+            return JsonResponse(data={'errors': [error]}, status=400)
+        return JsonResponse(data={'message': 'friend request accepted'}, status=200)
 
     @staticmethod
-    def validate_friend_id(friend_id: Any) -> (bool, Optional[str]):
-        if friend_id is None:
-            return False, '`friend_id` field required'
-        if not isinstance(friend_id, int):
-            return False, '`friend_id` field must be an integer'
+    def accept_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+        related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
+        if related_friendship is None:
+            return False, 'Friend request not found'
+        if related_friendship.status == Friend.ACCEPTED:
+            return False, 'Friend request already accepted'
+        related_friendship.status = Friend.ACCEPTED
+        related_friendship.save()
+        user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
+        if user_friendship is None:
+            Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
+        else:
+            user_friendship.status = Friend.ACCEPTED
+            user_friendship.save()
+        return True, None
+
+class FriendsDeclineView(View):
+    @staticmethod
+    def post(request: HttpRequest):
+        user_id = get_user_id(request)
         try:
-            User.objects.get(id=friend_id)
-        except User.DoesNotExist:
-            return False, 'User not found'
+            json_body = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
+        friend_id = json_body.get('friend_id')
+        valid, error = FriendsView.validate_friend_id(friend_id)
+        if not valid:
+            return JsonResponse(data={'errors': [error]}, status=400)
+
+        try:
+            valid, error = FriendsDeclineView.decline_friend_request(user_id, friend_id)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+        if not valid:
+            return JsonResponse(data={'errors': [error]}, status=400)
+        return JsonResponse(data={'message': 'friend request declined'}, status=200)
+
+    @staticmethod
+    def decline_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+        related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
+        if related_friendship is None:
+            return False, 'Friend request not found'
+        if related_friendship.status == Friend.ACCEPTED:
+            return False, 'Friend request already accepted'
+        related_friendship.delete()
         return True, None
