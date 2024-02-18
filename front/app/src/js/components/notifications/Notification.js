@@ -57,18 +57,13 @@ export class Notification extends Component {
   }
 
   onConnect() {
-    // on socket open
-    console.log('Socket successfully connected');
   }
 
   onClose() {
-    // on socket close
-    console.log('Socket closed');
     this.webSocket = null;
   }
 
   onError() {
-    console.log('Failed to connect');
     this.webSocket = null;
   }
 
