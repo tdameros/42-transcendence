@@ -1,31 +1,6 @@
 # Pong Client
 
-## Events when connected to the redirection server: (deprecated)
-- ### `error`:
-  >> Argument:  
-  >> ```
-  >> error_message: str
-  >> ``` 
-  > 
-  >> Prints error_message on `console.error`  
-  >> Disconnects from the server  
-  >> 
-  >> After this event is received the client will stop trying to connect to
-  >> the redirection server and the loading screen will be shown indefinitely
-
-- ### `game_server_uri`:
-  >> Argument:
-  >> ```
-  >> game_server_uri: str
-  >> ```
-  >
-  >> Disconnects the client from the redirection server  
-  >> Tries connecting to the game server
-  >>
-  >> The loading screen will be shown till the game server
-  >> sends a `scene` event (or indefinitely if the connection fails)  
-
-## Events when connected to the game server:
+## Events:
 - ### `error`
   >> Argument:
   >> ```
@@ -152,3 +127,29 @@
   >> ```
   >
   >> Updates the position and movement of the ball in the match at index match_index
+
+- ### `player_won_match`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'finished_match_location': {
+  >>         'game_round': int,
+  >>         'match': int
+  >>     },
+  >>     'winner_index': int,
+  >>     'new_match_json': (Same as the match in the scene but without the 'players' field)
+  >> }
+  >> ```
+  >
+  >> If it doesn't exist, creates a new match with the `new_match_json`  
+  >> Adds the player at [winner_index] to the match to the new match  
+  >> Adds the player at [1 - winner_index] to the loosers list
+ 
+- ### `game_over`:
+  >> ```
+  >> {
+  >>     'winner_index': int
+  >> }
+  >> ```
+  >
+  >> Work in progress

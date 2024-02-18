@@ -26,7 +26,9 @@ class FriendsTest(TestCase):
         response = self.client.get(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
         return response
 
-    def request_friends(self, access_token, friend_id):
+    @patch('requests.post')
+    def request_friends(self, access_token, friend_id, mock_post):
+        mock_post.return_value.status_code = 201
         url = reverse('friends-request')
         response = self.client.post(
             url,

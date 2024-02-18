@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
+from common.src.internal_requests import InternalAuthRequests
 from common.src.jwt_managers import user_authentication
 from tournament import settings
 from tournament.get_user import get_user_id
@@ -41,6 +42,7 @@ class StartTournamentView(View):
 
         try:
             tournament.save()
+            StartTournamentView.send_tournament_start_notification(tournament)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
@@ -61,6 +63,26 @@ class StartTournamentView(View):
             return error.MATCHES_NOT_GENERATED
 
         return None
+
+    @staticmethod
+    def send_tournament_start_notification(tournament: Tournament) -> None:
+        players = tournament.players.all()
+        players_id = [player.user_id for player in players]
+        notification_data = {
+            'title': f'Tournament `{tournament.name}` started',
+            'type': 'tournament_start',
+            'user_list': players_id,
+            # TODO: send tournament port instead of tournament id
+            'data': f'{tournament.id}'
+        }
+
+        response = InternalAuthRequests.post(
+            url=settings.USER_NOTIFICATION_ENDPOINT,
+            data=json.dumps(notification_data)
+        )
+
+        if response.status_code != 201:
+            raise Exception(f'Failed to send tournament start notification: {response.json()}')
 
 
 @method_decorator(csrf_exempt, name='dispatch')

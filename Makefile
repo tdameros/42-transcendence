@@ -7,6 +7,7 @@ USER_MANAGEMENT_DB_VOLUME_PATH	=	user_management/docker/volumes/db
 USER_STATS_DB_VOLUME_PATH		=	user_stats/docker/volumes/db
 MATCHMAKING_DB_VOLUME_PATH		=	matchmaking/docker/volumes/db
 TOURNAMENT_DB_VOLUME_PATH		=	tournament/docker/volumes/db
+NOTIFICATION_DB_VOLUME_PATH		=	notification/docker/volumes/db
 
 FRONT_DIST_VOLUME_PATH          =   front/app/dist
 
@@ -14,7 +15,8 @@ DB_VOLUMES						=	$(FRONT_DB_VOLUME_PATH) \
 									$(USER_MANAGEMENT_DB_VOLUME_PATH) \
 									$(USER_STATS_DB_VOLUME_PATH) \
 									$(MATCHMAKING_DB_VOLUME_PATH) \
-									$(TOURNAMENT_DB_VOLUME_PATH)
+									$(TOURNAMENT_DB_VOLUME_PATH) \
+									$(NOTIFICATION_DB_VOLUME_PATH)
 
 VOLUMES                         =   $(FRONT_DIST_VOLUME_PATH) \
                                     $(DB_VOLUMES)
@@ -44,6 +46,10 @@ up: create_volume_path
 .PHONY: down
 down:
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
+
+.PHONY: reup
+reup: down
+	$(MAKE) up
 
 .PHONY: start
 start:

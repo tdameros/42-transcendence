@@ -1,17 +1,20 @@
 import * as THREE from 'three';
 
 export class _Board {
-  #threeJsonBoard;
+  #threeJSBoard;
 
   constructor(boardJson) {
     const size = boardJson['size'];
-    this.#threeJsonBoard = new THREE.Mesh(
+    this.#threeJSBoard = new THREE.Mesh(
         new THREE.PlaneGeometry(size['x'], size['y']),
-        new THREE.MeshStandardMaterial({color: 0x222277}),
+        new THREE.MeshStandardMaterial({
+          color: 0x000044,
+          side: THREE.DoubleSide,
+        }),
     );
-    this.#threeJsonBoard.position.set(0., 0., 0.);
-    this.#threeJsonBoard.castShadow = false;
-    this.#threeJsonBoard.receiveShadow = true;
+    this.#threeJSBoard.position.set(0., 0., 0.);
+    this.#threeJSBoard.castShadow = false;
+    this.#threeJSBoard.receiveShadow = true;
   }
 
   updateFrame(timeDelta) {
@@ -19,6 +22,6 @@ export class _Board {
   }
 
   get threeJSBoard() {
-    return this.#threeJsonBoard;
+    return this.#threeJSBoard;
   }
 }

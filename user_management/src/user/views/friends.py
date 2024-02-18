@@ -6,6 +6,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src import settings
+from common.src.internal_requests import InternalAuthRequests
 from common.src.jwt_managers import user_authentication
 from user.models import Friend, User
 from user_management.JWTManager import get_user_id
@@ -38,6 +40,22 @@ class FriendsBaseView(View):
         except User.DoesNotExist:
             return False, 'Friend not found'
         return True, None
+
+    @staticmethod
+    def send_friend_request_notification(user_id: int, friend_id: int):
+        user = User.objects.get(id=user_id)
+        notification_data = {
+            'title': f'Friend request from {user.username}',
+            'type': 'friend_request',
+            'user_list': [friend_id],
+            'data': f'{user_id}',
+        }
+        response = InternalAuthRequests.post(
+            url=settings.USER_NOTIFICATION_ENDPOINT,
+            data=json.dumps(notification_data)
+        )
+        if response.status_code != 201:
+            raise Exception(f'Failed to send friend request notification : {response.text}')
 
 
 class FriendsView(FriendsBaseView):
@@ -88,7 +106,7 @@ class FriendsView(FriendsBaseView):
         return True, None
 
 
-class FriendsRequestView(View):
+class FriendsRequestView(FriendsBaseView):
     @staticmethod
     def post(request: HttpRequest):
         user_id = get_user_id(request)
@@ -97,7 +115,7 @@ class FriendsRequestView(View):
         except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         friend_id = json_body.get('friend_id')
-        valid, error = FriendsView.validate_friend_id(friend_id)
+        valid, error = FriendsRequestView.validate_friend_id(friend_id)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
 
@@ -116,10 +134,11 @@ class FriendsRequestView(View):
             status = 'accepted' if user_friendship.first().status == Friend.ACCEPTED else 'pending'
             return False, f'Friend status: {status}'
         Friend.objects.create(user_id=user_id, friend_id=friend_id)
+        FriendsRequestView.send_friend_request_notification(user_id, friend_id)
         return True, None
 
 
-class FriendsAcceptView(View):
+class FriendsAcceptView(FriendsBaseView):
     @staticmethod
     def post(request: HttpRequest):
         user_id = get_user_id(request)
@@ -128,7 +147,7 @@ class FriendsAcceptView(View):
         except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         friend_id = json_body.get('friend_id')
-        valid, error = FriendsView.validate_friend_id(friend_id)
+        valid, error = FriendsAcceptView.validate_friend_id(friend_id)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
 
@@ -158,7 +177,7 @@ class FriendsAcceptView(View):
         return True, None
 
 
-class FriendsDeclineView(View):
+class FriendsDeclineView(FriendsBaseView):
     @staticmethod
     def post(request: HttpRequest):
         user_id = get_user_id(request)
@@ -167,7 +186,7 @@ class FriendsDeclineView(View):
         except Exception:
             return JsonResponse(data={'errors': 'Invalid JSON format in the request body'}, status=400)
         friend_id = json_body.get('friend_id')
-        valid, error = FriendsView.validate_friend_id(friend_id)
+        valid, error = FriendsDeclineView.validate_friend_id(friend_id)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
 

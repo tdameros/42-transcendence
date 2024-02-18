@@ -541,7 +541,9 @@ class StartTournamentTest(TestCase):
 
         self.client.post(url, {'random': True}, content_type='application/json', headers=get_fake_headers(1))
 
-    def start_tournament(self, tournament_id):
+    @patch('api.views.manage_tournament_views.StartTournamentView.send_tournament_start_notification')
+    def start_tournament(self, tournament_id, mock_send):
+        mock_send.return_value = None
         url = reverse('start-tournament', args=(tournament_id,))
 
         response = self.client.patch(url, headers=get_fake_headers(1))
