@@ -6,10 +6,8 @@ from user.views.delete_account import DeleteAccountView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
-from user.views.friends import (FriendsView,
-                                FriendsRequestView,
-                                FriendsAcceptView,
-                                FriendsDeclineView,)
+from user.views.friends import (FriendsAcceptView, FriendsDeclineView,
+                                FriendsRequestView, FriendsView)
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.oauth import OAuth, OAuthCallback

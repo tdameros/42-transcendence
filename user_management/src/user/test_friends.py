@@ -1,8 +1,10 @@
 import json
 from unittest.mock import patch
+
 from django.test import TestCase
 from django.urls import reverse
-from user.models import User, Friend
+
+from user.models import Friend, User
 from user_management.JWTManager import UserAccessJWTManager
 
 
@@ -210,7 +212,6 @@ class FriendsAcceptTest(FriendsTest):
         response = self.accept_friends(token, user_id)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['Friend request not found'])
-
 
     def test_invalid_already_friends(self):
         user1 = {

@@ -9,7 +9,7 @@ import pyotp
 from django.test import TestCase
 from django.urls import reverse
 
-from user.models import Friend, User
+from user.models import User
 from user_management import settings
 from user_management.JWTManager import (UserAccessJWTManager,
                                         UserRefreshJWTManager)

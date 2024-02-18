@@ -87,6 +87,7 @@ class FriendsView(FriendsBaseView):
         related_friendship.delete()
         return True, None
 
+
 class FriendsRequestView(View):
     @staticmethod
     def post(request: HttpRequest):
@@ -116,6 +117,7 @@ class FriendsRequestView(View):
             return False, f'Friend status: {status}'
         Friend.objects.create(user_id=user_id, friend_id=friend_id)
         return True, None
+
 
 class FriendsAcceptView(View):
     @staticmethod
@@ -154,6 +156,7 @@ class FriendsAcceptView(View):
             user_friendship.status = Friend.ACCEPTED
             user_friendship.save()
         return True, None
+
 
 class FriendsDeclineView(View):
     @staticmethod
