@@ -7,45 +7,9 @@ import settings
 from EventEmitter import EventEmitter
 from Game.Ball import Ball
 from Game.MatchLocation import MatchLocation
+from Game.MatchPositionCalculator import MatchPositionCalculator
 from Game.Player.Player import Player
 from vector_to_dict import vector_to_dict
-
-
-class _MatchPositionFinder(object):
-    # This is a cache to avoid calculating the same position multiple times
-    match_positions: dict[MatchLocation, numpy.ndarray] = {}
-
-    @staticmethod
-    def get_position(match_location: MatchLocation) -> numpy.ndarray:
-        match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position is not None:
-            return match_position.copy()
-
-        if match_location.game_round == 0:
-            x: float = (match_location.match * settings.MATCH_SIZE[0]
-                        + match_location.match * settings.MATCHES_X_OFFSET)
-            match_position = numpy.array([x, 0., 0.])
-        else:
-            match_below_left: MatchLocation = MatchLocation(match_location.game_round - 1,
-                                                            match_location.match * 2)
-            match_below_right: MatchLocation = MatchLocation(match_below_left.game_round,
-                                                             match_below_left.match + 1)
-            x: float = ((_MatchPositionFinder._get_x_position(match_below_left)
-                         + _MatchPositionFinder._get_x_position(match_below_right))
-                        / 2)
-            y: float = (match_location.game_round * settings.MATCH_SIZE[1]
-                        + match_location.game_round * settings.MATCHES_Y_OFFSET)
-            match_position = numpy.array([x, y, 0.])
-
-        _MatchPositionFinder.match_positions[match_location] = match_position
-        return match_position.copy()
-
-    @staticmethod
-    def _get_x_position(match_location: MatchLocation) -> float:
-        match_position = _MatchPositionFinder.match_positions.get(match_location)
-        if match_position is not None:
-            return match_position[0]
-        return _MatchPositionFinder.get_position(match_location)[0]
 
 
 class Match(object):
@@ -54,7 +18,7 @@ class Match(object):
         self._points: list[int] = [0, 0]
         self._winner_index: Optional[int] = None
 
-        self._position: numpy.ndarray = _MatchPositionFinder.get_position(match_location)
+        self._position: numpy.ndarray = MatchPositionCalculator.get_position(match_location)
 
         self._players: list[Optional[Player]] = [None, None]
 
