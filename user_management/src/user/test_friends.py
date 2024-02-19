@@ -422,7 +422,7 @@ class DeleteFriendsTest(FriendsTest):
         response = self.delete_friends(token2, user_id)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['Friend not found'])
-        friends = Friend.objects.get(user_id=1, friend_id=2)
+        friends = Friend.objects.get(user_id=user_id, friend_id=friend_id)
         self.assertEqual(friends.status, Friend.PENDING)
 
     def test_invalid_no_friends(self):
