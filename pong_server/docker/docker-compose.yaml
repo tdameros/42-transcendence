@@ -38,6 +38,7 @@ services:
                 - GAME_SERVER_PATH=/app/src/game_server/
                 - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
                 - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
+                - PATH_TO_SSL_CERTS=/app/ssl/
             context: .
             dockerfile: Dockerfile
         volumes:

@@ -2,6 +2,7 @@
 
 export PONG_GAME_SERVERS_MIN_PORT=42200
 export PONG_GAME_SERVERS_MAX_PORT=42210
+export PATH_TO_SSL_CERTS=~/git/transcendence/ssl/certs/
 
 (
     cd src/game_server &&

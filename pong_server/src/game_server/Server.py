@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from ssl import SSLContext
+from typing import Optional
 
 import socketio
 from aiohttp import web
@@ -11,6 +13,8 @@ class Server(object):
     sio: socketio.AsyncServer = socketio.AsyncServer(cors_allowed_origins='*')
     _app: web.Application = web.Application()
     _runner: web.AppRunner
+    _is_running: bool = False
+    PORT: int
 
     _background_task: callable
 
@@ -25,17 +29,25 @@ class Server(object):
         Server._runner = web.AppRunner(Server._app)
 
     @staticmethod
-    async def start(host: str, start_port: int, end_port: int) -> int:
+    async def start(host: str,
+                    start_port: int,
+                    end_port: int,
+                    ssl_context: Optional[SSLContext] = None):
+        if Server._is_running:
+            raise Exception("Server is already running")
+
         await Server._runner.setup()
 
         logging.debug(f'start_port: {start_port}, end_port: {end_port}')
 
         for port in range(start_port, end_port + 1):
             try:
-                server = web.TCPSite(Server._runner, host, port)
+                server = web.TCPSite(Server._runner, host, port, ssl_context=ssl_context)
                 await server.start()
                 logging.info(f'started on port {port}')
-                return port
+                Server.PORT = port
+                Server._is_running = True
+                return
             except OSError:
                 continue
 
