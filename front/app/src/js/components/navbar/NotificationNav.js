@@ -201,7 +201,7 @@ export class NotificationNav extends Component {
 
   async #acceptFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.addFriend(
+      const {response} = await userManagementClient.acceptFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
@@ -216,7 +216,7 @@ export class NotificationNav extends Component {
 
   async #declineFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.deleteFriend(
+      const {response} = await userManagementClient.declineFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
