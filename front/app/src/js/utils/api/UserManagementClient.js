@@ -18,8 +18,8 @@ export class UserManagementClient extends BaseApiClient {
     'search-username': 'user/search-username/',
     'user-id-list': 'user/id-list/',
     'oauth': 'user/oauth/:oauth-service/',
-    'add-friend': 'user/friends/',
-    'delete-friend': 'user/friends/',
+    'friends-accept': 'user/friends/accept/',
+    'friends-decline': 'user/friends/decline/',
   };
 
   constructor() {
@@ -44,19 +44,19 @@ export class UserManagementClient extends BaseApiClient {
     return await JSONRequests.get(URL, params);
   }
 
-  async addFriend(userId) {
+  async acceptFriend(userId) {
     const body = {
       'friend_id': userId,
     };
-    const URL = `${this.URL}/${this.URIs['add-friend']}`;
+    const URL = `${this.URL}/${this.URIs['friends-accept']}`;
     return await this.postAuthRequest(URL, body);
   }
 
-  async deleteFriend(userId) {
+  async declineFriend(userId) {
     const body = {
       'friend_id': userId,
     };
-    const URL = `${this.URL}/${this.URIs['delete-friend']}`;
+    const URL = `${this.URL}/${this.URIs['friends-decline']}`;
     return await this.deleteAuthRequest(URL, body);
   }
 
