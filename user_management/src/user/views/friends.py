@@ -57,6 +57,27 @@ class FriendsBaseView(View):
         if response.status_code != 201:
             raise Exception(f'Failed to send friend request notification : {response.text}')
 
+    @staticmethod
+    def send_user_stats_update(user_id: int, friend_id: int):
+        user_friend_count = Friend.objects.filter(user_id=user_id, status=Friend.ACCEPTED).count()
+        related_friend_count = Friend.objects.filter(user_id=friend_id, status=Friend.ACCEPTED).count()
+        response = InternalAuthRequests.post(
+            url=settings.USER_STATS_USER_ENDPOINT,
+            data=json.dumps({
+                'friends': user_friend_count,
+            })
+        )
+        if response.status_code != 200:
+            raise Exception(f'Failed to update user stats : {response.text}')
+        response = InternalAuthRequests.post(
+            url=settings.USER_STATS_USER_ENDPOINT,
+            data=json.dumps({
+                'friends': related_friend_count,
+            })
+        )
+        if response.status_code != 200:
+            raise Exception(f'Failed to update user stats : {response.text}')
+
 
 class FriendsView(FriendsBaseView):
     @staticmethod
@@ -93,6 +114,10 @@ class FriendsView(FriendsBaseView):
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
+        try:
+            FriendsView.send_user_stats_update(user_id, friend_id)
+        except Exception as e:
+            return JsonResponse(data={'errors': [str(e)]}, status=500)
         return JsonResponse(data={'message': 'friend deleted'}, status=200)
 
     @staticmethod
@@ -157,6 +182,10 @@ class FriendsAcceptView(FriendsBaseView):
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
+        try:
+            FriendsView.send_user_stats_update(user_id, friend_id)
+        except Exception as e:
+            return JsonResponse(data={'errors': [str(e)]}, status=500)
         return JsonResponse(data={'message': 'friend request accepted'}, status=200)
 
     @staticmethod
