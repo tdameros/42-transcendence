@@ -61,16 +61,16 @@ class FriendsBaseView(View):
     def send_user_stats_update(user_id: int, friend_id: int):
         user_friend_count = Friend.objects.filter(user_id=user_id, status=Friend.ACCEPTED).count()
         related_friend_count = Friend.objects.filter(user_id=friend_id, status=Friend.ACCEPTED).count()
-        response = InternalAuthRequests.post(
-            url=settings.USER_STATS_USER_ENDPOINT,
+        response = InternalAuthRequests.patch(
+            url=f'{settings.USER_STATS_USER_ENDPOINT}{user_id}/',
             data=json.dumps({
                 'friends': user_friend_count,
             })
         )
         if response.status_code != 200:
             raise Exception(f'Failed to update user stats : {response.text}')
-        response = InternalAuthRequests.post(
-            url=settings.USER_STATS_USER_ENDPOINT,
+        response = InternalAuthRequests.patch(
+            url=f'{settings.USER_STATS_USER_ENDPOINT}{friend_id}/',
             data=json.dumps({
                 'friends': related_friend_count,
             })
@@ -144,6 +144,8 @@ class FriendsRequestView(FriendsBaseView):
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
 
+        if user_id == friend_id:
+            return JsonResponse(data={'errors': ['You cannot send a friend request to yourself']}, status=400)
         try:
             valid, error = FriendsRequestView.post_friend_request(user_id, friend_id)
         except Exception as e:
