@@ -13,6 +13,7 @@ services:
         volumes:
             - matchmaking_code:/app/matchmaking
             - common_code:/app/common
+            - ssl_certs:/app/ssl
         expose:
             - "3000"
         ports:

@@ -35,3 +35,6 @@ USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'
 
 GAME_CREATOR_URL = 'https://pong-server-nginx/'
 GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'
+
+SSL_CERT_PATH = '/app/ssl/certificate.crt'
+SSL_KEY_PATH = '/app/ssl/private.key'
