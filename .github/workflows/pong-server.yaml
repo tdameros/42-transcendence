@@ -5,12 +5,10 @@ on:
         branches:
             - main
             - dev
-            - pong-game
     pull_request:
         branches:
             - main
             - dev
-            - pong-game
 
 jobs:
     build:
@@ -37,12 +35,18 @@ jobs:
                   cp -r pong_server/src/shared_code pong_server/src/game_creator/shared_code
                   cp -r pong_server/src/shared_code pong_server/src/game_server/shared_code
 
+            - name: Generate ssl certificates
+              run: |
+                  make generate_ssl_certificate
+                  sudo chmod 777 ssl/certs/*
+
             - name: Run unit tests game creator
               working-directory: pong_server/src/
               run: |
                   export PONG_GAME_SERVERS_MIN_PORT=42200
                   export PONG_GAME_SERVERS_MAX_PORT=42210
                   export GAME_SERVER_PATH=`pwd`/game_server/
+                  export PATH_TO_SSL_CERTS=`pwd`/../../ssl/certs/
 
                   cd game_creator
                   python3 manage.py test
