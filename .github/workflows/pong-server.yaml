@@ -23,17 +23,23 @@ jobs:
               with:
                   python-version: '3.12'
 
+            - name: Copy shared files
+              run: |
+                  cp -r pong_server/src/shared_code pong_server/src/game_creator/
+                  cp -r pong_server/src/shared_code pong_server/src/game_server/
+
+            - name: Copy common
+              run: |
+                  cp -r common pong_server/src/game_creator/
+                  cp -r common pong_server/src/game_server/
+
             - name: Install dependencies
               run: |
                   pip3 install --upgrade pip
                   pip3 install flake8
                   pip3 install isort
                   pip3 install -r pong_server/docker/requirements.txt
-
-            - name: Copy shared files
-              run: |
-                  cp -r pong_server/src/shared_code pong_server/src/game_creator/shared_code
-                  cp -r pong_server/src/shared_code pong_server/src/game_server/shared_code
+                  pip3 install -r common/docker/requirements.txt                  
 
             - name: Generate ssl certificates
               run: |

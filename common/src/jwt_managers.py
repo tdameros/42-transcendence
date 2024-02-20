@@ -39,7 +39,9 @@ class JWTManager:
         """ returns: Success, payload, error message """
 
         try:
-            decoded_payload = jwt.decode(encoded_jwt, self.public_key, algorithms=[self.algorithm])
+            decoded_payload = jwt.decode(
+                encoded_jwt, self.public_key, algorithms=[self.algorithm]
+            )
             if decoded_payload.get('exp') is None:
                 return False, None, ["No expiration date found"]
             return True, decoded_payload, None
@@ -57,7 +59,9 @@ class UserAccessJWTDecoder:
     def authenticate(encoded_jwt: str) -> (bool, dict, list[str] | None):
         """ returns: Success, payload, error message """
 
-        success, decoded_payload, error_decode = UserAccessJWTDecoder.JWT_MANAGER.decode_jwt(encoded_jwt)
+        success, decoded_payload, error_decode = UserAccessJWTDecoder.JWT_MANAGER.decode_jwt(
+            encoded_jwt
+        )
         if not success:
             return False, None, error_decode
 
