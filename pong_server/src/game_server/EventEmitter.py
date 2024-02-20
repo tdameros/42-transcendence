@@ -63,3 +63,9 @@ class EventEmitter(object):
         await Server.emit('game_over', rooms.ALL_PLAYERS, {
             'winner_index': winner_index
         })
+
+    @staticmethod
+    async def fatal_error(error: str):
+        await Server.emit('fatal_error', rooms.ALL_PLAYERS, {
+            'error_message': error,
+        })
