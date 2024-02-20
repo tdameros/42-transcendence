@@ -32,6 +32,7 @@ DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'
 
 NOTIFICATION_URL = 'https://notification/'
 USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'
+NEW_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/new-friend/'
 
 GAME_CREATOR_URL = 'https://pong-server-nginx/'
 GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'

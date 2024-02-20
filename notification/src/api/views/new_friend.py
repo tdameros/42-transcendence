@@ -13,12 +13,12 @@ from common.src.jwt_managers import service_authentication
 from notification import settings
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class NewFriendNotificationView(View):
-    @method_decorator(service_authentication(['POST']))
-    @method_decorator(csrf_exempt)
     def post(self, request: HttpRequest) -> JsonResponse:
         try:
-            body = request.body.decode('utf8')
+            body = json.loads(request.body.decode('utf8'))
         except Exception:
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 

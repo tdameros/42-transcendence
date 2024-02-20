@@ -90,7 +90,7 @@ None
 
 > | status code | content-type       | response                         |
 > |-------------|--------------------|----------------------------------|
-> | `201`       | `application/json` | {"message": "Notification sent"} |
+> | `200`       | `application/json` | {"message": "Notification sent"} |
 > | `400`       | `application/json` | {"errors": [...]}                |
 > | `500`       | `application/json` | {"errors": [...]}                |
 
