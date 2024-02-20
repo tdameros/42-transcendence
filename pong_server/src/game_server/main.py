@@ -8,6 +8,7 @@ from typing import Optional
 from ClientManager import ClientManager
 from EventHandler import EventHandler
 from Game.GameManager import GameManager
+from PostSender.PostSender import PostSender
 from Server import Server
 from shared_code.setup_logging import setup_logging
 
@@ -43,16 +44,17 @@ async def background_task():
             exit(4)
 
 
-def init():
+async def init():
     setup_logging(f'Game Server {os.getpid()}: ')
     logging.getLogger('aiohttp').setLevel(logging.WARNING)
     logging.debug(f'Starting Game Server({os.getpid()})')
 
     players: list[Optional[int]] = [int(player) if player != 'None' else None
-                                    for player in sys.argv[2:]]
+                                    for player in sys.argv[3:]]
     logging.info(f'Players: {players}')
 
-    GameManager.init(players)
+    PostSender.init(sys.argv[2])
+    await GameManager.init(int(sys.argv[1]), players)
     Server.init(background_task)
     ClientManager.init([player for player in players if player is not None])
     EventHandler.init()
@@ -69,7 +71,7 @@ def get_ssl_context() -> ssl.SSLContext:
 
 async def main() -> int:
     try:
-        init()
+        await init()
         await Server.start('0.0.0.0',
                            int(os.getenv('PONG_GAME_SERVERS_MIN_PORT')),
                            int(os.getenv('PONG_GAME_SERVERS_MAX_PORT')),

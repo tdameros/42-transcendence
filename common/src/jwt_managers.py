@@ -24,9 +24,10 @@ class JWTManager:
         now = datetime.now(timezone.utc)
         expiration_time_minutes = now + timedelta(minutes=self.expiration_time_minutes)
 
-        payload = {'exp': expiration_time_minutes}
+        payload: dict = {}
         for key, value in payload_arg.items():
             payload[key] = value
+        payload['exp'] = expiration_time_minutes
 
         try:
             token = jwt.encode(payload, self.private_key, algorithm=self.algorithm)
@@ -107,7 +108,9 @@ def user_authentication(methods):
                 if not valid:
                     return JsonResponse({'errors': errors}, status=401)
             return view_func(request, *args, **kwargs)
+
         return _wrapped_view
+
     return decorator
 
 
@@ -121,5 +124,7 @@ def service_authentication(methods):
                 if not valid:
                     return JsonResponse({'errors': errors}, status=401)
             return view_func(request, *args, **kwargs)
+
         return _wrapped_view
+
     return decorator
