@@ -185,6 +185,7 @@ class FriendsAcceptView(FriendsBaseView):
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
         try:
+            FriendsAcceptView.send_new_friend_notification(user_id, friend_id)
             FriendsView.send_user_stats_update(user_id, friend_id)
         except Exception as e:
             return JsonResponse(data={'errors': [str(e)]}, status=500)
@@ -206,6 +207,17 @@ class FriendsAcceptView(FriendsBaseView):
             user_friendship.status = Friend.ACCEPTED
             user_friendship.save()
         return True, None
+
+    @staticmethod
+    def send_new_friend_notification(user_id: int, friend_id: int):
+        response = InternalAuthRequests.post(
+            url=settings.NEW_FRIEND_NOTIFICATION_ENDPOINT,
+            data=json.dumps({
+                'new_relationship': [user_id, friend_id]
+            })
+        )
+        if response.status_code != 200:
+            raise Exception(f'Failed to send new friend notification : {response.text}')
 
 
 class FriendsDeclineView(FriendsBaseView):

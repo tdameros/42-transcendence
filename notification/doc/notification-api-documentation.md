@@ -60,3 +60,38 @@ None
 > | `500`       | `application/json` | {"errors": [...]}                   |
 
 </details>
+
+--------------------------------------------------------------------------------
+
+## `/notification/new-friend/`
+
+### Send status of two new friends
+
+<details>
+ <summary><code>POST</code> <code><b>/notification/new-friend/</b></code></summary>
+
+### Request
+
+#### Headers
+
+> | name             | type   | description   | requirement |
+> |------------------|--------|---------------|-------------|
+> | `Authorization`  | String | Service token | Required    |
+
+#### Body
+
+> | name               | type        | description          | requirement |
+> |--------------------|-------------|----------------------|-------------|
+> | `new_relationship` | `list[int]` | New friends' user_id | Required    |
+
+### Response
+
+#### Status code
+
+> | status code | content-type       | response                         |
+> |-------------|--------------------|----------------------------------|
+> | `200`       | `application/json` | {"message": "Notification sent"} |
+> | `400`       | `application/json` | {"errors": [...]}                |
+> | `500`       | `application/json` | {"errors": [...]}                |
+
+</details>

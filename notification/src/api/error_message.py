@@ -15,3 +15,6 @@ INVALID_DATA_FORMAT = 'Data must be a string'
 
 NOTIFICATION_NOT_FOUND = 'Notification not found'
 NOTIFICATION_NOT_OWNER = 'You are not the owner of this notification'
+
+RELATIONSHIP_REQUIRED = 'Relationship is required'
+INVALID_RELATIONSHIP_FORMAT = 'Friend id must be a list of two integers'
