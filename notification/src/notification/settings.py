@@ -29,6 +29,9 @@ DEBUG = False
 
 TITLE_MAX_LENGTH = 255
 
+ONLINE_STATUS_STRING = 'online'
+OFFLINE_STATUS_STRING = 'offline'
+
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
 else:

@@ -101,9 +101,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 }
                 friend_connected = channel_layer.groups.get(f'{friend['id']}', {}).items()
                 if len(friend_connected) > 0:
-                    friend_data['status'] = 'online'
+                    friend_data['status'] = settings.ONLINE_STATUS_STRING
                 else:
-                    friend_data['status'] = 'offline'
+                    friend_data['status'] = settings.OFFLINE_STATUS_STRING
                 message_data = {'message': json.dumps(friend_data)}
                 await self.send(text_data=json.dumps(message_data))
                 await self.send_user_status(user_id, friend['id'], 'online')
