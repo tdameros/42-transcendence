@@ -44,6 +44,7 @@ services:
         volumes:
             - pong_server_code:/app/pong_server_code/
             - ssl_certs:/app/ssl
+            - common_code:/app/common
         command: /app/run.sh
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
