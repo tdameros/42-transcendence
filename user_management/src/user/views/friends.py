@@ -66,7 +66,7 @@ class FriendsBaseView(View):
         related_friend_count = Friend.objects.filter(user_id=friend_id, status=Friend.ACCEPTED).count()
         FriendsBaseView.send_friend_count(user_id, user_friend_count)
         FriendsBaseView.send_friend_count(friend_id, related_friend_count)
-    
+
     @staticmethod
     def send_friend_count(user_id: int, friend_count: int):
         try:
