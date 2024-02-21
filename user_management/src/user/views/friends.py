@@ -50,10 +50,13 @@ class FriendsBaseView(View):
             'user_list': [friend_id],
             'data': f'{user_id}',
         }
-        response = InternalAuthRequests.post(
-            url=settings.USER_NOTIFICATION_ENDPOINT,
-            data=json.dumps(notification_data)
-        )
+        try:
+            response = InternalAuthRequests.post(
+                url=settings.USER_NOTIFICATION_ENDPOINT,
+                data=json.dumps(notification_data)
+            )
+        except Exception as e:
+            raise Exception(f'Failed to access notification service : {e}')
         if response.status_code != 201:
             raise Exception(f'Failed to send friend request notification : {response.text}')
 
@@ -61,20 +64,20 @@ class FriendsBaseView(View):
     def send_user_stats_update(user_id: int, friend_id: int):
         user_friend_count = Friend.objects.filter(user_id=user_id, status=Friend.ACCEPTED).count()
         related_friend_count = Friend.objects.filter(user_id=friend_id, status=Friend.ACCEPTED).count()
-        response = InternalAuthRequests.patch(
-            url=f'{settings.USER_STATS_USER_ENDPOINT}{user_id}/',
-            data=json.dumps({
-                'friends': user_friend_count,
-            })
-        )
-        if response.status_code != 200:
-            raise Exception(f'Failed to update user stats : {response.text}')
-        response = InternalAuthRequests.patch(
-            url=f'{settings.USER_STATS_USER_ENDPOINT}{friend_id}/',
-            data=json.dumps({
-                'friends': related_friend_count,
-            })
-        )
+        FriendsBaseView.send_friend_count(user_id, user_friend_count)
+        FriendsBaseView.send_friend_count(friend_id, related_friend_count)
+
+    @staticmethod
+    def send_friend_count(user_id: int, friend_count: int):
+        try:
+            response = InternalAuthRequests.patch(
+                url=f'{settings.USER_STATS_USER_ENDPOINT}{user_id}/',
+                data=json.dumps({
+                    'friends': friend_count,
+                })
+            )
+        except Exception as e:
+            raise Exception(f'Failed to access user-stats : {e}')
         if response.status_code != 200:
             raise Exception(f'Failed to update user stats : {response.text}')
 
