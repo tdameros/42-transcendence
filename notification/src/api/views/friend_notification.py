@@ -56,7 +56,7 @@ class AddFriendNotificationView(FriendNotificationBaseView):
         friend_data = {
             'type': 'friend_status',
             'friend_id': friend_id,
-            'status': FriendNotificationBaseView.get_friend_status(channel_layer, friend_id)
+            'status': AddFriendNotificationView.get_friend_status(channel_layer, friend_id)
         }
         async_to_sync(channel_layer.group_send)(
             f'{user_id}',
