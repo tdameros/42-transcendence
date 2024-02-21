@@ -377,7 +377,9 @@ class GetFriendsTest(FriendsTest):
 
 
 class DeleteFriendsTest(FriendsTest):
-    def test_valid(self):
+    @patch('requests.post')
+    def test_valid(self, mock_post):
+        mock_post.return_value.status_code = 200
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',

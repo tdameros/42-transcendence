@@ -74,14 +74,42 @@ class AddFriendNotificationView(FriendNotificationBaseView):
         else:
             return settings.OFFLINE_STATUS_STRING
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
+class DeleteFriendNotificationView(FriendNotificationBaseView):
+    def post(self, request: HttpRequest) -> JsonResponse:
+        try:
+            body = json.loads(request.body.decode('utf8'))
+        except Exception:
+            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        relationship = body.get('deleted_relationship')
+        is_valid, errors = self.validate_friend_request(relationship)
+
+        if not is_valid:
+            return JsonResponse(data={'errors': errors}, status=400)
+
+        try:
+            self.send_delete_friend(relationship[0], relationship[1])
+            self.send_delete_friend(relationship[1], relationship[0])
+        except Exception as e:
+            return JsonResponse(data={'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': 'Notification sent'}, status=200)
+
     @staticmethod
-    def validate_friend_request(friend_id: any) -> tuple[bool, Optional[str]]:
-        if friend_id is None:
-            return False, error.RELATIONSHIP_REQUIRED
-        if not isinstance(friend_id, list):
-            return False, error.INVALID_RELATIONSHIP_FORMAT
-        if len(friend_id) != 2:
-            return False, error.INVALID_RELATIONSHIP_FORMAT
-        if not all(isinstance(i, int) for i in friend_id):
-            return False, error.INVALID_RELATIONSHIP_FORMAT
-        return True, None
+    def send_delete_friend(user_id: int, friend_id: int):
+        channel_layer = get_channel_layer()
+        friend_data = {
+            'type': 'friend_status',
+            'friend_id': friend_id,
+            'status': settings.DELETED_STATUS_STRING
+        }
+        async_to_sync(channel_layer.group_send)(
+            f'{user_id}',
+            {
+                'type': 'send_notification',
+                'message': json.dumps(friend_data)
+            }
+        )
