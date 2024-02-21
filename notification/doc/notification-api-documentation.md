@@ -63,12 +63,14 @@ None
 
 --------------------------------------------------------------------------------
 
-## `/notification/new-friend/`
+## `/notification/friend/add/`
 
 ### Send status of two new friends
 
 <details>
- <summary><code>POST</code> <code><b>/notification/new-friend/</b></code></summary>
+ <summary><code>POST</code> <code><b>/notification/friend/add/</b></code></summary>
+
+Sends a `friend_status` notification with the status of the new friend
 
 ### Request
 

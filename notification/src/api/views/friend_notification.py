@@ -15,7 +15,21 @@ from notification import settings
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(service_authentication(['POST']), name='dispatch')
-class NewFriendNotificationView(View):
+class FriendNotificationBaseView(View):
+    @staticmethod
+    def validate_friend_request(relationship: any) -> tuple[bool, Optional[str]]:
+        if relationship is None:
+            return False, error.RELATIONSHIP_REQUIRED
+        if not isinstance(relationship, list):
+            return False, error.INVALID_RELATIONSHIP_FORMAT
+        if len(relationship) != 2:
+            return False, error.INVALID_RELATIONSHIP_FORMAT
+        if not all(isinstance(i, int) for i in relationship):
+            return False, error.INVALID_RELATIONSHIP_FORMAT
+        return True, None
+
+
+class AddFriendNotificationView(FriendNotificationBaseView):
     def post(self, request: HttpRequest) -> JsonResponse:
         try:
             body = json.loads(request.body.decode('utf8'))
@@ -23,7 +37,7 @@ class NewFriendNotificationView(View):
             return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
 
         relationship = body.get('new_relationship')
-        is_valid, errors = NewFriendNotificationView.validate_friend_request(relationship)
+        is_valid, errors = self.validate_friend_request(relationship)
 
         if not is_valid:
             return JsonResponse(data={'errors': errors}, status=400)
@@ -42,7 +56,7 @@ class NewFriendNotificationView(View):
         friend_data = {
             'type': 'friend_status',
             'friend_id': friend_id,
-            'status': NewFriendNotificationView.get_friend_status(channel_layer, friend_id)
+            'status': FriendNotificationBaseView.get_friend_status(channel_layer, friend_id)
         }
         async_to_sync(channel_layer.group_send)(
             f'{user_id}',
