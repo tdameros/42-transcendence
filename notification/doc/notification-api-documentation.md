@@ -63,12 +63,14 @@ None
 
 --------------------------------------------------------------------------------
 
-## `/notification/new-friend/`
+## `/notification/friend/add/`
 
 ### Send status of two new friends
 
 <details>
- <summary><code>POST</code> <code><b>/notification/new-friend/</b></code></summary>
+ <summary><code>POST</code> <code><b>/notification/friend/add/</b></code></summary>
+
+Sends a `friend_status` notification with the status of the new friend
 
 ### Request
 
@@ -83,6 +85,43 @@ None
 > | name               | type        | description          | requirement |
 > |--------------------|-------------|----------------------|-------------|
 > | `new_relationship` | `list[int]` | New friends' user_id | Required    |
+
+### Response
+
+#### Status code
+
+> | status code | content-type       | response                         |
+> |-------------|--------------------|----------------------------------|
+> | `200`       | `application/json` | {"message": "Notification sent"} |
+> | `400`       | `application/json` | {"errors": [...]}                |
+> | `500`       | `application/json` | {"errors": [...]}                |
+
+</details>
+
+--------------------------------------------------------------------------------
+
+## `/notification/friend/delete/`
+
+### Send a notification to delete a friend
+
+<details>
+ <summary><code>POST</code> <code><b>/notification/friend/delete/</b></code></summary>
+
+Sends a `friend_status` notification with status `deleted`.
+
+### Request
+
+#### Headers
+
+> | name             | type   | description   | requirement |
+> |------------------|--------|---------------|-------------|
+> | `Authorization`  | String | Service token | Required    |
+
+#### Body
+
+> | name                   | type        | description              | requirement |
+> |------------------------|-------------|--------------------------|-------------|
+> | `deleted_relationship` | `list[int]` | Deleted friends' user_id | Required    |
 
 ### Response
 

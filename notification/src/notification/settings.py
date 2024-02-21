@@ -31,6 +31,7 @@ TITLE_MAX_LENGTH = 255
 
 ONLINE_STATUS_STRING = 'online'
 OFFLINE_STATUS_STRING = 'offline'
+DELETED_STATUS_STRING = 'deleted'
 
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
