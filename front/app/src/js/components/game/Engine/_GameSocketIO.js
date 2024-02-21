@@ -45,8 +45,9 @@ export class _GameSocketIO {
       console.log('disconnected from game server');
     });
 
-    this.#socketIO.on('error', async (message) => {
-      console.error('Server error message: ', message);
+    this.#socketIO.on('fatal_error', async (data) => {
+      console.error('Server fatal error: ', data['error_message']);
+      // TODO exit game
     });
 
     this.#socketIO.on('debug', (message) => {

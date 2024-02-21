@@ -9,11 +9,16 @@ from Game.Ball import Ball
 from Game.MatchLocation import MatchLocation
 from Game.MatchPositionCalculator import MatchPositionCalculator
 from Game.Player.Player import Player
+from PostSender.PostSender import PostSender
 from vector_to_dict import vector_to_dict
 
 
 class Match(object):
-    def __init__(self, match_location: MatchLocation):
+    GAME_ID: int  # Game ID is not the ID of the match, it is the ID of the game
+
+    def __init__(self, game_id: int, match_location: MatchLocation):
+        Match.GAME_ID = game_id
+
         self.LOCATION: MatchLocation = match_location
         self._points: list[int] = [0, 0]
         self._winner_index: Optional[int] = None
@@ -66,7 +71,7 @@ class Match(object):
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
-        # TODO Send point update to tournament
+        await PostSender.post_add_point(Match.GAME_ID, player_index)
 
         if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
             self._winner_index = player_index
@@ -90,6 +95,9 @@ class Match(object):
 
     def get_player(self, index: int) -> Optional[Player]:
         return self._players[index]
+
+    def get_player_score(self, player_index: int) -> int:
+        return self._points[player_index]
 
     def set_player(self, index: int, player: Player):
         self._players[index] = player
