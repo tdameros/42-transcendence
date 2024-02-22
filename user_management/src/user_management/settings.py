@@ -16,10 +16,20 @@ from dotenv import load_dotenv
 
 from common.src import settings as common_settings
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+CRON_SCRIPT_PATH = os.path.join(BASE_DIR, 'commands')
+COMMANDS_LOG_PATH = os.path.join(CRON_SCRIPT_PATH, 'commands.log')
+
+CRONJOBS = [
+    ('0 0 * * *', 'myapp.commands.delete_inactive_users', f'>> {COMMANDS_LOG_PATH} 2>&1'),
+]
+
+MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -58,7 +68,6 @@ GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token/'
 GITHUB_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/github/'
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
-
 FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
 FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize/'
 FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token/'
@@ -111,7 +120,11 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
-
+# user management URL
+if DEBUG:
+    USER_MANAGEMENT_URL = 'http://localhost:8001/'
+else:
+    USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
 # tournament URL
 if DEBUG:
     TOURNAMENT_URL = 'http://localhost:8000/'
@@ -247,3 +260,5 @@ STATIC_ROOT = BASE_DIR / 'user/static'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+USER_MANAGEMENT_SECRET_KEY = 'jdsildbjfbfb23ofbuildnslp389ny8o3'
