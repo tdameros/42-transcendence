@@ -2,6 +2,7 @@ import {Cookies} from '@js/Cookies.js';
 
 export class Theme {
   static defaultTheme = 'light';
+  static event = 'theme-change';
 
   static set(theme) {
     Cookies.add('theme', theme);
@@ -11,6 +12,7 @@ export class Theme {
     } else if (theme === 'dark') {
       this.hoverBrightness = Theme.lightHoverBrightness;
     }
+    document.dispatchEvent(new Event(Theme.event));
   }
 
   static set hoverBrightness(value) {
