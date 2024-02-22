@@ -20,6 +20,8 @@ export class UserManagementClient extends BaseApiClient {
     'oauth': 'user/oauth/:oauth-service/',
     'friends-accept': 'user/friends/accept/',
     'friends-decline': 'user/friends/decline/',
+    'friends-request': 'user/friends/request/',
+    'friends': 'user/friends/',
   };
 
   constructor() {
@@ -28,20 +30,25 @@ export class UserManagementClient extends BaseApiClient {
     this.URIs = UserManagementClient.URIs;
   }
 
-  async getOAuthIntra(source) {
-    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
-    const params = {
-      'source': source,
-    };
-    return await JSONRequests.get(URL, params);
+  async getFriends() {
+    const URL = `${this.URL}/${this.URIs['friends']}`;
+    return await this.getAuthRequest(URL);
   }
 
-  async getOAuthGithub(source) {
-    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+  async removeFriend(userId) {
     const params = {
-      'source': source,
+      'friend_id': userId,
     };
-    return await JSONRequests.get(URL, params);
+    const URL = `${this.URL}/${this.URIs['friends']}`;
+    return await this.deleteAuthRequest(URL, params);
+  }
+
+  async sendFriendRequest(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['friends-request']}`;
+    return await this.postAuthRequest(URL, body);
   }
 
   async acceptFriend(userId) {
@@ -57,7 +64,7 @@ export class UserManagementClient extends BaseApiClient {
       'friend_id': userId,
     };
     const URL = `${this.URL}/${this.URIs['friends-decline']}`;
-    return await this.deleteAuthRequest(URL, body);
+    return await this.postAuthRequest(URL, body);
   }
 
   async getOAuthIntra(source) {

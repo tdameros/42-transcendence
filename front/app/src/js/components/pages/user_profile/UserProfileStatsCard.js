@@ -62,7 +62,7 @@ export class UserProfileStatsCard extends Component {
                         </div>
                     </div>
                 </div>
-                <div class="mt-2 mb-0 text-sm"><span
+                <div class="d-flex align-items-center mt-2 mb-0 text-sm"><span
                         class="badge ${this.footerValueBrackground} ${this.footerValueColor} me-2"><i
                         class="bi ${this.footerArrow} me-1"></i>${this.footerValue}</span><span
                         class="text-nowrap text-xs text-muted">${this.footerTitle}</span>

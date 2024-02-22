@@ -1,5 +1,8 @@
 import {Component} from '@components';
 import {notificationClient, userManagementClient} from '@utils/api/index.js';
+import {FriendsCache} from '@utils/cache';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {getRouter} from '@js/Router.js';
 
 export class Notification extends Component {
   constructor() {
@@ -67,18 +70,19 @@ export class Notification extends Component {
     this.webSocket = null;
   }
 
-  onMessage(eventMessage) {
+  async onMessage(eventMessage) {
     const data = JSON.parse(eventMessage.data);
     const notification = JSON.parse(data.message);
-
     if (notification.type === 'friend_status') {
-      // TODO: implement friend status change
-      console.log('Friend status changed');
+      await this.#updateFriendInCache(notification);
+      if (document.querySelector('friends-component')) {
+        document.querySelector('friends-component').updateFriends();
+      }
     } else if (notification.type === 'friend_request' ||
                notification.type === 'tournament_start') {
-      this.addNotification(notification);
+      await this.addNotification(notification);
     }
-  };
+  }
 
   async sendAccessToken() {
     if (this.webSocket !== null && userManagementClient.isAuth() &&
@@ -100,7 +104,12 @@ export class Notification extends Component {
     this.webSocket.close();
   }
 
-  addNotification(notification) {
+  async addNotification(notification) {
+    if (notification.type === 'friend_request') {
+      if (!await this.#addUsernameInFriendRequestNotification(notification)) {
+        return;
+      }
+    }
     this.notifications.push(notification);
     if (notification['new_notification']) {
       this.toastNotifications.addNotification(notification);
@@ -111,12 +120,69 @@ export class Notification extends Component {
     }
   }
 
+  async #addUsernameInFriendRequestNotification(notification) {
+    try {
+      const {response, body} = await userManagementClient.getUsernameList(
+          [notification.data],
+      );
+      if (response.ok) {
+        notification['sender_username'] = body[notification.data];
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+      return false;
+    }
+  }
+
+  async #updateFriendInCache(notification) {
+    if (notification['status'] === 'deleted') {
+      FriendsCache.delete(notification['friend_id']);
+    } else {
+      const friend = FriendsCache.get(notification['friend_id']);
+      if (friend) {
+        friend['connected_status'] = notification['status'];
+        friend['status'] = 'accepted';
+        FriendsCache.set(notification['friend_id'], friend);
+      } else {
+        await this.#addFriendInCache(notification);
+      }
+    }
+  }
+
+  async #addFriendInCache(notification) {
+    try {
+      const {response, body} = await userManagementClient.getUsernameList(
+          [notification['friend_id']],
+      );
+      if (response.ok) {
+        const newFriend = {
+          'id': notification['friend_id'],
+          'username': body[notification['friend_id']],
+          'status': 'accepted',
+          'connected_status': notification['status'],
+        };
+        FriendsCache.set(newFriend.id, newFriend);
+      } else {
+        getRouter().redirect('/signin/');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
   async removeNotification(notification) {
     this.notifications = this.notifications.filter((n) => n !== notification);
+    if (notification.type === 'friend_request') {
+      FriendsCache.delete(notification['friend_id']);
+    }
     try {
       await notificationClient.deleteNotification(notification.id);
     } catch (error) {
-      getRouter().navigate('/signin/');
+      ErrorPage.loadNetworkError();
     }
   }
 }

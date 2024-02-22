@@ -1,13 +1,13 @@
 import {Component} from '@components';
-import {ErrorPage} from '@utils/ErrorPage.js';
 
-export class NotFound extends Component {
+export class HomeContent extends Component {
   constructor() {
     super();
   }
   render() {
-    ErrorPage.loadNotFound();
-    return (``);
+    return (`
+     <h1>Home</h1> 
+    `);
   }
   style() {
     return (`

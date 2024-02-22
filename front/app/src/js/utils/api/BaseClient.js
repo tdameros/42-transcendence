@@ -135,12 +135,12 @@ export class BaseApiClient {
     return await JSONRequests.patch(url, body, headers);
   }
 
-  async deleteAuthRequest(url, body = {}, headers = {}) {
+  async deleteAuthRequest(url, params = {}, headers = {}) {
     const auth = await this.authRequired();
     if (!auth) {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.delete(url, body, headers);
+    return await JSONRequests.delete(url, params, headers);
   }
 }

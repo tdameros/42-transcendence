@@ -3,13 +3,12 @@ import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router';
 
-export class Multiplayer extends Component {
+export class MultiplayerContent extends Component {
   constructor() {
     super();
   }
   render() {
     return (`
-      <navbar-component nav-active="multiplayer"></navbar-component>
       <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh">
         <h1>Multiplayer</h1>
         <button type="button" id="matchmaking" class="btn btn-primary">Find match</button>
@@ -51,7 +50,6 @@ export class Multiplayer extends Component {
       console.log(json);
       const port = json['port'];
       getRouter().navigate(`/game/${port}/`);
-      // console.log(json);
     });
 
     this.sio.on('disconnect', () => {

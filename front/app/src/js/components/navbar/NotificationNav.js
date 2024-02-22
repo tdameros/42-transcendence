@@ -133,9 +133,6 @@ export class NotificationNav extends Component {
   }
 
   async addNotification(notification) {
-    if (!await this.#addUsernameInFriendRequestNotifications([notification])) {
-      return false;
-    }
     this.notificationList.appendChild(this.#generateNotification(notification));
     const currentCount = this.bellIcon.getAttribute('data-count') ?
       parseInt(this.bellIcon.getAttribute('data-count')): 0;
@@ -144,8 +141,8 @@ export class NotificationNav extends Component {
   }
 
   async #generateNotifications(notifications) {
-    if (!await this.#addUsernameInFriendRequestNotifications(notifications)) {
-      return false;
+    if (notifications.length <= 0) {
+      return true;
     }
     for (const notification of notifications) {
       this.notificationList.appendChild(
@@ -165,6 +162,8 @@ export class NotificationNav extends Component {
 
   #generateFriendRequestNotification(notification) {
     notification.data = parseInt(notification.data);
+    notification['sender_id'] = parseInt(notification.data);
+    console.log(notification);
     const username = notification['sender_username'];
     const profileUrl = `/profile/${username}/`;
     const notificationDiv = document.createElement('div');
@@ -202,7 +201,7 @@ export class NotificationNav extends Component {
   async #acceptFriendRequest(notification) {
     try {
       const {response} = await userManagementClient.acceptFriend(
-          notification.data,
+          notification['sender_id'],
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
@@ -217,7 +216,7 @@ export class NotificationNav extends Component {
   async #declineFriendRequest(notification) {
     try {
       const {response} = await userManagementClient.declineFriend(
-          notification.data,
+          notification['sender_id'],
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
@@ -269,29 +268,6 @@ export class NotificationNav extends Component {
     this.#updateBellCount(this.notificationComponent.notifications.length);
     if (this.notificationComponent.notifications.length === 0) {
       this.notificationList.style.display = 'none';
-    }
-  }
-
-  async #addUsernameInFriendRequestNotifications(notifications) {
-    const senderIds = notifications.filter(
-        (notification) => notification.type === 'friend_request',
-    ).map((notification) => notification.data);
-    try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          senderIds,
-      );
-      if (response.ok) {
-        notifications.forEach((notification) => {
-          notification['sender_username'] = body[notification.data];
-        });
-        return true;
-      } else {
-        getRouter().redirect('/signin/');
-        return false;
-      }
-    } catch (error) {
-      ErrorPage.loadNetworkError();
-      return false;
     }
   }
 }

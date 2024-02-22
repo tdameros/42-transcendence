@@ -40,7 +40,11 @@ export class ToastNotifications extends Component {
     const toast = new Toast(toastDiv);
     toast.show();
     super.addComponentEventListener(toastDiv, 'hidden.bs.toast', () => {
-      this.toastContainer.removeChild(toastDiv);
+      try {
+        this.toastContainer.removeChild(toastDiv);
+      } catch (error) {
+        ;
+      }
     });
   }
 
@@ -54,6 +58,7 @@ export class ToastNotifications extends Component {
 
   #generateToastFriendRequestNotification(notification) {
     const toastDiv = document.createElement('div');
+    const username = notification['sender_username'];
     toastDiv.className = 'toast';
     toastDiv.setAttribute('role', 'alert');
     toastDiv.setAttribute('aria-live', 'assertive');
@@ -71,7 +76,7 @@ export class ToastNotifications extends Component {
                            class="rounded-circle me-2"
                            style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
                     <p class="mb-0 text-muted" style="font-size: 0.8rem;">
-                        <a class="text-primary text-decoration-none" onclick="window.router.navigate('/profile/edelage/')">edelage</a>
+                        <a class="text-primary text-decoration-none" onclick="window.router.navigate('/profile/${username}/')">${username}</a>
                         wants to be friends with you
                     </p>
               </div>
@@ -96,7 +101,7 @@ export class ToastNotifications extends Component {
 
   async #acceptFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.addFriend(
+      const {response} = await userManagementClient.acceptFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
@@ -111,7 +116,7 @@ export class ToastNotifications extends Component {
 
   async #declineFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.deleteFriend(
+      const {response} = await userManagementClient.declineFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
