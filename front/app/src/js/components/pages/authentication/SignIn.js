@@ -10,6 +10,7 @@ export class SignIn extends Component {
     super();
     this.isValidEmailInput = false;
     this.isValidPasswordInput = false;
+    this.passwordHiden = true;
 
     this.error = false;
     this.errorMessage = '';

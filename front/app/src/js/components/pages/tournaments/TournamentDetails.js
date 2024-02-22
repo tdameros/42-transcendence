@@ -12,7 +12,7 @@ export class TournamentDetails extends Component {
 
   render() {
     return (`
-      <div class="card mb-3 mt-3 overflow-auto">
+      <div class="card overflow-auto">
           <div class="card-header">
               ${this.#generatePlaceholderHeader()}
           </div>
