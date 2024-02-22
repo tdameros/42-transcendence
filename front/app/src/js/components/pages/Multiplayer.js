@@ -9,9 +9,7 @@ export class Multiplayer extends Component {
   }
   render() {
     return (`
-      <navbar-component nav-active="multiplayer"></navbar-component>
-      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh">
-        <h1>Multiplayer</h1>
+      <div class="d-flex flex-column justify-content-center align-items-center">
         <button type="button" id="matchmaking" class="btn btn-primary">Find match</button>
         <div id="cancel"></div>
         <div id="timer" class="m-3"></div>
