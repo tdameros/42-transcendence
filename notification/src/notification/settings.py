@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'api',
 ]
 
-# TODO: Add corsheaders
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
