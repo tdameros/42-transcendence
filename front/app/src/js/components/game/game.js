@@ -10,14 +10,13 @@ export class Game extends Component {
   }
   render() {
     return (`
-<!--      <navbar-component></navbar-component>-->
+      <navbar-component></navbar-component>
       <div id="container"></div>
     `);
   }
 
   postRender() {
-    console.log(`PORT FOUND : ${this.getAttribute('port')}`);
-    this.start_game(`http://localhost:${this.getAttribute('port')}`);
+    this.start_game(`https://localhost:${this.getAttribute('port')}`);
   }
 
   start_game(URI) {

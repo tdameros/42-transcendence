@@ -18,12 +18,46 @@ export class UserManagementClient extends BaseApiClient {
     'search-username': 'user/search-username/',
     'user-id-list': 'user/id-list/',
     'oauth': 'user/oauth/:oauth-service/',
+    'friends-accept': 'user/friends/accept/',
+    'friends-decline': 'user/friends/decline/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  async getOAuthIntra(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
+  async getOAuthGithub(source) {
+    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+    const params = {
+      'source': source,
+    };
+    return await JSONRequests.get(URL, params);
+  }
+
+  async acceptFriend(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['friends-accept']}`;
+    return await this.postAuthRequest(URL, body);
+  }
+
+  async declineFriend(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['friends-decline']}`;
+    return await this.deleteAuthRequest(URL, body);
   }
 
   async getOAuthIntra(source) {

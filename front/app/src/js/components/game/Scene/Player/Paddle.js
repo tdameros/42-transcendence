@@ -7,6 +7,9 @@ export class Paddle {
   #moveSpeed;
   #movement;
 
+  #paddleObject;
+  #light;
+
   #topCollisionSegment;
   #frontCollisionSegment;
   #bottomCollisionSegment;
@@ -25,17 +28,10 @@ export class Paddle {
         position.z);
 
     this.#paddleSize = jsonToVector3(paddleJson['size']);
-    if (this.#threeJSGroup.position.x < 0.) {
-      this.#paddleIsOnTheRight = false;
-      const color = new THREE.Color(0x00ff00);
-      this.#addPaddleToGroup(color);
-      this.#addLightToGroup(color);
-    } else {
-      this.#paddleIsOnTheRight = true;
-      const color = new THREE.Color(0xff0000);
-      this.#addPaddleToGroup(color);
-      this.#addLightToGroup(color);
-    }
+    this.#paddleIsOnTheRight = this.#threeJSGroup.position.x > 0.;
+    const color = this.#getColor();
+    this.#addPaddleToGroup(color);
+    this.#addLightToGroup(color);
 
     this.#playerPosition = playerPosition;
 
@@ -82,31 +78,39 @@ export class Paddle {
     return this.#threeJSGroup;
   }
 
+  #getColor() {
+    if (this.#paddleIsOnTheRight) {
+      return new THREE.Color(0xff1111);
+    } else {
+      return new THREE.Color(0x11ff11);
+    }
+  }
+
   #addPaddleToGroup(color) {
-    const geometry = new THREE.BoxGeometry(this.#paddleSize.x,
-        this.#paddleSize.y,
-        this.#paddleSize.z);
-    const player = new THREE.Mesh(geometry,
+    this.#paddleObject = new THREE.Mesh(
+        new THREE.BoxGeometry(this.#paddleSize.x,
+            this.#paddleSize.y,
+            this.#paddleSize.z),
         new THREE.MeshStandardMaterial({color: color,
           emissive: color}));
-    player.position.set(0., 0., 0.);
-    player.castShadow = true;
-    player.receiveShadow = false;
-    this.#threeJSGroup.add(player);
+    this.#paddleObject.position.set(0., 0., 0.);
+    this.#paddleObject.castShadow = true;
+    this.#paddleObject.receiveShadow = false;
+    this.#threeJSGroup.add(this.#paddleObject);
   }
 
   #addLightToGroup(color) {
-    const light = new THREE.RectAreaLight(color, 100., 1., 5.);
+    this.#light = new THREE.RectAreaLight(color, 100., 1., 5.);
 
     const xDirectionToLookAt = 999999999999999.;
     if (this.#paddleIsOnTheRight) {
-      light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.);
-      light.lookAt(-xDirectionToLookAt, 0., 0.);
+      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.);
+      this.#light.lookAt(-xDirectionToLookAt, 0., 0.);
     } else {
-      light.position.set(this.#paddleSize.x * 0.5, 0., 0.);
-      light.lookAt(xDirectionToLookAt, 0., 0.);
+      this.#light.position.set(this.#paddleSize.x * 0.5, 0., 0.);
+      this.#light.lookAt(xDirectionToLookAt, 0., 0.);
     }
-    this.#threeJSGroup.add(light);
+    this.#threeJSGroup.add(this.#light);
   }
 
   #setCollisionSegments() {
@@ -144,5 +148,18 @@ export class Paddle {
 
   get bottomCollisionSegment() {
     return this.#bottomCollisionSegment;
+  }
+
+  changeSide() {
+    this.#threeJSGroup.position.set(this.#threeJSGroup.position.x * -1.,
+        this.#threeJSGroup.position.y,
+        this.#threeJSGroup.position.z);
+    this.#paddleIsOnTheRight = !this.#paddleIsOnTheRight;
+    this.#threeJSGroup.remove(this.#paddleObject);
+    this.#threeJSGroup.remove(this.#light);
+    const color = this.#getColor();
+    this.#addPaddleToGroup(color);
+    this.#addLightToGroup(color);
+    this.#setCollisionSegments();
   }
 }

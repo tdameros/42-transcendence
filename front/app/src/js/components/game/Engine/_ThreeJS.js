@@ -4,13 +4,15 @@ import {RectAreaLightUniformsLib} from 'three/addons';
 export class _ThreeJS {
   #renderer;
   #camera;
-  #defaultCameraDirection;
+  #engine;
 
-  constructor() {
+  constructor(engine) {
     this.#initRenderer();
     this.#initCamera();
+    this.#engine = engine;
     window.addEventListener('resize', () => {
       this.#onWindowResize();
+      this.#engine.resizeHandler();
     }, false);
   }
 
@@ -28,16 +30,13 @@ export class _ThreeJS {
   }
 
   #initCamera() {
-    this.#camera = new THREE.PerspectiveCamera(90,
+    this.#camera = new THREE.PerspectiveCamera(59,
         window.innerWidth / window.innerHeight,
         0.1,
         1000);
 
-    this.#camera.position.set(0., 0., 50.);
-    this.#defaultCameraDirection = new THREE.Vector3(0., 0., -1.);
-    this.#camera.lookAt(this.#defaultCameraDirection.x,
-        this.#defaultCameraDirection.y,
-        this.#defaultCameraDirection.z);
+    this.#camera.position.set(0., 0., 70.);
+    this.#camera.lookAt(0., 0., -1.);
   }
 
   #onWindowResize() {
@@ -49,6 +48,20 @@ export class _ThreeJS {
 
   setCameraPosition(position) {
     this.#camera.position.set(position.x, position.y, position.z);
+  }
+
+  setCameraLookAt(position) {
+    this.#camera.lookAt(position.x, position.y, position.z);
+  }
+
+  getCameraVerticalFOVRadian() {
+    return this.#camera.fov * Math.PI / 180.;
+  }
+
+  getCameraHorizontalFOVRadian() {
+    const vFOV = this.getCameraVerticalFOVRadian();
+    const aspect = window.innerWidth / window.innerHeight;
+    return 2. * Math.atan(Math.tan(vFOV / 2.) * aspect);
   }
 
   setAnimationLoop(loopFunction) {

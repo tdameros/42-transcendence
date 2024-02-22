@@ -7,31 +7,42 @@ export class ThemeButton extends Component {
   }
 
   render() {
-    const theme = Theme.get();
-    const btnClass = theme === 'light' ?
-      'btn-outline-dark' : 'btn-outline-light';
+    let classIcon = '';
+    if (Theme.get() === 'light') {
+      classIcon = 'bi-moon-fill';
+    } else {
+      classIcon = 'bi-sun-fill';
+    }
     return (`
-      <button id="switch-btn" class="btn ${btnClass}" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16"
-               height="16" fill="currentColor" class="bi bi-moon-fill"
-               viewBox="0 0 16 16">
-              <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-          </svg>
-      </button>
+      <div class="btn icon-btn d-flex justify-content-center align-items-center">
+        <i class="bi ${classIcon} fs-5"></i>
+      </div>
     `);
   }
 
   style() {
     return (`
       <style>
-
+      .icon-btn {
+         cursor: pointer;
+         padding: 0.16rem 0.6rem;
+      }
+      
+      .icon-btn:hover {
+        background-color: var(--bs-body-bg);
+        border: var(--bs-border-width) solid var(--bs-border-color);
+      }
+      
+      .icon-btn:active {
+        border-color: var(--bs-border-color)!important;
+      }
       </style>
     `);
   }
 
   postRender() {
-    this.switchBtn = this.querySelector('#switch-btn');
-    super.addComponentEventListener(this.switchBtn, 'click', this.#switchTheme);
+    this.icon = this.querySelector('i');
+    super.addComponentEventListener(this, 'click', this.#switchTheme);
   }
 
   #switchTheme() {
@@ -40,7 +51,7 @@ export class ThemeButton extends Component {
     } else {
       Theme.set('light');
     }
-    this.switchBtn.classList.toggle('btn-outline-light');
-    this.switchBtn.classList.toggle('btn-outline-dark');
+    this.icon.classList.toggle('bi-moon-fill');
+    this.icon.classList.toggle('bi-sun-fill');
   }
 }

@@ -1,5 +1,6 @@
 import json
 import logging
+import ssl
 from typing import Any
 
 import requests
@@ -31,7 +32,14 @@ class Server:
         self.app.on_startup.append(self.start_matchmaking)
 
     def start(self) -> None:
-        web.run_app(self.app, host=settings.MATCHMAKING_HOST, port=settings.MATCHMAKING_PORT)
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(common_settings.SSL_CERT_PATH, common_settings.SSL_KEY_PATH)
+        web.run_app(
+            self.app,
+            host=settings.MATCHMAKING_HOST,
+            port=settings.MATCHMAKING_PORT,
+            ssl_context=ssl_context,
+        )
 
     async def connect(self, sid, environ, auth):
         logging.debug(f'New connection: {sid}')

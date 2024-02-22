@@ -166,7 +166,7 @@ export class TournamentDetails extends Component {
   }
 
   #generateHeader(tournament, userId) {
-    if (tournament['admin'] === localStorage.getItem('username')) {
+    if (tournament['admin-id'] === userId) {
       return (`
         ${tournament['name']} 
         ${this.#canJoin(tournament, userId) ? `<button id="join-btn" type="button" class="btn btn-success btn-sm">Join</button>` : ''}

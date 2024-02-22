@@ -10,7 +10,7 @@ export class Match {
   #ballIsWaiting;
   #ballStartTime;
 
-  constructor(matchJson) {
+  constructor(matchJson, shouldCreatePlayers) {
     this.#ball = new Ball(matchJson['ball']);
     this.#ballIsWaiting = matchJson['ball_is_waiting'];
     this.#ballStartTime = matchJson['ball_start_time'];
@@ -20,9 +20,11 @@ export class Match {
         position['y'],
         position['z']);
 
-    const playersJson = matchJson['players'];
-    this.#addPlayer(playersJson[0], 0);
-    this.#addPlayer(playersJson[1], 1);
+    if (shouldCreatePlayers === true) {
+      const playersJson = matchJson['players'];
+      this.#createPlayer(playersJson[0], 0);
+      this.#createPlayer(playersJson[1], 1);
+    }
 
     this.#threeJSGroup.add(this.#ball.threeJSGroup);
   }
@@ -69,11 +71,9 @@ export class Match {
     return this.#threeJSGroup.position;
   }
 
-  #addPlayer(playerJson, index) {
-    if (playerJson !== null) {
-      this.#players[index] = new Player(playerJson);
-      this.#threeJSGroup.add(this.#players[index].threeJSGroup);
-    }
+  #createPlayer(playerJson, index) {
+    this.#players[index] = new Player(playerJson);
+    this.#threeJSGroup.add(this.#players[index].threeJSGroup);
   }
 
   addPlayer(player, index) {
@@ -81,14 +81,13 @@ export class Match {
     this.#threeJSGroup.add(this.#players[index].threeJSGroup);
   }
 
-  popPlayer(index) {
+  removePlayer(index) {
     const player = this.#players[index];
     if (player === null) {
-      return null;
+      return;
     }
     this.#threeJSGroup.remove(player.threeJSGroup);
     this.#players[index] = null;
-    return player;
   }
 
   get threeJSGroup() {

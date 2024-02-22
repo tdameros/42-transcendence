@@ -1,3 +1,5 @@
 src/game_creator/shared_code
 src/game_server/shared_code
-src/redirection_server_deprecated/shared_code
+
+src/game_creator/common
+src/game_server/common

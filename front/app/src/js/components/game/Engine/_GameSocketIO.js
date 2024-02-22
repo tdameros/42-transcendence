@@ -9,6 +9,7 @@ import {userManagementClient} from '@utils/api/index.js';
 export class _GameSocketIO {
   #engine;
   #socketIO;
+  #isConnected = false;
 
   constructor(engine, URI) {
     this.#engine = engine;
@@ -16,7 +17,6 @@ export class _GameSocketIO {
   }
 
   #initGameSocketIO(URI) {
-    console.log(userManagementClient.userId);
     this.#socketIO = io(URI, {
       query: JSON.stringify({
         'json_web_token': {
@@ -25,38 +25,52 @@ export class _GameSocketIO {
       }),
     });
 
-    this.#socketIO.on('connect', () => {
+    this.#socketIO.on('connect', async () => {
       console.log('connection to game server established');
+      this.#isConnected = true;
     });
 
-    this.#socketIO.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+    this.#socketIO.on('connect_error', (rawError) => {
+      const jsonString = rawError.message.replace(/'/g, '"');
+      const error = JSON.parse(jsonString);
+      if (error['status'] !== 0) {
+        console.error('Connection error:', error['message']);
+      } else {
+        console.log('The game is already over');
+        // TODO handle game over
+      }
     });
 
     this.#socketIO.on('disconnect', () => {
       console.log('disconnected from game server');
     });
 
-    this.#socketIO.on('error', async (message) => {
-      console.error('Server error message: ', message);
+    this.#socketIO.on('fatal_error', async (data) => {
+      console.error('Server fatal error: ', data['error_message']);
+      // TODO exit game
     });
 
     this.#socketIO.on('debug', (message) => {
       console.log('Server debug message: ', message);
     });
 
-    this.#socketIO.on('scene', (data) => {
+    this.#socketIO.on('scene', async (data) => {
+      while (!this.#isConnected) {
+        await sleep(50);
+      }
       console.log('game scene received');
 
       this.#engine.scene = new Scene(
+          this.#engine,
           data['scene'],
           data['player_location'],
       );
+      this.#engine.scene.updateCamera();
       this.#engine.startListeningForKeyHooks();
     });
 
     this.#socketIO.on('update_paddle', async (data) => {
-      while (! (this.#engine.scene instanceof Scene)) {
+      while (!(this.#engine.scene instanceof Scene)) {
         await sleep(50);
       }
       console.log('update_paddle received');
@@ -68,7 +82,7 @@ export class _GameSocketIO {
     });
 
     this.#socketIO.on('prepare_ball_for_match', async (data) => {
-      while (! (this.#engine.scene instanceof Scene)) {
+      while (!(this.#engine.scene instanceof Scene)) {
         await sleep(50);
       }
       console.log('prepare_ball_for_match received');
@@ -82,7 +96,7 @@ export class _GameSocketIO {
     });
 
     this.#socketIO.on('update_ball', async (data) => {
-      while (! (this.#engine.scene instanceof Scene)) {
+      while (!(this.#engine.scene instanceof Scene)) {
         await sleep(50);
       }
       console.log('update_ball received');
@@ -94,16 +108,15 @@ export class _GameSocketIO {
     });
 
     this.#socketIO.on('player_won_match', async (data) => {
-      while (! (this.#engine.scene instanceof Scene)) {
+      while (!(this.#engine.scene instanceof Scene)) {
         await sleep(50);
       }
       console.log('player_won_match received');
 
       const winnerIndex = data['winner_index'];
       const finishedMatchLocation = data['finished_match_location'];
-      this.#engine.scene.removeLooserFromMatch(
-          finishedMatchLocation, 1 - winnerIndex,
-      );
+      this.#engine.scene.removeLooserFromMatch(finishedMatchLocation,
+          1 - winnerIndex);
 
       const winner = this.#engine.scene
           .getMatchFromLocation(finishedMatchLocation)
@@ -112,11 +125,23 @@ export class _GameSocketIO {
       const newMatchJson = data['new_match_json'];
       this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
 
+      const newWinnerIndex = finishedMatchLocation['match'] % 2;
       this.#engine.scene.addWinnerToMatch(
-          newMatchJson['location'], winner, winnerIndex,
+          newMatchJson['location'], winner, winnerIndex, newWinnerIndex,
       );
 
       this.#engine.scene.deleteMatch(finishedMatchLocation);
+
+      this.#engine.scene.updateCamera();
+    });
+
+    this.#socketIO.on('game_over', async (data) => {
+      while (!(this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
+      console.log('game_over received');
+
+      // TODO: show game over screen
     });
 
     this.#socketIO.connect();

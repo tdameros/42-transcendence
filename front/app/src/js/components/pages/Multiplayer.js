@@ -31,7 +31,7 @@ export class Multiplayer extends Component {
   async #socketHandler() {
     const accessToken = await userManagementClient.getValidAccessToken();
     console.log(accessToken);
-    this.sio = io('http://localhost:6004', {
+    this.sio = io('https://localhost:6004', {
       auth: {
         token: accessToken,
       },

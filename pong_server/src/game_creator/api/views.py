@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
+from shared_code import settings as shared_settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -17,7 +18,11 @@ class CreateGameView(View):
         try:
             game_id, players, request_issuer = CreateGameView._get_args(request)
 
-            port: int = GameCreator.create_game_server(game_id, players)
+            if request_issuer == settings.TOURNAMENT:
+                api_name = shared_settings.TOURNAMENT
+            else:
+                api_name = shared_settings.USER_STATS
+            port: int = GameCreator.create_game_server(game_id, players, api_name)
 
             return JsonResponse({'port': port},
                                 status=201)

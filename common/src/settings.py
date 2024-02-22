@@ -30,5 +30,13 @@ DEBUG_USER_STATS_URL = 'http://localhost:8001/'
 USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
 DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'
 
+NOTIFICATION_URL = 'https://notification/'
+USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'
+ADD_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/add/'
+DELETE_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/delete/'
+
 GAME_CREATOR_URL = 'https://pong-server-nginx/'
 GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'
+
+SSL_CERT_PATH = '/app/ssl/certificate.crt'
+SSL_KEY_PATH = '/app/ssl/private.key'
