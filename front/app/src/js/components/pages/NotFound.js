@@ -7,8 +7,7 @@ export class NotFound extends Component {
   }
   render() {
     ErrorPage.loadNotFound();
-    return (`
-    `);
+    return (``);
   }
   style() {
     return (`
