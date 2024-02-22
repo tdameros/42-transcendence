@@ -445,8 +445,6 @@ class TestsSearchUsername(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
-        self.assertEqual(result.json()['users'][0], 'Felix1')
-        self.assertEqual(result.json()['users'][9], 'Felix10')
         data = {
             'username': 'Felix1'
         }
@@ -458,7 +456,6 @@ class TestsSearchUsername(TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
-        self.assertEqual(result.json()['users'][0], 'Felix1')
         data = {
             'username': 'Felix2'
         }

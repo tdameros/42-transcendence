@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -60,7 +61,7 @@ class SignInView(View):
         user = User.objects.filter(username=username).first()
         if user is None:
             validation_errors.append('Username not found')
-        elif user is not None and password != user.password:
+        elif user is not None and check_password(password, user.password) is False:
             validation_errors.append('Invalid password')
 
         return validation_errors

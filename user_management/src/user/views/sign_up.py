@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -25,7 +26,7 @@ class SignUpView(View):
                 return JsonResponse(data={'errors': validation_errors}, status=400)
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
-                                       password=json_request['password'])
+                                       password=make_password(json_request['password']))
             valid, errors = post_user_stats(user.id)
             if not valid:
                 user.delete()
