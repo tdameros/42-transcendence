@@ -31,10 +31,6 @@ export class Theme {
     );
   }
 
-  static #setHoverBrightness(value) {
-    document.documentElement.style.setProperty('--hover-brigthness', value);
-  }
-
   static get() {
     const theme = Cookies.get('theme');
     if (theme === null) {
