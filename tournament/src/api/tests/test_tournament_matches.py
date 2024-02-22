@@ -192,7 +192,9 @@ class StartMatchTest(TestCase):
         tournament.status = Tournament.IN_PROGRESS
         tournament.save()
 
-    def start_match(self, tournament_id, player1, player2):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def start_match(self, tournament_id, player1, player2, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
         url = reverse('start-match', args=(tournament_id,))
 
         response = self.client.post(
@@ -275,7 +277,10 @@ class EndMatchTest(TestCase):
         tournament.status = Tournament.IN_PROGRESS
         tournament.save()
 
-    def end_match(self, tournament_id, winner_id):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def end_match(self, tournament_id, winner_id, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
+
         url = reverse('end-match', args=(tournament_id,))
 
         response = self.client.post(
@@ -352,7 +357,10 @@ class AddPointTest(TestCase):
         tournament.status = Tournament.IN_PROGRESS
         tournament.save()
 
-    def add_point(self, tournament_id, player_id):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def add_point(self, tournament_id, player_id, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
+
         url = reverse('add-point', args=(tournament_id,))
 
         response = self.client.post(
