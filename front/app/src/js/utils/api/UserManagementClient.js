@@ -22,12 +22,17 @@ export class UserManagementClient extends BaseApiClient {
     'friends-decline': 'user/friends/decline/',
     'friends-request': 'user/friends/request/',
     'friends': 'user/friends/',
+    'avatar': 'user/avatar/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  getURLAvatar(username) {
+    return `${this.URL}/${this.URIs['avatar']}${username}/`;
   }
 
   async getFriends() {

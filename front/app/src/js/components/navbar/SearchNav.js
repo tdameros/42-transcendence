@@ -84,7 +84,7 @@ export class SearchNav extends Component {
     return (users.slice(0, 3).map((username) => {
       return (`
       <div class="result-item p-1" onclick="window.router.navigate('/profile/${username}/')" username="${username}">
-        <img src="/img/tdameros.jpg" alt="profile image" class="rounded-circle" style="width: 40px; height: 40px;">
+        <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image" class="rounded-circle" style="width: 40px; height: 40px;">
         ${username}
       </div>
     `);

@@ -41,7 +41,7 @@ export class ConnectedNavbar extends Component {
                       <div class="dropdown mx-2">
                                 <span class="dropdown-toggle" id="dropdownMenuLink"
                                       data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img id="nav-profile-img" src="/img/tdameros.jpg" alt="profile image"
+                                    <img id="nav-profile-img" src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
                                          class="rounded-circle"
                                          style="width: 40px; height: 40px;">
                                     <span id="nav-username">@${username}</span>
