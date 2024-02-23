@@ -127,12 +127,11 @@ export class UserProfileContent extends Component {
         (match) => match.opponent_id,
     );
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          opponentsIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(opponentsIds);
       if (response.ok) {
         matchHistory['history'].forEach((match) => {
-          match['opponent_username'] = body[match.opponent_id];
+          match['opponent_username'] = body[match['opponent_id']];
         });
         return true;
       } else {

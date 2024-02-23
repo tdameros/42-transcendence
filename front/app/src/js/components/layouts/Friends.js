@@ -205,9 +205,8 @@ export class Friends extends Component {
   async #addUsernameInFriends(friends) {
     const friendIds = friends.map((friend) => friend.id);
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          friendIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(friendIds);
       if (response.ok) {
         friends.forEach((friend) => {
           friend['username'] = body[friend.id];

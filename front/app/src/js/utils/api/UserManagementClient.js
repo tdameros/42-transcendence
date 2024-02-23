@@ -1,5 +1,6 @@
 import {BaseApiClient} from './BaseClient.js';
 import {JSONRequests} from '@utils/JSONRequests.js';
+import {UsersCache} from '@utils/cache';
 
 export class UserManagementClient extends BaseApiClient {
   static URL = `https://${window.location.hostname}:6002`;
@@ -87,6 +88,32 @@ export class UserManagementClient extends BaseApiClient {
     };
     return await JSONRequests.get(URL, params);
   }
+
+  async getUsernameListInCache(IDList) {
+    const usersList = {};
+    const unknownUsersID = [];
+
+    IDList.forEach((userId) => {
+      const cachedUsername = UsersCache.get(userId);
+      if (cachedUsername) {
+        usersList[userId] = cachedUsername;
+      } else {
+        unknownUsersID.push(userId);
+      }
+    });
+
+    if (unknownUsersID.length > 0) {
+      const {response, body} = await this.getUsernameList(unknownUsersID);
+      if (!response.ok) return {response, body};
+      Object.entries(body).forEach(([userId, username]) => {
+        const parsedUserId = parseInt(userId);
+        UsersCache.set(parsedUserId, username);
+        usersList[parsedUserId] = username;
+      });
+    }
+    return {response: {ok: true}, body: usersList};
+  }
+
 
   async getUsernameList(IDList) {
     const body = {
