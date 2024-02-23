@@ -19,8 +19,9 @@ export class UsersCache {
   }
 
   static getUserId(username) {
-    if (Cache.get(UsersCache.CacheKey)) {
-      for (const [userId, value] of Cache.get(UsersCache.CacheKey)) {
+    const cache = Cache.get(UsersCache.CacheKey);
+    if (cache) {
+      for (const [userId, value] of cache) {
         if (value === username) {
           return userId;
         }
