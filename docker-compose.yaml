@@ -115,12 +115,12 @@ volumes:
             o: bind
             device: front/app/
 
-    front_dist:
+    front_dist_volume:
         driver: local
         driver_opts:
             type: none
             o: bind
-            device: front/app/dist/
+            device: front/docker/volumes/dist/
 
     # User management
     user_management_postgres_volume:
@@ -135,7 +135,6 @@ volumes:
             type: none
             o: bind
             device: user_management/src/
-    user_management_static_volume:
     user_management_media_volume:
         driver: local
         driver_opts:
@@ -156,8 +155,6 @@ volumes:
             type: none
             o: bind
             device: user_stats/src/
-    user_stats_static_volume:
-    user_stats_media_volume:
 
     # Matchmaking
     matchmaking_code:
@@ -180,8 +177,6 @@ volumes:
             type: none
             o: bind
             device: tournament/src/
-    tournament_static_volume:
-    tournament_media_volume:
 
     # Server Side Pong
     pong_server_code:
@@ -190,8 +185,6 @@ volumes:
             type: none
             o: bind
             device: pong_server/src/
-    pong_server_static_volume:
-    pong_server_media_volume:
 
     # Notification
     notification_postgres_volume:
@@ -206,8 +199,6 @@ volumes:
             type: none
             o: bind
             device: notification/src/
-    notification_static_volume:
-    notification_media_volume:
 
     # Common code
     common_code:

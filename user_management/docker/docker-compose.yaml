@@ -11,8 +11,6 @@ services:
         ports:
             - "6002:443"
         volumes:
-            - user_management_static_volume:/app/static
-            - user_management_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         depends_on:
             user-management:

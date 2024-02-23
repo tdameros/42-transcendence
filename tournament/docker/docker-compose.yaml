@@ -11,8 +11,6 @@ services:
         ports:
             - "6001:443"
         volumes:
-            - tournament_static_volume:/app/static
-            - tournament_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
