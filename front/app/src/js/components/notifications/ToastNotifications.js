@@ -72,7 +72,7 @@ export class ToastNotifications extends Component {
       <div class="toast-body p-2">
             <div class="d-flex justify-content-start align-items-center">
                 <div class="d-flex align-items-center mb-1">
-                    <img src="/img/tdameros.jpg" alt="profile image"
+                    <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
                            class="rounded-circle me-2"
                            style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
                     <p class="mb-0 text-muted" style="font-size: 0.8rem;">

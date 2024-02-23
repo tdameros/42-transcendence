@@ -76,7 +76,7 @@ export class Friends extends Component {
     <div class="card friend-card mb-2 bg-body-tertiary placeholder-glow">
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
-          <img src="/img/default_avatar.jpeg" alt="profile image"
+          <img src="/img/default_avatar.png" alt="profile image"
                class="rounded-circle me-2 placeholder placeholder-lg"
                style="width: 45px; height: 45px;">
           <div class="w-100">
@@ -130,12 +130,13 @@ export class Friends extends Component {
 
   renderFriendCard(friend) {
     const opacity = friend['status'] == 'pending' ? '0.5' : '1';
+    const username = friend['username'];
     return (`
     <div class="card friend-card mb-2 bg-body-tertiary" style="opacity: ${opacity};"
-         onclick="window.router.navigate('/profile/${friend['username']}/')">
+         onclick="window.router.navigate('/profile/${username}/')">
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
-          <img src="/img/tdameros.jpg" alt="profile image"
+          <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
                class="rounded-circle me-2"
                style="width: 45px; height: 45px;">
             <div>

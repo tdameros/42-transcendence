@@ -65,7 +65,7 @@ export class UserProfileHeader extends Component {
             </div>
             <div id="profile-info" class="profile-info d-flex align-items-center">
                 <div id="picture-container" class="profile-img-container ">
-                    <img src="/img/default_avatar.jpeg" alt="Profile picture"
+                    <img src="/img/default_avatar.png" alt="Profile picture"
                          class="profile-img mr-2 placeholder placeholder-lg">
                 </div>
                 <div class="user-info">
@@ -119,7 +119,7 @@ export class UserProfileHeader extends Component {
     this.profileInfo = this.querySelector('#profile-info');
     if (this.profileInfo) {
       this.profileInfo.innerHTML = this.renderProfileInfo(
-          username, '/img/tdameros.jpg',
+          username, `${userManagementClient.getURLAvatar(username)}`,
           username === userManagementClient.username,
       );
       this.friendActionBtn = this.querySelector('#friend-action-btn');

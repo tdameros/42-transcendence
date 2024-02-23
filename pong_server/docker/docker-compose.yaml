@@ -12,8 +12,6 @@ services:
             context: nginx
             dockerfile: Dockerfile
         volumes:
-            - pong_server_static_volume:/app/static
-            - pong_server_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         depends_on:
             pong-server:
