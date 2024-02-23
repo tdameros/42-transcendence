@@ -65,18 +65,14 @@ export class BaseApiClient {
     const requestBody = {
       'refresh_token': this.refreshToken,
     };
-    try {
-      const {response, body} = await JSONRequests.post(
-          `${UserManagementClient.URL}/${UserManagementClient.URIs['refresh-access-token']}`,
-          requestBody);
-      if (response.ok) {
-        this.accessToken = new JWT(body['access_token']);
-        return true;
-      } else {
-        this.logout();
-        return false;
-      }
-    } catch (error) {
+    const {response, body} = await JSONRequests.post(
+        `${UserManagementClient.URL}/${UserManagementClient.URIs['refresh-access-token']}`,
+        requestBody);
+    if (response.ok) {
+      this.accessToken = new JWT(body['access_token']);
+      return true;
+    } else {
+      this.logout();
       return false;
     }
   }
