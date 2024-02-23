@@ -146,9 +146,8 @@ export class UserProfileContent extends Component {
 
   async getUserId(username) {
     try {
-      const {response, body} = await userManagementClient.getUserByUsername(
-          username,
-      );
+      const {response, body} =
+        await userManagementClient.getUserByUsernameInCache(username);
       if (response.ok) {
         return body.id;
       } else if (response.status === 404) {

@@ -123,6 +123,19 @@ export class UserManagementClient extends BaseApiClient {
     return await this.postAuthRequest(URL, body);
   }
 
+  async getUserByUsernameInCache(username) {
+    const cachedUserId = UsersCache.getUserId(username);
+    if (cachedUserId) {
+      const user = {'id': cachedUserId, 'username': username};
+      return {response: {ok: true}, body: user};
+    }
+    const {response, body} = await this.getUserByUsername(username);
+    if (response.ok) {
+      UsersCache.set(body['id'], body['username']);
+    }
+    return {response, body};
+  }
+
   async getUserByUsername(username) {
     const URI = this.URIs['user-username'].replace(':username', username);
     const URL = `${this.URL}/${URI}`;
