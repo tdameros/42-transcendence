@@ -137,6 +137,11 @@ volumes:
             device: user_management/src/
     user_management_static_volume:
     user_management_media_volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: user_management/docker/volumes/media/
 
     # User stats
     user_stats_postgres_volume:
