@@ -2,6 +2,7 @@ import {JSONRequests} from '@utils/JSONRequests.js';
 import {JWT} from '@utils/JWT.js';
 import {UserManagementClient} from './UserManagementClient.js';
 import {userManagementClient} from '@utils/api/index.js';
+import {Cache} from '@utils/cache';
 
 export class BaseApiClient {
   static accessToken = new JWT(null);
@@ -83,6 +84,7 @@ export class BaseApiClient {
   logout() {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
+    Cache.clear();
     this.accessToken = new JWT(null);
     const notificationComponent = document.querySelector(
         'notification-component',

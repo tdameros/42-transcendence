@@ -9,4 +9,8 @@ export class Cache {
   static get(key) {
     return this.cache[key];
   }
+
+  static clear() {
+    Cache.cache = {};
+  }
 }
