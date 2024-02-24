@@ -127,7 +127,7 @@ export class UserProfileMatchList extends Component {
       return (`
         <tr>
           <td class="text-center" colspan="6">
-            <div class="alert alert-warning" role="alert">
+            <div class="m-2 text-secondary text-center" role="alert">
               No matches played yet
             </div>
          </td>

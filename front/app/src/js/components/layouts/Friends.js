@@ -93,6 +93,20 @@ export class Friends extends Component {
   }
 
   renderFriends(friends) {
+    if (friends.size === 0) {
+      return (`
+      <div class="card" style="height: calc(100vh - ${NavbarUtils.height}px - 1rem)">
+        <div class="card-header">
+          <h3>Friends</h3>
+        </div>
+        <div class="card-body ps-2 pe-2">
+          <div class="mt-2 text-secondary text-center" role="alert">
+            No friends yet
+          </div>
+        </div>
+      </div>
+    `);
+    }
     return (`
       <div class="card overflow-auto" style="height: calc(100vh - ${NavbarUtils.height}px - 1rem)">
         <div class="card-header">
