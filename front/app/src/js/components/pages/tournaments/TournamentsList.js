@@ -166,7 +166,7 @@ export class TournamentsList extends Component {
       return (`
         <tr>
           <td class="text-center" colspan="4">
-        <div class="alert alert-warning" role="alert">
+        <div class="m-2 text-center text-secondary" role="alert">
           No tournaments created yet
         </div>
           </td>
