@@ -97,9 +97,8 @@ export class TournamentsContent extends Component {
         (tournament) => tournament['admin-id'],
     );
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          adminIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(adminIds);
       if (response.ok) {
         tournaments.forEach((tournament) => {
           tournament['admin-username'] = body[tournament['admin-id']];

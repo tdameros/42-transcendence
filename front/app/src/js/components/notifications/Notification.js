@@ -122,9 +122,8 @@ export class Notification extends Component {
 
   async #addUsernameInFriendRequestNotification(notification) {
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          [notification.data],
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache([notification.data]);
       if (response.ok) {
         notification['sender_username'] = body[notification.data];
         return true;
