@@ -10,7 +10,7 @@ export class SearchNav extends Component {
 
   render() {
     return (`
-      <div class="position-relative z-1 me-2 ms-2">
+      <div class="position-relative z-1">
           <form id="search-form" class="d-flex" role="search">
               <input id="search-bar" class="form-control" type="search"
                      placeholder="Search users..." aria-label="Search" autocomplete="off">
