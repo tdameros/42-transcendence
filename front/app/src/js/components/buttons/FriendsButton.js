@@ -1,4 +1,5 @@
 import {Component} from '@components';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class FriendsButton extends Component {
   constructor() {
@@ -42,6 +43,7 @@ export class FriendsButton extends Component {
     const sidebar = document.querySelector('friends-sidebar-component');
     if (sidebar) {
       sidebar.toggleVisibility();
+      NavbarUtils.hideCollapse();
     }
   }
 }

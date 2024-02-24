@@ -46,6 +46,15 @@ export class Navbar extends Component {
     }
   }
 
+  hideCollapse() {
+    const navbarToggler = this.querySelector('.navbar-toggler');
+    const navbarToggleDisplay = window.getComputedStyle(navbarToggler)
+        .getPropertyValue('display');
+    if (navbarToggleDisplay !== 'none') {
+      navbarToggler.click();
+    }
+  }
+
   get height() {
     return this.querySelector('.navbar').offsetHeight;
   }
