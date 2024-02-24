@@ -32,7 +32,7 @@ export class ConnectedNavbar extends Component {
                       </li>
                   </ul>
                   <div class="d-flex align-items-center mb-2 mb-lg-0">
-                      <search-nav-component class="ms-2 me-2"></search-nav-component>
+                      <search-nav-component class="me-2"></search-nav-component>
                   </div>
                   <div id="log-part" class="d-flex align-items-center">
                       <theme-button-component class="me-1"></theme-button-component>
