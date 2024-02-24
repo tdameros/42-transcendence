@@ -20,15 +20,15 @@ export class DisconnectedNavbar extends Component {
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   </ul>
                   <div class="d-flex align-items-center">
-                    <theme-button-component class="me-2"></theme-button-component>
-                    <button class="btn btn-outline-success"
-                            onclick="window.router.navigate('/signup/')">
-                        Sign up
-                    </button>
-                    <button type="button" class="btn btn-primary ms-2"
-                            onclick="window.router.navigate('/signin/')">
-                        Sign in
-                    </button>
+                      <theme-button-component class="me-2"></theme-button-component>
+                      <button class="btn btn-outline-success"
+                              onclick="window.router.navigate('/signup/')">
+                          Sign up
+                      </button>
+                      <button type="button" class="btn btn-primary ms-2"
+                              onclick="window.router.navigate('/signin/')">
+                          Sign in
+                      </button>
                   </div>
               </div>
           </div>

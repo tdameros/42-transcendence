@@ -39,16 +39,18 @@ export class ConnectedNavbar extends Component {
                       <friends-button-component class="me-1"></friends-button-component>
                       <notification-nav-component class="me-1"></notification-nav-component>
                       <div class="dropdown mx-2">
-                                <span class="dropdown-toggle" id="dropdownMenuLink"
-                                      data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img id="nav-profile-img" src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
-                                         class="rounded-circle"
-                                         style="width: 40px; height: 40px;">
-                                    <span id="nav-username">@${username}</span>
-                                </span>
+                                      <span class="dropdown-toggle" id="dropdownMenuLink"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                          <img id="nav-profile-img" src="${userManagementClient.getURLAvatar(username)}"
+                                               alt="profile image"
+                                               class="rounded-circle"
+                                               style="width: 40px; height: 40px;">
+                                          <span id="nav-username">@${username}</span>
+                                      </span>
                           <ul class="dropdown-menu dropdown-menu-end"
                               aria-labelledby="dropdownMenuLink">
-                              <li><a class="dropdown-item" onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
+                              <li><a class="dropdown-item"
+                                     onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
                               <li><a class="dropdown-item">Settings</a></li>
                               <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
                           </ul>
