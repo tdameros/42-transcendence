@@ -16,10 +16,10 @@ export class TournamentsContent extends Component {
       <div class="m-2">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 p-0 pe-1">
               <tournaments-list-component display-mode="placeholder"></tournaments-list-component>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 p-0 ps-1">
               <tournament-details-component></tournament-details-component>
             </div>
           </div>

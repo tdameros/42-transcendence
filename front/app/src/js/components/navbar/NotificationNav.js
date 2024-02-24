@@ -163,7 +163,6 @@ export class NotificationNav extends Component {
   #generateFriendRequestNotification(notification) {
     notification.data = parseInt(notification.data);
     notification['sender_id'] = parseInt(notification.data);
-    console.log(notification);
     const username = notification['sender_username'];
     const profileUrl = `/profile/${username}/`;
     const notificationDiv = document.createElement('div');

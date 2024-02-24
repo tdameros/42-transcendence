@@ -28,7 +28,6 @@ export class FriendsSidebar extends Component {
       <style>
 .wrapper {
     display: flex;
-    /*align-items: stretch;*/
     width: 100%;
 }
 
@@ -88,7 +87,6 @@ a[data-toggle="collapse"] {
   }
 
   postRender() {
-
   }
 
   toggleVisibility() {
