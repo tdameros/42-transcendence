@@ -13,15 +13,13 @@ export class TournamentsContent extends Component {
 
   render() {
     return (`
-      <div class="m-2">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-md-6 p-0 pe-1">
-              <tournaments-list-component display-mode="placeholder"></tournaments-list-component>
-            </div>
-            <div class="col-md-6 p-0 ps-1">
-              <tournament-details-component></tournament-details-component>
-            </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-6 p-2">
+            <tournaments-list-component display-mode="placeholder"></tournaments-list-component>
+          </div>
+          <div class="col-lg-6 p-2">
+            <tournament-details-component></tournament-details-component>
           </div>
         </div>
       </div>
