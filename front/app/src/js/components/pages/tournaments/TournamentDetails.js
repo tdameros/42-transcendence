@@ -12,7 +12,7 @@ export class TournamentDetails extends Component {
 
   render() {
     return (`
-      <div class="card mb-3 mt-3 overflow-auto">
+      <div class="card overflow-auto">
           <div class="card-header">
               ${this.#generatePlaceholderHeader()}
           </div>
@@ -88,7 +88,7 @@ export class TournamentDetails extends Component {
   loadNoTournament() {
     this.header.innerHTML = 'No tournament selected';
     this.body.innerHTML = `
-      <div class="alert alert-warning" role="alert">
+      <div class="text-center text-secondary" role="alert">
         Please select a tournament
       </div>
     `;
@@ -195,7 +195,7 @@ export class TournamentDetails extends Component {
   #generatePlayersList(players) {
     if (players.length === 0) {
       return (`
-        <div class="alert alert-warning" role="alert">
+        <div class="text-center text-secondary" role="alert">
           No players registered yet
         </div>
       `);

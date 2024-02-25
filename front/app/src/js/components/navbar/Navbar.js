@@ -17,15 +17,12 @@ export class Navbar extends Component {
   style() {
     return (`
       <style>
-      nav {
-          box-shadow: rgba(0, 82, 224, 0.1) 0px 6px 12px 0px;
-      }
-
       .navbar {
           position: fixed;
           top: 0;
           width: 100%;
           z-index: 9999;
+          box-shadow: rgba(0, 82, 224, 0.1) 0px 6px 12px 0px;
       }
 
       .navbar-brand {
@@ -47,6 +44,19 @@ export class Navbar extends Component {
     } else {
       document.body.style.paddingTop = '0px';
     }
+  }
+
+  hideCollapse() {
+    const navbarToggler = this.querySelector('.navbar-toggler');
+    const navbarToggleDisplay = window.getComputedStyle(navbarToggler)
+        .getPropertyValue('display');
+    if (navbarToggleDisplay !== 'none') {
+      navbarToggler.click();
+    }
+  }
+
+  get height() {
+    return this.querySelector('.navbar').offsetHeight;
   }
 
   addNotification(notification) {

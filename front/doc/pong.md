@@ -1,13 +1,16 @@
 # Pong Client
 
 ## Events:
-- ### `error`
+- ### `fatal_error`
   >> Argument:
   >> ```
-  >> error_message: str
+  >> {
+  >>     'error_message': str,   
+  >> }
   >> ``` 
   >
-  >> Prints error_message on `console.error`  
+  >> Prints error_message on `console.error`
+  >> Closes the game
 
 - ### `debug`:
   >> Argument:

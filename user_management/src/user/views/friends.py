@@ -50,10 +50,13 @@ class FriendsBaseView(View):
             'user_list': [friend_id],
             'data': f'{user_id}',
         }
-        response = InternalAuthRequests.post(
-            url=settings.USER_NOTIFICATION_ENDPOINT,
-            data=json.dumps(notification_data)
-        )
+        try:
+            response = InternalAuthRequests.post(
+                url=settings.USER_NOTIFICATION_ENDPOINT,
+                data=json.dumps(notification_data)
+            )
+        except Exception as e:
+            raise Exception(f'Failed to access notification service : {e}')
         if response.status_code != 201:
             raise Exception(f'Failed to send friend request notification : {response.text}')
 
@@ -124,11 +127,23 @@ class FriendsView(FriendsBaseView):
         related_friendship.delete()
         try:
             FriendsView.send_user_stats_update(user_id, friend_id, False)
+            FriendsView.send_delete_friend_notification(user_id, friend_id)
         except Exception as e:
             Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
             Friend.objects.create(user_id=friend_id, friend_id=user_id, status=Friend.ACCEPTED)
-            return JsonResponse(data={'errors': [str(e)]}, status=500)
+            raise Exception(str(e))
         return True, None
+
+    @staticmethod
+    def send_delete_friend_notification(user_id: int, friend_id: int):
+        response = InternalAuthRequests.post(
+            url=settings.DELETE_FRIEND_NOTIFICATION_ENDPOINT,
+            data=json.dumps({
+                'deleted_relationship': [user_id, friend_id]
+            })
+        )
+        if response.status_code != 200:
+            raise Exception(f'Failed to send delete friend notification : {response.text}')
 
 
 class FriendsRequestView(FriendsBaseView):
@@ -144,6 +159,8 @@ class FriendsRequestView(FriendsBaseView):
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
 
+        if user_id == friend_id:
+            return JsonResponse(data={'errors': ['You cannot send a friend request to yourself']}, status=400)
         try:
             valid, error = FriendsRequestView.post_friend_request(user_id, friend_id)
         except Exception as e:
@@ -201,12 +218,24 @@ class FriendsAcceptView(FriendsBaseView):
             user_friendship.save()
         try:
             FriendsView.send_user_stats_update(user_id, friend_id, True)
+            FriendsAcceptView.send_new_friend_notification(user_id, friend_id)
         except Exception as e:
             related_friendship.status = Friend.PENDING
             related_friendship.save()
             user_friendship.delete()
-            return False, str(e)
+            raise Exception(str(e))
         return True, None
+
+    @staticmethod
+    def send_new_friend_notification(user_id: int, friend_id: int):
+        response = InternalAuthRequests.post(
+            url=settings.ADD_FRIEND_NOTIFICATION_ENDPOINT,
+            data=json.dumps({
+                'new_relationship': [user_id, friend_id]
+            })
+        )
+        if response.status_code != 200:
+            raise Exception(f'Failed to send add friend notification : {response.text}')
 
 
 class FriendsDeclineView(FriendsBaseView):

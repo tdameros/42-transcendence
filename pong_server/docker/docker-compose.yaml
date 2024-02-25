@@ -12,8 +12,6 @@ services:
             context: nginx
             dockerfile: Dockerfile
         volumes:
-            - pong_server_static_volume:/app/static
-            - pong_server_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         depends_on:
             pong-server:
@@ -38,11 +36,13 @@ services:
                 - GAME_SERVER_PATH=/app/src/game_server/
                 - PONG_GAME_SERVERS_MIN_PORT=${PONG_GAME_SERVERS_MIN_PORT}
                 - PONG_GAME_SERVERS_MAX_PORT=${PONG_GAME_SERVERS_MAX_PORT}
+                - PATH_TO_SSL_CERTS=/app/ssl/
             context: .
             dockerfile: Dockerfile
         volumes:
             - pong_server_code:/app/pong_server_code/
             - ssl_certs:/app/ssl
+            - common_code:/app/common
         command: /app/run.sh
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]

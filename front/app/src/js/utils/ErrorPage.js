@@ -1,10 +1,12 @@
 export class ErrorPage {
   static errorComponentName = 'error-component';
-  static NetworkErrorMessage = 'Network error, ' +
+  static networkErrorMessage = 'Network error, ' +
     'please check your network connection.';
+  static notFoundMessage = 'Page not found';
 
   static load(message, refresh = false) {
     window.app.innerHTML = `
+        <navbar-component></navbar-component>
         <${ErrorPage.errorComponentName}
             message="${message}"
             refresh="${refresh}">
@@ -12,10 +14,10 @@ export class ErrorPage {
   }
 
   static loadNetworkError() {
-    ErrorPage.load(ErrorPage.NetworkErrorMessage, true);
+    ErrorPage.load(ErrorPage.networkErrorMessage, true);
   }
 
   static loadNotFound() {
-    ErrorPage.load('Page not found');
+    ErrorPage.load(ErrorPage.notFoundMessage, false);
   }
 }

@@ -11,8 +11,6 @@ services:
         ports:
             - "6003:443"
         volumes:
-            - user_stats_static_volume:/app/static
-            - user_stats_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]

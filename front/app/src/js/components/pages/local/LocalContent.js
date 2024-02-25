@@ -1,12 +1,12 @@
 import {Component} from '@components';
 
-export class Home extends Component {
+export class LocalContent extends Component {
   constructor() {
     super();
   }
   render() {
     return (`
-      <navbar-component nav-active="home"></navbar-component>
+      <h1>Singleplayer</h1>
     `);
   }
   style() {

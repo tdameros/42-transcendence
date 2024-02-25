@@ -2,6 +2,7 @@ import {JSONRequests} from '@utils/JSONRequests.js';
 import {JWT} from '@utils/JWT.js';
 import {UserManagementClient} from './UserManagementClient.js';
 import {userManagementClient} from '@utils/api/index.js';
+import {Cache} from '@utils/cache';
 
 export class BaseApiClient {
   static accessToken = new JWT(null);
@@ -64,18 +65,14 @@ export class BaseApiClient {
     const requestBody = {
       'refresh_token': this.refreshToken,
     };
-    try {
-      const {response, body} = await JSONRequests.post(
-          `${UserManagementClient.URL}/${UserManagementClient.URIs['refresh-access-token']}`,
-          requestBody);
-      if (response.ok) {
-        this.accessToken = new JWT(body['access_token']);
-        return true;
-      } else {
-        this.logout();
-        return false;
-      }
-    } catch (error) {
+    const {response, body} = await JSONRequests.post(
+        `${UserManagementClient.URL}/${UserManagementClient.URIs['refresh-access-token']}`,
+        requestBody);
+    if (response.ok) {
+      this.accessToken = new JWT(body['access_token']);
+      return true;
+    } else {
+      this.logout();
       return false;
     }
   }
@@ -83,6 +80,7 @@ export class BaseApiClient {
   logout() {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
+    Cache.clear();
     this.accessToken = new JWT(null);
     const notificationComponent = document.querySelector(
         'notification-component',
@@ -135,12 +133,12 @@ export class BaseApiClient {
     return await JSONRequests.patch(url, body, headers);
   }
 
-  async deleteAuthRequest(url, body = {}, headers = {}) {
+  async deleteAuthRequest(url, params = {}, headers = {}) {
     const auth = await this.authRequired();
     if (!auth) {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.delete(url, body, headers);
+    return await JSONRequests.delete(url, params, headers);
   }
 }

@@ -1,13 +1,23 @@
-import {Home} from './Home.js';
-import {Multiplayer} from './Multiplayer.js';
-import {Singleplayer} from './Singleplayer.js';
-import {NotFound} from './NotFound.js';
-
 import {
   SignIn,
   SignUp,
   TwoFactorAuth,
 } from './authentication';
+
+import {
+  Home,
+  HomeContent,
+} from './home';
+
+import {
+  Local,
+  LocalContent,
+} from './local';
+
+import {
+  Multiplayer,
+  MultiplayerContent,
+} from './multiplayer';
 
 import {
   ResetPassword,
@@ -19,8 +29,10 @@ import {
 import {
   TournamentBracket,
   TournamentCreate,
+  TournamentCreateContent,
   TournamentDetails,
   Tournaments,
+  TournamentsContent,
   TournamentsList,
 } from './tournaments';
 
@@ -28,34 +40,43 @@ import {
   UserProfile,
   UserProfileChart,
   UserProfileChartsCards,
+  UserProfileContent,
   UserProfileHeader,
   UserProfileMatchList,
   UserProfileStatsCard,
   UserProfileStatsCards,
 } from './user_profile';
 
+import {NotFound} from './NotFound.js';
+
 export {
   SignIn,
   SignUp,
   TwoFactorAuth,
+  Home,
+  HomeContent,
+  Local,
+  LocalContent,
+  Multiplayer,
+  MultiplayerContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
   TournamentBracket,
   TournamentCreate,
+  TournamentCreateContent,
   TournamentDetails,
   Tournaments,
+  TournamentsContent,
   TournamentsList,
   UserProfile,
   UserProfileChart,
   UserProfileChartsCards,
+  UserProfileContent,
   UserProfileHeader,
   UserProfileMatchList,
   UserProfileStatsCard,
   UserProfileStatsCards,
-  Home,
-  Multiplayer,
   NotFound,
-  Singleplayer,
 };

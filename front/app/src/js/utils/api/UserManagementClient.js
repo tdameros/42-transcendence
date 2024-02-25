@@ -1,5 +1,6 @@
 import {BaseApiClient} from './BaseClient.js';
 import {JSONRequests} from '@utils/JSONRequests.js';
+import {UsersCache} from '@utils/cache';
 
 export class UserManagementClient extends BaseApiClient {
   static URL = `https://${window.location.hostname}:6002`;
@@ -20,6 +21,9 @@ export class UserManagementClient extends BaseApiClient {
     'oauth': 'user/oauth/:oauth-service/',
     'friends-accept': 'user/friends/accept/',
     'friends-decline': 'user/friends/decline/',
+    'friends-request': 'user/friends/request/',
+    'friends': 'user/friends/',
+    'avatar': 'user/avatar/',
   };
 
   constructor() {
@@ -28,20 +32,29 @@ export class UserManagementClient extends BaseApiClient {
     this.URIs = UserManagementClient.URIs;
   }
 
-  async getOAuthIntra(source) {
-    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', '42api')}`;
-    const params = {
-      'source': source,
-    };
-    return await JSONRequests.get(URL, params);
+  getURLAvatar(username) {
+    return `${this.URL}/${this.URIs['avatar']}${username}/`;
   }
 
-  async getOAuthGithub(source) {
-    const URL = `${this.URL}/${this.URIs['oauth'].replace(':oauth-service', 'github')}`;
+  async getFriends() {
+    const URL = `${this.URL}/${this.URIs['friends']}`;
+    return await this.getAuthRequest(URL);
+  }
+
+  async removeFriend(userId) {
     const params = {
-      'source': source,
+      'friend_id': userId,
     };
-    return await JSONRequests.get(URL, params);
+    const URL = `${this.URL}/${this.URIs['friends']}`;
+    return await this.deleteAuthRequest(URL, params);
+  }
+
+  async sendFriendRequest(userId) {
+    const body = {
+      'friend_id': userId,
+    };
+    const URL = `${this.URL}/${this.URIs['friends-request']}`;
+    return await this.postAuthRequest(URL, body);
   }
 
   async acceptFriend(userId) {
@@ -57,7 +70,7 @@ export class UserManagementClient extends BaseApiClient {
       'friend_id': userId,
     };
     const URL = `${this.URL}/${this.URIs['friends-decline']}`;
-    return await this.deleteAuthRequest(URL, body);
+    return await this.postAuthRequest(URL, body);
   }
 
   async getOAuthIntra(source) {
@@ -76,12 +89,51 @@ export class UserManagementClient extends BaseApiClient {
     return await JSONRequests.get(URL, params);
   }
 
+  async getUsernameListInCache(IDList) {
+    const usersList = {};
+    const unknownUsersID = [];
+
+    IDList.forEach((userId) => {
+      const cachedUsername = UsersCache.get(userId);
+      if (cachedUsername) {
+        usersList[userId] = cachedUsername;
+      } else {
+        unknownUsersID.push(userId);
+      }
+    });
+
+    if (unknownUsersID.length > 0) {
+      const {response, body} = await this.getUsernameList(unknownUsersID);
+      if (!response.ok) return {response, body};
+      Object.entries(body).forEach(([userId, username]) => {
+        const parsedUserId = parseInt(userId);
+        UsersCache.set(parsedUserId, username);
+        usersList[parsedUserId] = username;
+      });
+    }
+    return {response: {ok: true}, body: usersList};
+  }
+
+
   async getUsernameList(IDList) {
     const body = {
       'id_list': IDList,
     };
     const URL = `${this.URL}/${this.URIs['user-id-list']}`;
     return await this.postAuthRequest(URL, body);
+  }
+
+  async getUserByUsernameInCache(username) {
+    const cachedUserId = UsersCache.getUserId(username);
+    if (cachedUserId) {
+      const user = {'id': cachedUserId, 'username': username};
+      return {response: {ok: true}, body: user};
+    }
+    const {response, body} = await this.getUserByUsername(username);
+    if (response.ok) {
+      UsersCache.set(body['id'], body['username']);
+    }
+    return {response, body};
   }
 
   async getUserByUsername(username) {

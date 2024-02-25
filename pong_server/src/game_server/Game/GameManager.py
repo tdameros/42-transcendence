@@ -8,10 +8,13 @@ from Game.Match import Match
 from Game.MatchLocation import MatchLocation
 from Game.Player.Player import Player
 from Game.PlayerLocation import PlayerLocation
+from PostSender.PostSender import PostSender
 from Server import Server
 
 
 class GameManager(object):
+    GAME_ID: int
+
     _has_game_started: bool = False
     _is_game_over: bool = False
 
@@ -25,7 +28,9 @@ class GameManager(object):
     _matches_middle_y: float
 
     @staticmethod
-    def init(players: list[Optional[int]]):
+    async def init(game_id: int, players: list[Optional[int]]):
+        GameManager.GAME_ID = game_id
+
         for i in range(0, len(players), 2):
             match_index = i // 2
             if players[i] is None:
@@ -43,6 +48,10 @@ class GameManager(object):
                 GameManager._create_player(
                     players[i + 1],
                     PlayerLocation(0, match_index, 1))
+        for match in GameManager._matches:
+            await PostSender.post_start_match(GameManager.GAME_ID,
+                                              match.get_player(0).PLAYER_ID,
+                                              match.get_player(1).PLAYER_ID)
 
         GameManager._set_matches_bounding_box(len(players) // 2)
 
@@ -97,15 +106,28 @@ class GameManager(object):
 
     @staticmethod
     async def match_was_won(match: Match):
+        winner_index = match.get_winner_index()
+        looser_index = 1 - winner_index
+        await PostSender.post_end_match(
+            GameManager.GAME_ID,
+            match.get_player(winner_index).PLAYER_ID,
+            match.get_player_score(winner_index),
+            match.get_player(looser_index).PLAYER_ID,
+            match.get_player_score(looser_index)
+        )
+
         if len(GameManager._matches) == 1:
-            # TODO send game over to game-stats / tournament
             GameManager._is_game_over = True
             await EventEmitter.game_over(match.get_winner_index())
             return
 
-        winner_index: int = match.get_winner_index()
+        await GameManager.move_players_after_match_over(match, winner_index, looser_index)
 
-        GameManager._handle_match_looser(match, 1 - winner_index)
+    @staticmethod
+    async def move_players_after_match_over(match: Match,
+                                            winner_index: int,
+                                            looser_index: int):
+        GameManager._handle_match_looser(match, looser_index)
 
         new_match: Match = GameManager._get_or_create_match(MatchLocation(
             match.LOCATION.game_round + 1, match.LOCATION.match // 2
@@ -118,6 +140,11 @@ class GameManager(object):
         )
         if new_match.is_full():
             await new_match.start_match()
+            await PostSender.post_start_match(
+                GameManager.GAME_ID,
+                new_match.get_player(0).PLAYER_ID,
+                new_match.get_player(1).PLAYER_ID
+            )
 
         GameManager._delete_match(match)
 
@@ -168,7 +195,7 @@ class GameManager(object):
     def _get_or_create_match(match_location: MatchLocation) -> Match:
         match = GameManager.get_match(match_location)
         if not match:
-            match = Match(match_location)
+            match = Match(GameManager.GAME_ID, match_location)
             GameManager._matches.append(match)
             GameManager._match_table[match_location] = match
         return match

@@ -1,5 +1,6 @@
 import {Component} from '@components';
 import {Theme} from '@js/Theme.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class ThemeButton extends Component {
   constructor() {
@@ -53,5 +54,6 @@ export class ThemeButton extends Component {
     }
     this.icon.classList.toggle('bi-moon-fill');
     this.icon.classList.toggle('bi-sun-fill');
+    NavbarUtils.hideCollapse();
   }
 }

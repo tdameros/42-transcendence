@@ -14,7 +14,7 @@ export class TournamentsList extends Component {
 
   render() {
     return (`
-      <div class="card mb-3 mt-3">
+      <div class="card">
           <div class="card-header border-bottom d-flex align-items-center justify-content-between">
             <div class="d-flex justify-content-start">
               <li class="list-group-item d-flex m-2">
@@ -166,7 +166,7 @@ export class TournamentsList extends Component {
       return (`
         <tr>
           <td class="text-center" colspan="4">
-        <div class="alert alert-warning" role="alert">
+        <div class="m-2 text-center text-secondary" role="alert">
           No tournaments created yet
         </div>
           </td>

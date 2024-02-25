@@ -33,6 +33,8 @@ USER_STATS_FRIENDS_ENDPOINT = '/friends/'
 
 NOTIFICATION_URL = 'https://notification/'
 USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'
+ADD_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/add/'
+DELETE_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/delete/'
 
 GAME_CREATOR_URL = 'https://pong-server-nginx/'
 GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'

@@ -12,7 +12,6 @@ from common.src.jwt_managers import UserAccessJWTDecoder
 from notification import settings
 
 
-# TODO: the customer must send each new jwt
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         query_string = self.scope['query_string']
@@ -42,7 +41,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             if len(group_channels) == 0:
                 friend_list = await self.get_friend_list(self.jwt)
                 for friend in friend_list:
-                    await self.send_user_status(int(self.group_name), friend['id'], 'offline')
+                    if friend['status'] == 'accepted':
+                        await self.send_user_status(int(self.group_name), friend['id'], 'offline')
 
     async def receive(self, text_data):
         try:
@@ -101,9 +101,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 }
                 friend_connected = channel_layer.groups.get(f'{friend['id']}', {}).items()
                 if len(friend_connected) > 0:
-                    friend_data['status'] = 'online'
+                    friend_data['status'] = settings.ONLINE_STATUS_STRING
                 else:
-                    friend_data['status'] = 'offline'
+                    friend_data['status'] = settings.OFFLINE_STATUS_STRING
                 message_data = {'message': json.dumps(friend_data)}
                 await self.send(text_data=json.dumps(message_data))
                 await self.send_user_status(user_id, friend['id'], 'online')

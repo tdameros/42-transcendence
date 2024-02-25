@@ -38,9 +38,9 @@ class FriendsTest(TestCase):
         )
         return response
 
-    @patch('requests.post')
-    def accept_friends(self, access_token, friend_id, mock_post):
-        mock_post.return_value.status_code = 200
+    @patch('requests.patch')
+    def accept_friends(self, access_token, friend_id, mock_patch):
+        mock_patch.return_value.status_code = 200
         url = reverse('friends-accept')
         response = self.client.post(
             url,
@@ -60,9 +60,9 @@ class FriendsTest(TestCase):
         )
         return response
 
-    @patch('requests.post')
-    def delete_friends(self, access_token, friend_id, mock_post):
-        mock_post.return_value.status_code = 200
+    @patch('requests.patch')
+    def delete_friends(self, access_token, friend_id, mock_patch):
+        mock_patch.return_value.status_code = 200
         url = reverse('friends')
         if friend_id is not None:
             url += f'?friend_id={friend_id}'
@@ -166,7 +166,9 @@ class FriendsRequestTest(FriendsTest):
 
 
 class FriendsAcceptTest(FriendsTest):
-    def test_valid(self):
+    @patch('requests.post')
+    def test_valid(self, mock_post):
+        mock_post.return_value.status_code = 200
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',
@@ -375,7 +377,9 @@ class GetFriendsTest(FriendsTest):
 
 
 class DeleteFriendsTest(FriendsTest):
-    def test_valid(self):
+    @patch('requests.post')
+    def test_valid(self, mock_post):
+        mock_post.return_value.status_code = 200
         user1 = {
             'username': 'User1',
             'email': 'user1@test.com',

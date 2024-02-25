@@ -127,7 +127,7 @@ export class UserProfileMatchList extends Component {
       return (`
         <tr>
           <td class="text-center" colspan="6">
-            <div class="alert alert-warning" role="alert">
+            <div class="m-2 text-secondary text-center" role="alert">
               No matches played yet
             </div>
          </td>
@@ -217,9 +217,8 @@ export class UserProfileMatchList extends Component {
         (match) => match.opponent_id,
     );
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          opponentsIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(opponentsIds);
       if (response.ok) {
         matchHistory['history'].forEach((match) => {
           match['opponent_username'] = body[match.opponent_id];
