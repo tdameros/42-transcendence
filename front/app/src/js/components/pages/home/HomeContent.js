@@ -2,6 +2,7 @@ import {Component} from '@components';
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class HomeContent extends Component {
   constructor() {
@@ -9,14 +10,13 @@ export class HomeContent extends Component {
   }
   render() {
     return (`
-      <navbar-component nav-active="home"></navbar-component>
-      <div id="container">
+      <div id="container" class="m-2 card">
         <div id="text" class="flex-column position-absolute">
           <h1 class="fw-bolder">The Pong Battle Ground!</h1>
           <p>Challenge the elite</p>
           <p>Rise though the ranks</p>
           <p>Dominate the pong arena</p>
-          <multiplayer-component></multiplayer-component>
+          <multiplayer-content-component></multiplayer-content-component>
         </div>
       </div>
     `);
@@ -45,49 +45,53 @@ export class HomeContent extends Component {
     `);
   }
   async postRender() {
-    this.navbar_height = document.querySelector('.navbar').offsetHeight;
-    const container = document.querySelector('#container');
-    if (!WebGL.isWebGLAvailable()) {
-      container.appendChild(WebGL.getWebGLErrorMessage());
-      return;
-    }
-    const scene = new THREE.Scene();
-    const island = await this.getGLTFObject('/assets/models/transcendence.glb');
-    const boundingBox = new THREE.Box3().setFromObject(island);
-    const size = new THREE.Vector3();
-    boundingBox.getSize(size);
-    const camera = this.initCamera(island, size);
-    const renderer = this.initRenderer();
-    scene.add(island);
-    this.setLights(scene, island);
+    this.container = document.querySelector('#container');
 
-    container.appendChild(renderer.domElement);
+    await this.init();
+    this.container.appendChild(this.renderer.domElement);
 
-    renderer.setAnimationLoop(() => {
-      renderer.render(scene, camera);
-      island.rotation.y += 0.0005;
+    this.renderer.setAnimationLoop(() => {
+      this.renderer.render(this.scene, this.camera);
+      this.island.rotation.y += 0.0005;
     });
 
-    window.addEventListener('resize', () => {
-      renderer.setSize(
-          window.innerWidth,
-          window.innerHeight - this.navbar_height,
-      );
+    super.addComponentEventListener(window, 'resize', this.resizeEvent);
+  }
 
-      camera.aspect = window.innerWidth / (
-        window.innerHeight - this.navbar_height
-      );
-      camera.updateProjectionMatrix();
-      this.setCameraPosition(camera, island, size);
-    }, false);
+  async init() {
+    if (!WebGL.isWebGLAvailable()) {
+      this.container.appendChild(WebGL.getWebGLErrorMessage());
+      return;
+    }
+    this.scene = new THREE.Scene();
+    this.island = await this.getGLTFObject('/assets/models/transcendence.glb');
+    this.boundingBox = new THREE.Box3().setFromObject(this.island);
+    this.size = new THREE.Vector3();
+    this.boundingBox.getSize(this.size);
+    this.setObjectPosition(this.island);
+    this.camera = this.initCamera(this.island, this.size);
+    this.renderer = this.initRenderer();
+    this.scene.add(this.island);
+    this.setLights(this.scene, this.island);
+  }
+
+  resizeEvent(event) {
+    this.renderer.setSize(
+        this.getContainerWidth(),
+        this.getContainerHeight(),
+    );
+
+    this.camera.aspect = this.getContainerWidth() / (this.getContainerHeight());
+    this.camera.updateProjectionMatrix();
+    this.setCameraPosition(this.camera, this.island, this.size);
   }
 
   initRenderer() {
     const renderer = new THREE.WebGLRenderer({antialias: true});
 
     renderer.setSize(
-        window.innerWidth,
-        window.innerHeight - this.navbar_height,
+        this.getContainerWidth(),
+        this.getContainerHeight(),
     );
     renderer.autoClear = false;
     return renderer;
@@ -96,13 +100,28 @@ export class HomeContent extends Component {
   initCamera(object, size) {
     const camera = new THREE.PerspectiveCamera(
         75,
-        window.innerWidth / (window.innerHeight - this.navbar_height),
+        this.getContainerWidth() / this.getContainerHeight(),
         0.1,
         1000,
     );
 
     this.setCameraPosition(camera, object, size);
     return camera;
+  }
+
+  getContainerHeight() {
+    const style = window.getComputedStyle(this.container);
+    const marginTop = style.getPropertyValue('margin-top');
+    const marginBottom = style.getPropertyValue('margin-bottom');
+    return window.innerHeight - NavbarUtils.height -
+        parseInt(marginTop) - parseInt(marginBottom) - 2;
+  }
+
+  getContainerWidth() {
+    const style = window.getComputedStyle(this.container);
+    const marginLeft = style.getPropertyValue('margin-left');
+    const marginRight = style.getPropertyValue('margin-right');
+    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
   }
 
   setCameraPosition(camera, object, size) {
@@ -119,29 +138,27 @@ export class HomeContent extends Component {
 
   async getGLTFObject(path) {
     const gltf = await this.loadGLTFModel(path);
-    const object = gltf.scene;
-    const boundingBox = new THREE.Box3().setFromObject(object);
+    return gltf.scene;
+  }
+
+  setObjectPosition(object) {
     const boundingBoxCenter = new THREE.Vector3();
-    boundingBox.getCenter(boundingBoxCenter);
+    this.boundingBox.getCenter(boundingBoxCenter);
     const offset = new THREE.Vector3()
         .copy(object.position)
         .sub(boundingBoxCenter);
 
     object.position.add(offset);
-    return object;
   }
 
   setLights(scene, object) {
     const hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010);
     const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
 
-    const boundingBox = new THREE.Box3().setFromObject(object);
-    const size = new THREE.Vector3();
-    boundingBox.getSize(size);
     directionalLight.position.set(
-        object.position.x + size.x,
-        object.position.y + size.y,
-        object.position.z + size.z,
+        object.position.x + this.size.x,
+        object.position.y + this.size.y,
+        object.position.z + this.size.z,
     );
     directionalLight.target.position.set(
         object.position.x,
