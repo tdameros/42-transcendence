@@ -1,5 +1,7 @@
 import os
 
+from dotenv import load_dotenv
+
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
 
@@ -11,18 +13,27 @@ import os
 # This script shall also retrieve static keys needed for the app to work properly (such as 3rd party API keys).
 # All of these keys shall be stored in a .env file located at the project root.
 # An example of what this file should look like is provided in the .env.example file.
+# absolute path to ''common/src/.env''
 
-COMMON_ENV_FILE = 'common/src/.env'
-USER_MANAGEMENT_ENV_FILE = 'user_management/src/.env'
+# Load the .env file in the root directory
+load_dotenv(os.path.join(os.path.dirname(__file__), '../../.env'))
+print(os.path.dirname(__file__))
+COMMON_ENV_FILE = os.path.join(os.path.dirname(__file__), '.env')
+
+USER_MANAGEMENT_ENV_FILE = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../user_management/.env')
 # add your env file here :P
 
 env_files = [
     COMMON_ENV_FILE,
+    USER_MANAGEMENT_ENV_FILE,
     # add your env file here :D
 ]
 
 for env_file in env_files:
-    os.remove(env_file)
+    try:
+        os.remove(env_file)
+    except FileNotFoundError:
+        pass
 
 
 def generate_key(name, key, env_path):
