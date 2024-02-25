@@ -12,6 +12,7 @@ from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
 from common.src.jwt_managers import user_authentication
 from common.src.internal_requests import InternalAuthRequests
+from common.src import settings as common_settings
 from shared_code import settings as shared_settings
 
 
@@ -170,6 +171,7 @@ class CreatePrivateGameView(View):
         payload_dict = json.loads(payload)
         return int(payload_dict['user_id'])
 
+    # TODO: Check if opponent is a friend of the user
     @staticmethod
     def _get_opponent_id(request: HttpRequest) -> int:
         try:
@@ -193,7 +195,7 @@ class CreatePrivateGameView(View):
         }
         try:
             response = InternalAuthRequests.post(
-                url=settings.USER_NOTIFICATION_ENDPOINT,
+                url=common_settings.USER_NOTIFICATION_ENDPOINT,
                 data=json.dumps(notification_data)
             )
         except Exception as e:
