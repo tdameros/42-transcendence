@@ -29,3 +29,31 @@
 > | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                                                |
 > | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['game_id field is missing', 'players[1] is not an Optional[int]']} |
 > | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']}                             |
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+## `POST /create_game/private/`
+
+### Request
+
+#### Header
+
+> | name            | type   | description       | requirement |
+> |-----------------|--------|-------------------|-------------|
+> | `Authorization` | String | User access token | Required    |
+
+#### Body
+
+> | name          | type | description | requirement |
+> |---------------|------|-------------|-------------|
+> | `opponent_id` | int  | Opponent ID | Required    |
+
+### Response
+
+#### Status code
+
+> | status code | content-type       | response              | example                                            |
+> |-------------|--------------------|-----------------------|----------------------------------------------------|
+> | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                    |
+> | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['opponent field is missing']}          |
+> | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']} |

@@ -1,7 +1,8 @@
+import base64
 import json
 from typing import Optional
 
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
+from common.src.jwt_managers import user_authentication
 from shared_code import settings as shared_settings
 
 
@@ -135,3 +137,46 @@ class CreateGameView(View):
             return ''
 
         return request_issuer
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['POST']), name='dispatch')
+class CreatePrivateGameView(View):
+    def post(self, request: HttpRequest) -> JsonResponse:
+        api_name = shared_settings.PRIVATE_GAME
+        user_id = self._get_user_id(request)
+        players = [user_id]
+
+        try:
+            players.append(self._get_opponent_id(request))
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=400)
+
+        try:
+            port: int = GameCreator.create_game_server(0, players, api_name)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'port': port}, status=201)
+
+    @staticmethod
+    def _get_user_id(request: HttpRequest) -> int:
+        jwt = request.headers.get('Authorization')
+        split_jwt = jwt.split('.')
+        payload = base64.b64decode(split_jwt[1] + '===')
+
+        payload_dict = json.loads(payload)
+        return int(payload_dict['user_id'])
+
+    @staticmethod
+    def _get_opponent_id(request: HttpRequest) -> int:
+        try:
+            json_body = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            raise Exception(error_messages.BAD_JSON_FORMAT)
+        opponent_id = json_body.get('opponent_id')
+        if opponent_id is None:
+            raise Exception(error_messages.OPPONENT_ID_FIELD_MISSING)
+        if not isinstance(opponent_id, int):
+            raise Exception(error_messages.OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER)
+        return json_body.get('opponent_id')
