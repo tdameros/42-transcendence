@@ -16,11 +16,10 @@ from dotenv import load_dotenv
 # absolute path to ''common/src/.env''
 
 # Load the .env file in the root directory
-load_dotenv(os.path.join(os.path.dirname(__file__), '../../.env'))
-print(os.path.dirname(__file__))
-COMMON_ENV_FILE = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv('.env')
+COMMON_ENV_FILE = 'common/src/.env'
 
-USER_MANAGEMENT_ENV_FILE = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../user_management/.env')
+USER_MANAGEMENT_ENV_FILE = 'user_management/.env'
 # add your env file here :P
 
 env_files = [

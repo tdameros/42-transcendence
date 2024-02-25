@@ -69,9 +69,8 @@ jobs:
         python manage.py migrate
 
     - name: Generate .env file
-      working-directory: user_management/
       run: |
-        python ../common/src/generate_env.py
+        python common/src/generate_env.py
 
     - name: Run unit tests
       working-directory: user_management/src/
