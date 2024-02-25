@@ -146,7 +146,7 @@ export class TwoFactorAuth extends Component {
     this.code = Array.from(this.inputs).map((input) => input.value).join('');
     try {
       const {response, body} = await userManagementClient.signIn(
-          this.email, this.password, this.code,
+          this.login, this.password, this.code,
       );
       if (response.ok) {
         this.#loadAndCache(body['refresh_token']);

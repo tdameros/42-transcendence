@@ -156,9 +156,9 @@ export class UserManagementClient extends BaseApiClient {
     return await this.postAuthRequest(URL, body);
   }
 
-  async signIn(username, password, twoFactorCode=null) {
+  async signIn(login, password, twoFactorCode=null) {
     const body = {
-      'username': username,
+      'login': login,
       'password': password,
       '2fa_code': twoFactorCode,
     };

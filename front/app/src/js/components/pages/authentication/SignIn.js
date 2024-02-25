@@ -28,20 +28,19 @@ export class SignIn extends Component {
     return (`
       <navbar-component disable-padding-top="true"></navbar-component>
       <div id="container">
-        <div id="login"
+        <div id="login-card"
              class="d-flex justify-content-center align-items-center rounded-3">
             <div class="login-card card m-3">
                 <div class="card-body m-2">
                     <h2 class="card-title text-center m-5">Sign in</h2>
                     <form id="signin-form">
                         <div class="form-group mb-4">
-                            <input type="text" class="form-control" id="email"
-                                   placeholder="Username">
-                            <div id="email-feedback" class="invalid-feedback">
-                                Please enter a valid email.
+                            <input type="text" class="form-control" id="login"
+                                   placeholder="Username or email">
+                            <div id="login-feedback" class="invalid-feedback">
+                                Please enter a valid login.
                             </div>
                         </div>
-                        
                         <div class="form-group mb-4">
                             <div class="input-group">
                                 <input type="password" class="form-control"
@@ -79,7 +78,7 @@ export class SignIn extends Component {
   style() {
     return (`
       <style>
-      #login {
+      #login-card {
           height: 100vh;
       }
       
@@ -114,9 +113,9 @@ export class SignIn extends Component {
       event.preventDefault();
       this.#signin();
     });
-    this.email = this.querySelector('#email');
-    super.addComponentEventListener(this.email, 'input',
-        this.#emailHandler);
+    this.login = this.querySelector('#login');
+    super.addComponentEventListener(this.login, 'input',
+        this.#loginHandler);
     this.password = this.querySelector('#password');
     this.passwordEyeIcon = this.querySelector('#password-eye');
     super.addComponentEventListener(this.password, 'input',
@@ -148,8 +147,8 @@ export class SignIn extends Component {
     `);
   }
 
-  #emailHandler() {
-    this.isValidEmailInput = this.email.value.length > 0;
+  #loginHandler() {
+    this.isValidEmailInput = this.login.value.length > 0;
     this.#formHandler();
   }
 
@@ -167,7 +166,7 @@ export class SignIn extends Component {
     this.#startLoadButton();
     try {
       const {response, body} = await userManagementClient.signIn(
-          this.email.value, this.password.value,
+          this.login.value, this.password.value,
       );
       if (response.ok) {
         this.#loadAndCache(body.refresh_token);
@@ -189,7 +188,7 @@ export class SignIn extends Component {
     const twoFactorComponent = document.createElement(
         'two-factor-auth-component',
     );
-    twoFactorComponent.email = this.email.value;
+    twoFactorComponent.login = this.login.value;
     twoFactorComponent.password = this.password.value;
     const container = this.querySelector('#container');
     container.innerHTML = '';
