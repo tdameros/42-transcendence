@@ -10,9 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
-from common.src.jwt_managers import user_authentication
-from common.src.internal_requests import InternalAuthRequests
 from common.src import settings as common_settings
+from common.src.internal_requests import InternalAuthRequests
+from common.src.jwt_managers import user_authentication
 from shared_code import settings as shared_settings
 
 
