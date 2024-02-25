@@ -211,20 +211,28 @@ class TestsSignin(TestCase):
         url = reverse('signup')
         self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data = {
-            'username': 'aurelien123',
+            'login': 'aurelien123',
             'password': 'Validpass42*',
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
-
         self.assertEqual(result.status_code, 200)
+
         data_wrong_pass = {
-            'username': 'aurelien123',
+            'login': 'aurelien123',
             'password': 'WrongValidpass42*',
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data_wrong_pass), content_type='application/json')
         self.assertEqual(result.status_code, 401)
+
+        data_valid_email = {
+            'login': 'a@a.fr',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signin')
+        result = self.client.post(url, json.dumps(data_valid_email), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
 
 
 class TestsUsernameExist(TestCase):
