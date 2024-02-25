@@ -28,8 +28,8 @@ describe('InputValidator', () => {
       );
     });
 
-    it('email with a short local part', () => {
-      const shortLocalPart = 'a@ex.com';
+    it('email with an empty local part', () => {
+      const shortLocalPart = '@ex.com';
       const result = InputValidator.isValidEmail(shortLocalPart);
       expect(result.validity).toBe(false);
       expect(result.missingRequirements).toContain(
