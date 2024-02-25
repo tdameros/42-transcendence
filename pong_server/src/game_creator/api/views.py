@@ -11,6 +11,7 @@ from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
 from common.src.jwt_managers import user_authentication
+from common.src.internal_requests import InternalAuthRequests
 from shared_code import settings as shared_settings
 
 
@@ -154,6 +155,7 @@ class CreatePrivateGameView(View):
 
         try:
             port: int = GameCreator.create_game_server(0, players, api_name)
+            self.send_private_notification(port, user_id, players[1])
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
@@ -180,3 +182,21 @@ class CreatePrivateGameView(View):
         if not isinstance(opponent_id, int):
             raise Exception(error_messages.OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER)
         return json_body.get('opponent_id')
+
+    @staticmethod
+    def send_private_notification(port: int, user_id: int, opponent_id: int):
+        notification_data = {
+            'title': f'Invitation to a private party from {user_id}',
+            'type': 'private_game',
+            'user_list': [opponent_id],
+            'data': f'{port}',
+        }
+        try:
+            response = InternalAuthRequests.post(
+                url=settings.USER_NOTIFICATION_ENDPOINT,
+                data=json.dumps(notification_data)
+            )
+        except Exception as e:
+            raise Exception(f'Failed to access notification service : {e}')
+        if response.status_code != 201:
+            raise Exception(f'Failed to send notification : {response.json()}')
