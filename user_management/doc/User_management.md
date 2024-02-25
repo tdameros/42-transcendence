@@ -51,7 +51,7 @@ will return a refresh token when successful
 #### Body
 
 mandatory fields :
-- username
+- login (username or email) 
 - password
 
 optional fields :
@@ -59,7 +59,7 @@ optional fields :
 
 > ``` javascript
 > {
->     "username": "Aurel",
+>     "login": "Aurel",
 >     "password": "Validpass21*",
 >     "2fa_code": "123456"
 > }
