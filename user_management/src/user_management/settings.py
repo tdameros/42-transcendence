@@ -261,4 +261,4 @@ STATIC_ROOT = BASE_DIR / 'user/static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-USER_MANAGEMENT_SECRET_KEY = 'jdsildbjfbfb23ofbuildnslp389ny8o3'
+USER_MANAGEMENT_SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
