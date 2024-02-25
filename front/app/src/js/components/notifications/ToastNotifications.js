@@ -33,6 +33,18 @@ export class ToastNotifications extends Component {
     });
   }
 
+  static addErrorNotification(errorMessage) {
+    const toastNotifications = document.querySelector(
+        'toast-notifications-component',
+    );
+    if (toastNotifications) {
+      toastNotifications.addNotification({
+        type: 'error',
+        message: errorMessage,
+      });
+    }
+  }
+
   addNotification(notification) {
     const toastDiv = this.#generateToastNotification(notification);
     toastDiv.setAttribute('toast-id', notification.id);
@@ -53,6 +65,8 @@ export class ToastNotifications extends Component {
       return this.#generateToastFriendRequestNotification(notification);
     } else if (notification.type === 'tournament_start') {
       return this.#generateToastTournamentStartNotification(notification);
+    } else if (notification.type === 'error') {
+      return this.#generateToastErrorNotification(notification);
     }
   }
 
@@ -101,11 +115,14 @@ export class ToastNotifications extends Component {
 
   async #acceptFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.acceptFriend(
+      const {response, body} = await userManagementClient.acceptFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
         this.#removeNotification(notification);
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
       } else {
         getRouter().redirect('/signin/');
       }
@@ -116,11 +133,14 @@ export class ToastNotifications extends Component {
 
   async #declineFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.declineFriend(
+      const {response, body} = await userManagementClient.declineFriend(
           notification.data,
       );
       if (response.ok || response.status !== 401) {
         this.#removeNotification(notification);
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
       } else {
         getRouter().redirect('/signin/');
       }
@@ -175,5 +195,22 @@ export class ToastNotifications extends Component {
     if (this.notificationNav) {
       this.notificationNav.removeNotification(notification);
     }
+  }
+
+  #generateToastErrorNotification(notification) {
+    const toastDiv = document.createElement('div');
+    toastDiv.className = 'toast ';
+    toastDiv.setAttribute('role', 'alert');
+    toastDiv.setAttribute('aria-live', 'assertive');
+    toastDiv.setAttribute('aria-atomic', 'true');
+    toastDiv.innerHTML = `
+      <div class="toast-body bg-danger bg-opacity-25 text-danger-emphasis">
+        <div class="d-flex align-items-center justify-content-between">
+          <p class="m-0">${notification.message}</p>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    `;
+    return toastDiv;
   }
 }

@@ -2,6 +2,7 @@ import {Component} from '@components';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
+import {ToastNotifications} from '@components/notifications';
 
 export class NotificationNav extends Component {
   constructor() {
@@ -199,12 +200,15 @@ export class NotificationNav extends Component {
 
   async #acceptFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.acceptFriend(
+      const {response, body} = await userManagementClient.acceptFriend(
           notification['sender_id'],
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
-      } else {
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
+      } else if (response.status === 401) {
         getRouter().redirect('/signin/');
       }
     } catch (error) {
@@ -219,6 +223,9 @@ export class NotificationNav extends Component {
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
       } else {
         getRouter().redirect('/signin/');
       }
