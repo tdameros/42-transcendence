@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {notificationClient, userManagementClient} from '@utils/api/index.js';
+import {notificationClient, userManagementClient} from '@utils/api';
 import {FriendsCache} from '@utils/cache';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {getRouter} from '@js/Router.js';
@@ -131,8 +131,9 @@ export class Notification extends Component {
 
   async #addUsernameInFriendRequestNotification(notification) {
     try {
+      const userId = parseInt(notification.data);
       const {response, body} =
-        await userManagementClient.getUsernameListInCache([notification.data]);
+        await userManagementClient.getUsernameListInCache([userId]);
       if (response.ok) {
         notification['sender_username'] = body[notification.data];
         return true;

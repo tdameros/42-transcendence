@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
 

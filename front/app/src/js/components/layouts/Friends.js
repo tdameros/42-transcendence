@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {FriendsCache} from '@utils/cache';
 import {getRouter} from '@js/Router.js';
@@ -217,7 +217,7 @@ export class Friends extends Component {
   }
 
   async #addUsernameInFriends(friends) {
-    const friendIds = friends.map((friend) => friend.id);
+    const friendIds = friends.map((friend) => parseInt(friend.id));
     try {
       const {response, body} =
         await userManagementClient.getUsernameListInCache(friendIds);
