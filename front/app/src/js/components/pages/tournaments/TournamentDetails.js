@@ -4,6 +4,7 @@ import {TournamentBracket} from '@pages';
 import {Modal} from 'bootstrap';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
+import {ToastNotifications} from '@components/notifications';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -250,8 +251,7 @@ export class TournamentDetails extends Component {
         await this.loadTournamentDetails(this.tournamentId);
         return true;
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
         return false;
       }
     } catch (error) {
@@ -267,8 +267,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         await this.loadTournamentDetails(this.tournamentId);
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
