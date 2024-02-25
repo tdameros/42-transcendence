@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {NavbarUtils} from '@utils/NavbarUtils.js';
+import {Theme} from '@js/Theme.js';
 
 export class HomeContent extends Component {
   constructor() {
@@ -10,12 +11,13 @@ export class HomeContent extends Component {
   }
   render() {
     return (`
-      <div id="container" class="m-2 card">
-        <div id="text" class="flex-column position-absolute">
+      <div id="container" class="m-2 card light-background">
+        <div id="text" class="d-flex flex-column position-absolute">
           <h1 class="fw-bolder">The Pong Battle Ground!</h1>
-          <p>Challenge the elite</p>
-          <p>Rise though the ranks</p>
-          <p>Dominate the pong arena</p>
+          <p>Challenge your friends or face off against players from around the globe in fast-paced, head-to-head battles</p>
+<!--          <p>Challenge the elite</p>-->
+<!--          <p>Rise though the ranks</p>-->
+<!--          <p>Dominate the pong arena</p>-->
           <multiplayer-content-component></multiplayer-content-component>
         </div>
       </div>
@@ -24,8 +26,11 @@ export class HomeContent extends Component {
   style() {
     return (`
       <style>
-        #container {
-            background: linear-gradient(90deg, rgba(114,151,255,1) 0%, rgba(85,118,227,1) 30%, rgba(40,43,232,1) 100%);
+        .light-background {
+            background: linear-gradient(to bottom, #57c1eb 0%,#246fa8 100%);
+        }
+        .dark-background {
+            background: linear-gradient(to bottom, #020111 10%,#3a3a52 100%);
         }
         @media only screen and (min-aspect-ratio: 1/1) {
             #text {
@@ -56,23 +61,7 @@ export class HomeContent extends Component {
     });
 
     super.addComponentEventListener(window, 'resize', this.resizeEvent);
-  }
-
-  async init() {
-    if (!WebGL.isWebGLAvailable()) {
-      this.container.appendChild(WebGL.getWebGLErrorMessage());
-      return;
-    }
-    this.scene = new THREE.Scene();
-    this.island = await this.getGLTFObject('/assets/models/transcendence.glb');
-    this.boundingBox = new THREE.Box3().setFromObject(this.island);
-    this.size = new THREE.Vector3();
-    this.boundingBox.getSize(this.size);
-    this.setObjectPosition(this.island);
-    this.camera = this.initCamera(this.island, this.size);
-    this.renderer = this.initRenderer();
-    this.scene.add(this.island);
-    this.setLights(this.scene, this.island);
+    super.addComponentEventListener(document, Theme.event, this.themeEvent);
   }
 
   resizeEvent(event) {
@@ -84,6 +73,41 @@ export class HomeContent extends Component {
     this.camera.aspect = this.getContainerWidth() / (this.getContainerHeight());
     this.camera.updateProjectionMatrix();
     this.setCameraPosition(this.camera, this.island, this.size);
+  }
+
+  async themeEvent(event) {
+    if (Theme.get() === 'dark') {
+      this.scene.remove(this.island);
+      this.island = await this.getGLTFObject('/assets/models/island_dark.glb');
+      this.setObjectPosition(this.island);
+      this.container.classList.remove('light-background');
+      this.container.classList.add('dark-background');
+      this.directionalLight.intensity = 0.5;
+      this.scene.add(this.island);
+    }
+    else {
+      this.scene.remove(this.island);
+      this.island = await this.getGLTFObject('/assets/models/island.glb');
+      this.setObjectPosition(this.island);
+      this.container.classList.remove('dark-background');
+      this.container.classList.add('light-background');
+      this.directionalLight.intensity = 2.0;
+      this.scene.add(this.island);
+    }
+  }
+
+  async init() {
+    if (!WebGL.isWebGLAvailable()) {
+      this.container.appendChild(WebGL.getWebGLErrorMessage());
+      return;
+    }
+    this.scene = new THREE.Scene();
+    this.island = await this.getGLTFObject('/assets/models/island.glb');
+    this.setObjectPosition(this.island);
+    this.camera = this.initCamera(this.island, this.size);
+    this.renderer = this.initRenderer();
+    this.scene.add(this.island);
+    this.setLights(this.island);
   }
 
   initRenderer() {
@@ -142,6 +166,9 @@ export class HomeContent extends Component {
   }
 
   setObjectPosition(object) {
+    this.boundingBox = new THREE.Box3().setFromObject(this.island);
+    this.size = new THREE.Vector3();
+    this.boundingBox.getSize(this.size);
     const boundingBoxCenter = new THREE.Vector3();
     this.boundingBox.getCenter(boundingBoxCenter);
     const offset = new THREE.Vector3()
@@ -151,23 +178,23 @@ export class HomeContent extends Component {
     object.position.add(offset);
   }
 
-  setLights(scene, object) {
+  setLights(object) {
     const hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010);
-    const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
+    this.directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
 
-    directionalLight.position.set(
+    this.directionalLight.position.set(
         object.position.x + this.size.x,
         object.position.y + this.size.y,
         object.position.z + this.size.z,
     );
-    directionalLight.target.position.set(
+    this.directionalLight.target.position.set(
         object.position.x,
         object.position.y,
         object.position.z,
     );
-    directionalLight.castShadow = true;
-    scene.add(directionalLight);
-    scene.add(hemisphereLight);
+    this.directionalLight.castShadow = true;
+    this.scene.add(this.directionalLight);
+    this.scene.add(hemisphereLight);
   }
 
   loadGLTFModel(path) {
