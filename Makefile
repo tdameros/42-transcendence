@@ -2,22 +2,27 @@ DOCKER_COMPOSE_PATH		=	docker-compose.yaml
 DOCKER_COMPOSE			=	docker compose -f $(DOCKER_COMPOSE_PATH)
 DOCKER_COMPOSE_TIMEOUT	=	--timeout 1
 
-FRONT_DB_VOLUME_PATH			=	front/docker/volumes/db
 USER_MANAGEMENT_DB_VOLUME_PATH	=	user_management/docker/volumes/db
 USER_STATS_DB_VOLUME_PATH		=	user_stats/docker/volumes/db
 MATCHMAKING_DB_VOLUME_PATH		=	matchmaking/docker/volumes/db
 TOURNAMENT_DB_VOLUME_PATH		=	tournament/docker/volumes/db
+NOTIFICATION_DB_VOLUME_PATH		=	notification/docker/volumes/db
 
-FRONT_DIST_VOLUME_PATH          =   front/app/dist
 
-DB_VOLUMES						=	$(FRONT_DB_VOLUME_PATH) \
-									$(USER_MANAGEMENT_DB_VOLUME_PATH) \
+FRONT_DIST_VOLUME_PATH          =   front/docker/volumes/dist
+USER_MANAGEMENT_MEDIA_VOLUME_PATH=	user_management/docker/volumes/media
+
+DB_VOLUMES						=	$(USER_MANAGEMENT_DB_VOLUME_PATH) \
 									$(USER_STATS_DB_VOLUME_PATH) \
 									$(MATCHMAKING_DB_VOLUME_PATH) \
-									$(TOURNAMENT_DB_VOLUME_PATH)
+									$(TOURNAMENT_DB_VOLUME_PATH) \
+									$(NOTIFICATION_DB_VOLUME_PATH)
 
 VOLUMES                         =   $(FRONT_DIST_VOLUME_PATH) \
+									$(USER_MANAGEMENT_MEDIA_VOLUME_PATH) \
                                     $(DB_VOLUMES)
+
+SSL_IMAGE_NAME                  =   ssl_certificate_generator
 
 .PHONY: all
 all:
@@ -29,17 +34,25 @@ all:
 
 .PHONY: generate_ssl_certificate
 generate_ssl_certificate:
-	docker build -t ssl_certificate_generator ./ssl
+	docker build -t $(SSL_IMAGE_NAME) ./ssl
 	mkdir -p ssl/certs
-	docker run -v ./ssl/certs:/app/ssl ssl_certificate_generator
+	docker run -v ./ssl/certs:/app/ssl $(SSL_IMAGE_NAME)
+
+.PHONY: generate_env
+generate_env:
+	python3 ./common/src/generate_env.py
 
 .PHONY: up
 up: create_volume_path
 	$(DOCKER_COMPOSE) up --detach --build
 
 .PHONY: down
-down:
+down: delete_ssl_container
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
+
+.PHONY: reup
+reup: down
+	$(MAKE) up
 
 .PHONY: start
 start:
@@ -54,8 +67,9 @@ restart:
 	$(DOCKER_COMPOSE) restart $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: clean
-clean:
+clean: delete_ssl_container
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT) --volumes --rmi all
+	docker rmi $(SSL_IMAGE_NAME)
 
 .PHONY: fclean
 fclean: clean
@@ -72,3 +86,9 @@ create_volume_path:
 .PHONY: delete_volume_path
 delete_volume_path:
 	$(RM) -r $(VOLUMES)
+
+.PHONY: delete_ssl_container
+delete_ssl_container:
+	if [ -n "$$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME))" ]; then \
+        docker rm -f $$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME)); \
+    fi

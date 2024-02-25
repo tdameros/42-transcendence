@@ -71,7 +71,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
 
         self.run_test({
             'game_id': 1,
-            'players': [1, None, None, 4],
+            'players': [1, None, 3, 4],
             'request_issuer': settings.TOURNAMENT
         }, {
             'port': port

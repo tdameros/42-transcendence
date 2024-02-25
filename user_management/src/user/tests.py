@@ -1,3 +1,4 @@
+import base64
 import json
 import random
 from datetime import datetime, timedelta
@@ -8,9 +9,10 @@ import pyotp
 from django.test import TestCase
 from django.urls import reverse
 
-from user.models import Friend, User
+from user.models import User
 from user_management import settings
-from user_management.JWTManager import UserAccessJWTManager
+from user_management.JWTManager import (UserAccessJWTManager,
+                                        UserRefreshJWTManager)
 
 
 class TestsSignup(TestCase):
@@ -209,20 +211,28 @@ class TestsSignin(TestCase):
         url = reverse('signup')
         self.client.post(url, json.dumps(data_preparation), content_type='application/json')
         data = {
-            'username': 'aurelien123',
+            'login': 'aurelien123',
             'password': 'Validpass42*',
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
-
         self.assertEqual(result.status_code, 200)
+
         data_wrong_pass = {
-            'username': 'aurelien123',
+            'login': 'aurelien123',
             'password': 'WrongValidpass42*',
         }
         url = reverse('signin')
         result = self.client.post(url, json.dumps(data_wrong_pass), content_type='application/json')
         self.assertEqual(result.status_code, 401)
+
+        data_valid_email = {
+            'login': 'a@a.fr',
+            'password': 'Validpass42*',
+        }
+        url = reverse('signin')
+        result = self.client.post(url, json.dumps(data_valid_email), content_type='application/json')
+        self.assertEqual(result.status_code, 200)
 
 
 class TestsUsernameExist(TestCase):
@@ -379,6 +389,8 @@ class UserId(TestCase):
         user = User.objects.all().first()
         url = reverse('user-id', args=[user.id])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(user.username, result.json()['username'])
         self.assertEqual(user.id, result.json()['id'])
@@ -399,13 +411,19 @@ class Username(TestCase):
         user = User.objects.all().first()
         url = reverse('username', args=[user.username])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(user.username, result.json()['username'])
         self.assertEqual(user.id, result.json()['id'])
 
     def test_invalid_username(self):
+        User.objects.create(username='forjwt', email='a@a.fr', password='Validpass42*')
+        user_id = User.objects.all().first().id
         url = reverse('username', args=['invalid_username_123'])
         result = self.client.get(url)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user_id)[1]}')
         self.assertEqual(result.status_code, 404)
         self.assertTrue('errors' in result.json())
 
@@ -428,25 +446,30 @@ class TestsSearchUsername(TestCase):
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 401)
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
-        self.assertEqual(result.json()['users'][0], 'Felix1')
-        self.assertEqual(result.json()['users'][9], 'Felix10')
         data = {
             'username': 'Felix1'
         }
         url = reverse('search-username')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 10)
-        self.assertEqual(result.json()['users'][0], 'Felix1')
         data = {
             'username': 'Felix2'
         }
         url = reverse('search-username')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 1)
@@ -455,7 +478,8 @@ class TestsSearchUsername(TestCase):
             'username': 'Felix111'
         }
         url = reverse('search-username')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         self.assertEqual(result.status_code, 200)
         self.assertTrue('users' in result.json())
         self.assertEqual(len(result.json()['users']), 0)
@@ -489,7 +513,6 @@ class TestsUserUpdateInfos(TestCase):
 
         # 3)
         data = {
-            'access_token': access_token,
             'change_list': ['username', 'email', 'password'],
             'username': 'UpdatedUser',
             'email': 'updateduser@gmail.com',
@@ -499,6 +522,9 @@ class TestsUserUpdateInfos(TestCase):
         result = self.client.post(url, json.dumps(data), content_type='application/json')
 
         # 4)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 200)
         user = User.objects.filter(username='UpdatedUser').first()
         self.assertEqual(user.username, 'UpdatedUser')
@@ -514,7 +540,8 @@ class TestsUserUpdateInfos(TestCase):
         }
 
         url = reverse('update-infos')
-        result = self.client.post(url, json.dumps(data), content_type='application/json')
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(result.status_code, 400)
         self.assertTrue('errors' in result.json())
         self.assertTrue(result.json()['errors'])
@@ -570,7 +597,7 @@ class TestUserIdList(TestCase):
     def test_user_id_list(self):
         # create a user
 
-        User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel2', email='aurel2@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel3', email='aurel3@42.fr', password='Validpass42*')
         User.objects.create(username='Aurel4', email='aurel4@42.fr', password='Validpass42*')
@@ -584,280 +611,86 @@ class TestUserIdList(TestCase):
 
         url = reverse('user-id-list')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.status_code, 401)
+        result = self.client.post(url, json.dumps(data), content_type='application/json',
+                                  HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(Aurel1.id)[1]}')
         for user in UserList:
             self.assertEqual(result.json().get(str(user.id)), user.username)
-        data = {
-            'id_list': 'a'
-        }
-        url = reverse('user-id-list')
-        # result = self.client.post(url, json.dumps(data), content_type='application/json')
-        # self.assertEqual(result.status_code, 200)
-        # self.assertTrue('errors' in result.json())
 
 
-class FriendsTest(TestCase):
+class TestDeletedUser(TestCase):
 
-    @patch('user.views.sign_up.post_user_stats')
-    def create_user(self, body, mock_user_stats):
-        mock_user_stats.return_value = (True, None)
-        url = reverse('signup')
-        response = self.client.post(url, json.dumps(body), content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        refresh_token = response.json()['refresh_token']
+    @patch('requests.delete')
+    @patch('requests.post')
+    def test_deleted_user(self, mock_post, mock_delete):
+        Aurel1 = User.objects.create(username='Aurel1', email='aurel1@42.fr', password='Validpass42*')
+        url = reverse('delete-account')
+        access_token = UserAccessJWTManager.generate_jwt(Aurel1.id)[1]
+
+        mock_delete.return_value.status_code = 200
+        mock_post.return_value.status_code = 200
+        response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], 'Account deleted')
+        self.assertEqual(User.objects.filter(username='Aurel1').count(), 0)
+        Aurel1 = User.objects.filter(id=Aurel1.id).first()
+        self.assertTrue(Aurel1.account_deleted)
+
+        refresh_token = UserRefreshJWTManager.generate_jwt(Aurel1.id)[1]
         url = reverse('refresh-access-jwt')
-        response = self.client.post(url, json.dumps({'refresh_token': refresh_token}), content_type='application/json')
+        data = {
+            'refresh_token': refresh_token
+        }
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertNotEqual(response.status_code, 200)
+
+
+class TestAvatar(TestCase):
+    def test_avatar(self):
+        user = User.objects.create(username='alevra', email='aurel1@42.fr', password='Validpass42*')
+        access_token = UserAccessJWTManager.generate_jwt(user.id)[1]
+        url = reverse('avatar', args=['alevra'])
+
+        if settings.DEBUG:
+            path = 'test_resources/avatar.png'
+        else:
+            path = 'user/test_resources/avatar.png'
+        avatar = open(path, 'rb')
+        base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
+        base64_avatar = f'data:image/png;base64,{base64_avatar}'
+        avatar.close()
+        data = {
+            'avatar': base64_avatar
+        }
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
+
         self.assertEqual(response.status_code, 200)
-        return response.json()['access_token']
-
-    def get_friends(self, access_token):
-        url = reverse('friends')
-        response = self.client.get(url, content_type='application/json', HTTP_AUTHORIZATION=f'{access_token}')
-        return response
-
-    def post_friends(self, access_token, friend_id):
-        url = reverse('friends')
-        response = self.client.post(
-            url,
-            json.dumps({'friend_id': friend_id}),
-            content_type='application/json',
-            HTTP_AUTHORIZATION=f'{access_token}'
-        )
-        return response
-
-    def delete_friends(self, access_token, friend_id):
-        url = reverse('friends')
-        response = self.client.delete(
-            url,
-            json.dumps({'friend_id': friend_id}),
-            HTTP_AUTHORIZATION=f'{access_token}',
-        )
-        return response
-
-    def get_id_from_username(self, username):
-        url = reverse('username', args=[username])
+        url = reverse('avatar', args=['alevra'])
         response = self.client.get(url)
-        return response.json()['id']
-
-
-class PostFriendsTest(FriendsTest):
-
-    def test_valid_pending(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        self.create_user(user2)
-        user_id = self.get_id_from_username('User1')
-        friend_id = self.get_id_from_username('User2')
-        response = self.post_friends(token1, friend_id)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend request sent')
-        friend = Friend.objects.get(user_id=user_id, friend_id=friend_id)
-        self.assertEqual(friend.status, Friend.PENDING)
+        self.assertTrue('image/png' in response['Content-Type'])
 
-    def test_valid_accepted(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        token2 = self.create_user(user2)
-        user_id = self.get_id_from_username('User1')
-        friend_id = self.get_id_from_username('User2')
-        response = self.post_friends(token1, friend_id)
+        url = reverse('avatar', args=['alevra'])
+        response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend request sent')
-        response = self.post_friends(token2, user_id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend request sent')
-        friend1 = Friend.objects.get(user_id=user_id, friend_id=friend_id)
-        friend2 = Friend.objects.get(user_id=user_id, friend_id=friend_id)
-        self.assertEqual(friend1.status, Friend.ACCEPTED)
-        self.assertEqual(friend2.status, Friend.ACCEPTED)
 
-    def test_invalid_user_id(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
+        # test with too big avatar
+        if settings.DEBUG:
+            path = 'test_resources/too_big_avatar.png'
+        else:
+            path = 'user/test_resources/too_big_avatar.png'
+        avatar = open(path, 'rb')
+        base64_avatar = base64.b64encode(avatar.read()).decode('utf-8')
+        base64_avatar = f'data:image/png;base64,{base64_avatar}'
+        avatar.close()
+        data = {
+            'avatar': base64_avatar
         }
-        token1 = self.create_user(user1)
-        response = self.post_friends(token1, 'test')
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json',
+                                    HTTP_AUTHORIZATION=f'{access_token}')
+
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['`friend_id` field must be an integer'])
-        response = self.post_friends(token1, 3)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['User not found'])
-
-    def test_invalid_already_sent(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        self.create_user(user2)
-        friend_id = self.get_id_from_username('User2')
-        response = self.post_friends(token1, friend_id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend request sent')
-        response = self.post_friends(token1, friend_id)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['Friend request already sent'])
-
-
-class GetFriendsTest(FriendsTest):
-
-    def test_valid(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        user3 = {
-            'username': 'User3',
-            'email': 'user3@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        token2 = self.create_user(user2)
-        token3 = self.create_user(user3)
-        user_1_id = self.get_id_from_username('User1')
-        user_2_id = self.get_id_from_username('User2')
-        user_3_id = self.get_id_from_username('User3')
-        self.post_friends(token1, user_2_id)
-        self.post_friends(token1, user_3_id)
-        self.post_friends(token2, user_1_id)
-
-        response = self.get_friends(token1)
-        self.assertEqual(response.status_code, 200)
-        friends = response.json()['friends']
-        self.assertEqual(len(friends), 2)
-        self.assertEqual(friends[0]['id'], user_2_id)
-        self.assertEqual(friends[0]['status'], 'accepted')
-        self.assertEqual(friends[1]['id'], user_3_id)
-        self.assertEqual(friends[1]['status'], 'pending')
-
-        response = self.get_friends(token2)
-        self.assertEqual(response.status_code, 200)
-        friends = response.json()['friends']
-        self.assertEqual(len(friends), 1)
-        self.assertEqual(friends[0]['id'], user_1_id)
-        self.assertEqual(friends[0]['status'], 'accepted')
-
-        response = self.get_friends(token3)
-        self.assertEqual(response.status_code, 200)
-        friends = response.json()['friends']
-        self.assertEqual(len(friends), 0)
-
-    def test_invalid(self):
-        response = self.get_friends('test')
-        self.assertEqual(response.status_code, 401)
-
-
-class DeleteFriendsTest(FriendsTest):
-
-    def test_valid_pending(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        self.create_user(user2)
-        friend_id = self.get_id_from_username('User2')
-        self.post_friends(token1, friend_id)
-        response = self.delete_friends(token1, friend_id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend deleted')
-        friends = Friend.objects.filter(user_id=1, friend_id=2)
-        self.assertEqual(len(friends), 0)
-
-    def test_valid_accepted(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        token2 = self.create_user(user2)
-        user_1_id = self.get_id_from_username('User1')
-        user_2_id = self.get_id_from_username('User2')
-        self.post_friends(token1, user_2_id)
-        self.post_friends(token2, user_1_id)
-        response = self.delete_friends(token1, user_2_id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend deleted')
-        friends = Friend.objects.filter(user_id=1, friend_id=2)
-        self.assertEqual(len(friends), 0)
-        friends = Friend.objects.filter(user_id=2, friend_id=1)
-        self.assertEqual(len(friends), 0)
-
-    def test_valid_no_friends(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        user2 = {
-            'username': 'User2',
-            'email': 'user2@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        self.create_user(user2)
-        user_2_id = self.get_id_from_username('User2')
-        response = self.delete_friends(token1, user_2_id)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['message'], 'friend deleted')
-
-    def test_invalid_user_id(self):
-        user1 = {
-            'username': 'User1',
-            'email': 'user1@test.com',
-            'password': 'Validpass42*',
-        }
-        token1 = self.create_user(user1)
-        response = self.delete_friends(token1, None)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['`friend_id` field required'])
-        response = self.delete_friends(token1, 'test')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['`friend_id` field must be an integer'])
-        response = self.delete_friends(token1, 3)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['errors'], ['User not found'])

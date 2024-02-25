@@ -108,6 +108,11 @@ export class UserProfileChartsCards extends Component {
                 const index = tooltipItems[0].parsed.x;
                 return tooltipItems[0].dataset.labelsToolTip[index];
               },
+              label: function(tooltipItems) {
+                const unit = tooltipItems.datasetIndex === 0 ? '' : '%';
+                const newLabel = `${tooltipItems.dataset.label} : ${tooltipItems.parsed.y}${unit}`;
+                return newLabel;
+              },
             },
           },
         },
@@ -145,6 +150,9 @@ export class UserProfileChartsCards extends Component {
             suggestedMax: 100,
             ticks: {
               maxTicksLimit: 5,
+              callback: function(value, index, values) {
+                return value + '%';
+              },
             },
           },
         },
@@ -168,9 +176,7 @@ export class UserProfileChartsCards extends Component {
         datasets: [{
           label: 'Number of Games',
           data: matchesPlayed,
-          backgroundColor: 'rgba(235,54,69,0.6)',
-          borderColor: 'rgb(154,25,64)',
-          borderWidth: 1,
+          backgroundColor: 'rgba(254,100,132,1)',
         }],
       },
       options: {

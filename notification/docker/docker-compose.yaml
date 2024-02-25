@@ -1,0 +1,35 @@
+services:
+    notification:
+        networks:
+            - transcendence
+            - notification
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: sh -c "cp -r /app/notification /app/src &&
+                        cp -r /app/common /app/src/common &&
+                        python3 src/manage.py makemigrations &&
+                        python3 src/manage.py migrate &&
+                        cd /app/src &&
+                        daphne -e ssl:443:privateKey=/app/ssl/private.key:certKey=/app/ssl/certificate.crt notification.asgi:application"
+        volumes:
+            - notification_code:/app/notification
+            - common_code:/app/common
+            - ssl_certs:/app/ssl
+        ports:
+            - "6005:443"
+        depends_on:
+            - notification-db
+        restart: on-failure
+
+    notification-db:
+        networks:
+            - notification
+        image: postgres:16.0-bookworm
+        environment:
+            POSTGRES_DB: mydatabase
+            POSTGRES_USER: myuser
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - notification_postgres_volume:/var/lib/postgresql/data
+        restart: on-failure

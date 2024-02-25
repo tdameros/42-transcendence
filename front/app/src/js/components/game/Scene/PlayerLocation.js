@@ -13,10 +13,17 @@ export class PlayerLocation {
     this.#playerIndex = playerLocationJson['player_index'];
   }
 
+  getPlayerMatchFromScene(scene) {
+    if (this.#isLooser === true) {
+      return null;
+    }
+    return scene.getMatchFromKey(this.#matchKey);
+  }
+
   getPlayerFromScene(scene) {
     if (this.#isLooser === true) {
       return scene.loosers[this.#playerIndex];
     }
-    return scene.getMatchFromKey(this.#matchKey).players[this.#playerIndex];
+    return this.getPlayerMatchFromScene(scene).players[this.#playerIndex];
   }
 }

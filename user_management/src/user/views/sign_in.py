@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -35,10 +36,9 @@ class SignInView(View):
             return JsonResponse(data={'errors': ['Invalid JSON format in the request body']}, status=400)
 
         try:
-            validation_errors = SignInView.signin_infos_validation(json_request)
+            user, validation_errors = SignInView.signin_infos_validation(json_request)
             if validation_errors:
                 return JsonResponse(data={'errors': validation_errors}, status=401)
-            user = User.objects.filter(username=json_request['username']).first()
             if user.has_2fa:
                 return handle_2fa_code(user, json_request)
             return return_refresh_token(user)
@@ -49,18 +49,30 @@ class SignInView(View):
     def signin_infos_validation(json_request):
         validation_errors = []
 
-        username = json_request.get('username')
+        login = json_request.get('login')
         password = json_request.get('password')
-        if username is None:
-            validation_errors.append('Username empty')
+        if login is None:
+            validation_errors.append('Login empty')
         if password is None:
             validation_errors.append('Password empty')
-        if username is None or password is None:
-            return validation_errors
-        user = User.objects.filter(username=username).first()
+        if login is None or password is None:
+            return None, validation_errors
+        user, error = SignInView.get_user_by_login(login)
         if user is None:
-            validation_errors.append('Username not found')
-        elif user is not None and password != user.password:
+            validation_errors.append(error)
+        elif user is not None and check_password(password, user.password) is False:
             validation_errors.append('Invalid password')
+        return user, validation_errors
 
-        return validation_errors
+    @staticmethod
+    def get_user_by_login(login: str) -> (User, str):
+        try:
+            user = User.objects.get(username=login)
+        except User.DoesNotExist:
+            try:
+                user = User.objects.get(email=login)
+            except User.DoesNotExist:
+                return None, 'User not found'
+        except Exception as error:
+            return None, error
+        return user, None

@@ -2,7 +2,7 @@ import {Component} from '@components';
 import {InputValidator} from '@utils/InputValidator.js';
 import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {Cookies} from '@js/Cookies.js';
 import {JWT} from '@utils/JWT.js';

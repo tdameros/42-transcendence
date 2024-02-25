@@ -12,14 +12,14 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Match, Player, Tournament
 from api.views.match_utils import MatchUtils
+from common.src.jwt_managers import service_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class StartMatchView(View):
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO: add service authentication when implemented
-
         try:
             body = json.loads(request.body.decode('utf8'))
         except Exception:
@@ -90,11 +90,10 @@ class StartMatchView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class EndMatchView(View):
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO: add service authentication when implemented
-
         try:
             body = json.loads(request.body.decode('utf8'))
         except Exception:
@@ -202,10 +201,10 @@ class EndMatchView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class AddPointView(View):
     @staticmethod
     def post(request: HttpRequest, tournament_id: int) -> JsonResponse:
-        # TODO: add service authentication when implemented
         try:
             body = json.loads(request.body.decode('utf8'))
         except Exception:

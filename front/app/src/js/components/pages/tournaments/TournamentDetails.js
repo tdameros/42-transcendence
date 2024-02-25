@@ -12,7 +12,7 @@ export class TournamentDetails extends Component {
 
   render() {
     return (`
-      <div class="card mb-3 mt-3 overflow-auto">
+      <div class="card overflow-auto">
           <div class="card-header">
               ${this.#generatePlaceholderHeader()}
           </div>
@@ -74,8 +74,9 @@ export class TournamentDetails extends Component {
     super.addComponentEventListener(this.joinModalBtn, 'click',
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
-      this.modalAlert.setAttribute('alert-display', 'false');
+      this.modalAlert = this.querySelector('#join-alert-modal');
       this.modalAlert.setAttribute('alert-message', '');
+      this.modalAlert.setAttribute('alert-display', 'false');
       this.joinModalNickname.value = '';
       this.modalPassword.value = '';
     });
@@ -88,7 +89,7 @@ export class TournamentDetails extends Component {
   loadNoTournament() {
     this.header.innerHTML = 'No tournament selected';
     this.body.innerHTML = `
-      <div class="alert alert-warning" role="alert">
+      <div class="text-center text-secondary" role="alert">
         Please select a tournament
       </div>
     `;
@@ -166,7 +167,7 @@ export class TournamentDetails extends Component {
   }
 
   #generateHeader(tournament, userId) {
-    if (tournament['admin'] === localStorage.getItem('username')) {
+    if (tournament['admin-id'] === userId) {
       return (`
         ${tournament['name']} 
         ${this.#canJoin(tournament, userId) ? `<button id="join-btn" type="button" class="btn btn-success btn-sm">Join</button>` : ''}
@@ -195,7 +196,7 @@ export class TournamentDetails extends Component {
   #generatePlayersList(players) {
     if (players.length === 0) {
       return (`
-        <div class="alert alert-warning" role="alert">
+        <div class="text-center text-secondary" role="alert">
           No players registered yet
         </div>
       `);
@@ -311,6 +312,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         this.joinModal.hide();
         await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
       } else {
         this.joinModalAlert.setAttribute('alert-message', body['errors'][0]);
         this.joinModalAlert.setAttribute('alert-display', 'true');

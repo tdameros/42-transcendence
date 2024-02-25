@@ -9,8 +9,10 @@ from api.JsonResponseException import JsonResponseException
 
 class GameCreator(object):
     @staticmethod
-    def create_game_server(game_id: int, players: list[Optional[int]]) -> int:
-        process: subprocess.Popen = GameCreator._start_server(game_id, players)
+    def create_game_server(game_id: int,
+                           players: list[Optional[int]],
+                           api_name: str) -> int:
+        process: subprocess.Popen = GameCreator._start_server(game_id, players, api_name)
 
         while process.poll() is None:
             line = process.stdout.readline()
@@ -26,9 +28,11 @@ class GameCreator(object):
                                     status=500)
 
     @staticmethod
-    def _start_server(game_id: int, players: list[Optional[int]]) -> subprocess.Popen:
+    def _start_server(game_id: int,
+                      players: list[Optional[int]],
+                      api_name: str) -> subprocess.Popen:
         try:
-            command = ['python3', 'main.py', str(game_id)]
+            command = ['python3', 'main.py', str(game_id), api_name]
             for player in players:
                 command.append(str(player))
             return subprocess.Popen(command,

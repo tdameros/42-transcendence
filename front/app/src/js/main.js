@@ -14,7 +14,7 @@ Theme.init();
 const app = document.querySelector('#app');
 
 const router = new Router(app, [
-  new Route('/singleplayer/', 'singleplayer-component'),
+  new Route('/local/', 'local-component'),
   new Route('/multiplayer/', 'multiplayer-component'),
   new Route('/tournaments/', 'tournaments-component'),
   new Route('/tournaments/page/:id', 'tournaments-component'),

@@ -18,6 +18,7 @@ from common.src import settings as common_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+APPEND_SLASH = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -28,12 +29,15 @@ DEBUG = False
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
     USER_STATS_URL = 'http://localhost:8002/'
+    NOTIFICATION_URL = 'http://localhost:8003/'
 else:
     USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
     USER_STATS_URL = common_settings.USER_STATS_URL
+    NOTIFICATION_URL = common_settings.NOTIFICATION_URL
 
 USER_MANAGEMENT_USER_ENDPOINT = USER_MANAGEMENT_URL + 'user/id/'
 USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
+USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'
 
 MIN_TOURNAMENT_NAME_LENGTH = 3
 MAX_TOURNAMENT_NAME_LENGTH = 20
