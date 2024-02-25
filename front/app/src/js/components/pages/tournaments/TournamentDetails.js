@@ -74,8 +74,9 @@ export class TournamentDetails extends Component {
     super.addComponentEventListener(this.joinModalBtn, 'click',
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
-      this.modalAlert.setAttribute('alert-display', 'false');
+      this.modalAlert = this.querySelector('#join-alert-modal');
       this.modalAlert.setAttribute('alert-message', '');
+      this.modalAlert.setAttribute('alert-display', 'false');
       this.joinModalNickname.value = '';
       this.modalPassword.value = '';
     });
