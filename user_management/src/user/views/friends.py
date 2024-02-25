@@ -57,7 +57,7 @@ class FriendsBaseView(View):
             )
         except Exception as e:
             raise Exception(f'Failed to access notification service : {e}')
-        if response.status_code != 201:
+        if not response.ok:
             raise Exception(f'Failed to send friend request notification : {response.text}')
 
     @staticmethod
@@ -75,7 +75,7 @@ class FriendsBaseView(View):
             response = InternalAuthRequests.post(url, data=json.dumps(data))
         except Exception as e:
             raise Exception(f'Failed to access user-stats : {e}')
-        if response.status_code != 201:
+        if not response.ok:
             raise Exception(f'Failed to update friends in user-stats : {response.text}')
 
 
@@ -141,7 +141,7 @@ class FriendsView(FriendsBaseView):
                 'deleted_relationship': [user_id, friend_id]
             })
         )
-        if response.status_code != 200:
+        if not response.ok:
             raise Exception(f'Failed to send delete friend notification : {response.text}')
 
 
@@ -233,7 +233,7 @@ class FriendsAcceptView(FriendsBaseView):
                 'new_relationship': [user_id, friend_id]
             })
         )
-        if response.status_code != 200:
+        if not response.ok:
             raise Exception(f'Failed to send add friend notification : {response.text}')
 
 
