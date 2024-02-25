@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {notificationClient, userManagementClient} from '@utils/api/index.js';
+import {notificationClient, userManagementClient} from '@utils/api';
 import {FriendsCache} from '@utils/cache';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {getRouter} from '@js/Router.js';

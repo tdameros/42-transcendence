@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 
 export class Navbar extends Component {
   constructor() {

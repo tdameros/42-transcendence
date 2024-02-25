@@ -1,7 +1,7 @@
 import {JSONRequests} from '@utils/JSONRequests.js';
 import {JWT} from '@utils/JWT.js';
 import {UserManagementClient} from './UserManagementClient.js';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {Cache} from '@utils/cache';
 
 export class BaseApiClient {
