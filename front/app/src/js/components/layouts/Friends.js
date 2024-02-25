@@ -217,7 +217,7 @@ export class Friends extends Component {
   }
 
   async #addUsernameInFriends(friends) {
-    const friendIds = friends.map((friend) => friend.id);
+    const friendIds = friends.map((friend) => parseInt(friend.id));
     try {
       const {response, body} =
         await userManagementClient.getUsernameListInCache(friendIds);
