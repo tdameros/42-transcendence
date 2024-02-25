@@ -122,6 +122,17 @@ describe('InputValidator', () => {
       );
     });
 
+    it('password without a lowercase letter', () => {
+      const passwordWithoutLowercase = 'WEAKPASSWORD1!';
+      const result = InputValidator.isValidSecurePassword(
+          passwordWithoutLowercase,
+      );
+      expect(result.validity).toBe(false);
+      expect(result.missingRequirements).toContain(
+          InputValidator.MessagePasswordLowerCase,
+      );
+    });
+
     it('password without a special character', () => {
       const passwordWithoutSpecialChar = 'StrongPassword123';
       const result = InputValidator.isValidSecurePassword(

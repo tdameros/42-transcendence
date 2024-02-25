@@ -3,8 +3,8 @@ export class InputValidator {
   static usernameMinLength = 2;
   static passwordMaxLength = 20;
   static passwordMinLength = 8;
-  static emailMaxLength = 60;
-  static emailLocalMinLength = 5;
+  static emailMaxLength = 320;
+  static emailLocalMinLength = 1;
 
   static MessageEmailMaxLength =
     `Email must contain a maximum of ${
@@ -35,6 +35,8 @@ export class InputValidator {
     } characters.`;
   static MessagePasswordUpperCase =
     `Password must contain at least one uppercase letter.`;
+  static MessagePasswordLowerCase =
+    `Password must contain at least one lowercase letter.`;
   static MessagePasswordNumber =
     `Password must contain at least one number.`;
   static MessagePasswordSpecialChar =
@@ -49,7 +51,7 @@ export class InputValidator {
   }
 
   static isValidEmail(email) {
-    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    const emailRegex = /^[\w-_.]+@([\w-]+\.)+[\w-]{2,}$/;
     const missingRequirements = [];
     if (email.length > InputValidator.emailMaxLength) {
       missingRequirements.push(InputValidator.MessageEmailMaxLength);
@@ -80,6 +82,7 @@ export class InputValidator {
 
   static isValidSecurePassword(password) {
     const uppercaseRegex = /[A-Z]/;
+    const lowercaseRegex = /[a-z]/;
     const numberRegex = /[0-9]/;
     const specialCharacterRegex = /[^\w\s]/g;
     const missingRequirements = [];
@@ -92,6 +95,9 @@ export class InputValidator {
     }
     if (!uppercaseRegex.test(password)) {
       missingRequirements.push(InputValidator.MessagePasswordUpperCase);
+    }
+    if (!lowercaseRegex.test(password)) {
+      missingRequirements.push(InputValidator.MessagePasswordLowerCase);
     }
     if (!numberRegex.test(password)) {
       missingRequirements.push(InputValidator.MessagePasswordNumber);
