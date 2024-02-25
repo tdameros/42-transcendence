@@ -79,7 +79,6 @@ class FriendsBaseView(View):
             raise Exception(f'Failed to update friends in user-stats : {response.text}')
 
 
-
 class FriendsView(FriendsBaseView):
     @staticmethod
     def get(request: HttpRequest):
