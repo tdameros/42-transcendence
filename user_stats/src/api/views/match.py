@@ -93,7 +93,6 @@ class MatchView(View):
         match.user_elo = user.elo
         match.user_win_rate = user.win_rate
         match.user_matches_played = user.matches_played
-        match.user_friends = user.friends
         match.user_expected_result = MatchView.calculate_expected_result(user.elo, match.opponent.elo) * 100
         match.date = date
         return match

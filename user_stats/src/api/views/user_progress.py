@@ -8,7 +8,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
-from api.models import Match, User
+from api.models import FriendsHistory, Match, User
 from common.src.jwt_managers import user_authentication
 
 
@@ -23,32 +23,44 @@ class UserProgressView(View):
             return JsonResponse({'errors': errors}, status=400)
         days = request.GET.get('days', '7')
 
-        return UserProgressView.get_progress_data(user_id, days)
+        return UserProgressView.get_progress_data(user_id, int(days))
 
     @staticmethod
-    def get_progress_data(user_id: int, days):
+    def get_progress_data(user_id: int, days: int):
         progress = {
             'elo': 0,
             'win_rate': 0,
             'matches_played': 0,
             'friends': 0,
         }
-        date = timezone.now() - datetime.timedelta(days=int(days))
+        date = timezone.now() - datetime.timedelta(days=days)
         try:
             match = Match.objects.filter(user_id=user_id, date__gte=date).order_by('date').first()
         except Exception as e:
-            return JsonResponse({'errors': [str(e)]}, status=400)
-        if match is None:
-            return JsonResponse(progress, status=200)
+            return JsonResponse({'errors': [str(e)]}, status=500)
         try:
             user = User.objects.get(pk=user_id)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
+        try:
+            progress['friends'] = UserProgressView.get_friends_progress(user, days)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+        if match is None:
+            return JsonResponse(progress, status=200)
         progress['elo'] = user.elo - match.user_elo
         progress['win_rate'] = float(user.win_rate) - float(match.user_win_rate)
         progress['matches_played'] = user.matches_played - match.user_matches_played
-        progress['friends'] = user.friends - match.user_friends
         return JsonResponse(progress, status=200)
+
+    @staticmethod
+    def get_friends_progress(user: Any, days: int) -> int:
+        date = timezone.now() - datetime.timedelta(days=days)
+        try:
+            entry = FriendsHistory.objects.filter(user_id=user.id, date__lte=date).latest('date')
+        except FriendsHistory.DoesNotExist:
+            return user.friends
+        return user.friends - entry.count
 
     @staticmethod
     def validate_get_request(request: HttpRequest, user_id: int) -> (bool, Optional[list[str]]):

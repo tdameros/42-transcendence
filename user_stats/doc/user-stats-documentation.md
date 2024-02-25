@@ -281,6 +281,47 @@
 
 </details>
 
+--------------------------------------------------------------------------------
+
+## `/statistics/user/{id}/friends/`
+
+### Friends history
+
+<details>
+ <summary><code>POST</code> <code><b>/statistics/user/{id}/friends</b></code></summary>
+
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description   | requirement |
+> |-----------------|--------|---------------|-------------|
+> | `Authorization` | String | Service token | Required    |
+
+#### Body
+
+> | name        | type | default | description                   | requirement |
+> |-------------|------|---------|-------------------------------|-------------|
+> | `increment` | bool | None    | Addition/Deletion of a friend | Required    |
+
+### Response
+
+#### Body
+
+> | name        | type  | description              |
+> |-------------|-------|--------------------------|
+> | `new_entry` | dict  | New FriendsHistory entry |
+
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `401`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
+
+</details>
 
 --------------------------------------------------------------------------------
 
