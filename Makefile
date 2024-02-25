@@ -22,6 +22,8 @@ VOLUMES                         =   $(FRONT_DIST_VOLUME_PATH) \
 									$(USER_MANAGEMENT_MEDIA_VOLUME_PATH) \
                                     $(DB_VOLUMES)
 
+SSL_IMAGE_NAME                  =   ssl_certificate_generator
+
 .PHONY: all
 all:
 	if [ ! -e ssl/certs/certificate.crt ] && [ ! -e ssl/certs/certificate.crt ]; then \
@@ -32,9 +34,9 @@ all:
 
 .PHONY: generate_ssl_certificate
 generate_ssl_certificate:
-	docker build -t ssl_certificate_generator ./ssl
+	docker build -t $(SSL_IMAGE_NAME) ./ssl
 	mkdir -p ssl/certs
-	docker run -v ./ssl/certs:/app/ssl ssl_certificate_generator
+	docker run -v ./ssl/certs:/app/ssl $(SSL_IMAGE_NAME)
 
 .PHONY: generate_env
 generate_env:
@@ -45,7 +47,7 @@ up: create_volume_path
 	$(DOCKER_COMPOSE) up --detach --build
 
 .PHONY: down
-down:
+down: delete_ssl_container
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: reup
@@ -65,8 +67,9 @@ restart:
 	$(DOCKER_COMPOSE) restart $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: clean
-clean:
+clean: delete_ssl_container
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT) --volumes --rmi all
+	docker rmi $(SSL_IMAGE_NAME)
 
 .PHONY: fclean
 fclean: clean
@@ -83,3 +86,9 @@ create_volume_path:
 .PHONY: delete_volume_path
 delete_volume_path:
 	$(RM) -r $(VOLUMES)
+
+.PHONY: delete_ssl_container
+delete_ssl_container:
+	if [ -n "$$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME))" ]; then \
+        docker rm -f $$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME)); \
+    fi
