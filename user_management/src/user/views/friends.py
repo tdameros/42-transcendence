@@ -1,6 +1,7 @@
 import json
 from typing import Any, Optional
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -9,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from common.src import settings
 from common.src.internal_requests import InternalAuthRequests
 from common.src.jwt_managers import user_authentication
+from user import error_messages
 from user.models import Friend, User
 from user_management.JWTManager import get_user_id
 
@@ -267,3 +269,34 @@ class FriendsDeclineView(FriendsBaseView):
             return False, 'Friend request already accepted'
         related_friendship.delete()
         return True, None
+
+
+@method_decorator(user_authentication(['GET']), name='dispatch')
+class FriendStatusView(View):
+    @staticmethod
+    def get(request: HttpRequest):
+        user_id = get_user_id(request)
+        friend_id, error = FriendStatusView.get_friend_id(request)
+        if friend_id == -1:
+            return JsonResponse(data={'errors': [error]}, status=400)
+
+        try:
+            user_friendship = Friend.objects.get(user_id=user_id, friend_id=friend_id)
+        except ObjectDoesNotExist:
+            try:
+                user_friendship = Friend.objects.get(user_id=friend_id, friend_id=user_id)
+            except ObjectDoesNotExist:
+                return JsonResponse(data={'status': 'not_friend'}, status=200)
+        if user_friendship.status == Friend.PENDING:
+            return JsonResponse(data={'status': 'pending'}, status=200)
+        return JsonResponse(data={'status': 'accepted'}, status=200)
+
+    @staticmethod
+    def get_friend_id(request: HttpRequest) -> tuple[int, Optional[str]]:
+        friend_id = request.GET.get('friend_id')
+        if friend_id is None:
+            return -1, error_messages.MISSING_FRIEND_ID
+        if not friend_id.isdigit():
+            return -1, error_messages.FRIEND_ID_NOT_INT
+        friend_id = int(friend_id)
+        return friend_id, None
