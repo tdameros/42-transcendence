@@ -1,6 +1,5 @@
 from django.core.mail import send_mail
-from django.http import HttpRequest
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -18,7 +17,7 @@ from user_management.JWTManager import get_user_id
 class SendUserInfosView(View):
 
     @staticmethod
-    def get(request : HttpRequest) -> JsonResponse:
+    def get(request: HttpRequest) -> JsonResponse:
         user_id = get_user_id(request)
         user = User.objects.get(id=user_id)
         infos = {'username': user.username,
@@ -30,7 +29,7 @@ class SendUserInfosView(View):
         for key, url in {'user_stats_id': settings.USER_STATS_URL + f'statistics/user/{user.id}/',
                          'user_stats_history': settings.USER_STATS_URL + f'statistics/user/{user.id}/history/',
                          'user_stats_progress': settings.USER_STATS_URL + f'statistics/user/{user.id}/progress/',
-                        }.items():
+                         }.items():
 
             access_token = request.headers.get('Authorization')
             try:
