@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import jwt
 import pyotp
+from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 from django.urls import reverse
 
@@ -17,7 +18,7 @@ from user_management.JWTManager import (UserAccessJWTManager,
 
 class TestsSignup(TestCase):
 
-    def run_signup_test(self, name, username, email, password, expected_status, has_refresh_token,
+    def run_signup_test(self, name, username, email, password, expected_status,
                         expected_errors=None):
         data = {
             'username': username,
@@ -31,10 +32,6 @@ class TestsSignup(TestCase):
             print(f'Failed test {name}')
             print(result.json())
         self.assertEqual(result.status_code, expected_status)
-        if has_refresh_token:
-            self.assertTrue('refresh_token' in result.json())
-        else:
-            self.assertTrue('errors' in result.json())
         if expected_errors:
             self.assertEqual(result.json()['errors'], expected_errors)
 
@@ -42,7 +39,6 @@ class TestsSignup(TestCase):
     def test_signup_valid_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
-        has_refresh_token = True
         expected_status = 201
         name = 'Valid Username'
         long_username = 'a' * settings.USERNAME_MAX_LENGTH
@@ -58,13 +54,12 @@ class TestsSignup(TestCase):
                                  email,
                                  password,
                                  expected_status,
-                                 has_refresh_token)
+                                 )
 
     @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
-        has_refresh_token = False
         expected_status = 400
         name = 'Invalid Username'
         long_username = 'a' * (settings.USERNAME_MAX_LENGTH + 1)
@@ -84,14 +79,12 @@ class TestsSignup(TestCase):
                                  email,
                                  password,
                                  expected_status,
-                                 has_refresh_token,
                                  expected_errors)
 
     @patch('user.views.sign_up.post_user_stats')
     def test_signup_valid_email(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
-        has_refresh_token = True
         expected_status = 201
         name = 'Valid Email'
         long_email = ('a' * (settings.EMAIL_MAX_LENGTH - 5)) + '@a.fr'
@@ -102,13 +95,12 @@ class TestsSignup(TestCase):
         ]
         for email in valid_emails:
             username = 'Aurel' + str(random.randint(0, 100000))  # To avoid `username already taken` error
-            self.run_signup_test(name, username, email, password, expected_status, has_refresh_token)
+            self.run_signup_test(name, username, email, password, expected_status)
 
     @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_email(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         password = 'Validpass42*'
-        has_refresh_token = False
         expected_status = 400
         name = 'Invalid Email'
         long_email = ('a' * (settings.EMAIL_MAX_LENGTH - 4)) + '@a.fr'
@@ -134,13 +126,11 @@ class TestsSignup(TestCase):
                                  email,
                                  password,
                                  expected_status,
-                                 has_refresh_token,
                                  expected_errors)
 
     @patch('user.views.sign_up.post_user_stats')
     def test_signup_valid_password(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        has_refresh_token = True
         expected_status = 201
         name = 'Valid Password'
         valid_passwords = [
@@ -155,12 +145,11 @@ class TestsSignup(TestCase):
                                  email,
                                  password,
                                  expected_status,
-                                 has_refresh_token)
+                                 )
 
     @patch('user.views.sign_up.post_user_stats')
     def test_signup_invalid_password(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        has_refresh_token = False
         expected_status = 400
         name = 'Invalid Password'
         email = 'alevra@student.42Lyon.fr'
@@ -185,7 +174,6 @@ class TestsSignup(TestCase):
                                  email,
                                  password,
                                  expected_status,
-                                 has_refresh_token,
                                  expected_errors)
 
     @patch('user.views.sign_up.post_user_stats')
@@ -203,18 +191,16 @@ class TestsSignin(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_signin(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'aurelien123',
-            'email': 'a@a.fr',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.create(
+            username='aurelien123',
+            email='a@a.fr',
+            password=make_password('Validpass42*'),
+            emailVerified=True)
+        url = reverse('signin')
         data = {
             'login': 'aurelien123',
             'password': 'Validpass42*',
         }
-        url = reverse('signin')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(result.status_code, 200)
 
@@ -240,13 +226,7 @@ class TestsUsernameExist(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_username_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'Burel305',
-            'email': 'a@a.fr',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.create(username='Burel305', email='a@a.fr', password='Validpass42*', emailVerified=True)
         data_username_exist = {
             'username': 'Burel305'
         }
@@ -271,15 +251,12 @@ class TestsRefreshJWT(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_refresh_jwt(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'Aurel303',
-            'email': 'alevra@gmail.com',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.create(username='Aurel303',
+                                   email='alevra@gmail.com',
+                                   password='Validpass42*'
+                                   , emailVerified=True)
         data = {
-            'refresh_token': result.json()['refresh_token']
+            'refresh_token': UserRefreshJWTManager.generate_jwt(user.id)[1]
         }
         url = reverse('refresh-access-jwt')
         result = self.client.post(url, json.dumps(data), content_type='application/json')
@@ -348,13 +325,10 @@ class TestsEmailExist(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_email_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'Aurel305',
-            'email': 'a@a.fr',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+        user = User.objects.create(username='Aurel305',
+                                   email='a@a.fr',
+                                   password='Validpass42*',
+                                   emailVerified=True)
         data_email_exist = {
             'email': 'a@a.fr'
         }
@@ -379,14 +353,10 @@ class UserId(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_user_id(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'Aurel303',
-            'email': 'alevra@gmail.com',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
-        user = User.objects.all().first()
+        user = User.objects.create(username='Aurel303',
+                                   email='alevra@gmail.com',
+                                   password='Validpass42*',
+                                   emailVerified=True)
         url = reverse('user-id', args=[user.id])
         result = self.client.get(url)
         self.assertEqual(result.status_code, 401)
@@ -401,14 +371,10 @@ class Username(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        data_preparation = {
-            'username': 'Aurel303',
-            'email': 'alevra@gmail.com',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        self.client.post(url, json.dumps(data_preparation), content_type='application/json')
-        user = User.objects.all().first()
+        user = User.objects.create(username='Aurel303',
+                                   email='alevra@gmail.com',
+                                   password='Validpass42*',
+                                   emailVerified=True)
         url = reverse('username', args=[user.username])
         result = self.client.get(url)
         self.assertEqual(result.status_code, 401)
@@ -418,8 +384,8 @@ class Username(TestCase):
         self.assertEqual(user.id, result.json()['id'])
 
     def test_invalid_username(self):
-        User.objects.create(username='forjwt', email='a@a.fr', password='Validpass42*')
-        user_id = User.objects.all().first().id
+        user = User.objects.create(username='forjwt', email='a@a.fr', password='Validpass42*')
+        user_id = user.id
         url = reverse('username', args=['invalid_username_123'])
         result = self.client.get(url)
         self.assertEqual(result.status_code, 401)
@@ -434,13 +400,10 @@ class TestsSearchUsername(TestCase):
     def test_search_username(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         for i in range(1, 20):
-            data_preparation = {
-                'username': f'Felix{i}',
-                'email': f'felix{i}@gmail.com',
-                'password': 'Validpass42*',
-            }
-            url = reverse('signup')
-            self.client.post(url, json.dumps(data_preparation), content_type='application/json')
+            User.objects.create(username=f'Felix{i}',
+                                       email=f'felix{i}@gmail.com',
+                                       password='Validpass42*',
+                                       emailVerified=True)
         data = {
             'username': 'Felix'
         }
@@ -496,14 +459,11 @@ class TestsUserUpdateInfos(TestCase):
     def test_user_update_infos(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         # 1)
-        data_preparation = {
-            'username': 'UpdateThisUser',
-            'email': 'updatethisuser@gmail.com',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
-        refresh_token = result.json()['refresh_token']
+        user = User.objects.create(username='UpdateThisUser',
+                            email='updatethisuser@gmail.com',
+                            password='Validpass42*',
+                            emailVerified=True)
+        refresh_token = UserRefreshJWTManager.generate_jwt(user.id)[1]
         user = User.objects.filter(username='UpdateThisUser').first()
 
         # 2)
@@ -553,14 +513,11 @@ class TestsTwoFa(TestCase):
     def test_two_fa(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
 
-        data_preparation = {
-            'username': 'TestTwoFA',
-            'email': 'aurelien.levra@gmail.com',
-            'password': 'Validpass42*',
-        }
-        url = reverse('signup')
-        result = self.client.post(url, json.dumps(data_preparation), content_type='application/json')
-        refresh_token = result.json()['refresh_token']
+        user = User.objects.create(username='TestTwoFA',
+                                   email='aurelien.levra@gmail.com',
+                                   password='Validpass42*',
+                                   emailVerified=True)
+        refresh_token = UserRefreshJWTManager.generate_jwt(user.id)[1]
         data = {
             'refresh_token': refresh_token
         }

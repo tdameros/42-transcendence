@@ -5,17 +5,15 @@ from django.test import TestCase
 from django.urls import reverse
 
 from user.models import Friend, User
-from user_management.JWTManager import UserAccessJWTManager
+from user_management.JWTManager import UserAccessJWTManager, UserRefreshJWTManager
 
 
 class FriendsTest(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def create_user(self, body, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        url = reverse('signup')
-        response = self.client.post(url, json.dumps(body), content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        refresh_token = response.json()['refresh_token']
+        user = User.objects.create(**body, emailVerified=True)
+        refresh_token = UserRefreshJWTManager.generate_jwt(user.id)[1]
         url = reverse('refresh-access-jwt')
         response = self.client.post(url, json.dumps({'refresh_token': refresh_token}), content_type='application/json')
         self.assertEqual(response.status_code, 200)
