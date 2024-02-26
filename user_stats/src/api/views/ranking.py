@@ -7,7 +7,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
-from api.models import Match, User
+from api.models import User
 from common.src.jwt_managers import user_authentication
 
 

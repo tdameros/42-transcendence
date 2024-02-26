@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 import api.error_message as error
-from api.models import Match, User
+from api.models import User
 
 
 class RankingTest(TestCase):
@@ -30,6 +30,7 @@ class RankingTest(TestCase):
                 matches_played=100,
             )
 
+
 class GetRanking(RankingTest):
     def test_valid_single_page(self):
         self.create_user_range(10)
@@ -43,6 +44,7 @@ class GetRanking(RankingTest):
             if elo is not None:
                 self.assertLessEqual(user['elo'], elo)
             elo = user['elo']
+
     def test_valid_multiple_pages(self):
         self.create_user_range(100)
         response = self.get_ranking(1, 10)
@@ -118,4 +120,3 @@ class GetRanking(RankingTest):
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
         self.assertEqual(body['errors'], [error.PAGE_SIZE_INVALID])
-
