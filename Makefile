@@ -69,11 +69,14 @@ restart:
 .PHONY: clean
 clean: delete_ssl_container
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT) --volumes --rmi all
-	docker rmi $(SSL_IMAGE_NAME)
+	if docker images | grep -q "$(SSL_IMAGE_NAME)"; then \
+		docker rmi $(SSL_IMAGE_NAME); \
+    fi
 
 .PHONY: fclean
 fclean: clean
 	$(MAKE) delete_volume_path
+	rm -rf ./ssl/certs
 
 .PHONY: re
 re: fclean
