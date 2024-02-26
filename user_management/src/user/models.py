@@ -26,11 +26,12 @@ class User(models.Model):
         return pyotp.TOTP(self.totp_secret).verify(code)
 
     def get_email_field_name(self):
-        return 'email'
+        return self.email
 
     def update_latest_login(self):
-        self.last_login =  datetime.now(timezone.utc)
+        self.last_login = datetime.now(timezone.utc)
         self.save()
+
 
 class PendingOAuth(models.Model):
     hashed_state = models.CharField(max_length=settings.OAUTH_STATE_MAX_LENGTH, unique=True)

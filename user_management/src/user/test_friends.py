@@ -5,7 +5,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from user.models import Friend, User
-from user_management.JWTManager import UserAccessJWTManager, UserRefreshJWTManager
+from user_management.JWTManager import (UserAccessJWTManager,
+                                        UserRefreshJWTManager)
 
 
 class FriendsTest(TestCase):

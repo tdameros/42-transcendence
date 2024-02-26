@@ -1,7 +1,7 @@
 import base64
 import json
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import jwt
@@ -191,7 +191,7 @@ class TestsSignin(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_signin(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        user = User.objects.create(
+        User.objects.create(
             username='aurelien123',
             email='a@a.fr',
             password=make_password('Validpass42*'),
@@ -226,7 +226,7 @@ class TestsUsernameExist(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_username_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        user = User.objects.create(username='Burel305', email='a@a.fr', password='Validpass42*', emailVerified=True)
+        User.objects.create(username='Burel305', email='a@a.fr', password='Validpass42*', emailVerified=True)
         data_username_exist = {
             'username': 'Burel305'
         }
@@ -253,8 +253,8 @@ class TestsRefreshJWT(TestCase):
         mock_user_stats.return_value = (True, None)
         user = User.objects.create(username='Aurel303',
                                    email='alevra@gmail.com',
-                                   password='Validpass42*'
-                                   , emailVerified=True)
+                                   password='Validpass42*',
+                                   emailVerified=True)
         data = {
             'refresh_token': UserRefreshJWTManager.generate_jwt(user.id)[1]
         }
@@ -325,10 +325,10 @@ class TestsEmailExist(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_email_exist(self, mock_user_stats):
         mock_user_stats.return_value = (True, None)
-        user = User.objects.create(username='Aurel305',
-                                   email='a@a.fr',
-                                   password='Validpass42*',
-                                   emailVerified=True)
+        User.objects.create(username='Aurel305',
+                            email='a@a.fr',
+                            password='Validpass42*',
+                            emailVerified=True)
         data_email_exist = {
             'email': 'a@a.fr'
         }
@@ -401,9 +401,9 @@ class TestsSearchUsername(TestCase):
         mock_user_stats.return_value = (True, None)
         for i in range(1, 20):
             User.objects.create(username=f'Felix{i}',
-                                       email=f'felix{i}@gmail.com',
-                                       password='Validpass42*',
-                                       emailVerified=True)
+                                email=f'felix{i}@gmail.com',
+                                password='Validpass42*',
+                                emailVerified=True)
         data = {
             'username': 'Felix'
         }
@@ -460,9 +460,9 @@ class TestsUserUpdateInfos(TestCase):
         mock_user_stats.return_value = (True, None)
         # 1)
         user = User.objects.create(username='UpdateThisUser',
-                            email='updatethisuser@gmail.com',
-                            password='Validpass42*',
-                            emailVerified=True)
+                                   email='updatethisuser@gmail.com',
+                                   password='Validpass42*',
+                                   emailVerified=True)
         refresh_token = UserRefreshJWTManager.generate_jwt(user.id)[1]
         user = User.objects.filter(username='UpdateThisUser').first()
 
@@ -651,3 +651,71 @@ class TestAvatar(TestCase):
                                     HTTP_AUTHORIZATION=f'{access_token}')
 
         self.assertEqual(response.status_code, 400)
+
+
+class TestEmailVerified(TestCase):
+    @patch('user.views.sign_up.post_user_stats')
+    def test_email_verified(self, mock_user_stats):
+        mock_user_stats.return_value = (True, None)
+        username = 'testEmailVerified'
+        email = 'a@a.fr'
+        password = 'Validpass42*'
+        data = {
+            'username': username,
+            'email': email,
+            'password': password,
+        }
+        url = reverse('signup')
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.filter(username='testEmailVerified').first()
+        self.assertTrue(user.emailVerificationToken)
+        url = reverse('verify-email', args=[user.id, user.emailVerificationToken])
+        response = self.client.post(url, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        user = User.objects.filter(username='testEmailVerified').first()
+        self.assertTrue(user.emailVerified)
+        self.assertEqual(user.emailVerificationToken, None)
+
+        username = 'testBadToken'
+        email = 'a2@a.fr'
+        data = {
+            'username': username,
+            'email': email,
+            'password': password,
+        }
+        url = reverse('signup')
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.filter(username='testBadToken').first()
+        url = reverse('verify-email', args=[user.id, 'bad_token'])
+        response = self.client.post(url, content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+        self.assertTrue('errors' in response.json())
+        self.assertEqual(response.json()['errors'], ['invalid verification token'])
+        user = User.objects.filter(username='testBadToken').first()
+        self.assertFalse(user.emailVerified)
+        # test expired token
+
+        username = 'testExpiredToken'
+        email = 'a3@a.fr'
+        data = {
+            'username': username,
+            'email': email,
+            'password': password,
+        }
+        url = reverse('signup')
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.filter(username='testExpiredToken').first()
+        user.emailVerificationTokenExpiration = datetime.now(timezone.utc) - timedelta(days=1)
+        user.save()
+        url = reverse('verify-email', args=[user.id, user.emailVerificationToken])
+        response = self.client.post(url, content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+        self.assertTrue('errors' in response.json())
+        self.assertEqual(response.json()['errors'], ['verification token expired'])
+        user = User.objects.filter(username='testExpiredToken').first()
+        self.assertFalse(user.emailVerified)
+        self.assertEqual(user.emailVerificationToken, None)
+        self.assertEqual(user.emailVerificationTokenExpiration, None)
