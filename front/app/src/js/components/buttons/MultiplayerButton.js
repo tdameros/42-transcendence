@@ -3,17 +3,16 @@ import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router';
 
-export class MultiplayerContent extends Component {
+export class MultiplayerButton extends Component {
   constructor() {
     super();
   }
   render() {
     return (`
-      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh">
-        <h1>Multiplayer</h1>
-        <button type="button" id="matchmaking" class="btn btn-primary">Find match</button>
+      <div class="d-flex flex-row align-items-center">
+        <button type="button" id="matchmaking" class="btn btn-primary btn-lg">Find match</button>
         <div id="cancel"></div>
-        <div id="timer" class="m-3"></div>
+        <div id="timer" class="ms-2"></div>
       </div>
     `);
   }
@@ -74,7 +73,7 @@ export class MultiplayerContent extends Component {
 
   #addCancelButton() {
     this.cancel.innerHTML = `
-      <button type="button" id="cancel-button" class="btn btn-danger">Cancel</button>
+      <button type="button" id="cancel-button" class="btn btn-danger btn-lg">Cancel</button>
     `;
     const cancelButton = document.querySelector('#cancel-button');
 
@@ -89,7 +88,7 @@ export class MultiplayerContent extends Component {
     let time = 0;
     this.queueTimerInterval = setInterval(() => {
       time += 1;
-      this.timer.innerHTML = `<h2>${this.#getDisplayTimer(time)}</h2>`;
+      this.timer.innerHTML = `<h2 class="m-0">${this.#getDisplayTimer(time)}</h2>`;
     }, 1000);
   }
 
