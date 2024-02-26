@@ -11,7 +11,7 @@ from api import error_messages, settings
 from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
 from common.src import settings as common_settings
-from common.src.internal_requests import InternalAuthRequests
+from common.src.internal_requests import InternalAuthRequests, InternalRequests
 from common.src.jwt_managers import user_authentication
 from shared_code import settings as shared_settings
 
@@ -150,10 +150,25 @@ class CreatePrivateGameView(View):
         players = [user_id]
 
         try:
-            players.append(self._get_opponent_id(request))
+            opponent_id = self._get_opponent_id(request)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=400)
+        try:
+            opponent_status = self._get_opponent_friend_status(
+                request.headers.get('Authorization'),
+                opponent_id
+            )
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
 
+        if opponent_status != 'accepted':
+            return JsonResponse(
+                {
+                    'errors': [error_messages.opponent_not_friend(opponent_id)]
+                },
+                status=403
+            )
+        players.append(opponent_id)
         try:
             port: int = GameCreator.create_game_server(0, players, api_name)
             self.send_private_notification(port, user_id, players[1])
@@ -171,7 +186,6 @@ class CreatePrivateGameView(View):
         payload_dict = json.loads(payload)
         return int(payload_dict['user_id'])
 
-    # TODO: Check if opponent is a friend of the user
     @staticmethod
     def _get_opponent_id(request: HttpRequest) -> int:
         try:
@@ -184,6 +198,20 @@ class CreatePrivateGameView(View):
         if not isinstance(opponent_id, int):
             raise Exception(error_messages.OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER)
         return json_body.get('opponent_id')
+
+    @staticmethod
+    def _get_opponent_friend_status(access_token: str, opponent: int) -> str:
+        try:
+            response = InternalRequests.get(
+                url=f'{common_settings.FRIEND_STATUS_ENDPOINT}',
+                params={'friend_id': opponent},
+                headers={'Authorization': access_token}
+            )
+        except Exception as e:
+            raise Exception(f'Failed to access friends service : {e}')
+        if response.status_code != 200:
+            raise Exception(f'Failed to get friend request status : {response.json()}')
+        return response.json()['status']
 
     @staticmethod
     def send_private_notification(port: int, user_id: int, opponent_id: int):

@@ -21,6 +21,7 @@ SERVICE_ACCESS_ALGORITHM = 'HS256'
 SERVICE_EXPIRATION_TIME = 1
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+FRIEND_STATUS_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/status/'
 
 TOURNAMENT_URL = 'https://tournament-nginx/'
 

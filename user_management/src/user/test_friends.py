@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
+from user import error_messages
 from user.models import Friend, User
 from user_management.JWTManager import UserAccessJWTManager
 
@@ -467,3 +468,54 @@ class DeleteFriendsTest(FriendsTest):
         response = self.delete_friends(token1, 3)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['errors'], ['Friend not found'])
+
+
+class TestFriendStatus(TestCase):
+    @patch('requests.post')
+    def setUp(self, mock_post):
+        mock_post.return_value.status_code = 200
+        user = User.objects.create(id=1, username='alevra', email='aurel1@42.fr', password='Validpass42*')
+        user1 = User.objects.create(id=2, username='hferraud', email='hferraud@42.fr', password='Validpass42*')
+        user2 = User.objects.create(id=3, username='edelage', email='edelage@42.fr', password='Validpass42*')
+
+        url = reverse('friends-request')
+        self.client.post(url, json.dumps({'friend_id': user1.id}), content_type='application/json',
+                         HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
+        self.client.post(url, json.dumps({'friend_id': user1.id}), content_type='application/json',
+                         HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user2.id)[1]}')
+        url = reverse('friends-accept')
+        self.client.post(url, json.dumps({'friend_id': user.id}), content_type='application/json',
+                         HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user1.id)[1]}')
+
+    def get_friends_status(self, user_id, friend_id):
+        url = reverse('friends-status') + f'?friend_id={friend_id}'
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user_id)[1]}')
+        body = response.json()
+        return response, body
+
+    def test_friends_status_accepted(self):
+        response, body = self.get_friends_status(1, 2)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['status'], 'accepted')
+
+    def test_friends_status_pending(self):
+        response, body = self.get_friends_status(2, 3)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['status'], 'pending')
+
+    def test_friends_status_not_friend(self):
+        response, body = self.get_friends_status(1, 3)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body['status'], 'not_friend')
+
+    def test_friend_id_not_int(self):
+        response, body = self.get_friends_status(1, 'not_int')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error_messages.FRIEND_ID_NOT_INT])
+
+    def test_friend_id_missing(self):
+        url = reverse('friends-status')
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(1)[1]}')
+        body = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(body['errors'], [error_messages.MISSING_FRIEND_ID])

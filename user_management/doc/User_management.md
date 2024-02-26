@@ -732,6 +732,35 @@ All fields mandatory:
 
 </details>
 
+## `/user/friends/status/`
+
+### Get the status of a friend request
+
+This endpoint retrieves the status of a friend request.
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Query
+
+> | name        | data type | description | type      |
+> |-------------|-----------|-------------|-----------|
+> | `friend_id` | int       | Friend's id | Required  |
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"status": "accepted"}`                             |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
 ## `/user/delete-account/`
 
 ### Anonymize user's account
