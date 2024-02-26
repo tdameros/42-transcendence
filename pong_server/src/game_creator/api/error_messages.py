@@ -19,6 +19,9 @@ LEN_PLAYERS_IS_NOT_A_POWER_OF_2 = 'len(players) should be a power of 2'
 BOTH_PLAYERS_ARE_NONE = 'Each pair of players should have at least one non-None player'
 NEED_2_PLAYERS_FOR_MATCHMAKING = 'Need len(players) == 2 for matchmaking'
 
+OPPONENT_ID_FIELD_MISSING = 'opponent_id field is missing'
+OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER = 'opponent_id field is not an integer'
+
 
 def player_is_found_multiple_times(player_id: int) -> str:
     return f'Player id {player_id} is found multiple times'

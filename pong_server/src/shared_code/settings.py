@@ -5,3 +5,4 @@ LOG_LEVEL = logging.DEBUG
 
 TOURNAMENT: str = 'tournament'
 USER_STATS: str = 'user_stats'
+PRIVATE_GAME: str = 'private_game'
