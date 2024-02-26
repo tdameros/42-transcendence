@@ -23,6 +23,10 @@ OPPONENT_ID_FIELD_MISSING = 'opponent_id field is missing'
 OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER = 'opponent_id field is not an integer'
 
 
+def opponent_not_friend(opponent_id: int) -> str:
+    return f'opponent_id {opponent_id} is not your friend'
+
+
 def player_is_found_multiple_times(player_id: int) -> str:
     return f'Player id {player_id} is found multiple times'
 

@@ -480,9 +480,9 @@ class TestFriendStatus(TestCase):
 
         url = reverse('friends-request')
         self.client.post(url, json.dumps({'friend_id': user1.id}), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
+                         HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user.id)[1]}')
         self.client.post(url, json.dumps({'friend_id': user1.id}), content_type='application/json',
-                                    HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user2.id)[1]}')
+                         HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user2.id)[1]}')
         url = reverse('friends-accept')
         self.client.post(url, json.dumps({'friend_id': user.id}), content_type='application/json',
                          HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(user1.id)[1]}')
