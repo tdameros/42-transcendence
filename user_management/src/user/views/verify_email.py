@@ -5,6 +5,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
+from user_management.JWTManager import UserRefreshJWTManager
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -21,11 +22,17 @@ class VerifyEmailView(View):
         if user.is_verified:
             return JsonResponse(data={'errors': ['user already verified']}, status=400)
         if not default_token_generator.check_token(user, token):
-            return JsonResponse(data={'errors': ['invalid token']}, status=400)
+            return JsonResponse(data={'errors': ['invalid verification token']}, status=400)
 
         try:
             user.is_verified = True
             user.save()
         except Exception:
             return JsonResponse(data={'errors': ['an error occurred while verifying the user']}, status=500)
-        return JsonResponse(data={'message': 'user verified'}, status=200)
+        try:
+            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
+            if success is False:
+                return JsonResponse(data={'errors': errors}, status=400)
+            return JsonResponse(data={'message': 'user verified', 'refresh_token': refresh_token}, status=201)
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
