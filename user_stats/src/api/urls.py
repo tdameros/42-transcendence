@@ -7,6 +7,7 @@ from api.views.user_graph import (UserGraphEloView, UserGraphMatchesPlayedView,
                                   UserGraphWinRateView)
 from api.views.user_history import UserHistoryView
 from api.views.user_progress import UserProgressView
+from api.views.ranking import RankingView
 
 urlpatterns = [
     path('user/<int:user_id>/', UserView.as_view(), name='user'),
@@ -16,6 +17,7 @@ urlpatterns = [
     path('user/<int:user_id>/graph/win_rate/', UserGraphWinRateView.as_view(), name='user_graph_win_rate'),
     path('user/<int:user_id>/friends/', UserFriendsView.as_view(), name='user_friends'),
     path('match/', MatchView.as_view(), name='match'),
+    path('ranking/', RankingView.as_view(), name='ranking'),
     path(
         'user/<int:user_id>/graph/matches_played/',
         UserGraphMatchesPlayedView.as_view(),
