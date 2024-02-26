@@ -23,7 +23,6 @@ class Enable2fa(View):
             return JsonResponse(data={'errors': ['user not found']}, status=400)
         if user.has_2fa:
             return JsonResponse(data={'errors': ['2fa already enabled']}, status=400)
-        user.has_2fa = True
         user.totp_secret = pyotp.random_base32()
         user.totp_config_url = f'otpauth://totp/{user.username}?secret={user.totp_secret}&issuer=Pong'
         user.save()
@@ -55,8 +54,6 @@ class Verify2fa(View):
         user_id = get_user_id(request)
         user = User.objects.get(id=user_id)
 
-        if not user.has_2fa:
-            return JsonResponse(data={'errors': ['2fa not enabled']}, status=400)
         try:
             json_request = json.loads(request.body.decode('utf-8'))
         except Exception:
@@ -65,5 +62,8 @@ class Verify2fa(View):
         if not code:
             return JsonResponse(data={'errors': ['code not provided']}, status=400)
         if not user.verify_2fa(code):
-            return JsonResponse(data={'errors': ['invalid code']}, status=400)
+            return JsonResponse(data={'errors': ['invalid code or 2fa not enabled']}, status=400)
+        if not user.has_2fa:
+            user.has_2fa = True
+            user.save()
         return JsonResponse(data={'message': '2fa verified'}, status=200)
