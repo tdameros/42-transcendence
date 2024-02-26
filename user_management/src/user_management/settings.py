@@ -112,7 +112,7 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
-#base URL
+# base URL
 if DEBUG:
     BASE_URL = 'http://localhost:8000/'
 else:
