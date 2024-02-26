@@ -16,7 +16,10 @@ class DeleteInactiveUsersView(View):
     def post(self, request):
         if request.headers.get('Authorization') != settings.USER_MANAGEMENT_SECRET_KEY:
             return JsonResponse(data={'errors': ['Unauthorized']}, status=401)
-        users = User.objects.all()
+        try:
+            users = User.objects.all()
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'Error fetching users : {e}']}, status=500)
         inactive_users = []
 
         for user in users:

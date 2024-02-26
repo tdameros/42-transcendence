@@ -39,9 +39,12 @@ def delete_account(user_id, access_token):
         delete_tournament(user, access_token)
     except Exception as e:
         return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
-    anonymize_user(user)
-    user.account_deleted = True
-    user.save()
+    try:
+        anonymize_user(user)
+        user.account_deleted = True
+        user.save()
+    except Exception as e:
+        return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
     return JsonResponse(data={'message': 'Account deleted'}, status=200)
 
 
