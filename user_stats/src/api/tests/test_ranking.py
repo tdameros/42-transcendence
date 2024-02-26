@@ -9,7 +9,7 @@ from api.models import Match, User
 
 
 class RankingTest(TestCase):
-    @patch('common.src.jwt_managers.user_authentication')
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def get_ranking(self, page, page_size, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         url = reverse('ranking')
@@ -18,7 +18,6 @@ class RankingTest(TestCase):
             query.update({'page': page})
         if page_size is not None:
             query.update({'page_size': page_size})
-        print('query: ', query)
         response = self.client.get(url, query)
         return response
 
@@ -39,7 +38,11 @@ class GetRanking(RankingTest):
         body = json.loads(response.content)
         self.assertEqual(len(body['ranking']), 10)
         self.assertEqual(body['total_pages'], 1)
-
+        elo = None
+        for user in body['ranking']:
+            if elo is not None:
+                self.assertLessEqual(user['elo'], elo)
+            elo = user['elo']
     def test_valid_multiple_pages(self):
         self.create_user_range(100)
         response = self.get_ranking(1, 10)
@@ -84,6 +87,10 @@ class GetRanking(RankingTest):
 
     def test_invalid_page(self):
         self.create_user_range(100)
+        response = self.get_ranking(2, None)
+        self.assertEqual(response.status_code, 400)
+        body = json.loads(response.content)
+        self.assertEqual(body['errors'], ['That page contains no results'])
         response = self.get_ranking(0, None)
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
@@ -92,11 +99,7 @@ class GetRanking(RankingTest):
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
         self.assertEqual(body['errors'], [error.PAGE_INVALID])
-        response = self.get_ranking(2, None)
-        self.assertEqual(response.status_code, 400)
-        body = json.loads(response.content)
-        self.assertEqual(body['errors'], [error.PAGE_INVALID])
-        response = self.get_ranking('a', 1)
+        response = self.get_ranking('a', None)
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
         self.assertEqual(body['errors'], [error.PAGE_INVALID])
