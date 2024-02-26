@@ -19,7 +19,7 @@ from user_management.utils import (is_valid_email, is_valid_password,
 def generate_verif_link(user):
     token = default_token_generator.make_token(user)
     user_id = urlsafe_base64_encode(str(user.id).encode())
-    verification_url = reverse('verify_email', kwargs={'user_id': user_id, 'token': token})
+    verification_url = reverse('verify-email', kwargs={'user_id': user_id, 'token': token})
 
     return f'{settings.BASE_URL}{verification_url}'
 

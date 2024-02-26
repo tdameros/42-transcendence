@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pyotp
 from django.db import models
 
@@ -18,10 +20,17 @@ class User(models.Model):
     totp_secret = models.CharField(max_length=settings.TOTP_SECRET_MAX_LENGTH, null=True)
     totp_config_url = models.CharField(max_length=settings.TOTP_CONFIG_URL_MAX_LENGTH, null=True)
     account_deleted = models.BooleanField(default=False)
+    last_login = models.DateTimeField(null=True)
 
     def verify_2fa(self, code):
         return pyotp.TOTP(self.totp_secret).verify(code)
 
+    def get_email_field_name(self):
+        return 'email'
+
+    def update_latest_login(self):
+        self.last_login =  datetime.now(timezone.utc)
+        self.save()
 
 class PendingOAuth(models.Model):
     hashed_state = models.CharField(max_length=settings.OAUTH_STATE_MAX_LENGTH, unique=True)

@@ -33,6 +33,12 @@ class VerifyEmailView(View):
             success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
+            try:
+                user.update_latest_login()
+                user.save()
+            except Exception as e:
+                return JsonResponse(
+                    data={'errors': [f'An error occurred while updating the last login date : {e}']}, status=500)
             return JsonResponse(data={'message': 'user verified', 'refresh_token': refresh_token}, status=201)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
