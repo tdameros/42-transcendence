@@ -20,6 +20,8 @@ SERVICE_ACCESS_ALGORITHM = 'HS256'
 
 SERVICE_EXPIRATION_TIME = 1
 
+BASE_URL = 'https://42.shiftcode.fr/'
+
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
 
 TOURNAMENT_URL = 'https://tournament-nginx/'

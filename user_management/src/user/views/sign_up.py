@@ -1,16 +1,26 @@
 import json
 
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.tokens import default_token_generator
 from django.http import JsonResponse
+from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.http import urlsafe_base64_encode
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
-from user_management.JWTManager import UserRefreshJWTManager
+from user_management import settings
 from user_management.utils import (is_valid_email, is_valid_password,
                                    is_valid_username, post_user_stats)
 
+
+def generate_verif_link(user):
+    token = default_token_generator.make_token(user)
+    user_id = urlsafe_base64_encode(str(user.id).encode())
+    verification_url = reverse('verify_email', kwargs={'user_id': user_id, 'token': token})
+
+    return f'{settings.BASE_URL}{verification_url}'
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignUpView(View):
@@ -31,12 +41,8 @@ class SignUpView(View):
             if not valid:
                 user.delete()
                 return JsonResponse(data={'errors': errors}, status=500)
-            success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
-            if success is False:
-                return JsonResponse(data={'errors': errors}, status=400)
-            return JsonResponse(data={'refresh_token': refresh_token}, status=201)
-        except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred: {e}']}, status=500)
+            # verif_link = generate_verif_link(user)
+
 
     @staticmethod
     def signup_infos_validation(json_request):

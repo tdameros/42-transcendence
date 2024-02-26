@@ -112,6 +112,11 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
+#base URL
+if DEBUG:
+    BASE_URL = 'http://localhost:8000/'
+else:
+    BASE_URL = common_settings.BASE_URL
 
 # tournament URL
 if DEBUG:
