@@ -4,7 +4,7 @@ import {io} from 'socket.io-client';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
 
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 
 export class _GameSocketIO {
   #engine;

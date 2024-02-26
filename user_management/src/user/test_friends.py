@@ -38,9 +38,9 @@ class FriendsTest(TestCase):
         )
         return response
 
-    @patch('requests.patch')
+    @patch('requests.post')
     def accept_friends(self, access_token, friend_id, mock_patch):
-        mock_patch.return_value.status_code = 200
+        mock_patch.return_value.status_code = 201
         url = reverse('friends-accept')
         response = self.client.post(
             url,
@@ -60,9 +60,9 @@ class FriendsTest(TestCase):
         )
         return response
 
-    @patch('requests.patch')
+    @patch('requests.post')
     def delete_friends(self, access_token, friend_id, mock_patch):
-        mock_patch.return_value.status_code = 200
+        mock_patch.return_value.status_code = 201
         url = reverse('friends')
         if friend_id is not None:
             url += f'?friend_id={friend_id}'

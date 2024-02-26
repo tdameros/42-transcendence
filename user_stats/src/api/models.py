@@ -21,7 +21,12 @@ class Match(models.Model):
     user_elo = models.IntegerField(null=True)
     user_win_rate = models.FloatField(null=True)
     user_matches_played = models.IntegerField(null=True)
-    user_friends = models.IntegerField(null=True)
     user_elo_delta = models.IntegerField(null=True)
     user_expected_result = models.FloatField(null=True)
     date = models.DateTimeField(null=True)
+
+
+class FriendsHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='friends_history_user')
+    count = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)

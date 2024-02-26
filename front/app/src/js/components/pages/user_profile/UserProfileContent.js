@@ -1,5 +1,5 @@
-import {Component} from '../../Component.js';
-import {ErrorPage} from '../../../utils/ErrorPage.js';
+import {Component} from '@components';
+import {ErrorPage} from '@utils/ErrorPage.js';
 import {userManagementClient, userStatsClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 
@@ -124,7 +124,7 @@ export class UserProfileContent extends Component {
 
   async addUsernameInMatchHistory(matchHistory) {
     const opponentsIds = matchHistory['history'].map(
-        (match) => match.opponent_id,
+        (match) => parseInt(match['opponent_id']),
     );
     try {
       const {response, body} =

@@ -214,14 +214,14 @@ export class UserProfileMatchList extends Component {
 
   async #addUsernameInMatchHistory(matchHistory) {
     const opponentsIds = matchHistory['history'].map(
-        (match) => match.opponent_id,
+        (match) => parseInt(match['opponent_id']),
     );
     try {
       const {response, body} =
         await userManagementClient.getUsernameListInCache(opponentsIds);
       if (response.ok) {
         matchHistory['history'].forEach((match) => {
-          match['opponent_username'] = body[match.opponent_id];
+          match['opponent_username'] = body[match['opponent_id']];
         });
         return true;
       } else {

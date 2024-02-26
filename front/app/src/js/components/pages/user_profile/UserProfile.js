@@ -1,5 +1,5 @@
 import {Component} from '../../Component.js';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 
 export class UserProfile extends Component {

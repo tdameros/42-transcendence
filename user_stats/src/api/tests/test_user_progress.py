@@ -24,6 +24,15 @@ class ProgressTest(TestCase):
         response = self.client.post(url, json.dumps(body), content_type='application/json')
         return response
 
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_friends(self, user_id, increment, mock_post):
+        mock_post.return_value = (True, None)
+        url = reverse('user_friends', kwargs={'user_id': user_id})
+        body = {
+            'increment': increment
+        }
+        return self.client.post(url, json.dumps(body), content_type='application/json')
+
     def assert_progress_validity(self, user_id, elo, win_rate, matches_played, days=None):
         response = self.get_progress(user_id, days)
         self.assertEqual(response.status_code, 200)
@@ -233,6 +242,20 @@ class GetProgress(ProgressTest):
 
         self.assert_progress_validity(1, 0, 0, 0, 1)
         self.assert_progress_validity(2, 0, 0, 0, 1)
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_valid_friends(self, mock_authenticate):
+        mock_authenticate.return_value = (True, {'id': 1}, None)
+        self.post_friends(1, True)
+        response = self.get_progress(1, None)
+        self.assertEqual(response.status_code, 200)
+        progress = response.json()
+        self.assertEqual(progress['friends'], 1)
+        self.post_friends(1, False)
+        response = self.get_progress(1, None)
+        self.assertEqual(response.status_code, 200)
+        progress = response.json()
+        self.assertEqual(progress['friends'], 0)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):

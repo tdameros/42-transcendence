@@ -92,7 +92,7 @@ export class TournamentsContent extends Component {
 
   async #addAdminUsernamesInTournaments(tournaments) {
     const adminIds = tournaments.map(
-        (tournament) => tournament['admin-id'],
+        (tournament) => parseInt(tournament['admin-id']),
     );
     try {
       const {response, body} =

@@ -57,29 +57,26 @@ class FriendsBaseView(View):
             )
         except Exception as e:
             raise Exception(f'Failed to access notification service : {e}')
-        if response.status_code != 201:
+        if not response.ok:
             raise Exception(f'Failed to send friend request notification : {response.text}')
 
     @staticmethod
-    def send_user_stats_update(user_id: int, friend_id: int):
-        user_friend_count = Friend.objects.filter(user_id=user_id, status=Friend.ACCEPTED).count()
-        related_friend_count = Friend.objects.filter(user_id=friend_id, status=Friend.ACCEPTED).count()
-        FriendsBaseView.send_friend_count(user_id, user_friend_count)
-        FriendsBaseView.send_friend_count(friend_id, related_friend_count)
+    def send_user_stats_update(user_id: int, friend_id: int, increment: bool):
+        data = {
+            'increment': increment,
+        }
+        FriendsBaseView.post_friends_increment(user_id, data)
+        FriendsBaseView.post_friends_increment(friend_id, data)
 
     @staticmethod
-    def send_friend_count(user_id: int, friend_count: int):
+    def post_friends_increment(user_id: int, data: dict) -> JsonResponse:
+        url = settings.USER_STATS_USER_ENDPOINT + str(user_id) + settings.USER_STATS_FRIENDS_ENDPOINT
         try:
-            response = InternalAuthRequests.patch(
-                url=f'{settings.USER_STATS_USER_ENDPOINT}{user_id}/',
-                data=json.dumps({
-                    'friends': friend_count,
-                })
-            )
+            response = InternalAuthRequests.post(url, data=json.dumps(data))
         except Exception as e:
             raise Exception(f'Failed to access user-stats : {e}')
-        if response.status_code != 200:
-            raise Exception(f'Failed to update user stats : {response.text}')
+        if not response.ok:
+            raise Exception(f'Failed to update friends in user-stats : {response.text}')
 
 
 class FriendsView(FriendsBaseView):
@@ -117,21 +114,23 @@ class FriendsView(FriendsBaseView):
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
-        try:
-            FriendsView.send_delete_friend_notification(user_id, friend_id)
-            FriendsView.send_user_stats_update(user_id, friend_id)
-        except Exception as e:
-            return JsonResponse(data={'errors': [str(e)]}, status=500)
         return JsonResponse(data={'message': 'friend deleted'}, status=200)
 
     @staticmethod
-    def delete_friend(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+    def delete_friend(user_id: int, friend_id: int) -> (bool, Optional[str]):
         user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
         related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
         if user_friendship is None or related_friendship is None:
             return False, 'Friend not found'
         user_friendship.delete()
         related_friendship.delete()
+        try:
+            FriendsView.send_user_stats_update(user_id, friend_id, False)
+            FriendsView.send_delete_friend_notification(user_id, friend_id)
+        except Exception as e:
+            Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
+            Friend.objects.create(user_id=friend_id, friend_id=user_id, status=Friend.ACCEPTED)
+            raise Exception(str(e))
         return True, None
 
     @staticmethod
@@ -142,7 +141,7 @@ class FriendsView(FriendsBaseView):
                 'deleted_relationship': [user_id, friend_id]
             })
         )
-        if response.status_code != 200:
+        if not response.ok:
             raise Exception(f'Failed to send delete friend notification : {response.text}')
 
 
@@ -170,7 +169,7 @@ class FriendsRequestView(FriendsBaseView):
         return JsonResponse(data={'message': 'friend request sent'}, status=201)
 
     @staticmethod
-    def post_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+    def post_friend_request(user_id: int, friend_id: int) -> (bool, Optional[str]):
         user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id)
         if user_friendship.exists():
             status = 'accepted' if user_friendship.first().status == Friend.ACCEPTED else 'pending'
@@ -199,15 +198,10 @@ class FriendsAcceptView(FriendsBaseView):
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
         if not valid:
             return JsonResponse(data={'errors': [error]}, status=400)
-        try:
-            FriendsAcceptView.send_new_friend_notification(user_id, friend_id)
-            FriendsView.send_user_stats_update(user_id, friend_id)
-        except Exception as e:
-            return JsonResponse(data={'errors': [str(e)]}, status=500)
         return JsonResponse(data={'message': 'friend request accepted'}, status=200)
 
     @staticmethod
-    def accept_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+    def accept_friend_request(user_id: int, friend_id: int) -> (bool, Optional[str]):
         related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
         if related_friendship is None:
             return False, 'Friend request not found'
@@ -217,10 +211,18 @@ class FriendsAcceptView(FriendsBaseView):
         related_friendship.save()
         user_friendship = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
         if user_friendship is None:
-            Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
+            user_friendship = Friend.objects.create(user_id=user_id, friend_id=friend_id, status=Friend.ACCEPTED)
         else:
             user_friendship.status = Friend.ACCEPTED
             user_friendship.save()
+        try:
+            FriendsView.send_user_stats_update(user_id, friend_id, True)
+            FriendsAcceptView.send_new_friend_notification(user_id, friend_id)
+        except Exception as e:
+            related_friendship.status = Friend.PENDING
+            related_friendship.save()
+            user_friendship.delete()
+            raise Exception(str(e))
         return True, None
 
     @staticmethod
@@ -231,7 +233,7 @@ class FriendsAcceptView(FriendsBaseView):
                 'new_relationship': [user_id, friend_id]
             })
         )
-        if response.status_code != 200:
+        if not response.ok:
             raise Exception(f'Failed to send add friend notification : {response.text}')
 
 
@@ -257,7 +259,7 @@ class FriendsDeclineView(FriendsBaseView):
         return JsonResponse(data={'message': 'friend request declined'}, status=200)
 
     @staticmethod
-    def decline_friend_request(user_id: int, friend_id: int) -> (bool, Optional[list[str]]):
+    def decline_friend_request(user_id: int, friend_id: int) -> (bool, Optional[str]):
         related_friendship = Friend.objects.filter(user_id=friend_id, friend_id=user_id).first()
         if related_friendship is None:
             return False, 'Friend request not found'
