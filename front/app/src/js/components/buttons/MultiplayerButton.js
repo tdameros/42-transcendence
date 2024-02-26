@@ -3,7 +3,7 @@ import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router';
 
-export class MultiplayerContent extends Component {
+export class MultiplayerButton extends Component {
   constructor() {
     super();
   }
