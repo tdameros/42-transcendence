@@ -132,6 +132,13 @@ else:
     TOURNAMENT_URL = common_settings.TOURNAMENT_URL
 ALLOWED_HOSTS = ['*']
 
+# user stats URL
+if DEBUG:
+    USER_STATS_URL = 'http://localhost:8002/'
+else:
+    USER_STATS_URL = common_settings.USER_STATS_URL
+ALLOWED_HOSTS = ['*']
+
 # Application definition
 
 INSTALLED_APPS = [

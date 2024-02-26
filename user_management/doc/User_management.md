@@ -736,7 +736,8 @@ All fields mandatory:
 
 ### Anonymize user's account
 
-This endpoint anonymizes the user's account.
+This endpoint anonymizes the user's account. <br>
+GDPR compliant ( article 17 )
 
 <details>
  <summary><code>DELETE</code><code><b>/user/delete-account/</b></code></summary>
@@ -825,3 +826,29 @@ Authorization: {access_token}
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 </details>
+
+
+## `/user/send-user-infos/`
+
+### Send a user informations via email
+
+This endpoint sends the user's informations via email. <br>
+GDPR compliant ( article 15 )
+
+<details>
+ <summary><code>GET</code><code><b>/user/send-user-infos/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                                    |
+> |-----------|--------------------|-------------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent", "email": "************ra@gmail.com"}` |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                       |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`        |
+
+</details>
+
