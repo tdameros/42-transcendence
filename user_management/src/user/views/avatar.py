@@ -19,25 +19,13 @@ from user_management.utils import save_image_from_base64
 @method_decorator(user_authentication(['POST', 'DELETE']), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class AvatarView(View):
-    @staticmethod
-    def get(request, username):
-        try:
-            user = User.objects.filter(username=username).first()
-        except Exception as e:
-            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
-        if not user:
-            return JsonResponse(data={'error': 'User not found'}, status=404)
-        if not user.avatar:
-            return AvatarView.create_file_response(f'{STATIC_ROOT}/default_avatar.png')
-        path = f'{MEDIA_ROOT}/{str(user.avatar)}'
-        return AvatarView.create_file_response(path)
 
     @staticmethod
     def create_file_response(path):
         return FileResponse(open(path, 'rb'), content_type='image/png')
 
     @staticmethod
-    def post(request, username):
+    def post(request):
         try:
             json_request = json.loads(request.body.decode('utf-8'))
         except Exception as e:
@@ -47,8 +35,6 @@ class AvatarView(View):
             user = User.objects.filter(id=user_id).first()
         except Exception as e:
             return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
-        if user.username != username:
-            return JsonResponse(data={'error': 'User not found'}, status=404)
 
         base64_string = json_request.get('avatar')
         if not base64_string:
@@ -72,14 +58,12 @@ class AvatarView(View):
         return JsonResponse(data={'message': 'Avatar updated'}, status=200)
 
     @staticmethod
-    def delete(request, username):
+    def delete(request):
         try:
             user_id = get_user_id(request)
             user = User.objects.filter(id=user_id).first()
         except Exception as e:
             return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
-        if user.username != username:
-            return JsonResponse(data={'error': 'User not found'}, status=404)
         if not user:
             return JsonResponse(data={'error': 'User not found'}, status=404)
         file_to_delete = f'{MEDIA_ROOT}/{str(user.avatar)}'
@@ -91,3 +75,20 @@ class AvatarView(View):
             return JsonResponse(data={'error': f'Error deleting file : {e}'}, status=500)
 
         return JsonResponse(data={'message': 'Avatar deleted'}, status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GetAvatarView(View):
+
+    @staticmethod
+    def get(request, username):
+        try:
+            user = User.objects.filter(username=username).first()
+        except Exception as e:
+            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
+        if not user:
+            return JsonResponse(data={'error': 'User not found'}, status=404)
+        if not user.avatar:
+            return AvatarView.create_file_response(f'{STATIC_ROOT}/default_avatar.png')
+        path = f'{MEDIA_ROOT}/{str(user.avatar)}'
+        return AvatarView.create_file_response(path)
