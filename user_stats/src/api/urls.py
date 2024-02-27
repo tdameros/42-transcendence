@@ -1,13 +1,13 @@
 from django.urls import path
 
 from api.views.match import MatchView
+from api.views.ranking import RankingView
 from api.views.user import UserView
 from api.views.user_friends import UserFriendsView
 from api.views.user_graph import (UserGraphEloView, UserGraphMatchesPlayedView,
                                   UserGraphWinRateView)
 from api.views.user_history import UserHistoryView
 from api.views.user_progress import UserProgressView
-from api.views.ranking import RankingView
 
 urlpatterns = [
     path('user/<int:user_id>/', UserView.as_view(), name='user'),
