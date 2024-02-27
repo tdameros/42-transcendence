@@ -3,6 +3,7 @@ import json
 
 from django.conf import settings
 from django.http import HttpRequest
+from django.utils import timezone
 
 import common.src.settings as common_settings
 from common.src.jwt_managers import JWTManager, UserAccessJWTDecoder
@@ -61,7 +62,19 @@ class UserAccessJWTManager:
 
         if not user_exist(user_id):
             return False, None, ['User does not exist']
-        return UserAccessJWTManager.JWT_MANAGER.generate_jwt({'user_id': user_id, 'token_type': 'access'})  # Common
+        success, token, errors = UserAccessJWTManager.JWT_MANAGER.generate_jwt(
+            {'user_id': user_id, 'token_type': 'access'})  # Common
+        if success:
+            try:
+                user = User.objects.get(id=user_id)
+                user.last_activity = timezone.now()
+                user.save()
+            except Exception as e:
+                success = False
+                token = None
+                errors = [str(e)]
+
+        return success, token, errors
 
     @staticmethod
     def authenticate(encoded_jwt: str) -> (bool, str | None, list[str]):

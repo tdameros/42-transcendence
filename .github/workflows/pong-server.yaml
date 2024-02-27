@@ -60,7 +60,7 @@ jobs:
             - name: Run PEP8 check
               working-directory: pong_server/
               run: |
-                  flake8 . --max-line-length=95
+                  flake8 . --max-line-length=95 --exclude=common
 
             - name: Check imports in game_creator
               working-directory: pong_server/src/game_creator/

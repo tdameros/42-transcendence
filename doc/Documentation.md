@@ -44,48 +44,59 @@ this documentation details the different endpoints of each microservice.
 
 ## User Management
 > ### [/user/signup](../user_management/doc/User_management.md#usersignup)
-
 > ### [/user/signin](../user_management/doc/User_management.md#usersignin)
+>
+> #### Create an account / Sign in
 
 > ### [/user/username-exist](../user_management/doc/User_management.md#userusername-exist)
-
 > ### [/user/email-exist](../user_management/doc/User_management.md#useremail-exist)
+>
+> #### Check if a username / email already exists
 
 > ### [/user/forgot-password/send-code](../user_management/doc/User_management.md#userforgot-passwordsend-code)
-
 > ### [/user/forgot-password/check-code](../user_management/doc/User_management.md#userforgot-passwordcheck-code)
-
 > ### [/user/forgot-password/change-password](../user_management/doc/User_management.md#userforgot-passwordchange-password)
-
-> ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#userrefresh-access-jwt)
-
-> ### [/user/id/{user_id}](../user_management/doc/User_management.md#useriduser-id)
-
-> ### [/user/id_list/](../user_management/doc/User_management.md#userid-list)
-
-> ### [/user/search-username/](../user_management/doc/User_management.md#usersearch-username)
-
-> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#useroauthoauth-service)
-
-> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#useroauthcallbackauth-service)
+>
+> #### Forgot password process
 
 > ### [/user/update-infos/](../user_management/doc/User_management.md#userupdate-infos)
+> ### [/user/avatar/](../user_management/doc/User_management.md#useravatar)
+> ### [/user/delete-account/](../user_management/doc/User_management.md#userdelete-account)
+>
+> #### Update/delete user information
+
+> ### [/user/id/{user_id}](../user_management/doc/User_management.md#useriduser-id)
+> ### [/user/id_list/](../user_management/doc/User_management.md#userid-list)
+> ### [/user/search-username/](../user_management/doc/User_management.md#usersearch-username)
+>
+> #### Retrieve user information
+
+> ### [/user/refresh-access-jwt](../user_management/doc/User_management.md#userrefresh-access-jwt)
+>
+> #### Refresh the access token
+
+> ### [/user/oauth/{oauth-service}](../user_management/doc/User_management.md#useroauthoauth-service)
+> ### [/user/oauth/callback/{oauth-service}](../user_management/doc/User_management.md#useroauthcallbackauth-service)
+>
+> #### Oauth2 process
 
 > ### [/user/2fa/enable](../user_management/doc/User_management.md#user2faenable)
-
 > ### [/user/2fa/disable](../user_management/doc/User_management.md#user2fadisable)
-
 > ### [/user/2fa/verify](../user_management/doc/User_management.md#user2faverify)
+>
+> #### Two factor authentication process
 
 > ### [/user/friends/](../user_management/doc/User_management.md#userfriends)
-
 > ### [/user/friends/request/](../user_management/doc/User_management.md#userfriendsrequest)
-
 > ### [/user/friends/accept/](../user_management/doc/User_management.md#userfriendsaccept)
-
 > ### [/user/friends/decline/](../user_management/doc/User_management.md#userfriendsdecline)
+>
+> #### Manage friends
 
-> ### [/user/avatar/](../user_management/doc/User_management.md#useravatar)
+> ### [/user/send-user-infos/](../user_management/doc/User_management.md#usersend-user-infos)
+> 
+> #### Send user information via its email (GDPR)
+
 
 ## User Stats 
 > ### [/statistics/user/{id}](../user_stats/doc/user-stats-documentation.md#statisticsuserid)

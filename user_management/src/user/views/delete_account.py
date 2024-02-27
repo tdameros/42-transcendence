@@ -28,23 +28,29 @@ def delete_tournament(user, access_token):
         raise Exception(f'Error anonymizing players : {request.json()}')
 
 
+def delete_account(user_id, access_token):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return JsonResponse(data={'errors': ['User not found']}, status=404)
+    except Exception as e:
+        return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+    try:
+        delete_tournament(user, access_token)
+    except Exception as e:
+        return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+    try:
+        anonymize_user(user)
+        user.account_deleted = True
+        user.save()
+    except Exception as e:
+        return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+    return JsonResponse(data={'message': 'Account deleted'}, status=200)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['DELETE']), name='dispatch')
 class DeleteAccountView(View):
     @staticmethod
     def delete(request: HttpRequest):
-        user_id = get_user_id(request)
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse(data={'errors': ['User not found']}, status=404)
-        except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
-        try:
-            delete_tournament(user, request.headers['Authorization'])
-        except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
-        anonymize_user(user)
-        user.account_deleted = True
-        user.save()
-        return JsonResponse(data={'message': 'Account deleted'}, status=200)
+        return delete_account(get_user_id(request), request.headers.get('Authorization'))

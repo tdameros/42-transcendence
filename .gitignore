@@ -158,3 +158,4 @@ package-lock.json
 
 # Common folder #
 user_stats/src/common
+/user_management/src/common/
