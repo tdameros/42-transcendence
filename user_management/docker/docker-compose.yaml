@@ -11,8 +11,6 @@ services:
         ports:
             - "6002:443"
         volumes:
-            - user_management_static_volume:/app/static
-            - user_management_media_volume:/app/media
             - ssl_certs:/etc/nginx/ssl
         depends_on:
             user-management:
@@ -32,7 +30,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: sh -c "cp -r /app/user_management /app/src &&
+        command: sh -c "cp -r /app/user_management/* /app/src &&
                         cp -r /app/common /app/src/common &&
                         pip install --root-user-action=ignore --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&
@@ -40,6 +38,7 @@ services:
                         gunicorn -c /app/gunicorn.conf.py"
         volumes:
             - user_management_code:/app/user_management
+            - user_management_media_volume:/app/src/media
             - common_code:/app/common
             - ssl_certs:/app/ssl
         expose:

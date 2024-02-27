@@ -1,7 +1,8 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
+import {ToastNotifications} from '@components/notifications';
 
 export class NotificationNav extends Component {
   constructor() {
@@ -163,7 +164,6 @@ export class NotificationNav extends Component {
   #generateFriendRequestNotification(notification) {
     notification.data = parseInt(notification.data);
     notification['sender_id'] = parseInt(notification.data);
-    console.log(notification);
     const username = notification['sender_username'];
     const profileUrl = `/profile/${username}/`;
     const notificationDiv = document.createElement('div');
@@ -172,7 +172,7 @@ export class NotificationNav extends Component {
     notificationDiv.innerHTML = `
       <div class="d-flex justify-content-start align-items-center">
           <div class="d-flex align-items-center mb-1">
-              <img src="/img/tdameros.jpg" alt="profile image"
+              <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
                    class="rounded-circle me-2"
                    style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
               <p class="mb-0 text-muted" style="font-size: 0.8rem;">
@@ -200,12 +200,15 @@ export class NotificationNav extends Component {
 
   async #acceptFriendRequest(notification) {
     try {
-      const {response} = await userManagementClient.acceptFriend(
+      const {response, body} = await userManagementClient.acceptFriend(
           notification['sender_id'],
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
-      } else {
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
+      } else if (response.status === 401) {
         getRouter().redirect('/signin/');
       }
     } catch (error) {
@@ -220,6 +223,9 @@ export class NotificationNav extends Component {
       );
       if (response.ok || response.status !== 401) {
         this.removeNotification(notification);
+        if (!response.ok) {
+          ToastNotifications.addErrorNotification(body['errors'][0]);
+        }
       } else {
         getRouter().redirect('/signin/');
       }

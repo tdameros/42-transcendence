@@ -40,3 +40,8 @@ DAYS_INVALID = 'days invalid'
 
 MAX_POINTS_REQUIRED = 'max_points required'
 MAX_POINTS_INVALID = 'max_points invalid'
+
+INCREMENT_REQUIRED = '`increment` field required'
+INCREMENT_INVALID = '`increment` field invalid'
+
+FRIENDS_NEGATIVE = 'friends cannot be negative'

@@ -1,15 +1,13 @@
 import logging
 from typing import Optional
 
-from socketio.exceptions import ConnectionRefusedError
-
 from AntiCheat import AntiCheat
 from ClientManager import ClientManager
+from common.src.jwt_managers import UserAccessJWTDecoder
+from ConnectError import ConnectError
 from EventEmitter import EventEmitter
 from Game.GameManager import GameManager
 from Server import Server
-from shared_code.get_json_web_token import get_json_web_token
-from shared_code.get_query_string import get_query_string
 
 
 class EventHandler(object):
@@ -20,31 +18,42 @@ class EventHandler(object):
         Server.sio.on('update_paddle')(EventHandler._update_paddle)
 
     @staticmethod
-    async def _connect(sid: str, environ, auth):
-        logging.info(f'{sid} connected')
+    async def _connect(sid: str, _environ, auth):
+        try:
+            logging.info(f'{sid} connected')
 
-        user_id = get_json_web_token(get_query_string(environ))['user_id']
+            user_id: int = EventHandler._authenticate_user(auth)
+            if GameManager.is_game_over():
+                raise ConnectError('The game is over', 0)
+            previous_sid = ClientManager.get_user_sid(user_id)
+            if previous_sid:
+                await Server.sio.disconnect(previous_sid)
+
+            await ClientManager.add_newly_connected_user(user_id, sid)
+            if GameManager.has_game_started():
+                await EventEmitter.scene(sid,
+                                         GameManager.get_player(user_id).get_location(),
+                                         GameManager.get_scene())
+        except ConnectError as e:
+            raise e.to_socket_io_exception()
+
+    @staticmethod
+    def _authenticate_user(auth: Optional[dict]) -> int:
+        """ This is not an event handler, but it is used by `connect` """
+        if auth is None:
+            raise ConnectError('auth data missing', 401)
+        if not isinstance(auth, dict):
+            raise ConnectError('auth data should be a dictionary', 401)
+        token = auth.get('token')
+        if token is None:
+            raise ConnectError('Token field is not present in auth data', 401)
+        success, payload, error = UserAccessJWTDecoder.authenticate(token)
+        if not success:
+            raise ConnectError(f'Invalid token: {error}', 401)
+        user_id: int = int(payload['user_id'])
         if user_id not in ClientManager.CLIENTS_IDS:
-            raise ConnectionRefusedError({
-                'message': 'You are not part of this game',
-                'status': 1
-            })
-
-        if GameManager.is_game_over():
-            raise ConnectionRefusedError({
-                'message': 'The game is over',
-                'status': 0
-            })
-
-        previous_sid = ClientManager.get_user_sid(user_id)
-        if previous_sid:
-            await Server.sio.disconnect(previous_sid)
-
-        await ClientManager.add_newly_connected_user(user_id, sid)
-        if GameManager.has_game_started():
-            await EventEmitter.scene(sid,
-                                     GameManager.get_player(user_id).get_location(),
-                                     GameManager.get_scene())
+            raise ConnectError('You are not part of this game', 1)
+        return user_id
 
     @staticmethod
     async def _disconnect(sid: str):
@@ -77,7 +86,7 @@ class EventHandler(object):
 
     @staticmethod
     def _get_update_paddle_args(player_data) -> (bool, Optional[float], Optional[str]):
-        """ This is not an event handler, but it is used by one
+        """ This is not an event handler, but it is used by `update_paddle`
             Returns success, client_paddle_position, direction """
         try:
             client_paddle_position = player_data['client_paddle_position']

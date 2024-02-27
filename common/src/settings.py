@@ -21,6 +21,7 @@ SERVICE_ACCESS_ALGORITHM = 'HS256'
 SERVICE_EXPIRATION_TIME = 1
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+FRIEND_STATUS_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/status/'
 
 TOURNAMENT_URL = 'https://tournament-nginx/'
 
@@ -29,6 +30,7 @@ DEBUG_USER_STATS_URL = 'http://localhost:8001/'
 
 USER_STATS_USER_ENDPOINT = USER_STATS_URL + 'statistics/user/'
 DEBUG_USER_STATS_USER_ENDPOINT = DEBUG_USER_STATS_URL + 'statistics/user/'
+USER_STATS_FRIENDS_ENDPOINT = '/friends/'
 
 NOTIFICATION_URL = 'https://notification/'
 USER_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/user/'

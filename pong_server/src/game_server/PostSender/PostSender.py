@@ -1,6 +1,7 @@
 import shared_code.settings as settings
 from PostSender._ABaseAPI import ABaseAPI
 from PostSender._DevAPI import DevAPI
+from PostSender._PrivateGameAPI import PrivateGameAPI
 from PostSender._TournamentAPI import TournamentAPI
 from PostSender._UserStatsAPI import UserStatsAPI
 
@@ -14,6 +15,8 @@ class PostSender(ABaseAPI):
             PostSender._api = TournamentAPI
         elif api_name == settings.USER_STATS:
             PostSender._api = UserStatsAPI
+        elif api_name == settings.PRIVATE_GAME:
+            PostSender._api = PrivateGameAPI
         else:
             PostSender._api = DevAPI
 

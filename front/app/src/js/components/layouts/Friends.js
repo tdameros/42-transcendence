@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {FriendsCache} from '@utils/cache';
 import {getRouter} from '@js/Router.js';
@@ -76,7 +76,7 @@ export class Friends extends Component {
     <div class="card friend-card mb-2 bg-body-tertiary placeholder-glow">
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
-          <img src="/img/default_avatar.jpeg" alt="profile image"
+          <img src="/img/default_avatar.png" alt="profile image"
                class="rounded-circle me-2 placeholder placeholder-lg"
                style="width: 45px; height: 45px;">
           <div class="w-100">
@@ -93,6 +93,20 @@ export class Friends extends Component {
   }
 
   renderFriends(friends) {
+    if (friends.size === 0) {
+      return (`
+      <div class="card" style="height: calc(100vh - ${NavbarUtils.height}px - 1rem)">
+        <div class="card-header">
+          <h3>Friends</h3>
+        </div>
+        <div class="card-body ps-2 pe-2">
+          <div class="mt-2 text-secondary text-center" role="alert">
+            No friends yet
+          </div>
+        </div>
+      </div>
+    `);
+    }
     return (`
       <div class="card overflow-auto" style="height: calc(100vh - ${NavbarUtils.height}px - 1rem)">
         <div class="card-header">
@@ -130,12 +144,13 @@ export class Friends extends Component {
 
   renderFriendCard(friend) {
     const opacity = friend['status'] == 'pending' ? '0.5' : '1';
+    const username = friend['username'];
     return (`
     <div class="card friend-card mb-2 bg-body-tertiary" style="opacity: ${opacity};"
-         onclick="window.router.navigate('/profile/${friend['username']}/')">
+         onclick="window.router.navigate('/profile/${username}/')">
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
-          <img src="/img/tdameros.jpg" alt="profile image"
+          <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
                class="rounded-circle me-2"
                style="width: 45px; height: 45px;">
             <div>
@@ -202,11 +217,10 @@ export class Friends extends Component {
   }
 
   async #addUsernameInFriends(friends) {
-    const friendIds = friends.map((friend) => friend.id);
+    const friendIds = friends.map((friend) => parseInt(friend.id));
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          friendIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(friendIds);
       if (response.ok) {
         friends.forEach((friend) => {
           friend['username'] = body[friend.id];

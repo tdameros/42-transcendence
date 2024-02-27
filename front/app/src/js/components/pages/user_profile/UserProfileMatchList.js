@@ -127,7 +127,7 @@ export class UserProfileMatchList extends Component {
       return (`
         <tr>
           <td class="text-center" colspan="6">
-            <div class="alert alert-warning" role="alert">
+            <div class="m-2 text-secondary text-center" role="alert">
               No matches played yet
             </div>
          </td>
@@ -214,15 +214,14 @@ export class UserProfileMatchList extends Component {
 
   async #addUsernameInMatchHistory(matchHistory) {
     const opponentsIds = matchHistory['history'].map(
-        (match) => match.opponent_id,
+        (match) => parseInt(match['opponent_id']),
     );
     try {
-      const {response, body} = await userManagementClient.getUsernameList(
-          opponentsIds,
-      );
+      const {response, body} =
+        await userManagementClient.getUsernameListInCache(opponentsIds);
       if (response.ok) {
         matchHistory['history'].forEach((match) => {
-          match['opponent_username'] = body[match.opponent_id];
+          match['opponent_username'] = body[match['opponent_id']];
         });
         return true;
       } else {
@@ -237,13 +236,14 @@ export class UserProfileMatchList extends Component {
 
   #renderMatch(match) {
     const date = new Date(match['date']).toLocaleDateString();
+    const username = match['opponent_username'];
     return (`
       <tr class="align-middle">
           <td><img alt="..."
-                   src="https://cdn.intra.42.fr/users/4dbeb251e3a03d1db32a7fa82a97ee88/alevra.jpg"
+                   src="${userManagementClient.getURLAvatar(username)}"
                    class="avatar avatar-sm rounded-circle me-2">
               <a class="text-heading font-semibold text-decoration-none"
-                 onclick="window.router.navigate('/profile/${match['opponent_username']}/')">${match['opponent_username']}</a>
+                 onclick="window.router.navigate('/profile/${username}/')">${username}</a>
           </td>
           <td class="">${date}</tdtext-center>
           <td class="">${this.#renderMatchResult(match['result'])}</td>

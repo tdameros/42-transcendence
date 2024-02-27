@@ -28,8 +28,6 @@ jobs:
                   cp -r pong_server/src/shared_code pong_server/src/game_creator/
                   cp -r pong_server/src/shared_code pong_server/src/game_server/
 
-            - name: Copy common
-              run: |
                   cp -r common pong_server/src/game_creator/
                   cp -r common pong_server/src/game_server/
 
@@ -47,20 +45,20 @@ jobs:
                   sudo chmod 777 ssl/certs/*
 
             - name: Run unit tests game creator
-              working-directory: pong_server/src/
               run: |
                   export PONG_GAME_SERVERS_MIN_PORT=42200
                   export PONG_GAME_SERVERS_MAX_PORT=42210
-                  export GAME_SERVER_PATH=`pwd`/game_server/
-                  export PATH_TO_SSL_CERTS=`pwd`/../../ssl/certs/
+                  export GAME_SERVER_PATH=`pwd`/pong_server/src/game_server/
+                  export PATH_TO_SSL_CERTS=`pwd`/ssl/certs/
+                  export ACCESS_SERVICE_KEY='test-key'
 
-                  cd game_creator
+                  cd pong_server/src/game_creator/
                   python3 manage.py test
 
             - name: Run PEP8 check
               working-directory: pong_server/
               run: |
-                  flake8 . --max-line-length=95
+                  flake8 . --max-line-length=95 --exclude=common
 
             - name: Check imports in game_creator
               working-directory: pong_server/src/game_creator/

@@ -21,7 +21,7 @@ services:
             front-vite:
                 condition: service_completed_successfully
         volumes:
-            - front_dist:/transcendence/
+            - front_dist_volume:/transcendence/
             - ssl_certs:/etc/nginx/ssl
 
     front-vite:
@@ -31,5 +31,6 @@ services:
         working_dir: /app
         volumes:
             - front_code:/app
+            - front_dist_volume:/app/dist
         command: sh -c "npm install && npm run build"
         restart: on-failure

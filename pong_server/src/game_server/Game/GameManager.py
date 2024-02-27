@@ -48,12 +48,18 @@ class GameManager(object):
                 GameManager._create_player(
                     players[i + 1],
                     PlayerLocation(0, match_index, 1))
-        for match in GameManager._matches:
-            await PostSender.post_start_match(GameManager.GAME_ID,
-                                              match.get_player(0).PLAYER_ID,
-                                              match.get_player(1).PLAYER_ID)
-
         GameManager._set_matches_bounding_box(len(players) // 2)
+        await GameManager._start_first_round()
+
+    @staticmethod
+    async def _start_first_round():
+        for match in GameManager._matches:
+            player_1: Player = match.get_player(0)
+            player_2: Player = match.get_player(1)
+            if player_1 is not None and player_2 is not None:
+                await PostSender.post_start_match(GameManager.GAME_ID,
+                                                  player_1.PLAYER_ID,
+                                                  player_2.PLAYER_ID)
 
     @staticmethod
     def get_scene() -> dict:

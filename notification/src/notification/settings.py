@@ -41,7 +41,7 @@ else:
 USER_MANAGEMENT_FRIEND_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/'
 
 
-ALLOWED_USER_NOTIFICATION_TYPES = ['friend_request', 'tournament_start']
+ALLOWED_USER_NOTIFICATION_TYPES = ['friend_request', 'tournament_start', 'private_game']
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'api',
 ]
 
-# TODO: Add corsheaders
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

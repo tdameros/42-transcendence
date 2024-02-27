@@ -4,6 +4,7 @@ import {TournamentBracket} from '@pages';
 import {Modal} from 'bootstrap';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
+import {ToastNotifications} from '@components/notifications';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -74,8 +75,9 @@ export class TournamentDetails extends Component {
     super.addComponentEventListener(this.joinModalBtn, 'click',
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
-      this.modalAlert.setAttribute('alert-display', 'false');
+      this.modalAlert = this.querySelector('#join-alert-modal');
       this.modalAlert.setAttribute('alert-message', '');
+      this.modalAlert.setAttribute('alert-display', 'false');
       this.joinModalNickname.value = '';
       this.modalPassword.value = '';
     });
@@ -88,7 +90,7 @@ export class TournamentDetails extends Component {
   loadNoTournament() {
     this.header.innerHTML = 'No tournament selected';
     this.body.innerHTML = `
-      <div class="alert alert-warning" role="alert">
+      <div class="text-center text-secondary" role="alert">
         Please select a tournament
       </div>
     `;
@@ -195,7 +197,7 @@ export class TournamentDetails extends Component {
   #generatePlayersList(players) {
     if (players.length === 0) {
       return (`
-        <div class="alert alert-warning" role="alert">
+        <div class="text-center text-secondary" role="alert">
           No players registered yet
         </div>
       `);
@@ -249,8 +251,7 @@ export class TournamentDetails extends Component {
         await this.loadTournamentDetails(this.tournamentId);
         return true;
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
         return false;
       }
     } catch (error) {
@@ -266,8 +267,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         await this.loadTournamentDetails(this.tournamentId);
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();

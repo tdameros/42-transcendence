@@ -2,6 +2,7 @@ import {Component} from '@components';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {FriendsCache} from '@utils/cache';
+import {ToastNotifications} from '@components/notifications';
 
 export class UserProfileHeader extends Component {
   constructor() {
@@ -65,7 +66,7 @@ export class UserProfileHeader extends Component {
             </div>
             <div id="profile-info" class="profile-info d-flex align-items-center">
                 <div id="picture-container" class="profile-img-container ">
-                    <img src="/img/default_avatar.jpeg" alt="Profile picture"
+                    <img src="/img/default_avatar.png" alt="Profile picture"
                          class="profile-img mr-2 placeholder placeholder-lg">
                 </div>
                 <div class="user-info">
@@ -119,7 +120,7 @@ export class UserProfileHeader extends Component {
     this.profileInfo = this.querySelector('#profile-info');
     if (this.profileInfo) {
       this.profileInfo.innerHTML = this.renderProfileInfo(
-          username, '/img/tdameros.jpg',
+          username, `${userManagementClient.getURLAvatar(username)}`,
           username === userManagementClient.username,
       );
       this.friendActionBtn = this.querySelector('#friend-action-btn');
@@ -174,7 +175,7 @@ export class UserProfileHeader extends Component {
 
   async #addFriend() {
     try {
-      const {response} = await userManagementClient.sendFriendRequest(
+      const {response, body} = await userManagementClient.sendFriendRequest(
           this.userId,
       );
       if (response.ok) {
@@ -185,6 +186,8 @@ export class UserProfileHeader extends Component {
           'connected_status': 'unknow',
         });
         document.querySelector('friends-component').updateFriends();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch {
       ErrorPage.loadNetworkError();
@@ -193,12 +196,14 @@ export class UserProfileHeader extends Component {
 
   async #removeFriend() {
     try {
-      const {response} = await userManagementClient.removeFriend(
+      const {response, body} = await userManagementClient.removeFriend(
           this.userId,
       );
       if (response.ok) {
         FriendsCache.delete(this.userId);
         document.querySelector('friends-component').updateFriends();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch {
       ErrorPage.loadNetworkError();

@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 
 export class Navbar extends Component {
   constructor() {
@@ -43,6 +43,15 @@ export class Navbar extends Component {
       document.body.style.paddingTop = navbarHeight + 'px';
     } else {
       document.body.style.paddingTop = '0px';
+    }
+  }
+
+  hideCollapse() {
+    const navbarToggler = this.querySelector('.navbar-toggler');
+    const navbarToggleDisplay = window.getComputedStyle(navbarToggler)
+        .getPropertyValue('display');
+    if (navbarToggleDisplay !== 'none') {
+      navbarToggler.click();
     }
   }
 

@@ -1,5 +1,5 @@
 import {Component} from '@components';
-import {userManagementClient} from '@utils/api/index.js';
+import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
 
@@ -10,7 +10,7 @@ export class SearchNav extends Component {
 
   render() {
     return (`
-      <div class="position-relative z-1 me-2 ms-2">
+      <div class="position-relative z-1">
           <form id="search-form" class="d-flex" role="search">
               <input id="search-bar" class="form-control" type="search"
                      placeholder="Search users..." aria-label="Search" autocomplete="off">
@@ -84,7 +84,7 @@ export class SearchNav extends Component {
     return (users.slice(0, 3).map((username) => {
       return (`
       <div class="result-item p-1" onclick="window.router.navigate('/profile/${username}/')" username="${username}">
-        <img src="/img/tdameros.jpg" alt="profile image" class="rounded-circle" style="width: 40px; height: 40px;">
+        <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image" class="rounded-circle" style="width: 40px; height: 40px;">
         ${username}
       </div>
     `);

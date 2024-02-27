@@ -51,7 +51,7 @@ will return a refresh token when successful
 #### Body
 
 mandatory fields :
-- username
+- login (username or email) 
 - password
 
 optional fields :
@@ -59,7 +59,7 @@ optional fields :
 
 > ``` javascript
 > {
->     "username": "Aurel",
+>     "login": "Aurel",
 >     "password": "Validpass21*",
 >     "2fa_code": "123456"
 > }
@@ -732,11 +732,41 @@ All fields mandatory:
 
 </details>
 
+## `/user/friends/status/`
+
+### Get the status of a friend request
+
+This endpoint retrieves the status of a friend request.
+
+<details>
+ <summary><code>DELETE</code><code><b>/user/friends/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Query
+
+> | name        | data type | description | type      |
+> |-------------|-----------|-------------|-----------|
+> | `friend_id` | int       | Friend's id | Required  |
+
+#### Responses
+
+> | http code | content-type       | response                                             |
+> |-----------|--------------------|------------------------------------------------------|
+> | `200`     | `application/json` | `{"status": "accepted"}`                             |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+
+</details>
+
 ## `/user/delete-account/`
 
 ### Anonymize user's account
 
-This endpoint anonymizes the user's account.
+This endpoint anonymizes the user's account. <br>
+GDPR compliant ( article 17 )
 
 <details>
  <summary><code>DELETE</code><code><b>/user/delete-account/</b></code></summary>
@@ -825,3 +855,29 @@ Authorization: {access_token}
 > | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
 
 </details>
+
+
+## `/user/send-user-infos/`
+
+### Send a user informations via email
+
+This endpoint sends the user's informations via email. <br>
+GDPR compliant ( article 15 )
+
+<details>
+ <summary><code>GET</code><code><b>/user/send-user-infos/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                                    |
+> |-----------|--------------------|-------------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent", "email": "************ra@gmail.com"}` |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                       |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`        |
+
+</details>
+

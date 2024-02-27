@@ -1,5 +1,6 @@
 import {Component} from '@components';
 import {userManagementClient} from '@utils/api';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 export class GithubButton extends Component {
   constructor() {
@@ -61,7 +62,7 @@ export class GithubButton extends Component {
         this.reRender();
       }
     } catch (e) {
-      console.error(e);
+      ErrorPage.loadNetworkError();
       this.reRender();
     }
   }
