@@ -17,8 +17,9 @@ export class Engine {
     this.#socket = null;
   }
 
-  connectToServer(URI) {
-    this.#socket = new _GameSocketIO(this, URI);
+  async connectToServer(URI) {
+    this.#socket = new _GameSocketIO(this);
+    await this.#socket.init(URI);
   }
 
   renderFrame() {

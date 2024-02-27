@@ -11,18 +11,14 @@ export class _GameSocketIO {
   #socketIO;
   #isConnected = false;
 
-  constructor(engine, URI) {
+  constructor(engine) {
     this.#engine = engine;
-    this.#initGameSocketIO(URI);
   }
 
-  #initGameSocketIO(URI) {
+  async init(URI) {
     this.#socketIO = io(URI, {
-      query: JSON.stringify({
-        'json_web_token': {
-          'user_id': userManagementClient.userId,
-        },
-      }),
+      auth: {
+        token: await userManagementClient.getValidAccessToken()},
     });
 
     this.#socketIO.on('connect', async () => {
@@ -30,9 +26,8 @@ export class _GameSocketIO {
       this.#isConnected = true;
     });
 
-    this.#socketIO.on('connect_error', (rawError) => {
-      const jsonString = rawError.message.replace(/'/g, '"');
-      const error = JSON.parse(jsonString);
+    this.#socketIO.on('connect_error', (jsonString) => {
+      const error = JSON.parse(jsonString.message);
       if (error['status'] !== 0) {
         console.error('Connection error:', error['message']);
       } else {

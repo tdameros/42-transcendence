@@ -29,7 +29,10 @@ export class Game extends Component {
     const engine = new Engine();
 
     this.displayScene(engine);
-    engine.connectToServer(URI);
+    engine.connectToServer(URI)
+        .catch((error) => {
+          console.error('Error connecting to server:', error);
+        });
   }
 
   displayScene(engine) {
