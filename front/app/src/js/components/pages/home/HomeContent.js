@@ -102,6 +102,7 @@ export class HomeContent extends Component {
     await this.initIslandScene();
     this.renderer = this.initRenderer();
     this.container.appendChild(this.renderer.domElement);
+    this.camera = this.initCamera(this.island, this.size);
 
     this.renderer.setAnimationLoop(() => {
       this.renderer.render(this.scene, this.camera);
@@ -119,7 +120,7 @@ export class HomeContent extends Component {
         this.getContainerHeight(),
     );
 
-    this.camera.aspect = this.getContainerWidth() / (this.getContainerHeight());
+    this.camera.aspect = this.getContainerWidth() / this.getContainerHeight();
     this.camera.updateProjectionMatrix();
     this.setCameraPosition(this.camera, this.island, this.size);
   }
@@ -145,10 +146,10 @@ export class HomeContent extends Component {
     } else {
       this.island = await this.getGLTFObject('/assets/models/island_dark.glb');
     }
+    this.island.castShadow = true;
     this.island.receiveShadow = true;
     this.setObjectPosition(this.island);
     this.setLights(this.island);
-    this.camera = this.initCamera(this.island, this.size);
     this.scene.add(this.island);
   }
 
