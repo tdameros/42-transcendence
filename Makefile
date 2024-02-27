@@ -37,6 +37,7 @@ generate_ssl_certificate:
 	docker build -t $(SSL_IMAGE_NAME) ./ssl
 	mkdir -p ssl/certs
 	docker run -v ./ssl/certs:/app/ssl $(SSL_IMAGE_NAME)
+	$(MAKE) delete_ssl_container
 
 .PHONY: generate_env
 generate_env:
@@ -47,7 +48,7 @@ up: create_volume_path
 	$(DOCKER_COMPOSE) up --detach --build
 
 .PHONY: down
-down: delete_ssl_container
+down:
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: reup
@@ -67,11 +68,8 @@ restart:
 	$(DOCKER_COMPOSE) restart $(DOCKER_COMPOSE_TIMEOUT)
 
 .PHONY: clean
-clean: delete_ssl_container
+clean: delete_ssl_image
 	$(DOCKER_COMPOSE) down $(DOCKER_COMPOSE_TIMEOUT) --volumes --rmi all
-	if docker images | grep -q "$(SSL_IMAGE_NAME)"; then \
-		docker rmi $(SSL_IMAGE_NAME); \
-    fi
 
 .PHONY: fclean
 fclean: clean
@@ -92,6 +90,10 @@ delete_volume_path:
 
 .PHONY: delete_ssl_container
 delete_ssl_container:
-	if [ -n "$$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME))" ]; then \
-        docker rm -f $$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME)); \
+	docker rm -f $$(docker ps -a -q -f ancestor=$(SSL_IMAGE_NAME))
+
+.PHONY: delete_ssl_image
+delete_ssl_image:
+	if docker images | grep -q "$(SSL_IMAGE_NAME)"; then \
+		docker rmi $(SSL_IMAGE_NAME); \
     fi
