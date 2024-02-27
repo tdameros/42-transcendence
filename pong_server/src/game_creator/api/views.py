@@ -12,11 +12,12 @@ from api.GameCreator import GameCreator
 from api.JsonResponseException import JsonResponseException
 from common.src import settings as common_settings
 from common.src.internal_requests import InternalAuthRequests, InternalRequests
-from common.src.jwt_managers import user_authentication
+from common.src.jwt_managers import service_authentication, user_authentication
 from shared_code import settings as shared_settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class CreateGameView(View):
     def post(self, request):
         try:
