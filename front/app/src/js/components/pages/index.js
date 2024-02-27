@@ -1,4 +1,5 @@
 import {
+  ActivateAccount,
   SignIn,
   SignUp,
   TwoFactorAuth,
@@ -45,6 +46,7 @@ import {
 import {NotFound} from './NotFound.js';
 
 export {
+  ActivateAccount,
   SignIn,
   SignUp,
   TwoFactorAuth,

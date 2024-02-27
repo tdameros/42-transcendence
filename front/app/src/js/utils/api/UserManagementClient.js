@@ -24,12 +24,20 @@ export class UserManagementClient extends BaseApiClient {
     'friends-request': 'user/friends/request/',
     'friends': 'user/friends/',
     'avatar': 'user/avatar/',
+    'verify-email': 'user/verify-email/:id/:token/',
   };
 
   constructor() {
     super();
     this.URL = UserManagementClient.URL;
     this.URIs = UserManagementClient.URIs;
+  }
+
+  async verifyEmail(userId, token) {
+    const URI = this.URIs['verify-email']
+        .replace(':id', userId).replace(':token', token);
+    const URL = `${this.URL}/${URI}`;
+    return await JSONRequests.post(URL, {});
   }
 
   getURLAvatar(username) {

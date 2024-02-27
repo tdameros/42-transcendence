@@ -20,7 +20,10 @@ export class Router {
   }
 
   navigate(newPath) {
-    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    const newPathWithoutQuery = newPath.split('?')[0];
+    const {route, parametersValues} = this.#findMatchingRoute(
+        newPathWithoutQuery,
+    );
     if (route === null) {
       console.error(`Route not found`);
       return null;
@@ -43,8 +46,11 @@ export class Router {
   }
 
   redirect(newPath) {
+    const newPathWithoutQuery = newPath.split('?')[0];
     window.history.replaceState({}, '', newPath);
-    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    const {route, parametersValues} = this.#findMatchingRoute(
+        newPathWithoutQuery,
+    );
     if (route === null) {
       console.error(`Route not found`);
       return null;

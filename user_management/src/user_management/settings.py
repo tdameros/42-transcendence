@@ -38,6 +38,7 @@ MEDIA_URL = '/media/'
 
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
+EMAIL_VERIFICATION_TOKEN_MAX_LENGTH = 100
 USERNAME_MAX_LENGTH = 20
 USERNAME_MIN_LENGTH = 2
 PASSWORD_MIN_LENGTH = 8
@@ -120,11 +121,18 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
+# FRONT_ACTIVE_ACCOUNT URL
+if DEBUG:
+    FRONT_ACTIVE_ACCOUNT_URL = 'http://localhost:8080/account/active/'
+else:
+    FRONT_ACTIVE_ACCOUNT_URL = common_settings.FRONT_ACTIVE_ACCOUNT_URL
+
 # user management URL
 if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
 else:
     USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
+
 # tournament URL
 if DEBUG:
     TOURNAMENT_URL = 'http://localhost:8000/'

@@ -20,6 +20,9 @@ SERVICE_ACCESS_ALGORITHM = 'HS256'
 
 SERVICE_EXPIRATION_TIME = 1
 
+FRONT_URL = 'https://localhost/'
+FRONT_ACTIVE_ACCOUNT_URL = f'{FRONT_URL}account/active/'
+
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
 FRIEND_STATUS_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/status/'
 

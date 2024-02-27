@@ -27,6 +27,7 @@ import {
 } from './notifications';
 
 import {
+  ActivateAccount,
   SignIn,
   SignUp,
   TwoFactorAuth,
@@ -83,6 +84,7 @@ customElements.define('search-nav-component', SearchNav);
 customElements.define('notification-component', Notification);
 customElements.define('toast-notifications-component', ToastNotifications);
 
+customElements.define('activate-account-component', ActivateAccount);
 customElements.define('two-factor-auth-component', TwoFactorAuth);
 customElements.define('signin-component', SignIn);
 customElements.define('signup-component', SignUp);
