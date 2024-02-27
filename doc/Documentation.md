@@ -110,3 +110,5 @@ this documentation details the different endpoints of each microservice.
 > ### [/statistics/user/{id}/friends/](../user_stats/doc/user-stats-documentation.md#statisticsuseridfriends)
 
 > ### [/statistics/match/](../user_stats/doc/user-stats-documentation.md#statisticsmatch)
+
+> ### [/statistics/ranking/](../user_stats/doc/user-stats-documentation.md#statisticsranking)

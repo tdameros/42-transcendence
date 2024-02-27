@@ -369,3 +369,55 @@
 > | `500`       | `application/json` | {"errors": [...]} |
 
 </details>
+
+--------------------------------------------------------------------------------
+
+## `/statistics/ranking/`
+
+### User ranking
+
+<details>
+ <summary><code>GET</code> <code><b>/statistics/ranking/</b></code></summary>
+
+### Request
+
+#### Header (not implemented)
+
+> | name            | type   | description  | requirement |
+> |-----------------|--------|--------------|-------------|
+> | `Authorization` | String | Access token | Required    |
+
+#### Query
+
+> | name        | type   | default | description              | requirement |
+> |-------------|--------|---------|--------------------------|-------------|
+> | `page`      | int    | 1       | Page index               | Optional    |
+> | `page_size` | int    | 100     | Numbers of user per page | Optional    |
+
+### Response
+
+#### Body
+
+> | name          | type       | description              |
+> |---------------|------------|--------------------------|
+> | `ranking`     | list[User] | User ranking             |
+> | `total_pages` | int        | The total number of page |
+
+#### User
+
+> | name             | type | description              |
+> |------------------|------|--------------------------|
+> | `id`             | int  | User id                  |
+> | `elo`            | int  | User elo                 |
+> | `matches_played` | int  | Number of matches played |
+> | `win_rate`       | int  | User win rate            |
+ 
+#### Status code
+
+> | status code | content-type       | response          |
+> |-------------|--------------------|-------------------|
+> | `200`       | `application/json` | {...}             |
+> | `400`       | `application/json` | {"errors": [...]} |
+> | `500`       | `application/json` | {"errors": [...]} |
+
+</details>
