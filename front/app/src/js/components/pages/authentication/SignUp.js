@@ -363,7 +363,7 @@ export class SignUp extends Component {
       const {response, body} = await userManagementClient.signUp(
           this.username.value, this.email.value, this.password.value);
       if (response.ok) {
-        await this.#loadAndCache(body.refresh_token);
+        this.#loadEmailVerification();
       } else {
         this.#resetLoadButton();
         this.alertForm.setAttribute('alert-message', body.errors[0]);
@@ -421,5 +421,20 @@ export class SignUp extends Component {
   #resetLoadButton() {
     this.signupBtn.innerHTML = 'Sign up';
     this.signupBtn.disabled = false;
+  }
+
+  #loadEmailVerification() {
+    const cardBody = this.querySelector('.card-body');
+    cardBody.innerHTML = this.#renderEmailVerification();
+  }
+
+  #renderEmailVerification() {
+    return (`
+      <h2 class="card-title text-center m-5 dynamic-hover">Activate your account</h2>
+      <p class="text-center">Please verify your email address to continue</p> 
+      <div class="d-flex justify-content-center mb-4">
+        <i class="bi bi-envelope-arrow-up" style="font-size: 7rem;"></i>
+      </div>
+    `);
   }
 }
