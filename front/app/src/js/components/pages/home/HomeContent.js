@@ -193,50 +193,52 @@ export class HomeContent extends Component {
   }
 
   setLights(object) {
-    this.hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010, 0.5);
-    this.directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
-
-    this.directionalLight.castShadow = true;
     if (Theme.get() === 'light') {
-      this.directionalLight.intensity = 2;
-      this.directionalLight.castShadow = true;
-      this.directionalLight.shadow.bias = -0.001;
-      this.directionalLight.shadow.mapSize.width = 2048;
-      this.directionalLight.shadow.mapSize.height = 2048;
-      this.directionalLight.shadow.camera.near = 0.1;
-      this.directionalLight.shadow.camera.far = 20.;
-      this.directionalLight.shadow.camera.left = .5;
-      this.directionalLight.shadow.camera.right = -.5;
-      this.directionalLight.shadow.camera.top = .5;
-      this.directionalLight.shadow.camera.bottom = -.5;
+      this.#addSunLight(object);
     } else {
-      this.directionalLight.intensity = 0.1;
-      this.moonLight = new THREE.PointLight(0xFFFF00, 0.25);
-      this.moonLight.position.set(-0.15, 1.20, -0.28);
-      this.moonLight.castShadow = true;
-      this.moonLight.shadow.bias = -0.001;
-      this.moonLight.shadow.mapSize.width = 2048;
-      this.moonLight.shadow.mapSize.height = 2048;
-      this.moonLight.shadow.camera.near = 0.1;
-      this.moonLight.shadow.camera.far = 1.;
-      this.directionalLight.shadow.camera.left = .5;
-      this.directionalLight.shadow.camera.right = -.5;
-      this.directionalLight.shadow.camera.top = .5;
-      this.directionalLight.shadow.camera.bottom = -.5;
-      object.add(this.moonLight);
+      this.#addMoonLight(object);
     }
-    this.directionalLight.position.set(
-        object.position.x + this.size.x,
-        object.position.y + this.size.y,
-        object.position.z + this.size.z,
-    );
-    this.directionalLight.target.position.set(
-        object.position.x,
-        object.position.y,
-        object.position.z,
-    );
-    this.scene.add(this.directionalLight);
+    this.hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010, 0.5);
     this.scene.add(this.hemisphereLight);
+  }
+
+  #addSunLight(object) {
+    this.sunLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
+    this.sunLight.position.set(
+        this.size.x, this.size.y, this.size.z,
+    );
+    this.sunLight.target.position.set(
+        object.position.x, object.position.y, object.position.z,
+    );
+    this.sunLight.castShadow = true;
+    this.sunLight.intensity = 2;
+    this.sunLight.castShadow = true;
+    this.sunLight.shadow.bias = -0.001;
+    this.sunLight.shadow.mapSize.width = 2048;
+    this.sunLight.shadow.mapSize.height = 2048;
+    this.sunLight.shadow.camera.near = 0.1;
+    this.sunLight.shadow.camera.far = 20.;
+    this.sunLight.shadow.camera.left = .5;
+    this.sunLight.shadow.camera.right = -.5;
+    this.sunLight.shadow.camera.top = .5;
+    this.sunLight.shadow.camera.bottom = -.5;
+    object.add(this.sunLight);
+  }
+
+  #addMoonLight(object) {
+    this.moonLight = new THREE.PointLight(0xFFFF00, 0.25);
+    this.moonLight.position.set(-0.15, 1.20, -0.28);
+    this.moonLight.castShadow = true;
+    this.moonLight.shadow.bias = -0.001;
+    this.moonLight.shadow.mapSize.width = 2048;
+    this.moonLight.shadow.mapSize.height = 2048;
+    this.moonLight.shadow.camera.near = 0.1;
+    this.moonLight.shadow.camera.far = 1.;
+    this.moonLight.shadow.camera.left = .5;
+    this.moonLight.shadow.camera.right = -.5;
+    this.moonLight.shadow.camera.top = .5;
+    this.moonLight.shadow.camera.bottom = -.5;
+    object.add(this.moonLight);
   }
 
   getContainerHeight() {
