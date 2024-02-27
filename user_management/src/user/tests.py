@@ -1,7 +1,7 @@
 import base64
 import json
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import jwt
@@ -653,7 +653,7 @@ class TestAvatar(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-        
+
 class TestEmailVerified(TestCase):
     @patch('user.views.sign_up.post_user_stats')
     def test_email_verified(self, mock_user_stats):
@@ -720,8 +720,8 @@ class TestEmailVerified(TestCase):
         self.assertFalse(user.emailVerified)
         self.assertEqual(user.emailVerificationToken, None)
         self.assertEqual(user.emailVerificationTokenExpiration, None)
-        
-        
+
+
 class TestDeleteInactiveUsersView(TestCase):
     @patch('common.src.internal_requests.InternalRequests.delete')
     @patch('common.src.internal_requests.InternalRequests.post')
@@ -770,4 +770,3 @@ class TestSendUserInfosView(TestCase):
         url = reverse('send-user-infos')
         response = self.client.get(url, HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(response.status_code, 200)
-        

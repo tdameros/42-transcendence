@@ -121,9 +121,9 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
-# base URL
+# FRONT_ACTIVE_ACCOUNT URL
 if DEBUG:
-    FRONT_ACTIVE_ACCOUNT = 'http://localhost:8080/account/active/'
+    FRONT_ACTIVE_ACCOUNT_URL = 'http://localhost:8080/account/active/'
 else:
     FRONT_ACTIVE_ACCOUNT_URL = common_settings.FRONT_ACTIVE_ACCOUNT_URL
 
@@ -132,7 +132,7 @@ if DEBUG:
     USER_MANAGEMENT_URL = 'http://localhost:8001/'
 else:
     USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
-    
+
 # tournament URL
 if DEBUG:
     TOURNAMENT_URL = 'http://localhost:8000/'
