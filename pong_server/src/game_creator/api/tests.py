@@ -9,6 +9,7 @@ import api.error_messages as error_messages
 from api import settings
 from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
+from common.src.jwt_managers import ServiceAccessJWT
 
 
 class PostCreateGameTest(TestCaseNoDatabase):
@@ -25,11 +26,18 @@ class PostCreateGameTest(TestCaseNoDatabase):
         if self._app_path:
             os.environ['GAME_SERVER_PATH'] = self._app_path
 
-    def post_request(self, request_body) -> (dict, int):
+    def post_request(self, request_body, jwt: Optional[str] = None) -> (dict, int):
         url = reverse('create_game')
-        response = self.client.post(url,
-                                    json.dumps(request_body),
-                                    content_type='application/json')
+        if jwt is None:
+            success, jwt, errors = ServiceAccessJWT.generate_jwt()
+            if not success:
+                raise Exception(f'Failed to generate jwt: {errors}')
+        response = self.client.post(
+            url,
+            json.dumps(request_body),
+            content_type='application/json',
+            headers={'Authorization': jwt} if len(jwt) != 0 else None
+        )
 
         return json.loads(response.content.decode('utf-8')), response.status_code
 
@@ -46,8 +54,8 @@ class PostCreateGameTest(TestCaseNoDatabase):
         os.environ['PONG_GAME_SERVERS_MAX_PORT'] = str(max_port)
         os.environ['GAME_SERVER_PATH'] = app_path
 
-    def run_test(self, request_body, expected_body, expected_status):
-        body, status = self.post_request(request_body)
+    def run_test(self, request_body, expected_body, expected_status, jwt=None):
+        body, status = self.post_request(request_body, jwt)
 
         self.assertEqual(body, expected_body)
 
@@ -76,6 +84,30 @@ class PostCreateGameTest(TestCaseNoDatabase):
         }, {
             'port': port
         }, 201)
+
+    def test_no_jwt(self):
+        port = 4243
+        self.set_env_var(port)
+
+        self.run_test({
+            'game_id': 1,
+            'players': [1, None, None, 4],
+            'request_issuer': settings.TOURNAMENT
+        }, {
+            'errors': ["Invalid token type. Token must be a <class 'bytes'>"]
+        }, 401, jwt='')
+
+    def test_bad_jwt(self):
+        port = 4243
+        self.set_env_var(port)
+
+        self.run_test({
+            'game_id': 1,
+            'players': [1, None, None, 4],
+            'request_issuer': settings.TOURNAMENT
+        }, {
+            'errors': ['Not enough segments']
+        }, 401, jwt='badjwt')
 
     def test_invalid_json(self):
         self.run_test('invalid json', {

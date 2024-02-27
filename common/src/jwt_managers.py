@@ -72,7 +72,7 @@ class UserAccessJWTDecoder:
         return True, decoded_payload, None
 
 
-class ServiceAccessJWT(JWTManager):
+class ServiceAccessJWT:
     JWT_MANAGER = JWTManager(
         settings.SERVICE_KEY,
         settings.SERVICE_KEY,

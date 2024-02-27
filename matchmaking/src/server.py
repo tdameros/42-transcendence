@@ -10,7 +10,7 @@ from aiohttp import web
 import common.src.settings as common_settings
 import src.error_message as error
 import src.settings as settings
-from common.src.internal_requests import InternalRequests
+from common.src.internal_requests import InternalAuthRequests
 
 from .authenticate import authenticate_user
 from .matchmaking import Matchmaking
@@ -76,7 +76,7 @@ class Server:
             ]
         }
         try:
-            response = InternalRequests.post(
+            response = InternalAuthRequests.post(
                 common_settings.GAME_CREATOR_CREATE_GAME_ENDPOINT,
                 data=json.dumps(data),
             )
