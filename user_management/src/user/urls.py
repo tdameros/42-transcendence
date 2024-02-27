@@ -3,6 +3,7 @@ from django.urls import path
 
 from user.views.avatar import AvatarView
 from user.views.delete_account import DeleteAccountView
+from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
@@ -14,6 +15,7 @@ from user.views.is_username_taken import IsUsernameTakenView
 from user.views.oauth import OAuth, OAuthCallback
 from user.views.refresh_JWT import RefreshJWT
 from user.views.search_username import SearchUsernameView
+from user.views.send_user_infos import SendUserInfosView
 from user.views.sign_in import SignInView
 from user.views.sign_up import SignUpView
 from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
@@ -48,6 +50,8 @@ urlpatterns = [
     path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
     path('avatar/<str:username>/', AvatarView.as_view(), name='avatar'),
+    path('delete-inactive-users/', DeleteInactiveUsersView.as_view(), name='delete-inactive-users'),
+    path('send-user-infos/', SendUserInfosView.as_view(), name='send-user-infos'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
