@@ -130,11 +130,9 @@ export class HomeContent extends Component {
     if (Theme.get() === 'dark') {
       this.container.classList.remove('light-background');
       this.container.classList.add('dark-background');
-      this.directionalLight.intensity = 0.5;
     } else {
       this.container.classList.remove('dark-background');
       this.container.classList.add('light-background');
-      this.directionalLight.intensity = 2.0;
     }
     await this.initIslandScene();
     this.island.rotation.y = rotation;
@@ -147,6 +145,7 @@ export class HomeContent extends Component {
     } else {
       this.island = await this.getGLTFObject('/assets/models/island_dark.glb');
     }
+    this.island.receiveShadow = true;
     this.setObjectPosition(this.island);
     this.setLights(this.island);
     this.camera = this.initCamera(this.island, this.size);
@@ -155,6 +154,9 @@ export class HomeContent extends Component {
 
   initRenderer() {
     const renderer = new THREE.WebGLRenderer({antialias: true});
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     renderer.setSize(
         this.getContainerWidth(),
@@ -193,12 +195,33 @@ export class HomeContent extends Component {
     this.hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010, 0.5);
     this.directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
 
+    this.directionalLight.castShadow = true;
     if (Theme.get() === 'light') {
       this.directionalLight.intensity = 2;
+      this.directionalLight.castShadow = true;
+      this.directionalLight.shadow.bias = -0.001;
+      this.directionalLight.shadow.mapSize.width = 2048;
+      this.directionalLight.shadow.mapSize.height = 2048;
+      this.directionalLight.shadow.camera.near = 0.1;
+      this.directionalLight.shadow.camera.far = 20.;
+      this.directionalLight.shadow.camera.left = .5;
+      this.directionalLight.shadow.camera.right = -.5;
+      this.directionalLight.shadow.camera.top = .5;
+      this.directionalLight.shadow.camera.bottom = -.5;
     } else {
       this.directionalLight.intensity = 0.1;
       this.moonLight = new THREE.PointLight(0xFFFF00, 0.25);
       this.moonLight.position.set(-0.15, 1.20, -0.28);
+      this.moonLight.castShadow = true;
+      this.moonLight.shadow.bias = -0.001;
+      this.moonLight.shadow.mapSize.width = 2048;
+      this.moonLight.shadow.mapSize.height = 2048;
+      this.moonLight.shadow.camera.near = 0.1;
+      this.moonLight.shadow.camera.far = 1.;
+      this.directionalLight.shadow.camera.left = .5;
+      this.directionalLight.shadow.camera.right = -.5;
+      this.directionalLight.shadow.camera.top = .5;
+      this.directionalLight.shadow.camera.bottom = -.5;
       object.add(this.moonLight);
     }
     this.directionalLight.position.set(
@@ -252,6 +275,12 @@ export class HomeContent extends Component {
 
     return new Promise((resolve, reject) => {
       loader.load(path, (gltf) => {
+        gltf.scene.traverse(function(node ) {
+          if ( node.type === 'Mesh' ) {
+            node.castShadow = true;
+            node.receiveShadow = true;
+          }
+        });
         resolve(gltf);
       }, undefined, reject);
     });
