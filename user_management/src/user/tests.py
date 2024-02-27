@@ -608,7 +608,7 @@ class TestAvatar(TestCase):
     def test_avatar(self):
         user = User.objects.create(username='alevra', email='aurel1@42.fr', password='Validpass42*')
         access_token = UserAccessJWTManager.generate_jwt(user.id)[1]
-        url = reverse('avatar', args=['alevra'])
+        url = reverse('avatar')
 
         if settings.DEBUG:
             path = 'test_resources/avatar.png'
@@ -631,7 +631,7 @@ class TestAvatar(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('image/png' in response['Content-Type'])
 
-        url = reverse('avatar', args=['alevra'])
+        url = reverse('avatar')
         response = self.client.delete(url, HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(response.status_code, 200)
 
@@ -751,7 +751,7 @@ class TestSendUserInfosView(TestCase):
         Aurel1 = User.objects.create(username='Aurel1', email='aurelien.levra@gmail.com', password='Validpass42*')
         access_token = UserAccessJWTManager.generate_jwt(Aurel1.id)[1]
         # avatar
-        url = reverse('avatar', args=['Aurel1'])
+        url = reverse('avatar')
         if settings.DEBUG:
             path = 'test_resources/avatar.png'
         else:

@@ -36,7 +36,9 @@ all fields are mandatory
 
 </details>
 
-## `user/verify-email/<id>/<token>`
+## `user/verify-email/<str:id>/<str:token>`
+
+NB : id is in base64
 
 ### Verify the email of the user (and so the account)
 
@@ -812,10 +814,11 @@ This endpoint allows the user to get and update his avatar.
 ### Get user's avatar
 
 <details>
- <summary><code>GET</code><code><b>/user/avatar/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/avatar/<<e>str:username></b></code></summary>
 
 ### Parameters
 
+username of the user to retrieve
 
 #### Responses
 
@@ -833,7 +836,7 @@ This endpoint allows the user to get and update his avatar.
 <details>
  <summary><code>POST</code><code><b>/user/avatar/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
