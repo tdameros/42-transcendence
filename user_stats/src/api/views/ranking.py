@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 import api.error_message as error
 from api.models import User
 from common.src.jwt_managers import user_authentication
+from user_stats import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -20,8 +21,8 @@ class RankingView(View):
         valid, errors = RankingView.validate_get_request(request)
         if not valid:
             return JsonResponse({'errors': errors}, status=400)
-        page = request.GET.get('page', '1')
-        page_size = request.GET.get('page_size', '100')
+        page = request.GET.get('page', settings.PAGE_DEFAULT)
+        page_size = request.GET.get('page_size', settings.RANKING_PAGE_SIZE_DEFAULT)
 
         return RankingView.get_ranking(page, page_size)
 
@@ -48,8 +49,8 @@ class RankingView(View):
     @staticmethod
     def validate_get_request(request: HttpRequest) -> (bool, Optional[list[str]]):
         errors = []
-        page = request.GET.get('page', '1')
-        page_size = request.GET.get('page_size', '10')
+        page = request.GET.get('page', settings.PAGE_DEFAULT)
+        page_size = request.GET.get('page_size', settings.RANKING_PAGE_SIZE_DEFAULT)
 
         valid, error = RankingView.validate_page(page)
         if not valid:
