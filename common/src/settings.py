@@ -24,6 +24,7 @@ FRONT_URL = 'https://localhost/'
 FRONT_ACTIVE_ACCOUNT_URL = f'{FRONT_URL}account/active/'
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
+FRIEND_STATUS_ENDPOINT = USER_MANAGEMENT_URL + 'user/friends/status/'
 
 TOURNAMENT_URL = 'https://tournament-nginx/'
 

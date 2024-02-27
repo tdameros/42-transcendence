@@ -4,6 +4,7 @@ import {
   FriendsButton,
   GithubButton,
   IntraButton,
+  MultiplayerButton,
   ThemeButton,
 } from './buttons';
 
@@ -34,8 +35,6 @@ import {
   HomeContent,
   Local,
   LocalContent,
-  Multiplayer,
-  MultiplayerContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -70,6 +69,7 @@ import {
 customElements.define('friends-button-component', FriendsButton);
 customElements.define('github-button-component', GithubButton);
 customElements.define('intra-button-component', IntraButton);
+customElements.define('multiplayer-button-component', MultiplayerButton);
 customElements.define('theme-button-component', ThemeButton);
 
 customElements.define('friends-component', Friends);
@@ -94,9 +94,6 @@ customElements.define('home-content-component', HomeContent);
 
 customElements.define('local-component', Local);
 customElements.define('local-content-component', LocalContent);
-
-customElements.define('multiplayer-component', Multiplayer);
-customElements.define('multiplayer-content-component', MultiplayerContent);
 
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
@@ -145,6 +142,7 @@ export {
   FriendsButton,
   GithubButton,
   IntraButton,
+  MultiplayerButton,
   ThemeButton,
   Friends,
   FriendsSidebar,
@@ -173,7 +171,6 @@ export {
   UserProfileStatsCard,
   UserProfileStatsCards,
   Home,
-  Multiplayer,
   NotFound,
   Alert,
   Error,

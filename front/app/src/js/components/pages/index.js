@@ -16,11 +16,6 @@ import {
 } from './local';
 
 import {
-  Multiplayer,
-  MultiplayerContent,
-} from './multiplayer';
-
-import {
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -59,8 +54,6 @@ export {
   HomeContent,
   Local,
   LocalContent,
-  Multiplayer,
-  MultiplayerContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
