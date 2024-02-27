@@ -3,11 +3,11 @@ from typing import Optional
 
 from AntiCheat import AntiCheat
 from ClientManager import ClientManager
+from common.src.jwt_managers import UserAccessJWTDecoder
 from ConnectError import ConnectError
 from EventEmitter import EventEmitter
 from Game.GameManager import GameManager
 from Server import Server
-from common.src.jwt_managers import UserAccessJWTDecoder
 
 
 class EventHandler(object):

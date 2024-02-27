@@ -7,9 +7,9 @@ from django.urls import reverse
 
 import api.error_messages as error_messages
 from api import settings
+from common.src.jwt_managers import ServiceAccessJWT
 from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
-from common.src.jwt_managers import ServiceAccessJWT
 
 
 class PostCreateGameTest(TestCaseNoDatabase):
