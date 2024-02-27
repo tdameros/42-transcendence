@@ -114,9 +114,9 @@ else:
 
 # base URL
 if DEBUG:
-    BASE_URL = 'http://localhost:8000/'
+    FRONT_ACTIVE_ACCOUNT = 'http://localhost:8080/account/active/'
 else:
-    BASE_URL = common_settings.BASE_URL
+    FRONT_ACTIVE_ACCOUNT_URL = common_settings.FRONT_ACTIVE_ACCOUNT_URL
 
 # tournament URL
 if DEBUG:

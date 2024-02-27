@@ -20,7 +20,8 @@ SERVICE_ACCESS_ALGORITHM = 'HS256'
 
 SERVICE_EXPIRATION_TIME = 1
 
-BASE_URL = 'https://42.shiftcode.fr/'
+FRONT_URL = 'https://localhost/'
+FRONT_ACTIVE_ACCOUNT_URL = f'{FRONT_URL}account/active/'
 
 USER_MANAGEMENT_URL = 'https://user-management-nginx/'
 

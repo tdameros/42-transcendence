@@ -20,10 +20,9 @@ from user_management.utils import (is_valid_email, is_valid_password,
 def generate_verif_link(user):
     token = default_token_generator.make_token(user)
     user_id = urlsafe_base64_encode(str(user.id).encode())
-    verification_url = reverse('verify-email', kwargs={'user_id': user_id, 'token': token})
     user.emailVerificationToken = token
     user.emailVerificationTokenExpiration = datetime.now(timezone.utc) + timedelta(days=1)
-    return f'{settings.BASE_URL}{verification_url}'
+    return f'{settings.FRONT_ACTIVE_ACCOUNT_URL}{user_id}/{token}/'
 
 
 @method_decorator(csrf_exempt, name='dispatch')
