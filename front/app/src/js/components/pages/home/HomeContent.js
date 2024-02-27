@@ -102,6 +102,7 @@ export class HomeContent extends Component {
     await this.initIslandScene();
     this.renderer = this.initRenderer();
     this.container.appendChild(this.renderer.domElement);
+    this.camera = this.initCamera(this.island, this.size);
 
     this.renderer.setAnimationLoop(() => {
       this.renderer.render(this.scene, this.camera);
@@ -119,7 +120,7 @@ export class HomeContent extends Component {
         this.getContainerHeight(),
     );
 
-    this.camera.aspect = this.getContainerWidth() / (this.getContainerHeight());
+    this.camera.aspect = this.getContainerWidth() / this.getContainerHeight();
     this.camera.updateProjectionMatrix();
     this.setCameraPosition(this.camera, this.island, this.size);
   }
@@ -130,11 +131,9 @@ export class HomeContent extends Component {
     if (Theme.get() === 'dark') {
       this.container.classList.remove('light-background');
       this.container.classList.add('dark-background');
-      this.directionalLight.intensity = 0.5;
     } else {
       this.container.classList.remove('dark-background');
       this.container.classList.add('light-background');
-      this.directionalLight.intensity = 2.0;
     }
     await this.initIslandScene();
     this.island.rotation.y = rotation;
@@ -147,14 +146,18 @@ export class HomeContent extends Component {
     } else {
       this.island = await this.getGLTFObject('/assets/models/island_dark.glb');
     }
+    this.island.castShadow = true;
+    this.island.receiveShadow = true;
     this.setObjectPosition(this.island);
     this.setLights(this.island);
-    this.camera = this.initCamera(this.island, this.size);
     this.scene.add(this.island);
   }
 
   initRenderer() {
     const renderer = new THREE.WebGLRenderer({antialias: true});
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     renderer.setSize(
         this.getContainerWidth(),
@@ -190,29 +193,52 @@ export class HomeContent extends Component {
   }
 
   setLights(object) {
-    this.hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010, 0.5);
-    this.directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
-
     if (Theme.get() === 'light') {
-      this.directionalLight.intensity = 2;
+      this.#addSunLight(object);
     } else {
-      this.directionalLight.intensity = 0.1;
-      this.moonLight = new THREE.PointLight(0xFFFF00, 0.25);
-      this.moonLight.position.set(-0.15, 1.20, -0.28);
-      object.add(this.moonLight);
+      this.#addMoonLight(object);
     }
-    this.directionalLight.position.set(
-        object.position.x + this.size.x,
-        object.position.y + this.size.y,
-        object.position.z + this.size.z,
-    );
-    this.directionalLight.target.position.set(
-        object.position.x,
-        object.position.y,
-        object.position.z,
-    );
-    this.scene.add(this.directionalLight);
+    this.hemisphereLight = new THREE.HemisphereLight(0xFFFFFF, 0x000010, 0.5);
     this.scene.add(this.hemisphereLight);
+  }
+
+  #addSunLight(object) {
+    this.sunLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
+    this.sunLight.position.set(
+        this.size.x, this.size.y, this.size.z,
+    );
+    this.sunLight.target.position.set(
+        object.position.x, object.position.y, object.position.z,
+    );
+    this.sunLight.castShadow = true;
+    this.sunLight.intensity = 2;
+    this.sunLight.castShadow = true;
+    this.sunLight.shadow.bias = -0.001;
+    this.sunLight.shadow.mapSize.width = 2048;
+    this.sunLight.shadow.mapSize.height = 2048;
+    this.sunLight.shadow.camera.near = 0.1;
+    this.sunLight.shadow.camera.far = 20.;
+    this.sunLight.shadow.camera.left = .5;
+    this.sunLight.shadow.camera.right = -.5;
+    this.sunLight.shadow.camera.top = .5;
+    this.sunLight.shadow.camera.bottom = -.5;
+    object.add(this.sunLight);
+  }
+
+  #addMoonLight(object) {
+    this.moonLight = new THREE.PointLight(0xFFFF00, 0.25);
+    this.moonLight.position.set(-0.15, 1.20, -0.28);
+    this.moonLight.castShadow = true;
+    this.moonLight.shadow.bias = -0.001;
+    this.moonLight.shadow.mapSize.width = 2048;
+    this.moonLight.shadow.mapSize.height = 2048;
+    this.moonLight.shadow.camera.near = 0.1;
+    this.moonLight.shadow.camera.far = 1.;
+    this.moonLight.shadow.camera.left = .5;
+    this.moonLight.shadow.camera.right = -.5;
+    this.moonLight.shadow.camera.top = .5;
+    this.moonLight.shadow.camera.bottom = -.5;
+    object.add(this.moonLight);
   }
 
   getContainerHeight() {
@@ -252,6 +278,12 @@ export class HomeContent extends Component {
 
     return new Promise((resolve, reject) => {
       loader.load(path, (gltf) => {
+        gltf.scene.traverse(function(node ) {
+          if ( node.type === 'Mesh' ) {
+            node.castShadow = true;
+            node.receiveShadow = true;
+          }
+        });
         resolve(gltf);
       }, undefined, reject);
     });
