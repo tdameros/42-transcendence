@@ -23,6 +23,12 @@ import {
 } from './reset_password';
 
 import {
+  Settings,
+  Settings2FA,
+  SettingsContent,
+} from './settings';
+
+import {
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,
@@ -58,6 +64,9 @@ export {
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,

@@ -39,6 +39,9 @@ import {
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,
@@ -100,6 +103,10 @@ customElements.define('reset-password-code-component', ResetPasswordCode);
 customElements.define('reset-password-email-component', ResetPasswordEmail);
 customElements.define('reset-password-new-component', ResetPasswordNew);
 
+customElements.define('settings-component', Settings);
+customElements.define('settings-2fa-component', Settings2FA);
+customElements.define('settings-content-component', SettingsContent);
+
 customElements.define('tournament-bracket-component', TournamentBracket);
 customElements.define('tournament-create-component', TournamentCreate);
 customElements.define(
@@ -155,6 +162,9 @@ export {
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,
