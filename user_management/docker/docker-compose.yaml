@@ -31,6 +31,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/user_management/* /app/src &&
+                        cp /app/user_management/.env /app/src/.env &&
+                        rm -rf /app/src/common &&
                         cp -r /app/common /app/src/common &&
                         pip install --root-user-action=ignore --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&
@@ -47,7 +49,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 3
         depends_on:
             user-management-db:
                 condition: service_healthy

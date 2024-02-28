@@ -30,6 +30,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/tournament /app/src &&
+                        cp /app/tournament/.env /app/src/.env &&
+                        rm -rf /app/src/common &&
                         cp -r /app/common /app/src/common &&
                         pip install --root-user-action=ignore --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&

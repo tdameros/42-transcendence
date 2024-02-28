@@ -13,7 +13,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from common.src import settings as common_settings
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,7 +59,7 @@ PASSWORD_MIN_LENGTH = 4
 PASSWORD_MAX_LENGTH = 30
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jyplfl_@yqc2@o&hh)b6s&c%b$&qna9mov4gi#%w3=z9c#8*=f'
+SECRET_KEY = os.getenv('TOURNAMENT_SECRET_KEY')
 
 ALLOWED_HOSTS = ['*']
 

@@ -20,17 +20,22 @@ import generate_pair_of_keys
 load_dotenv('.env')
 COMMON_ENV_FILE = 'common/src/.env'
 
-USER_MANAGEMENT_ENV_FILE = 'user_management/.env'
-USER_STATS_ENV_FILE = 'user_stats/.env'
-TOURNAMENT_ENV_FILE = 'tournament/.env'
+USER_MANAGEMENT_ENV_FILE = 'user_management/src/.env'
+USER_STATS_ENV_FILE = 'user_stats/src/.env'
+TOURNAMENT_ENV_FILE = 'tournament/src/.env'
 GAME_CREATOR_ENV_FILE = 'pong_server/src/game_creator/.env'
-NOTIFICATION_ENV_FILE = 'notification/.env'
-MATCHMAKING_ENV_FILE = 'matchmaking/.env'
+NOTIFICATION_ENV_FILE = 'notification/src/.env'
+MATCHMAKING_ENV_FILE = 'matchmaking/src/.env'
 # add your env file here :P
 
 env_files = [
     COMMON_ENV_FILE,
     USER_MANAGEMENT_ENV_FILE,
+    USER_STATS_ENV_FILE,
+    TOURNAMENT_ENV_FILE,
+    GAME_CREATOR_ENV_FILE,
+    NOTIFICATION_ENV_FILE,
+    MATCHMAKING_ENV_FILE
     # add your env file here :D
 ]
 
