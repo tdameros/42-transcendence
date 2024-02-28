@@ -12,9 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
+from common.src import settings as common_settings
 from common.src.internal_requests import InternalAuthRequests
 from common.src.jwt_managers import user_authentication
-from common.src import settings as common_settings
 from tournament import settings
 from tournament.get_user import get_user_id
 
@@ -86,7 +86,6 @@ class StartTournamentView(View):
 
         if response.status_code != 201:
             raise Exception(f'Failed to send tournament start notification: {response.json()}')
-
 
     @staticmethod
     def create_tournament_game(tournament: Tournament) -> tuple[bool, Optional[str], Optional[int]]:
@@ -302,7 +301,7 @@ class ManageTournamentView(View):
         if not valid_max_players:
             return False, max_players_error
         elif len(tournament_players) > new_max_players:
-            return False, f'You cannot set the max players to {new_max_players} because there are already '\
+            return False, f'You cannot set the max players to {new_max_players} because there are already ' \
                           f'{len(tournament_players)} players registered'
         return True, None
 
