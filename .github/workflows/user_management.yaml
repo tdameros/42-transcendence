@@ -34,6 +34,11 @@ jobs:
       with:
         python-version: '3.12'
 
+    - name: Generate .env file
+      run: |
+        pip install cryptography python-dotenv
+        python common/src/generate_env.py
+
     - name: Copy common
       working-directory: user_management/src/
       run: |
@@ -57,10 +62,6 @@ jobs:
       working-directory: user_management/src/
       run: |
         isort . --check-only
-
-    - name: Generate .env file
-      run: |
-        python common/src/generate_env.py
 
     - name: Run Django migrations
       working-directory: user_management/src/
