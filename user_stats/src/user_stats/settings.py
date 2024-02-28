@@ -48,8 +48,6 @@ K_FACTOR = 32
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('USER_STATS_SECRET_KEY')
 
-ACCESS_PUBLIC_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'
-
 DECODE_ALGORITHM = 'HS256'
 
 APPEND_SLASH = False
