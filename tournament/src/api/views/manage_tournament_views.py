@@ -1,3 +1,4 @@
+import datetime
 import json
 import math
 from typing import Any, Optional
@@ -39,6 +40,7 @@ class StartTournamentView(View):
             return JsonResponse(data={'errors': [start_error]}, status=403)
 
         tournament.status = Tournament.IN_PROGRESS
+        tournament.start_datetime = datetime.datetime.now()
 
         try:
             tournament.save()

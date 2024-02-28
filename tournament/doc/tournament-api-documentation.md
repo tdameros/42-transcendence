@@ -483,3 +483,25 @@ End a match
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
 
 </details>
+
+--------------------------------------------------------------------------------
+
+## `/tournament/delete-inactive/`
+
+Delete inactive tournaments
+
+<details>
+ <summary><code>DELETE</code> <code><b>/tournament/delete-inactive/</b></code></summary>
+
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                            |
+> |-----------|--------------------|-------------------------------------|
+> | `200`     | `application/json` | `{'message': 'Tournament deleted'}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`          |
+
+</details>
