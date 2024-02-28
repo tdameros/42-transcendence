@@ -1,13 +1,15 @@
 export class Router {
   #routes;
   #app;
+  #appendSlash;
 
-  constructor(app, routes = []) {
+  constructor(app, routes = [], appendSlash=true) {
     if (Router.instance) {
       return Router.instance;
     }
     Router.instance = this;
     this.#routes = [];
+    this.#appendSlash = appendSlash;
     Object.assign(this.#routes, routes);
     this.#app = app;
     window.addEventListener('popstate', (event) => {
@@ -35,13 +37,13 @@ export class Router {
   }
 
   init() {
-    const {route, parametersValues} = this.#findMatchingRoute(
-        document.location.pathname,
-    );
+    const URI = this.#getURIWithSlash(document.location.pathname);
+    const {route, parametersValues} = this.#findMatchingRoute(URI);
     if (route === null) {
       console.error(`Route not found`);
       return null;
     }
+    window.history.replaceState({}, '', URI);
     return this.#loadRoute(route, parametersValues);
   }
 
@@ -91,6 +93,13 @@ export class Router {
       return null;
     }
     this.#loadRoute(route, parametersValues);
+  }
+
+  #getURIWithSlash(URI) {
+    if (this.#appendSlash && !URI.endsWith('/')) {
+      return URI + '/';
+    }
+    return URI;
   }
 
   static #setParametersInElement(element, parameters, values) {
