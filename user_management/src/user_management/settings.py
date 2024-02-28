@@ -77,6 +77,7 @@ FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
 APPEND_SLASH = False
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'  # TODO ask Tom if we can delete this
