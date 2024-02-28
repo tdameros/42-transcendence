@@ -94,6 +94,10 @@ export class BaseApiClient {
     return localStorage.getItem('username');
   }
 
+  set username(username) {
+    localStorage.setItem('username', username);
+  }
+
   get userId() {
     return new JWT(this.refreshToken).payload.user_id;
   }
