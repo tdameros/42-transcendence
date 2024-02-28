@@ -22,5 +22,8 @@ cp -r /app/common/ /app/src/game_creator/common
 rm -rf /app/src/game_server/common
 cp -r /app/common/ /app/src/game_server/common
 
+# Copy the .env to the game_creator folder
+cp /app/game_creator/.env /app/src/game_creator/.env
+
 # Run game_creator
 gunicorn -c /app/gunicorn.conf.py

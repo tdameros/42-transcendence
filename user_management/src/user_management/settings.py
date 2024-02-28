@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 
 from common.src import settings as common_settings
 
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 CRON_SCRIPT_PATH = os.path.join(BASE_DIR, 'commands')
@@ -26,7 +28,6 @@ CRONJOBS = [
 ]
 
 MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 

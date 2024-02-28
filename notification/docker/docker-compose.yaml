@@ -7,6 +7,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/notification /app/src &&
+                        cp /app/notification/.env /app/src/.env &&
+                        rm -rf /app/src/common &&
                         cp -r /app/common /app/src/common &&
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
