@@ -39,6 +39,11 @@ jobs:
         pip install isort
         pip install -r notification/docker/requirements.txt
 
+    - name: Generate .env file
+      run: |
+        pip install cryptography python-dotenv
+        python common/src/generate_env.py
+
     - name: Copy common
       working-directory: notification/src/
       run: |
