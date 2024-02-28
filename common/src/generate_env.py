@@ -2,6 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
+import generate_pair_of_keys
+
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
 
@@ -11,15 +13,19 @@ from dotenv import load_dotenv
 # but should be generated here as well for consistency.
 
 # This script shall also retrieve static keys needed for the app to work properly (such as 3rd party API keys).
-# All of these keys shall be stored in a .env file located at the project root.
+# All of these keys shall be stored in a .env file located at the project's root.
 # An example of what this file should look like is provided in the .env.example file.
-# absolute path to ''common/src/.env''
 
 # Load the .env file in the root directory
 load_dotenv('.env')
 COMMON_ENV_FILE = 'common/src/.env'
 
 USER_MANAGEMENT_ENV_FILE = 'user_management/.env'
+USER_STATS_ENV_FILE = 'user_stats/.env'
+TOURNAMENT_ENV_FILE = 'tournament/.env'
+GAME_CREATOR_ENV_FILE = 'pong_server/src/game_creator/.env'
+NOTIFICATION_ENV_FILE = 'notification/.env'
+MATCHMAKING_ENV_FILE = 'matchmaking/.env'
 # add your env file here :P
 
 env_files = [
@@ -40,9 +46,14 @@ def generate_key(name, key, env_path):
         f.write(f'{name}={key}\n')
 
 
+# common
 generate_key('ACCESS_SERVICE_KEY', os.urandom(32).hex(), COMMON_ENV_FILE)
 
 # user_management
+generate_pair_of_keys.generate_pair_of_keys()
+os.rename('public_access_jwt_key.pem', 'common/src/public_access_jwt_key.pem')
+os.rename('private_access_jwt_key.pem', 'user_management/src/private_access_jwt_key.pem')
+generate_key('REFRESH_KEY', os.urandom(32).hex(), USER_MANAGEMENT_ENV_FILE)
 generate_key('USER_MANAGEMENT_SECRET_KEY', os.urandom(32).hex(), USER_MANAGEMENT_ENV_FILE)
 generate_key('GITHUB_CLIENT_ID', os.getenv('GITHUB_CLIENT_ID'), USER_MANAGEMENT_ENV_FILE)
 generate_key('GITHUB_CLIENT_SECRET', os.getenv('GITHUB_CLIENT_SECRET'), USER_MANAGEMENT_ENV_FILE)
@@ -51,4 +62,22 @@ generate_key('FT_API_CLIENT_SECRET', os.getenv('FT_API_CLIENT_SECRET'), USER_MAN
 generate_key('EMAIL_HOST_USER', os.getenv('EMAIL_HOST_USER'), USER_MANAGEMENT_ENV_FILE)
 generate_key('EMAIL_HOST_PASSWORD', os.getenv('EMAIL_HOST_PASSWORD'), USER_MANAGEMENT_ENV_FILE)
 generate_key('DEBUG', os.getenv('DEBUG'), USER_MANAGEMENT_ENV_FILE)
+
+# user_stats
+generate_key('USER_STATS_SECRET_KEY', os.urandom(32).hex(), USER_STATS_ENV_FILE)
+
+# tournament
+generate_key('TOURNAMENT_SECRET_KEY', os.urandom(32).hex(), TOURNAMENT_ENV_FILE)
+
+# game_creator
+generate_key('GAME_CREATOR_SECRET_KEY', os.urandom(32).hex(), GAME_CREATOR_ENV_FILE)
+
+# notification
+generate_key('NOTIFICATION_SECRET_KEY', os.urandom(32).hex(), NOTIFICATION_ENV_FILE)
+
+# matchmaking
+generate_key('MATCHMAKING_SECRET_KEY', os.urandom(32).hex(), MATCHMAKING_ENV_FILE)
+
 # add your key here ;)
+
+print('.env files generated successfully')
