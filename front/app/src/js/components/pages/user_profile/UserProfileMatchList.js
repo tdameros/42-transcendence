@@ -241,7 +241,7 @@ export class UserProfileMatchList extends Component {
       <tr class="align-middle">
           <td><img alt="..."
                    src="${userManagementClient.getURLAvatar(username)}"
-                   class="avatar avatar-sm rounded-circle me-2">
+                   class="avatar avatar-sm rounded-circle object-fit-cover me-2">
               <a class="text-heading font-semibold text-decoration-none"
                  onclick="window.router.navigate('/profile/${username}/')">${username}</a>
           </td>
