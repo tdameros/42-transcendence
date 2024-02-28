@@ -44,13 +44,17 @@ jobs:
                   make generate_ssl_certificate
                   sudo chmod 777 ssl/certs/*
 
+            - name: Generate .env
+              run: |
+                  python3 common/src/generate_env.py
+
             - name: Run unit tests game creator
               run: |
+                  `sed 's/^/export /' common/src/.env`
                   export PONG_GAME_SERVERS_MIN_PORT=42200
                   export PONG_GAME_SERVERS_MAX_PORT=42210
                   export GAME_SERVER_PATH=`pwd`/pong_server/src/game_server/
                   export PATH_TO_SSL_CERTS=`pwd`/ssl/certs/
-                  export ACCESS_SERVICE_KEY='test-key'
 
                   cd pong_server/src/game_creator/
                   python3 manage.py test

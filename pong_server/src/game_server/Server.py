@@ -73,8 +73,8 @@ class Server(object):
                    room: str,
                    message: any,
                    skip_sid: str | None = None):
-        logging.info(f"emitting: event='{event}', message='{message}', room='{room}'"
-                     f'{f", skip_sid='{skip_sid}'" if skip_sid is not None else ''})')
+        logging.debug(f"emitting: event='{event}', message='{message}', room='{room}'"
+                      f'{f", skip_sid='{skip_sid}'" if skip_sid is not None else ''})')
         await Server.sio.emit(event, message, room=room, skip_sid=skip_sid)
 
     @staticmethod

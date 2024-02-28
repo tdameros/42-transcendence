@@ -43,7 +43,7 @@ class JWTManager:
                 encoded_jwt, self.public_key, algorithms=[self.algorithm]
             )
             if decoded_payload.get('exp') is None:
-                return False, None, ["No expiration date found"]
+                return False, None, ['No expiration date found']
             return True, decoded_payload, None
         except Exception as e:
             return False, None, [str(e)]
