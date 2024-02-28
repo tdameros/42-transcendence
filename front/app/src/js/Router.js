@@ -43,7 +43,7 @@ export class Router {
       console.error(`Route not found`);
       return null;
     }
-    window.history.replaceState({}, '', URI);
+    window.history.replaceState({}, '', URI + window.location.search);
     return this.#loadRoute(route, parametersValues);
   }
 
