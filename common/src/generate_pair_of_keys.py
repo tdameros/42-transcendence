@@ -38,14 +38,3 @@ def generate_pair_of_keys():
 
 if __name__ == '__main__':
     generate_pair_of_keys()
-# # # load keys from files
-# # private_key_str = open('private_access_jwt_key.pem').read()
-# # public_key_str = open('public_access_jwt_key.pem').read()
-#
-# # Generate a JWT
-# payload = {'data': 'data'}
-# encoded_jwt = jwt.encode(payload, private_key_str, algorithm='RS256')
-#
-# # Decode a JWT
-# decoded_payload = jwt.decode(encoded_jwt, public_key_str, algorithms=['RS256'])
-# print(decoded_payload)
