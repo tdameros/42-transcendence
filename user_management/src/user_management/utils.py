@@ -38,12 +38,14 @@ def download_image_from_url(url, model_instance):
     else:
         return False
 
+
 def get_image_format_from_base64(base64_string):
     try:
         image_format = base64_string.split(';base64')[0].split('/')[1]
         return image_format
     except Exception:
         return None
+
 
 def save_image_from_base64(base64_string, model_instance):
     if not base64_string:
@@ -56,7 +58,9 @@ def save_image_from_base64(base64_string, model_instance):
         img_file = ContentFile(img_io.getvalue())
         random_suffixes = generate_random_string(10)
         model_instance.avatar.delete()
-        model_instance.avatar.save(f'{model_instance.id}_{random_suffixes}.{img_format.lower()}', File(img_file), save=True)
+        model_instance.avatar.save(
+            f'{model_instance.id}_{random_suffixes}.{img_format.lower()}', File(img_file), save=True
+        )
     except Exception as e:
         return False, str(e)
     return True, None

@@ -13,7 +13,8 @@ from user.models import User
 from user_management import settings
 from user_management.JWTManager import get_user_id
 from user_management.settings import MEDIA_ROOT, STATIC_ROOT
-from user_management.utils import save_image_from_base64, get_image_format_from_base64
+from user_management.utils import (get_image_format_from_base64,
+                                   save_image_from_base64)
 
 
 @method_decorator(user_authentication(['POST', 'DELETE']), name='dispatch')
@@ -51,12 +52,12 @@ class AvatarView(View):
         try:
             base64_data = base64_string.split(';base64')[1]
             image_data = base64.b64decode(base64_data)
-        except Exception as e:
+        except Exception:
             return JsonResponse(data={'errors': ['Invalid image format']}, status=400)
         if sys.getsizeof(image_data) > settings.MAX_IMAGE_SIZE:
             return JsonResponse(data={
                 'errors': [f'Image too big (max {settings.MAX_IMAGE_SIZE / 1000000} Mb, ',
-                         f'your image is {sys.getsizeof(image_data) / 1000000} Mb)']}, status=400)
+                           f'your image is {sys.getsizeof(image_data) / 1000000} Mb)']}, status=400)
         success, error = save_image_from_base64(base64_data, user)
         if not success:
             return JsonResponse(data={'errors': [error]}, status=400)
@@ -92,9 +93,9 @@ class GetAvatarView(View):
         try:
             user = User.objects.filter(username=username).first()
         except Exception as e:
-            return JsonResponse(data={'error': f'Error getting user : {e}'}, status=500)
+            return JsonResponse(data={'errors': [f'Error getting user : {e}']}, status=500)
         if not user:
-            return JsonResponse(data={'error': 'User not found'}, status=404)
+            return JsonResponse(data={'errors': ['User not found']}, status=404)
         if not user.avatar:
             return AvatarView.create_file_response(f'{STATIC_ROOT}/default_avatar.png')
         path = f'{MEDIA_ROOT}/{str(user.avatar)}'
