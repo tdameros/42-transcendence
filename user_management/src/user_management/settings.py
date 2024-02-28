@@ -26,7 +26,6 @@ CRONJOBS = [
 ]
 
 MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -79,36 +78,14 @@ FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 APPEND_SLASH = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&r*!icx1$(sv7f-sj&ezvjxw+pljt-yz(r6yowfg18ihdu@15k'  # TODO ask Tom if we can delete this
-REFRESH_KEY = 'WE_SOULD_ALSO_CHANGE_THIS_KEY'  # TODO change this key
-ACCESS_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXzxVVqvlfqUCU
-eOPijiuvdagBCWhI1vGODJR3p1TfPdrwlsuJuKHKX8uOt8AlcJPf0XMFuNxYfDt2
-cOQF5TTFfyk80RKR8kjvDHORzVZw+TUozC/LV1NqgK5vt9nE2Xag45t3NMamJzxy
-jtU5SprlwmSzcxMv/yKnFp/gdUniW69zJK89+UvXChY7dB9OiYv8H9ee71+aPbKe
-fwOm19jAkR7h4UD+PH5M/dyg8GCz9dgbey13KKyWbnvhT7lC99GLW6KLyOQWCkjH
-BSfFhvGZlb5fwh0aZpSe5w14XWktmMQhyvsyTM/fObVq5DDDvUM5sZM9ossk2NM9
-0/etZgmZAgMBAAECggEAA7hZZ34HGmcFZB4KR5UAUQ5rDYtzeMV7qeV5Be2d0NKt
-ONQZLMjPfiwWyuqJ1OELXqK9VNiQ3cI9msttaw+Q2X4iPpFJCTaMvv7pHhuQELiq
-qtNGII+FRcjdfXNd7Mr/czXgq20pqQyxGIWTiBHh9dtrqFIbmEOCT+HoDRISu29G
-EjBetmvVZFUOcnRsbleYC1SQkzSRQfF8r49EhKMUdjm4UqWoMXlZhyShS5skiTwx
-1I12L52YkDLvzldUnFbB8FJwr7QaWO+WjhTCaIzWhTicL1SQKPY4OGvgc/MsgZg9
-K6bLz5RDDeshP1sfPcXvX0i7IQyYFyXy3VI0XcRXWQKBgQDQTXLwqjahNQai39pS
-Sv9WWlNcuOvyoLa1dd62jW3/yTBXsucolps5On5R1mz5gWgnzEqkC8RIR2jH8+qc
-pKXo8SlVlPtIF2JX1/eU0W64IXOnP+GmpbhL+9J2wr9FJOH7g0krjJ3hiN2WIgU/
-D89MNNHitIbcL5HrMNDE3mA1MwKBgQC6kgR9ajqRGiGc4VwhX/08f5bvnhmrD2f2
-7z+w5ngEwNVfg3adKn4KpwkyIDOt6W5GqnsE8aTDBru9SarHO0W/8Stx7CgkRwjw
-WVL+0cir6SDo6EkcoO8hpAV3LOj8stY5LLL+IgFmf3TNl+AfyWu1yeDmITkU79nf
-jzutO/DuAwKBgGmEMgszTgUPRVNQLdmt3/YwPzYi/nKjcqotESpMLkJ5+aETIQFw
-eSTeOoreIcmqAcbXN6AtzboHYk6XgmrjBKAhOZz+oON95PU2k1WxWXKwj1NTiszN
-+bOT1qMON7Gg41ByyqfizT8oA4c/qISvT4T85K0AYag7+KC406hGNVn9AoGBAK0X
-+chtvSaQSu0k/HgOeYEekud/FCtroLYuJDY4rNMkIRJ7gpmwKb4yWMrDq47HisNP
-OdFNa+JxJc8pQKOVL1I0K22Hf3qg2P88sE6wTXCJWzobAHHqMdJRPazi4spIFY54
-FRzIaeoxiCmSpaJ4GlFPmjOIUVBGcyoB1okTmqUHAoGAaZvBn10vGBRkK8G3wKYu
-lfXCoz40jhE4N1kidOYBGwPPWyF5OYbhZjCWI2Pq8ldB4hU/bz8eLobrPs4i15Dz
-mZpeFfyRNLuFLV4U8B9TKtLXKqM5ttR+T4qVu6emm9w7sk3XsFpUPHtl6Q8y90qe
-i16cG6lJDF0tN7qwIIDcKYs=
------END PRIVATE KEY-----"""
+print(os.path.join(BASE_DIR, '.env'))
+error_message = f"tried to load {os.path.join(BASE_DIR, '.env')}"
+SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
+USER_MANAGEMENT_SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
+USER_MANAGEMENT_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ACCESS_PRIVATE_KEY = open(f'{USER_MANAGEMENT_FOLDER}/src/private_access_jwt_key.pem').read()
+ACCESS_PUBLIC_KEY = common_settings.ACCESS_PUBLIC_KEY
+REFRESH_KEY = os.getenv('REFRESH_KEY')
 REFRESH_EXPIRATION_MINUTES = 60 * 24 * 30
 ACCESS_EXPIRATION_MINUTES = 15
 
@@ -275,5 +252,3 @@ STATIC_ROOT = BASE_DIR / 'user/static'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-USER_MANAGEMENT_SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
