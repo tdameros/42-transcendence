@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -56,6 +57,8 @@ class UserUpdateInfosManager:
     def update_user_field(user_id, field_name, new_value):
         try:
             user = User.objects.get(id=user_id)
+            if field_name == 'password':
+                new_value = make_password(new_value)
             setattr(user, field_name, new_value)
             user.save()
             return True, None
