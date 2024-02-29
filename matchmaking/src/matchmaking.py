@@ -40,8 +40,8 @@ class Matchmaking:
         return closest_opponent
 
     def add_player(self, player: Player) -> Optional[str]:
-        for player in self.queue:
-            if player.sid == player.sid:
+        for queue_player in self.queue:
+            if queue_player.sid == player.sid:
                 return error.ALREADY_IN_QUEUE
         self.queue.append(player)
         return None
