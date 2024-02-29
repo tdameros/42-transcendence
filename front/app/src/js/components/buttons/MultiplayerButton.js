@@ -1,18 +1,25 @@
-import {Component} from '@components';
 import {io} from 'socket.io-client';
+
+import {Component} from '@components';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router';
+import {ErrorPage} from '@utils/ErrorPage.js';
+import {ToastNotifications} from '@components/notifications';
 
 export class MultiplayerButton extends Component {
+  static multiplayerURL = `https://${window.location.hostname}:6004/`;
+
   constructor() {
     super();
+    this.queueTime = 0;
   }
+
   render() {
     return (`
       <div class="d-flex flex-row align-items-center">
         <button type="button" id="matchmaking" class="btn btn-primary btn-lg">Find match</button>
         <div id="cancel"></div>
-        <div id="timer" class="ms-2"></div>
+        <div id="timer" class="ms-2 text-muted"></div>
       </div>
     `);
   }
@@ -20,44 +27,58 @@ export class MultiplayerButton extends Component {
   postRender() {
     this.matchmakingButton = document.querySelector('#matchmaking');
     super.addComponentEventListener(
-        this.matchmakingButton, 'click', this.#socketHandler,
+        this.matchmakingButton, 'click', this.#matchmackingHandler,
     );
     this.timer = document.querySelector('#timer');
     this.cancel = document.querySelector('#cancel');
   }
 
+  async #matchmackingHandler() {
+    this.#startMatchmakingLoader();
+    await this.#socketHandler();
+  }
+
   async #socketHandler() {
-    const accessToken = await userManagementClient.getValidAccessToken();
-    console.log(accessToken);
-    this.sio = io('https://localhost:6004', {
+    let accessToken;
+    try {
+      accessToken = await userManagementClient.getValidAccessToken();
+      if (accessToken === null) {
+        getRouter().redirect('/signin/');
+        return;
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+      return;
+    }
+    this.sio = io(MultiplayerButton.multiplayerURL, {
       auth: {
         token: accessToken,
       },
     });
 
     this.sio.on('connect', () => {
-      console.log('connected');
       this.#startQueue();
     });
 
-    this.sio.on('connect_error', (err) => {
-      console.log(err.message);
+    this.sio.on('connect_error', (error) => {
+      ToastNotifications.addErrorNotification('Server connection error');
+      this.#cancelQueue();
     });
 
     this.sio.on('match', (data) => {
       const json = JSON.parse(data);
-      console.log(json);
       const port = json['port'];
       getRouter().navigate(`/game/${port}/`);
     });
 
     this.sio.on('disconnect', () => {
-      console.log('disconnected');
-      this.#stopQueueTimer();
+      this.#cancelQueue();
     });
 
-    this.sio.on('error', (err) => {
-      console.log(err);
+    this.sio.on('error', (message) => {
+      console.error(message);
+      ToastNotifications.addErrorNotification(message.error);
+      this.#cancelQueue();
     });
   }
 
@@ -69,6 +90,7 @@ export class MultiplayerButton extends Component {
 
   #hideMatchmakingButton() {
     this.matchmakingButton.style.display = 'none';
+    this.#stopMatchmakingLoader();
   }
 
   #addCancelButton() {
@@ -76,24 +98,31 @@ export class MultiplayerButton extends Component {
       <button type="button" id="cancel-button" class="btn btn-danger btn-lg">Cancel</button>
     `;
     const cancelButton = document.querySelector('#cancel-button');
+    super.addComponentEventListener(
+        cancelButton, 'click', this.#cancelQueue,
+    );
+  }
 
-    this.addComponentEventListener(cancelButton, 'click', () => {
-      this.#stopQueueTimer();
-      this.cancel.innerHTML = '';
-      this.sio.disconnect();
-    });
+  #cancelQueue() {
+    this.#stopMatchmakingLoader();
+    this.#stopQueueTimer();
+    this.cancel.innerHTML = '';
+    this.sio.disconnect();
   }
 
   #startQueueTimer() {
-    let time = 0;
+    if (this.queueTime === 0) {
+      this.timer.innerHTML = `<h2 class="m-0">${this.#getDisplayTimer(this.queueTime)}</h2>`;
+    }
     this.queueTimerInterval = setInterval(() => {
-      time += 1;
-      this.timer.innerHTML = `<h2 class="m-0">${this.#getDisplayTimer(time)}</h2>`;
+      this.queueTime += 1;
+      this.timer.innerHTML = `<h2 class="m-0">${this.#getDisplayTimer(this.queueTime)}</h2>`;
     }, 1000);
   }
 
   #stopQueueTimer() {
     clearInterval(this.queueTimerInterval);
+    this.queueTime = 0;
     this.timer.innerHTML = '';
     this.matchmakingButton.style.display = 'block';
   }
@@ -107,6 +136,18 @@ export class MultiplayerButton extends Component {
     return minutesStr + ':' + secondsStr;
   }
 
+  #startMatchmakingLoader() {
+    this.matchmakingButton.disabled = true;
+    this.matchmakingButton.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Find match
+    `;
+  }
+
+  #stopMatchmakingLoader() {
+    this.matchmakingButton.disabled = false;
+    this.matchmakingButton.innerHTML = 'Find match';
+  }
 
   style() {
     return (`
