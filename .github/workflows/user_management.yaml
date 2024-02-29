@@ -34,6 +34,11 @@ jobs:
       with:
         python-version: '3.12'
 
+    - name: Generate .env file
+      run: |
+        pip install cryptography python-dotenv
+        python common/src/generate_env.py
+
     - name: Copy common
       working-directory: user_management/src/
       run: |
@@ -67,10 +72,6 @@ jobs:
       run: |
         python manage.py makemigrations
         python manage.py migrate
-
-    - name: Generate .env file
-      run: |
-        python common/src/generate_env.py
 
     - name: Run unit tests
       working-directory: user_management/src/
