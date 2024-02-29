@@ -2,10 +2,10 @@
 
 ## Events:
 - ### `connect`:
-  >> Query string:
+  >> auth:
   >> ```
   >> {  
-  >>     'json_web_token': The client's Json Web Token
+  >>     'token': The client's access Json Web Token
   >> }
   >> ```
   >

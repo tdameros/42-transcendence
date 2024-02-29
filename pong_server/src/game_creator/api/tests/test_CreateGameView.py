@@ -7,8 +7,9 @@ from django.urls import reverse
 
 import api.error_messages as error_messages
 from api import settings
+from api.PlayerManager import PlayerManager
+from api.tests.utils.TestCaseNoDatabase import TestCaseNoDatabase
 from common.src.jwt_managers import ServiceAccessJWT
-from game_creator.TestCaseNoDatabase import TestCaseNoDatabase
 from shared_code import error_messages as shared_error_messages
 
 
@@ -26,12 +27,19 @@ class PostCreateGameTest(TestCaseNoDatabase):
         if self._app_path:
             os.environ['GAME_SERVER_PATH'] = self._app_path
 
-    def post_request(self, request_body, jwt: Optional[str] = None) -> (dict, int):
+    def post_request(self,
+                     request_body,
+                     jwt: Optional[str],
+                     reset_player_manager: bool) -> (dict, int):
         url = reverse('create_game')
         if jwt is None:
             success, jwt, errors = ServiceAccessJWT.generate_jwt()
             if not success:
                 raise Exception(f'Failed to generate jwt: {errors}')
+
+        if reset_player_manager:
+            PlayerManager._users = {}
+
         response = self.client.post(
             url,
             json.dumps(request_body),
@@ -54,8 +62,13 @@ class PostCreateGameTest(TestCaseNoDatabase):
         os.environ['PONG_GAME_SERVERS_MAX_PORT'] = str(max_port)
         os.environ['GAME_SERVER_PATH'] = app_path
 
-    def run_test(self, request_body, expected_body, expected_status, jwt=None):
-        body, status = self.post_request(request_body, jwt)
+    def run_test(self,
+                 request_body,
+                 expected_body,
+                 expected_status,
+                 jwt: Optional[str] = None,
+                 reset_player_manager: bool = True):
+        body, status = self.post_request(request_body, jwt, reset_player_manager)
 
         self.assertEqual(body, expected_body)
 
@@ -220,6 +233,29 @@ class PostCreateGameTest(TestCaseNoDatabase):
         }, {
             'errors': [error_messages.NEED_2_PLAYERS_FOR_MATCHMAKING]
         }, 400)
+
+    def test_player_is_already_in_a_game(self):
+        port = 4244
+        self.set_env_var(port)
+
+        self.run_test({
+            'game_id': 1,
+            'players': [1, 2],
+            'request_issuer': settings.MATCHMAKING
+        }, {
+            'port': port
+        }, 201)
+
+        port = 4245
+        self.set_env_var(port)
+
+        self.run_test({
+            'game_id': 1,
+            'players': [2, 3],
+            'request_issuer': settings.MATCHMAKING
+        }, {
+            'errors': [error_messages.player_is_already_in_a_game(2)]
+        }, 409, reset_player_manager=False)
 
     def test_missing_request_issuer(self):
         self.run_test({

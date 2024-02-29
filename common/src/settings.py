@@ -41,7 +41,11 @@ ADD_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/add/'
 DELETE_FRIEND_NOTIFICATION_ENDPOINT = NOTIFICATION_URL + 'notification/friend/delete/'
 
 GAME_CREATOR_URL = 'https://pong-server-nginx/'
-GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_URL + 'create_game/'
+GAME_CREATOR_BASE_URL = GAME_CREATOR_URL + 'game_creator/'
+GAME_CREATOR_CREATE_GAME_ENDPOINT = GAME_CREATOR_BASE_URL + 'create_game/'
+GAME_CREATOR_CREATE_PRIVATE_GAME_ENDPOINT = GAME_CREATOR_BASE_URL + 'create_private_game/'
+GAME_CREATOR_REMOVE_PLAYERS_CURRENT_GAME_ENDPOINT = (GAME_CREATOR_BASE_URL +
+                                                     'remove_players_current_game/')
 
 SSL_CERT_PATH = '/app/ssl/certificate.crt'
 SSL_KEY_PATH = '/app/ssl/private.key'

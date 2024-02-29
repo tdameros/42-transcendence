@@ -35,6 +35,14 @@ def player_is_not_an_optional_int(index: int) -> str:
     return f'players[{index}] is not an Optional[int]'
 
 
+def player_is_not_an_int(index: int) -> str:
+    return f'players[{index}] is not an int'
+
+
+def player_is_already_in_a_game(player_id: int) -> str:
+    return f'Player id {player_id} is already in a game'
+
+
 def error_creating_game_server(error: str) -> str:
     return f'Error creating game server: {error}'
 
