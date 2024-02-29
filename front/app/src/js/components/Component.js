@@ -28,14 +28,14 @@ export class Component extends HTMLElement {
     this.update();
   }
 
-  addComponentEventListener(element, event, callback) {
+  addComponentEventListener(element, event, callback, callbackInstance=this) {
     if (!element) {
       return;
     }
     if (!this.#componentEventListeners[event]) {
       this.#componentEventListeners[event] = [];
     }
-    const eventCallback = callback.bind(this);
+    const eventCallback = callback.bind(callbackInstance);
     this.#componentEventListeners[event].push({element, eventCallback});
     element.addEventListener(event, eventCallback);
   }
