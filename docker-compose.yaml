@@ -82,6 +82,12 @@ services:
             file: notification/docker/docker-compose.yaml
             service: notification-db
 
+    # Crontab
+    crontab:
+        extends:
+            file: crontab/docker-compose.yaml
+            service: crontab
+
 
 networks:
     front:
@@ -215,3 +221,11 @@ volumes:
             type: none
             o: bind
             device: ssl/certs
+
+    # Cron script
+    cron_script:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: crontab/script

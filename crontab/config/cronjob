@@ -1,0 +1,1 @@
+0 * * * * /usr/bin/python /app/delete_inactive_tournament.py

@@ -1,0 +1,13 @@
+services:
+  crontab:
+    networks:
+      - transcendence
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "pip install --root-user-action=ignore --no-cache-dir -r /app/common/docker/requirements.txt &&
+      cron -f"
+    volumes:
+      - common_code:/app/common
+      - cron_script:/app
+    restart: on-failure
