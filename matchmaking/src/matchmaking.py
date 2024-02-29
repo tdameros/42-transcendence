@@ -2,8 +2,8 @@ import asyncio
 from time import time
 from typing import Any, Optional
 
-import src.settings as settings
 import src.error_message as error
+import src.settings as settings
 
 from .player import Player
 
