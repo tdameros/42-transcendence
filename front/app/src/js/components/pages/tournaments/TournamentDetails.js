@@ -36,8 +36,8 @@ export class TournamentDetails extends Component {
                       <div class="modal-body d-flex flex-column justify-content-center">
                           <input type="text" class="form-control mb-2" id="nickname"
                                  placeholder="nickname" required>
-                          <input type="password" class="form-control mb-2"
-                                 id="password" placeholder="password" required>
+                          <div id="password-container">
+                          </div>
                           <alert-component id="join-alert-modal"
                                            alert-display="false"></alert-component>
                       </div>
@@ -71,7 +71,7 @@ export class TournamentDetails extends Component {
     this.joinModalTitle = this.querySelector('#join-modal-title');
     this.joinModalBtn = this.querySelector('#join-modal-btn');
     this.joinModalNickname = this.querySelector('#nickname');
-    this.modalPassword = this.querySelector('#password');
+    this.modalPasswordContainer = this.querySelector('#password-container');
     super.addComponentEventListener(this.joinModalBtn, 'click',
         this.#modalJoinBtnHandler);
     super.addComponentEventListener(joinModal, 'hidden.bs.modal', () => {
@@ -79,7 +79,6 @@ export class TournamentDetails extends Component {
       this.modalAlert.setAttribute('alert-message', '');
       this.modalAlert.setAttribute('alert-display', 'false');
       this.joinModalNickname.value = '';
-      this.modalPassword.value = '';
     });
     this.alertModal = this.querySelector('#alert-modal');
     const navbarHeight = document.body.style.paddingTop;
@@ -293,9 +292,12 @@ export class TournamentDetails extends Component {
   async #joinBtnHandler() {
     this.joinModalTitle.textContent = this.tournament['name'];
     if (this.tournament['is-private']) {
-      this.querySelector('#password').classList.remove('d-none');
+      this.modalPasswordContainer.innerHTML = `
+            <input type="password" class="form-control mb-2"
+             id="password" placeholder="password" required>
+      `;
     } else {
-      this.querySelector('#password').classList.add('d-none');
+      this.modalPasswordContainer.innerHTML = '';
     }
     this.joinModal.show();
   }
@@ -303,7 +305,10 @@ export class TournamentDetails extends Component {
   async #modalJoinBtnHandler(event) {
     event.preventDefault();
     const nickname = this.joinModalNickname.value;
-    const password = this.modalPassword.value;
+    const passwordInput = this.modalPasswordContainer.querySelector(
+        '#password',
+    );
+    const password = passwordInput ? passwordInput.value : '';
     try {
       const {response, body} = await tournamentClient.joinTournament(
           this.tournamentId, nickname, password,
