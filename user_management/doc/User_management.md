@@ -904,3 +904,36 @@ Authorization: {access_token}
 
 </details>
 
+## `/user/me/`
+
+### Retrieve user private infos
+
+This endpoint retrieves the user's private information.
+
+<details>
+ <summary><code>GET</code><code><b>/user/send-user-infos/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                                    |
+> |-----------|--------------------|-------------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent", "email": "************ra@gmail.com"}` |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                       |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`        |
+
+Json response :
+```json
+{
+    "username" : "Aurel",
+    "id": 1,
+    "email": "a@a.fr",
+    "has_2fa": true,
+    "OAuth": true
+ }
+
+
+</details>
