@@ -251,10 +251,11 @@ class PostCreateGameTest(TestCaseNoDatabase):
 
         self.run_test({
             'game_id': 1,
-            'players': [2, 3],
-            'request_issuer': settings.MATCHMAKING
+            'players': [2, 3, 4, 1],
+            'request_issuer': settings.TOURNAMENT
         }, {
-            'errors': [error_messages.player_is_already_in_a_game(2)]
+            'errors': [error_messages.SOME_PLAYERS_ARE_ALREADY_IN_A_GAME],
+            'players_already_in_a_game': [2, 1]
         }, 409, reset_player_manager=False)
 
     def test_missing_request_issuer(self):

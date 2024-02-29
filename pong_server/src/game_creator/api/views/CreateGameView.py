@@ -56,13 +56,16 @@ class CreateGameView(View):
         if len(errors) > 0:
             raise JsonResponseException({'errors': errors}, status=400)
 
-        conflicts: list[str] = []
+        players_already_in_a_game: list[str] = []
         for player in players:
             if player is not None:
                 if PlayerManager.get_player_game_port(player) is not None:
-                    conflicts.append(error_messages.player_is_already_in_a_game(player))
-        if len(conflicts) > 0:
-            raise JsonResponseException({'errors': conflicts}, status=409)
+                    players_already_in_a_game.append(player)
+        if len(players_already_in_a_game) > 0:
+            raise JsonResponseException({
+                'errors': [error_messages.SOME_PLAYERS_ARE_ALREADY_IN_A_GAME],
+                'players_already_in_a_game': players_already_in_a_game
+            }, status=409)
 
         return game_id, players, request_issuer
 
