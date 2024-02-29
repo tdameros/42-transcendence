@@ -121,6 +121,7 @@ class GameManager(object):
             match.get_player(looser_index).PLAYER_ID,
             match.get_player_score(looser_index)
         )
+        await ClientManager.unregister_player(match.get_player(looser_index).PLAYER_ID)
 
         if len(GameManager._matches) == 1:
             GameManager._is_game_over = True
