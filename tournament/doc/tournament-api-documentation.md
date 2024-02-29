@@ -291,9 +291,16 @@ Anonymizes a user's nicknames
 <details>
  <summary><code>POST</code> <code><b>/tournament/player/anonymize</b></code></summary>
 
-### Parameters
+### Request
 
-None
+#### Body
+
+- The user id to anonymize
+
+> ```javascript
+> {
+>    "user_id": 1
+> }
 
 ### Responses
 

@@ -169,7 +169,15 @@ class TournamentPlayersView(View):
 class AnonymizePlayerView(View):
     @staticmethod
     def post(request: HttpRequest) -> JsonResponse:
-        user_id = get_user_id(request)
+        try:
+            json_request = json.loads(request.body.decode('utf8'))
+        except Exception:
+            return JsonResponse(data={'errors': [error.BAD_JSON_FORMAT]}, status=400)
+
+        user_id = json_request.get('user_id')
+        valid_user_id, user_id_error = AnonymizePlayerView.validate_user_id(user_id)
+        if not valid_user_id:
+            return JsonResponse(data={'errors': [user_id_error]}, status=400)
 
         try:
             players = Player.objects.filter(user_id=user_id)
@@ -187,3 +195,11 @@ class AnonymizePlayerView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'message': 'Your nickname has been anonymized'}, status=200)
+
+    @staticmethod
+    def validate_user_id(user_id: any) -> tuple[bool, Optional[str]]:
+        if user_id is None:
+            return False, error.USER_ID_MISSING
+        if not isinstance(user_id, int):
+            return False, error.USER_ID_INVALID
+        return True, None
