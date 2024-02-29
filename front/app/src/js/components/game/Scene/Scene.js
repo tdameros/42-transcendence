@@ -22,12 +22,15 @@ export class Scene {
   #matchesXOffset;
   #matchesYOffset;
 
-  constructor(engine, sceneJson, playerLocationJson) {
+  constructor() {}
+
+  async init(engine, sceneJson, playerLocationJson) {
     this.#engine = engine;
 
     const matchesJson = sceneJson['matches'];
     for (const matchJson of matchesJson) {
-      const newMatch = new Match(matchJson, true);
+      const newMatch = new Match();
+      await newMatch.init(matchJson, true);
       this.#matches.push(newMatch);
       this.#addMatchToMatchMap(newMatch, matchJson['location']);
       this.#threeJSScene.add(newMatch.threeJSGroup);
@@ -35,7 +38,8 @@ export class Scene {
 
     const loosersJson = sceneJson['loosers'];
     for (const looserJson of loosersJson) {
-      const newLooser = new Player(looserJson);
+      const newLooser = new Player();
+      await newLooser.init(loosersJson);
       this.#loosers.push(newLooser);
       this.#threeJSScene.add(newLooser.threeJSGroup);
     }
@@ -201,7 +205,8 @@ export class Scene {
       return;
     }
 
-    match = new Match(matchJson, false);
+    match = new Match();
+    match.init(matchJson, false);
     this.#matches.push(match);
     this.#matches_map[key] = match;
     this.#threeJSScene.add(match.threeJSGroup);

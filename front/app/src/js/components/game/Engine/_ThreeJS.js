@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {RectAreaLightUniformsLib} from 'three/addons';
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 
 export class _ThreeJS {
   #renderer;
@@ -10,6 +11,7 @@ export class _ThreeJS {
     this.#initRenderer();
     this.#initCamera();
     this.#engine = engine;
+    new OrbitControls(this.#camera, this.#renderer.domElement);
     window.addEventListener('resize', () => {
       this.#onWindowResize();
       this.#engine.resizeHandler();

@@ -100,9 +100,9 @@ export class Paddle {
   }
 
   #addLightToGroup(color) {
-    this.#light = new THREE.RectAreaLight(color, 100., 1., 5.);
+    this.#light = new THREE.RectAreaLight(color, 5., 1., 5.);
 
-    const xDirectionToLookAt = 999999999999999.;
+    const xDirectionToLookAt = 1.;
     if (this.#paddleIsOnTheRight) {
       this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.);
       this.#light.lookAt(-xDirectionToLookAt, 0., 0.);

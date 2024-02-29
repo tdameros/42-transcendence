@@ -179,7 +179,7 @@ export class Ball {
   }
 
   #addLightToGroup() {
-    const light = new THREE.PointLight(0xFFFFFF, 75.0, 40.);
+    const light = new THREE.PointLight(0xFFFFFF, 25.0, 10.);
     light.position.set(0., 0., 0.);
     light.castShadow = true;
     this.#threeJSGroup.add(light);

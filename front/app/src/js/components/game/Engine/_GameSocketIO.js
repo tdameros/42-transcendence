@@ -55,7 +55,8 @@ export class _GameSocketIO {
       }
       console.log('game scene received');
 
-      this.#engine.scene = new Scene(
+      this.#engine.scene = new Scene;
+      await this.#engine.scene.init(
           this.#engine,
           data['scene'],
           data['player_location'],
