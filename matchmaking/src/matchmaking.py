@@ -3,6 +3,7 @@ from time import time
 from typing import Any, Optional
 
 import src.settings as settings
+import src.error_message as error
 
 from .player import Player
 
@@ -38,8 +39,12 @@ class Matchmaking:
                     closest_opponent = opponent
         return closest_opponent
 
-    def add_player(self, player: Player) -> None:
+    def add_player(self, player: Player) -> Optional[str]:
+        for player in self.queue:
+            if player.sid == player.sid:
+                return error.ALREADY_IN_QUEUE
         self.queue.append(player)
+        return None
 
     def remove_player(self, sid) -> None:
         for player in self.queue:
