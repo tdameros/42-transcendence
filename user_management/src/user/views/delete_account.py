@@ -23,7 +23,10 @@ def delete_tournament(user, access_token):
     request = InternalRequests.delete(f'{settings.TOURNAMENT_URL}tournament/', headers={'Authorization': access_token})
     if request.status_code != 200:
         raise Exception(f'Error deleting tournaments : {request.json()}')
-    request = InternalAuthRequests.post(f'{settings.TOURNAMENT_URL}tournament/player/anonymize/')
+    request = InternalAuthRequests.post(
+        f'{settings.TOURNAMENT_URL}tournament/player/anonymize/',
+        data={'user_id': user.id}
+    )
     if request.status_code != 200:
         raise Exception(f'Error anonymizing players : {request.json()}')
 
