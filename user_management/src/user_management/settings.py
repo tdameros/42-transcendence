@@ -79,7 +79,6 @@ FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 APPEND_SLASH = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-print(os.path.join(BASE_DIR, '.env'))
 error_message = f"tried to load {os.path.join(BASE_DIR, '.env')}"
 SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
 USER_MANAGEMENT_SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
