@@ -116,7 +116,7 @@ export class ToastNotifications extends Component {
             <div class="d-flex justify-content-start align-items-center">
                 <div class="d-flex align-items-center mb-1">
                     <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
-                           class="rounded-circle me-2"
+                           class="rounded-circle object-fit-cover me-2"
                            style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
                     <p class="mb-0 text-muted" style="font-size: 0.8rem;">
                         <a class="text-primary text-decoration-none" onclick="window.router.navigate('/profile/${username}/')">${username}</a>
