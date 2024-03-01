@@ -16,7 +16,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         depends_on:
             tournament:
                 condition: service_healthy
@@ -47,7 +47,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         depends_on:
             tournament-db:
                 condition: service_healthy
@@ -67,5 +67,5 @@ services:
             test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         restart: on-failure
