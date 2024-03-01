@@ -25,6 +25,15 @@ export class Engine {
     await this.#socket.init(URI);
   }
 
+  disconnectFromServer() {
+    try {
+      this.#socket.disconnect();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   renderFrame() {
     this.#threeJS.renderFrame(this.#scene.threeJSScene);
   }

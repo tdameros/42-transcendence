@@ -20,12 +20,20 @@ export class Game extends Component {
   }
 
   postRender() {
+    this.engine = null;
     const port = this.getAttribute('port');
     if (!port) {
       console.error('Port attribute is not set');
       return;
     }
     this.start_game(this.getGameURL(port));
+  }
+
+  disconnectedCallback() {
+    if (this.engine) {
+      this.engine.disconnectFromServer();
+    }
+    super.removeAllComponentEventListeners();
   }
 
   start_game(URI) {
@@ -36,10 +44,10 @@ export class Game extends Component {
       );
       return;
     }
-    const engine = new Engine(this);
+    this.engine = new Engine(this);
 
-    this.displayScene(engine);
-    engine.connectToServer(URI)
+    this.displayScene(this.engine);
+    this.engine.connectToServer(URI)
         .catch((error) => {
           console.error('Error connecting to server:', error);
         });
