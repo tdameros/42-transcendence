@@ -14,15 +14,14 @@ from common.src.jwt_managers import service_authentication
 class DeleteInactiveTournamentView(View):
     @staticmethod
     def delete(request: HttpRequest) -> JsonResponse:
-        limit_datetime = datetime.datetime.now() - datetime.timedelta(hours=1)
+        limit_datetime = datetime.datetime.now(datetime.UTC) - datetime.timedelta(hours=1)
         try:
             in_progress_tournaments = Tournament.objects.filter(
-                status=Tournament.IN_PROGRESS,
-                start_datetime__lt=limit_datetime
+                status=Tournament.IN_PROGRESS
             )
-            in_progress_tournaments.delete()
+            for tournament in in_progress_tournaments:
+                if tournament.start_datetime < limit_datetime:
+                    tournament.delete()
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
         return JsonResponse({'message': 'Tournament deleted'}, status=200)
-
-
