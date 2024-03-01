@@ -1,0 +1,22 @@
+services:
+  crontab:
+    networks:
+      - transcendence
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "pip install --root-user-action=ignore --no-cache-dir -r /app/common/docker/requirements.txt &&
+      cron -f"
+    volumes:
+      - common_code:/app/common
+      - cron_script:/app
+    depends_on:
+      tournament-nginx:
+        condition: service_healthy
+      user-management-nginx:
+        condition: service_healthy
+      user-stats-nginx:
+        condition: service_healthy
+      pong-server-nginx:
+        condition: service_healthy
+    restart: on-failure
