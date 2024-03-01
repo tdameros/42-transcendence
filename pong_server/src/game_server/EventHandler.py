@@ -35,6 +35,7 @@ class EventHandler(object):
                                          GameManager.get_player(user_id).get_location(),
                                          GameManager.get_scene())
         except ConnectError as e:
+            logging.warning(f'{sid} failed to connect: {e.MESSAGE} (status {e.STATUS_CODE})')
             raise e.to_socket_io_exception()
 
     @staticmethod

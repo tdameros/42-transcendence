@@ -79,7 +79,8 @@ class GameManager(object):
     @staticmethod
     async def start_game():
         for match in GameManager._matches:
-            await match.start_match()
+            if match.get_player(0) is not None and match.get_player(1) is not None:
+                await match.start_match()
 
         scene = GameManager.get_scene()
         for client_id in ClientManager.CLIENTS_IDS:

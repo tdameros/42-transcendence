@@ -553,8 +553,10 @@ class StartTournamentTest(TestCase):
         return response, body
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    def test_start_tournament(self, mock_get):
+    @patch('api.views.manage_tournament_views.StartTournamentView.create_tournament_game')
+    def test_start_tournament(self, mock_game_creator, mock_get):
         mock_get.return_value = (True, {'id': 1}, None)
+        mock_game_creator.return_value = (True, None, 200)
         response, body = self.start_tournament(1)
 
         tournament = Tournament.objects.get(id=1)
