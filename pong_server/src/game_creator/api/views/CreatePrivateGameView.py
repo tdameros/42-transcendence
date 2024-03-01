@@ -1,4 +1,3 @@
-import base64
 import json
 
 from django.http import HttpRequest, JsonResponse
@@ -8,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api import error_messages
 from api.GameCreator import GameCreator
+from api.views.utils.get_user_id_from_jwt_in_request import \
+    get_user_id_from_jwt_in_request
 from common.src import settings as common_settings
 from common.src.internal_requests import InternalAuthRequests, InternalRequests
 from common.src.jwt_managers import user_authentication
@@ -20,7 +21,7 @@ class CreatePrivateGameView(View):
     def post(self, request: HttpRequest) -> JsonResponse:
         # TODO: if this view is not deleted, make it check if a player is already in a game
         api_name = shared_settings.PRIVATE_GAME
-        user_id = self._get_user_id(request)
+        user_id = get_user_id_from_jwt_in_request(request)
         players = [user_id]
 
         try:
@@ -50,15 +51,6 @@ class CreatePrivateGameView(View):
             return JsonResponse({'errors': [str(e)]}, status=500)
 
         return JsonResponse({'port': port}, status=201)
-
-    @staticmethod
-    def _get_user_id(request: HttpRequest) -> int:
-        jwt = request.headers.get('Authorization')
-        split_jwt = jwt.split('.')
-        payload = base64.b64decode(split_jwt[1] + '===')
-
-        payload_dict = json.loads(payload)
-        return int(payload_dict['user_id'])
 
     @staticmethod
     def _get_opponent_id(request: HttpRequest) -> int:

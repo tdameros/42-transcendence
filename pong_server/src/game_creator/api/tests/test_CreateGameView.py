@@ -47,7 +47,9 @@ class PostCreateGameTest(TestCaseNoDatabase):
             headers={'Authorization': jwt} if len(jwt) != 0 else None
         )
 
-        return json.loads(response.content.decode('utf-8')), response.status_code
+        response_content = response.content.decode('utf-8')
+        return (json.loads(response_content) if len(response_content) > 0 else {},
+                response.status_code)
 
     def set_env_var(self,
                     min_port: int,
@@ -251,10 +253,11 @@ class PostCreateGameTest(TestCaseNoDatabase):
 
         self.run_test({
             'game_id': 1,
-            'players': [2, 3],
-            'request_issuer': settings.MATCHMAKING
+            'players': [2, 3, 4, 1],
+            'request_issuer': settings.TOURNAMENT
         }, {
-            'errors': [error_messages.player_is_already_in_a_game(2)]
+            'errors': [error_messages.SOME_PLAYERS_ARE_ALREADY_IN_A_GAME],
+            'players_already_in_a_game': [2, 1]
         }, 409, reset_player_manager=False)
 
     def test_missing_request_issuer(self):
