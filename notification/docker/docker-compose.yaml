@@ -20,6 +20,11 @@ services:
             - ssl_certs:/app/ssl
         ports:
             - "6005:443"
+        healthcheck:
+          test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+          interval: 5s
+          timeout: 5s
+          retries: 60
         depends_on:
             - notification-db
         restart: on-failure
@@ -34,4 +39,9 @@ services:
             POSTGRES_PASSWORD: mypassword
         volumes:
             - notification_postgres_volume:/var/lib/postgresql/data
+        healthcheck:
+          test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+          interval: 5s
+          timeout: 5s
+          retries: 6
         restart: on-failure

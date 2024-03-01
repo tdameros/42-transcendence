@@ -10,6 +10,8 @@ services:
         ports:
             - "443:443"
         depends_on:
+            notification:
+                condition: service_healthy
             tournament-nginx:
                 condition: service_healthy
             user-management-nginx:
