@@ -72,6 +72,9 @@ export class Match {
   }
 
   #createPlayer(playerJson, index) {
+    if (playerJson === null) {
+      return;
+    }
     this.#players[index] = new Player(playerJson);
     this.#threeJSGroup.add(this.#players[index].threeJSGroup);
   }

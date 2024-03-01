@@ -35,15 +35,16 @@ class EventHandler(object):
                                          GameManager.get_player(user_id).get_location(),
                                          GameManager.get_scene())
         except ConnectError as e:
+            logging.warning(f'{sid} failed to connect: {e.MESSAGE} (status {e.STATUS_CODE})')
             raise e.to_socket_io_exception()
 
     @staticmethod
     def _authenticate_user(auth: Optional[dict]) -> int:
         """ This is not an event handler, but it is used by `connect` """
         if auth is None:
-            raise ConnectError('auth data missing', 401)
+            raise ConnectError('auth data missing', 400)
         if not isinstance(auth, dict):
-            raise ConnectError('auth data should be a dictionary', 401)
+            raise ConnectError('auth data should be a dictionary', 400)
         token = auth.get('token')
         if token is None:
             raise ConnectError('Token field is not present in auth data', 401)

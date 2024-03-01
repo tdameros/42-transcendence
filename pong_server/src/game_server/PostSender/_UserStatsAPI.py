@@ -1,3 +1,5 @@
+import logging
+
 from common.src import settings
 from PostSender._ABaseAPI import ABaseAPI
 
@@ -19,9 +21,13 @@ class UserStatsAPI(ABaseAPI):
                              winner_score: int,
                              looser_id: int,
                              looser_score: int):
-        await UserStatsAPI._post(f'{settings.USER_STATS_URL}statistics/match/', {
+        uri: str = f'{settings.USER_STATS_URL}statistics/match/'
+        body: dict = {
             'winner_id': winner_id,
             'winner_score': winner_score,
             'loser_id': looser_id,
             'loser_score': looser_score
-        })
+        }
+
+        logging.info(f'Posting to {uri} with body {body}')
+        await UserStatsAPI._post(uri, body)

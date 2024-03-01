@@ -1,4 +1,5 @@
 import asyncio
+import atexit
 import logging
 import os
 import ssl
@@ -21,6 +22,8 @@ async def background_task():
             await Server.sio.sleep(.3)
 
         await GameManager.start_game()  # Blocks till the game is over
+
+        ClientManager.unregister_all_players()
 
         await Server.sio.sleep(10)  # Give the clients time to receive the game_over event
 
@@ -78,6 +81,7 @@ async def main() -> int:
                            get_ssl_context())
 
         print(f'port: {Server.PORT}')
+        atexit.register(ClientManager.unregister_all_players)
         """ Do not use logging! This should always be printed as the game
             creator will read it """
         sys.stdout.flush()

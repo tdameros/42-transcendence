@@ -123,7 +123,7 @@ class OAuthCallback(View):
         if not access_token:
             return redirect(f'{source}?error=Failed to retrieve access token')
         login, avatar_url, email = self.get_user_infos(access_token, auth_service)
-        user, error = self.create_or_get_user(login, email, avatar_url)
+        user, error = self.create_or_get_user(login, email, avatar_url, auth_service)
         if not user:
             return redirect(f'{source}?error={error}')
         success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
@@ -134,7 +134,7 @@ class OAuthCallback(View):
         return response
 
     @staticmethod
-    def create_or_get_user(login, email, avatar_url):
+    def create_or_get_user(login, email, avatar_url, auth_service):
         user = User.objects.filter(email=email).first()
         if user is None:
             search_user = User.objects.filter(username=login).first()
@@ -150,6 +150,7 @@ class OAuthCallback(View):
                 return None, 'Failed to post user stats'
             if not download_image_from_url(avatar_url, user):
                 return None, 'Failed to download profile picture'
+            user.oauth = auth_service
             user.save()
         return user, None
 

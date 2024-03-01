@@ -48,7 +48,10 @@ class Server:
             logging.debug(str(errors))
             raise socketio.exceptions.ConnectionRefusedError(str(errors))
         player = Player(sid, user['id'], user['elo'])
-        self.matchmaking.add_player(player)
+        error = self.matchmaking.add_player(player)
+        if error is not None:
+            logging.debug(error)
+            raise socketio.exceptions.ConnectionRefusedError(error)
         logging.debug(f'User added to the queue: {user}')
         return True
 

@@ -43,3 +43,6 @@ MATCH_PLAYER_NOT_EXIST = 'Player does not exist'
 MATCH_WINNER_NOT_INT = 'Winner must be an integer'
 MATCH_WINNER_NOT_EXIST = 'Winner does not exist'
 MATCHES_NOT_GENERATED = 'Matches have not been generated yet'
+
+USER_ID_MISSING = 'Missing user_id field'
+USER_ID_INVALID = 'User_id must be an integer'

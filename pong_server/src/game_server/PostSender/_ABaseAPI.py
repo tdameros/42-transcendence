@@ -50,7 +50,6 @@ class ABaseAPI(ABC):
                 f'Server error {response.status_code} during {ABaseAPI._get_caller_info()}: '
                 f'{error}'
             )
-            return
 
     @staticmethod
     def _get_caller_info() -> str:

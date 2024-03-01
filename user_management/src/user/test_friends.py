@@ -75,7 +75,8 @@ class FriendsTest(TestCase):
     def get_id_from_username(self, username):
         url = reverse('username', args=[username])
         first_id_in_db = User.objects.all().first().id
-        response = self.client.get(url, HTTP_AUTHORIZATION=f'{UserAccessJWTManager.generate_jwt(first_id_in_db)[1]}')
+        access_token = UserAccessJWTManager.generate_jwt(first_id_in_db)[1]
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{access_token}')
         return response.json()['id']
 
 

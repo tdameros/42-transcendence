@@ -4,6 +4,7 @@ import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {getRouter} from '@js/Router.js';
 import {SignIn} from './SignIn.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class TwoFactorAuth extends Component {
   constructor() {
@@ -62,7 +63,7 @@ export class TwoFactorAuth extends Component {
       }
       
       #two-factor-auth {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .two-factor-card {
@@ -92,7 +93,6 @@ export class TwoFactorAuth extends Component {
 
   #renderLoader() {
     return (`
-      <navbar-component disable-padding-top="true"></navbar-component>
       <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
           <div class="spinner-border" role="status">
               <span class="visually-hidden">Loading...</span>

@@ -71,7 +71,7 @@ class Match(object):
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
-        await PostSender.post_add_point(Match.GAME_ID, player_index)
+        await PostSender.post_add_point(Match.GAME_ID, self._players[player_index].PLAYER_ID)
 
         if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
             self._winner_index = player_index

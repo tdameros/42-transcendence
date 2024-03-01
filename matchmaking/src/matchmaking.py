@@ -2,6 +2,7 @@ import asyncio
 from time import time
 from typing import Any, Optional
 
+import src.error_message as error
 import src.settings as settings
 
 from .player import Player
@@ -38,8 +39,12 @@ class Matchmaking:
                     closest_opponent = opponent
         return closest_opponent
 
-    def add_player(self, player: Player) -> None:
+    def add_player(self, player: Player) -> Optional[str]:
+        for queue_player in self.queue:
+            if queue_player.sid == player.sid:
+                return error.ALREADY_IN_QUEUE
         self.queue.append(player)
+        return None
 
     def remove_player(self, sid) -> None:
         for player in self.queue:
