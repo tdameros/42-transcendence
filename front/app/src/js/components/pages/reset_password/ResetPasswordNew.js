@@ -3,6 +3,7 @@ import {InputValidator} from '@utils/InputValidator.js';
 import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class ResetPasswordNew extends Component {
   constructor() {
@@ -74,7 +75,7 @@ export class ResetPasswordNew extends Component {
       }
       
       #reset-password {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .reset-password-card {

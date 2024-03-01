@@ -14,7 +14,7 @@ export class TournamentCreate extends Component {
       return false;
     }
     return (`
-      <navbar-component disable-padding-top="true" nav-active="tournaments"></navbar-component>
+      <navbar-component nav-active="tournaments"></navbar-component>
       <friends-sidebar-component main-component="tournament-create-content-component"></friends-sidebar-component>
     `);
   }

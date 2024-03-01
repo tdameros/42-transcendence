@@ -1,7 +1,10 @@
 import {
   ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
 } from './authentication';
 
@@ -14,6 +17,11 @@ import {
   Local,
   LocalContent,
 } from './local';
+
+import {
+  PrivacyPolicy,
+  PrivacyPolicyContent,
+} from './privacy_policy';
 
 import {
   ResetPassword,
@@ -47,13 +55,18 @@ import {NotFound} from './NotFound.js';
 
 export {
   ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Home,
   HomeContent,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,

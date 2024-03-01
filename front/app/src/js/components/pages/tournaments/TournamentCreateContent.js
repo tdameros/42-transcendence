@@ -2,6 +2,7 @@ import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class TournamentCreateContent extends Component {
   constructor() {
@@ -65,7 +66,7 @@ export class TournamentCreateContent extends Component {
     return (`
       <style>
       #tournament {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .tournament-card {

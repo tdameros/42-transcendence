@@ -28,13 +28,18 @@ import {
 
 import {
   ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Home,
   HomeContent,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -60,6 +65,7 @@ import {
 import {
   Alert,
   Error,
+  ErrorContent,
 } from './utilities';
 
 import {
@@ -85,15 +91,23 @@ customElements.define('notification-component', Notification);
 customElements.define('toast-notifications-component', ToastNotifications);
 
 customElements.define('activate-account-component', ActivateAccount);
+customElements.define(
+  'activate-account-content-component', ActivateAccountContent
+);
 customElements.define('two-factor-auth-component', TwoFactorAuth);
 customElements.define('signin-component', SignIn);
+customElements.define('signin-content-component', SignInContent);
 customElements.define('signup-component', SignUp);
+customElements.define('signup-content-component', SignUpContent);
 
 customElements.define('home-component', Home);
 customElements.define('home-content-component', HomeContent);
 
 customElements.define('local-component', Local);
 customElements.define('local-content-component', LocalContent);
+
+customElements.define('privacy-policy-component', PrivacyPolicy);
+customElements.define('privacy-policy-content-component', PrivacyPolicyContent);
 
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
@@ -133,6 +147,7 @@ customElements.define(
 
 customElements.define('alert-component', Alert);
 customElements.define('error-component', Error);
+customElements.define('error-content-component', ErrorContent);
 
 customElements.define('game-component', Game);
 
@@ -146,11 +161,17 @@ export {
   ThemeButton,
   Friends,
   FriendsSidebar,
+  ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -174,6 +195,7 @@ export {
   NotFound,
   Alert,
   Error,
+  ErrorContent,
   Navbar,
   Notification,
 };
