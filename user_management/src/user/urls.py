@@ -12,6 +12,7 @@ from user.views.friends import (FriendsAcceptView, FriendsDeclineView,
                                 FriendsView)
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
+from user.views.me import MeView
 from user.views.oauth import OAuth, OAuthCallback
 from user.views.refresh_JWT import RefreshJWT
 from user.views.search_username import SearchUsernameView
@@ -55,6 +56,7 @@ urlpatterns = [
     path('avatar/', AvatarView.as_view(), name='avatar'),
     path('delete-inactive-users/', DeleteInactiveUsersView.as_view(), name='delete-inactive-users'),
     path('send-user-infos/', SendUserInfosView.as_view(), name='send-user-infos'),
+    path('me/', MeView.as_view(), name='me'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 
