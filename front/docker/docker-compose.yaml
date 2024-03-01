@@ -18,6 +18,8 @@ services:
                 condition: service_healthy
             user-stats-nginx:
                 condition: service_healthy
+            crontab:
+                condition: service_started
             front-vite:
                 condition: service_completed_successfully
         volumes:
