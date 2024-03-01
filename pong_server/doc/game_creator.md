@@ -28,12 +28,12 @@
 
 #### Status code
 
-> | status code | content-type       | response              | example                                                                               |
-> |-------------|--------------------|-----------------------|---------------------------------------------------------------------------------------|
-> | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                                                       |
-> | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['game_id field is missing', 'players[1] is not an Optional[int]']}        |
-> | `409`       | `application/json` | {'errors': list[str]} | {'errors': ['Player id 2 is already in a game', 'Player id 56 is already in a game']} |
-> | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']}                                    |
+> | status code | content-type       | response                                                                                     | example                                                                                    |
+> |-------------|--------------------|----------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+> | `201`       | `application/json` | {'port': int}                                                                                | {'port': 60000}                                                                            |
+> | `400`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['game_id field is missing', 'players[1] is not an Optional[int]']}             |
+> | `409`       | `application/json` | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': list[int]} | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': [2, 56]} |
+> | `500`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['Error creating game server: reason']}                                         |
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 

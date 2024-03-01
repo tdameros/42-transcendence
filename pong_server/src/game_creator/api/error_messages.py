@@ -18,6 +18,7 @@ NEED_AT_LEAST_2_PLAYERS_THAT_ARENT_NONE = ("Need at least 2 players that "
 LEN_PLAYERS_IS_NOT_A_POWER_OF_2 = 'len(players) should be a power of 2'
 BOTH_PLAYERS_ARE_NONE = 'Each pair of players should have at least one non-None player'
 NEED_2_PLAYERS_FOR_MATCHMAKING = 'Need len(players) == 2 for matchmaking'
+SOME_PLAYERS_ARE_ALREADY_IN_A_GAME = 'Some player(s) are already in a game'
 
 OPPONENT_ID_FIELD_MISSING = 'opponent_id field is missing'
 OPPONENT_ID_FIELD_IS_NOT_AN_INTEGER = 'opponent_id field is not an integer'
