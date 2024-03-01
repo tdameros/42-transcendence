@@ -9,21 +9,21 @@ export class _KeyHookHandler {
   }
 
   startListeningForKeyHooks() {
-    window.addEventListener('keydown', async () => {
-      await this.#onKeyPress(event);
-    }, false);
-    window.addEventListener('keyup', async () => {
-      await this.#onKeyRelease(event);
-    }, false);
-    window.addEventListener('blur', async () => {
-      await this.#onFocusLoss();
-    }, false);
-  }
-
-  stopListeningForKeyHooks() {
-    window.addEventListener('keydown', async () => {}, false);
-    window.addEventListener('keyup', async () => {}, false);
-    window.addEventListener('blur', async () => {}, false);
+    this.#engine.component.addComponentEventListener(
+        window, 'keydown', async () => {
+          await this.#onKeyPress(event);
+        }, this,
+    );
+    this.#engine.component.addComponentEventListener(
+        window, 'keyup', async () => {
+          await this.#onKeyRelease(event);
+        }, this,
+    );
+    this.#engine.component.addComponentEventListener(
+        window, 'blur', async () => {
+          await this.#onFocusLoss();
+        }, this,
+    );
   }
 
   async #onKeyPress(event) {

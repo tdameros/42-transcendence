@@ -1,16 +1,19 @@
+import {Scene} from '@components/game/Scene/Scene.js';
+
 import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
 import {_GameSocketIO} from './_GameSocketIO.js';
-import {Scene} from '@components/game/Scene/Scene.js';
 
 export class Engine {
   #threeJS;
   #keyHookHandler;
   #socket;
   #scene;
+  #component;
 
-  constructor() {
+  constructor(component) {
+    this.#component = component;
     this.#threeJS = new _ThreeJS(this);
     this.#keyHookHandler = new _KeyHookHandler(this);
     this.#scene = new LoadingScreenScene();
@@ -52,6 +55,10 @@ export class Engine {
     this.#threeJS.stopAnimationLoop();
   }
 
+  get component() {
+    return this.#component;
+  }
+
   set socket(socket) {
     this.#socket = socket;
   }
@@ -73,9 +80,5 @@ export class Engine {
 
   startListeningForKeyHooks() {
     this.#keyHookHandler.startListeningForKeyHooks();
-  }
-
-  stopListeningForKeyHooks() {
-    this.#keyHookHandler.stopListeningForKeyHooks();
   }
 }
