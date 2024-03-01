@@ -47,7 +47,9 @@ class PostCreateGameTest(TestCaseNoDatabase):
             headers={'Authorization': jwt} if len(jwt) != 0 else None
         )
 
-        return json.loads(response.content.decode('utf-8')), response.status_code
+        response_content = response.content.decode('utf-8')
+        return (json.loads(response_content) if len(response_content) > 0 else {},
+                response.status_code)
 
     def set_env_var(self,
                     min_port: int,
