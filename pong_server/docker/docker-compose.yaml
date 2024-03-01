@@ -20,7 +20,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         restart: on-failure
 
     pong-server:
@@ -48,5 +48,5 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         restart: on-failure
