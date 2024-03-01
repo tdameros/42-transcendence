@@ -5,6 +5,7 @@ import {ErrorPage} from '@utils/ErrorPage.js';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {Modal} from 'bootstrap';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class SettingsContent extends Component {
   constructor() {
@@ -140,27 +141,27 @@ export class SettingsContent extends Component {
     return (`
       <style>
       #settings {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .settings-card {
           width: 550px;
       }
       
-      .rounded-circle {
+      #avatar {
         transition: transform 0.3s ease;
-    }
+      }
 
-    .rounded-circle:hover {
+      #avatar:hover {
         transform: scale(1.1); 
         cursor: pointer;
-    }
+      }
     
-    .hide-placeholder-text {
+      .hide-placeholder-text {
         color: var(--bs-secondary-bg);
         background-color: var(--bs-secondary-bg)!important;
       }
-    </style>
+      </style>
     `);
   }
 
@@ -307,7 +308,7 @@ export class SettingsContent extends Component {
       if (response.ok) {
         this.defaultUsername = body['username'];
         this.defaultEmail = body['email'];
-        this.defaultHas2FA = body['has_2fa'];
+        this.defaultHas2FA = body['2fa'];
         this.innerHTML = this.renderWithDefaultSettings() + this.style();
         return true;
       } else {
@@ -714,6 +715,7 @@ export class SettingsContent extends Component {
       const {response, body} = await userManagementClient.deleteAccount();
       if (response.ok) {
         userManagementClient.logout();
+        this.deleteModal.hide();
         getRouter().navigate('/signin/');
         return;
       } else {

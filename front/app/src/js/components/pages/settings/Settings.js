@@ -14,7 +14,7 @@ export class Settings extends Component {
       return false;
     }
     return (`
-      <navbar-component disable-padding-top="true"></navbar-component>
+      <navbar-component></navbar-component>
       <friends-sidebar-component main-component="settings-content-component"></friends-sidebar-component>
     `);
   }

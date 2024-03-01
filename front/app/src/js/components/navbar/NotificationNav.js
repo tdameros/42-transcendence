@@ -11,7 +11,7 @@ export class NotificationNav extends Component {
 
   render() {
     return (`
-    <div class="position-relative z-1">
+    <div class="position-relative">
         <div id="bell-btn" class="btn btn-sm icon-btn">
           <i id="bell-icon" class="bi-bell-fill fs-5 bell-counter"></i>
         </div>
