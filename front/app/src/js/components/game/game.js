@@ -1,10 +1,14 @@
-import {Component} from '@components';
 import WebGL from 'three/addons/capabilities/WebGL.js';
-
-import {Engine} from './Engine/Engine.js';
 import * as THREE from 'three';
 
+import {Component} from '@components';
+import {ToastNotifications} from '@components/notifications';
+
+import {Engine} from './Engine/Engine.js';
+
 export class Game extends Component {
+  static gameURL = `https://${window.location.hostname}`;
+
   constructor() {
     super();
   }
@@ -16,17 +20,23 @@ export class Game extends Component {
   }
 
   postRender() {
-    this.start_game(`https://localhost:${this.getAttribute('port')}`);
+    const port = this.getAttribute('port');
+    if (!port) {
+      console.error('Port attribute is not set');
+      return;
+    }
+    this.start_game(this.getGameURL(port));
   }
 
   start_game(URI) {
     if (!WebGL.isWebGLAvailable()) {
-      document.querySelector('#container')
-          .appendChild(WebGL.getWebGLErrorMessage());
+      console.error(WebGL.getWebGLErrorMessage());
+      ToastNotifications.addErrorNotification(
+          'WebGL is not available on this device',
+      );
       return;
     }
-
-    const engine = new Engine();
+    const engine = new Engine(this);
 
     this.displayScene(engine);
     engine.connectToServer(URI)
@@ -44,6 +54,10 @@ export class Game extends Component {
 
       engine.renderFrame();
     });
+  }
+
+  getGameURL(port) {
+    return `${Game.gameURL}:${port}/`;
   }
 
   style() {
