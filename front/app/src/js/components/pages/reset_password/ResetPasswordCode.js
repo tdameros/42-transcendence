@@ -3,6 +3,7 @@ import {Keys} from '@utils/Keys.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {ResetPasswordNew} from './ResetPasswordNew.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class ResetPasswordCode extends Component {
   constructor() {
@@ -61,7 +62,7 @@ export class ResetPasswordCode extends Component {
       }
       
       #reset-password {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .reset-password-card {

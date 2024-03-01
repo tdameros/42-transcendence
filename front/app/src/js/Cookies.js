@@ -21,4 +21,12 @@ export class Cookies {
     const options = `path=/;${Cookies.#expireDate};${Cookies.#securePart}`;
     document.cookie = `${name}=;${options}`;
   }
+
+  static removeAll() {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim().split('=')[0];
+      Cookies.remove(cookie);
+    }
+  }
 }
