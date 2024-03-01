@@ -68,6 +68,7 @@ this documentation details the different endpoints of each microservice.
 > ### [/user/id/{user_id}](../user_management/doc/User_management.md#useriduser-id)
 > ### [/user/id_list/](../user_management/doc/User_management.md#userid-list)
 > ### [/user/search-username/](../user_management/doc/User_management.md#usersearch-username)
+> ### [/user/me/](../user_management/doc/User_management.md#userme)
 >
 > #### Retrieve user information
 

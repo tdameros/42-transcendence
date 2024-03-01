@@ -27,6 +27,12 @@ CRONJOBS = [
     ('0 0 * * *', 'myapp.commands.delete_inactive_users', f'>> {COMMANDS_LOG_PATH} 2>&1'),
 ]
 
+MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 

@@ -770,3 +770,17 @@ class TestSendUserInfosView(TestCase):
         url = reverse('send-user-infos')
         response = self.client.get(url, HTTP_AUTHORIZATION=f'{access_token}')
         self.assertEqual(response.status_code, 200)
+
+
+class TestMe(TestCase):
+
+    def test_me(self):
+        Aurel1 = User.objects.create(username='Aurel1', email='a@a.fr', password='Validpass42*')
+        access_token = UserAccessJWTManager.generate_jwt(Aurel1.id)[1]
+        url = reverse('me')
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'{access_token}')
+        self.assertEqual(response.status_code, 200)
+
+        url = reverse('me')
+        response = self.client.get(url, HTTP_AUTHORIZATION='invalid_token')
+        self.assertEqual(response.status_code, 401)
