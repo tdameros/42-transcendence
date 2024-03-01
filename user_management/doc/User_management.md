@@ -911,7 +911,7 @@ Authorization: {access_token}
 This endpoint retrieves the user's private information.
 
 <details>
- <summary><code>GET</code><code><b>/user/send-user-infos/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/me/</b></code></summary>
 
 ### Headers
 
@@ -932,8 +932,24 @@ Json response :
     "id": 1,
     "email": "a@a.fr",
     "has_2fa": true,
-    "OAuth": true
+    "OAuth": None
  }
+ ```
+or 
+```json
+{
+    "username" : "Aurel",
+    "id": 1,
+    "email": "a@a.fr",
+    "has_2fa": false,
+    "OAuth": "github"
+}
+```
 
+for OAuth, value can be :
+- None
+- "github"
+- "42api"
+  (in case of doubt you can check the user model in models.py)
 
 </details>
