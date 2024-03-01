@@ -1,9 +1,13 @@
 import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
+
 
 import {Match} from './Match';
 import {PlayerLocation} from './PlayerLocation';
 import {Player} from './Player/Player';
 import {BallBoundingBox, PaddleBoundingBox} from './boundingBoxes';
+import {Sky} from 'three/addons/objects/Sky.js';
+import {Theme} from '@js/Theme.js';
 
 export class Scene {
   #engine;
@@ -21,6 +25,8 @@ export class Scene {
   #matchHalfHeight;
   #matchesXOffset;
   #matchesYOffset;
+  #sky;
+  #sun;
 
   constructor() {}
 
@@ -44,6 +50,34 @@ export class Scene {
       this.#threeJSScene.add(newLooser.threeJSGroup);
     }
 
+    this.#sky = new Sky();
+    this.#sun = new THREE.Vector3();
+    this.#sky.scale.setScalar(45000);
+    const uniforms = this.#sky.material.uniforms;
+    uniforms.sunPosition.value.copy(this.#sun);
+    uniforms.turbidity.value = 10;
+    uniforms.rayleigh.value = 3;
+    uniforms.mieCoefficient.value = 0.005;
+    uniforms.mieDirectionalG.value = 0.7;
+    if (Theme.get() === 'light') {
+      this.setLightTheme();
+    } else {
+      this.setDarkTheme();
+    }
+    
+    
+    // TODO rename me
+    let junk = new THREE.Vector3(0, 1, 0);
+    const axis = new THREE.Vector3(1, 0, 0);
+    const angle = Math.PI / 2;
+
+    junk.applyAxisAngle( axis, angle );
+
+
+
+    this.#sky.material.uniforms.up.value.set( junk.x, junk.y, junk.z);
+    //this.#sky.rotation.set(Math.PI / 2, 0, 0);
+    this.#threeJSScene.add(this.#sky);
     const light = new THREE.AmbientLight(0xffffff, 0.2);
     this.#threeJSScene.add(light);
 
@@ -61,6 +95,18 @@ export class Scene {
     this.#matchHalfHeight = sceneJson['match_half_height'];
     this.#matchesXOffset = sceneJson['matches_x_offset'];
     this.#matchesYOffset = sceneJson['matches_y_offset'];
+  }
+
+  setLightTheme() {
+    this.#sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(0), 0);
+    const uniforms = this.#sky.material.uniforms;
+    uniforms.sunPosition.value.copy(this.#sun);
+  }
+
+  setDarkTheme() {
+    this.#sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(-2), 0);
+    const uniforms = this.#sky.material.uniforms;
+    uniforms.sunPosition.value.copy(this.#sun);
   }
 
   updateFrame(timeDelta) {
@@ -165,10 +211,30 @@ export class Scene {
     const cameraHeight = Math.max(xHeight, yHeight);
 
     const cameraPosition = new THREE.Vector3(
-        currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight,
+        // currentPlayerGamePosition.x, cameraHeight, currentPlayerGamePosition.z,
+        currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight - 20,
     );
     const cameraLookAt = currentPlayerGamePosition.clone();
     this.#engine.updateCamera(cameraPosition, cameraLookAt);
+
+    // Ancienne position de la caméra
+    const oldCameraPosition = cameraPosition;
+
+    // Nouvelle position de la caméra (zoomée)
+    const newCameraPosition = new THREE.Vector3(
+        currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight,
+        // currentPlayerGamePosition.x, cameraHeight + 20, currentPlayerGamePosition.z,
+    );
+
+    // Créer un tween pour animer la position de la caméra
+    new TWEEN.Tween(oldCameraPosition)
+        .to(newCameraPosition, 3000) // Durée de l'animation (en millisecondes)
+        .easing(TWEEN.Easing.Quadratic.InOut) // Type d'interpolation pour une transition fluide
+        .onUpdate(() => {
+            // Mise à jour de la position de la caméra à chaque étape de l'animation
+            this.#engine.updateCamera(oldCameraPosition, cameraLookAt);
+        })
+        .start(); // Démarrer l'animation
   }
 
   static convertMatchLocationToKey(matchLocationJson) {

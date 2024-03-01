@@ -1,17 +1,18 @@
 import * as THREE from 'three';
 import {RectAreaLightUniformsLib} from 'three/addons';
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 export class _ThreeJS {
   #renderer;
   #camera;
   #engine;
-
+  #controls;
   constructor(engine) {
     this.#initRenderer();
     this.#initCamera();
     this.#engine = engine;
-    new OrbitControls(this.#camera, this.#renderer.domElement);
+    this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
+    this.#controls.target.set(30, 25, 0);
     window.addEventListener('resize', () => {
       this.#onWindowResize();
       this.#engine.resizeHandler();
@@ -72,6 +73,10 @@ export class _ThreeJS {
 
   stopAnimationLoop() {
     this.#renderer.setAnimationLoop(null);
+  }
+
+  updateControls() {
+    this.#controls.update();
   }
 
   renderFrame(scene) {

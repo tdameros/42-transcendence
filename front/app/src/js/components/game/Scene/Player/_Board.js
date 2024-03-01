@@ -3,7 +3,6 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 export class _Board {
   #threeJSBoard;
-  #gltfScene;
 
   constructor() {
     // const size = boardJson['size'];
@@ -16,19 +15,23 @@ export class _Board {
     // );
   }
 
-  async init(boardJson, index){
+  async init(boardJson, index) {
+    const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
-    boardSize.z = boardSize.x / 20;
+    boardSize.z = 1;
     await this.initBoard(boardSize, index);
     await this.initWalls(boardSize);
+    this.initGoal(boardSize, wallWidth, index);
+    this.initScore(boardSize, wallWidth, index, 3);
+    this.initLight(boardSize, index);
     this.#threeJSBoard.castShadow = false;
     this.#threeJSBoard.receiveShadow = true;
   }
 
   async initBoard(boardSize, index) {
-    this.#gltfScene = await this.loadGLTFModel('/assets/models/board.glb');
-    const board = this.#gltfScene.scene;
+    const gltf = await this.loadGLTFModel('/assets/models/board.glb');
+    const board = gltf.scene;
     if (index === 1) {
       board.rotateZ(Math.PI);
     }
@@ -36,7 +39,8 @@ export class _Board {
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
     board.position.set(0., 0., 0.);
-    board.scale.set(boardSize.x / size.x, boardSize.y / size.y, 10);
+    board.scale.set(boardSize.x / size.x, boardSize.y / size.y, boardSize.z / size.z);
+    console.log(boardSize.z / size.z);
     this.#threeJSBoard.add(board);
   }
 
@@ -61,12 +65,69 @@ export class _Board {
     wall.scale.set(
         boardSize.x / size.x,
         wallWidth / size.y,
-        wallWidth / size.z,
+        boardSize.z / size.z * 2,
     );
     return wall;
   }
 
-  async asyncConstructor() {
+  initLight(boardSize, index) {
+    let sign = 1;
+    if (index === 0) {
+      sign = -1;
+    }
+    const light = new THREE.PointLight(0xffffff, 250);
+    light.position.set(sign * boardSize['x'] / 2 + sign * 5, boardSize['y'] / 2 + 5, 10);
+    this.#threeJSBoard.add(light.clone());
+    light.position.set(sign * boardSize['x'] / 2 + sign * 5, -boardSize['y'] / 2 - 5, 10);
+    this.#threeJSBoard.add(light.clone());
+    if (sign === 1) {
+      light.position.set(-sign * boardSize['x'] / 2, boardSize['y'] / 2 + 5, 10);
+      this.#threeJSBoard.add(light.clone());
+      light.position.set(-sign * boardSize['x'] / 2, -boardSize['y'] / 2 - 5, 10);
+      this.#threeJSBoard.add(light.clone());
+    }
+  }
+
+  initScore(boardSize, wallWidth, index, maxScore) {
+    let sign = -1;
+    if (index === 0) {
+      sign = 1;
+    }
+    const pointRadius = wallWidth / 3;
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x00ff00,
+      metalness: 0.5,
+    });
+    material.flatShading = true;
+    const point = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(pointRadius),
+        material,
+    );
+    point.position.set(
+        sign * boardSize.x / 2 - sign * boardSize.x / 6,
+        boardSize.y / 2 + wallWidth / 2,
+        boardSize.z);
+    for (let i = 0; i < maxScore; i++) {
+      this.#threeJSBoard.add(point.clone());
+      point.position.x = point.position.x - sign * wallWidth;
+    }
+  }
+
+  initGoal(boardSize, wallWidth, index) {
+    let sign = 1;
+    if (index === 0) {
+      sign = -1;
+    }
+    const goal = new THREE.Mesh(
+        new THREE.BoxGeometry(wallWidth / 2, boardSize.y + wallWidth * 2, boardSize.z * 2),
+        new THREE.MeshPhysicalMaterial({
+          roughness: 0.2,
+          metalness: 0.2,
+          transmission: 1,
+        }),
+    );
+    goal.position.set(sign * boardSize.x / 2 + sign * wallWidth / 4, 0, 0);
+    this.#threeJSBoard.add(goal);
   }
 
   updateFrame(timeDelta) {
@@ -84,7 +145,7 @@ export class _Board {
       loader.load(path,
           // onLoad callback
           (gltf) => {
-            console.log("GLTF model loaded successfully:", gltf);
+            console.log('GLTF model loaded successfully:', gltf);
             resolve(gltf);
           },
           // onProgress callback
@@ -93,9 +154,9 @@ export class _Board {
           },
           // onError callback
           (error) => {
-            console.error("An error occurred while loading the GLTF model:", error);
+            console.error('An error occurred while loading the GLTF model:', error);
             reject(error);
-          }
+          },
       );
     });
   }
