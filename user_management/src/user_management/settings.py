@@ -27,15 +27,52 @@ CRONJOBS = [
     ('0 0 * * *', 'myapp.commands.delete_inactive_users', f'>> {COMMANDS_LOG_PATH} 2>&1'),
 ]
 
-MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+if os.getenv('DEBUG') == 'True':
+    DEBUG = True
+else:
+    DEBUG = False
+
+if DEBUG:
+    FRONT_URL = "https://localhost:6002/"
+else:
+    FRONT_URL = common_settings.FRONT_URL
+
+if DEBUG:
+    USER_MANAGEMENT_IP = 'http://localhost:8000/'
+else:
+    USER_MANAGEMENT_IP = 'https://localhost:6002/'
+
+
+# FRONT_ACTIVE_ACCOUNT URL
+if DEBUG:
+    FRONT_ACTIVE_ACCOUNT_URL = 'http://localhost:8080/account/active/'
+else:
+    FRONT_ACTIVE_ACCOUNT_URL = common_settings.FRONT_ACTIVE_ACCOUNT_URL
+
+# user management URL
+if DEBUG:
+    USER_MANAGEMENT_URL = 'http://localhost:8001/'
+else:
+    USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
+
+# tournament URL
+if DEBUG:
+    TOURNAMENT_URL = 'http://localhost:8000/'
+else:
+    TOURNAMENT_URL = common_settings.TOURNAMENT_URL
+ALLOWED_HOSTS = ['*']
+
+# user stats URL
+if DEBUG:
+    USER_STATS_URL = 'http://localhost:8002/'
+else:
+    USER_STATS_URL = common_settings.USER_STATS_URL
+ALLOWED_HOSTS = ['*']
+
+MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
 EMAIL_VERIFICATION_TOKEN_MAX_LENGTH = 100
@@ -66,13 +103,13 @@ OAUTH_SOURCE_MAX_LENGTH = 100
 GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize/'
 GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token/'
-GITHUB_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/github/'
+GITHUB_REDIRECT_URI = f'{USER_MANAGEMENT_IP}user/oauth/callback/github/'
 GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 GITHUB_USER_PROFILE_URL = 'https://api.github.com/user'
 FT_API_CLIENT_ID = os.getenv('FT_API_CLIENT_ID')
 FT_API_AUTHORIZE_URL = 'https:///api.intra.42.fr/oauth/authorize/'
 FT_API_ACCESS_TOKEN_URL = 'https://api.intra.42.fr/oauth/token/'
-FT_API_REDIRECT_URI = 'https://localhost:6002/user/oauth/callback/42api/'
+FT_API_REDIRECT_URI = f'{USER_MANAGEMENT_IP}user/oauth/callback/42api/'
 FT_API_CLIENT_SECRET = os.getenv('FT_API_CLIENT_SECRET')
 FT_API_USER_PROFILE_URL = 'https://api.intra.42.fr/v2/me'
 
@@ -91,38 +128,6 @@ ACCESS_EXPIRATION_MINUTES = 15
 
 # avatar
 MAX_IMAGE_SIZE = 1000000
-
-# SECURITY WARNING: don't run with debug turned on in production!
-if os.getenv('DEBUG') == 'True':
-    DEBUG = True
-else:
-    DEBUG = False
-
-# FRONT_ACTIVE_ACCOUNT URL
-if DEBUG:
-    FRONT_ACTIVE_ACCOUNT_URL = 'http://localhost:8080/account/active/'
-else:
-    FRONT_ACTIVE_ACCOUNT_URL = common_settings.FRONT_ACTIVE_ACCOUNT_URL
-
-# user management URL
-if DEBUG:
-    USER_MANAGEMENT_URL = 'http://localhost:8001/'
-else:
-    USER_MANAGEMENT_URL = common_settings.USER_MANAGEMENT_URL
-
-# tournament URL
-if DEBUG:
-    TOURNAMENT_URL = 'http://localhost:8000/'
-else:
-    TOURNAMENT_URL = common_settings.TOURNAMENT_URL
-ALLOWED_HOSTS = ['*']
-
-# user stats URL
-if DEBUG:
-    USER_STATS_URL = 'http://localhost:8002/'
-else:
-    USER_STATS_URL = common_settings.USER_STATS_URL
-ALLOWED_HOSTS = ['*']
 
 # Application definition
 
