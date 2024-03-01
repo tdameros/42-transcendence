@@ -49,7 +49,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 3
+            retries: 5
         depends_on:
             user-management-db:
                 condition: service_healthy
