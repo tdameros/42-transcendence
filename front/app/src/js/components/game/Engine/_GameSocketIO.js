@@ -151,6 +151,10 @@ export class _GameSocketIO {
     this.#socketIO.connect();
   }
 
+  disconnect() {
+    this.#socketIO.disconnect();
+  }
+
   emit(event, data) {
     this.#socketIO.emit(event, data);
   }
