@@ -92,7 +92,7 @@ customElements.define('toast-notifications-component', ToastNotifications);
 
 customElements.define('activate-account-component', ActivateAccount);
 customElements.define(
-  'activate-account-content-component', ActivateAccountContent
+    'activate-account-content-component', ActivateAccountContent,
 );
 customElements.define('two-factor-auth-component', TwoFactorAuth);
 customElements.define('signin-component', SignIn);
