@@ -26,6 +26,7 @@ const router = new Router(app, [
   new Route('/tournaments/create/', 'tournament-create-component'),
   new Route('/profile/:username/', 'user-profile-component'),
   new Route('/game/:port/', 'game-component'),
+  new Route('/privacy-policy/', 'privacy-policy-component'),
   new Route('/home/', 'home-component'),
   new Route('/', 'home-component'),
   new Route('', 'notfound-component'),
