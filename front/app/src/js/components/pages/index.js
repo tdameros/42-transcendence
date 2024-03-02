@@ -24,6 +24,11 @@ import {
 } from './privacy_policy';
 
 import {
+  Ranking,
+  RankingContent,
+} from './ranking';
+
+import {
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -73,6 +78,8 @@ export {
   LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,

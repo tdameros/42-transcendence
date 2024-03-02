@@ -9,6 +9,7 @@ export class UserProfileMatchList extends Component {
   }
   render() {
     this.pageNumber = this.getAttribute('page-number') || 1;
+    this.pageNumber = parseInt(this.pageNumber);
     return this.renderPlaceholder();
   }
 
@@ -26,7 +27,6 @@ export class UserProfileMatchList extends Component {
       }
       
       .badge-dot {
-          /*color: black;*/
           color: var(--bs-heading-color);
           background: 0 0;
           align-items: center;
