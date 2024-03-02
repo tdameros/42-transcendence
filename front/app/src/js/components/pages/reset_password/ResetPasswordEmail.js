@@ -4,6 +4,7 @@ import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {ResetPasswordCode} from './ResetPasswordCode.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class ResetPasswordEmail extends Component {
   constructor() {
@@ -42,7 +43,7 @@ export class ResetPasswordEmail extends Component {
     return (`
       <style>
       #reset-password {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
   
       .reset-password-card {

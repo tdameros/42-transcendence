@@ -34,7 +34,7 @@ env_files = [
     TOURNAMENT_ENV_FILE,
     GAME_CREATOR_ENV_FILE,
     NOTIFICATION_ENV_FILE,
-    MATCHMAKING_ENV_FILE
+    MATCHMAKING_ENV_FILE,
     # add your env file here :D
 ]
 
@@ -48,6 +48,14 @@ for env_file in env_files:
 def generate_key(name, key, env_path):
     with open(env_path, 'a') as f:
         f.write(f'{name}={key}\n')
+
+
+def generate_database_credentials(microservice: str, host: str, env_path: str):
+    generate_key('POSTGRES_DB', f'{microservice}_db', env_path)
+    generate_key('POSTGRES_USER', f'{microservice}_user', env_path)
+    generate_key('POSTGRES_PASSWORD', os.urandom(32).hex(), env_path)
+    generate_key('POSTGRES_HOST', host, env_path)
+    generate_key('POSTGRES_PORT', 5432, env_path)
 
 
 # common
@@ -66,18 +74,22 @@ generate_key('FT_API_CLIENT_SECRET', os.getenv('FT_API_CLIENT_SECRET'), USER_MAN
 generate_key('EMAIL_HOST_USER', os.getenv('EMAIL_HOST_USER'), USER_MANAGEMENT_ENV_FILE)
 generate_key('EMAIL_HOST_PASSWORD', os.getenv('EMAIL_HOST_PASSWORD'), USER_MANAGEMENT_ENV_FILE)
 generate_key('DEBUG', os.getenv('DEBUG'), USER_MANAGEMENT_ENV_FILE)
+generate_database_credentials('user_management', 'user-management-db', USER_MANAGEMENT_ENV_FILE)
 
 # user_stats
 generate_key('USER_STATS_SECRET_KEY', os.urandom(32).hex(), USER_STATS_ENV_FILE)
+generate_database_credentials('user_stats', 'user-stats-db', USER_STATS_ENV_FILE)
 
 # tournament
 generate_key('TOURNAMENT_SECRET_KEY', os.urandom(32).hex(), TOURNAMENT_ENV_FILE)
+generate_database_credentials('tournament', 'tournament-db', TOURNAMENT_ENV_FILE)
 
 # game_creator
 generate_key('GAME_CREATOR_SECRET_KEY', os.urandom(32).hex(), GAME_CREATOR_ENV_FILE)
 
 # notification
 generate_key('NOTIFICATION_SECRET_KEY', os.urandom(32).hex(), NOTIFICATION_ENV_FILE)
+generate_database_credentials('notification', 'notification-db', NOTIFICATION_ENV_FILE)
 
 # matchmaking
 generate_key('MATCHMAKING_SECRET_KEY', os.urandom(32).hex(), MATCHMAKING_ENV_FILE)

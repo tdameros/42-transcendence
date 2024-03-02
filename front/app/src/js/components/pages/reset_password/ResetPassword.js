@@ -12,7 +12,7 @@ export class ResetPassword extends Component {
       return false;
     }
     return (`
-      <navbar-component disable-padding-top="true"></navbar-component>
+      <navbar-component></navbar-component>
       <div id="container">
         <reset-password-email-component></reset-password-email-component>
      </div>

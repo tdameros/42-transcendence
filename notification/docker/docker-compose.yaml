@@ -20,6 +20,11 @@ services:
             - ssl_certs:/app/ssl
         ports:
             - "6005:443"
+        healthcheck:
+          test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
+          interval: 5s
+          timeout: 5s
+          retries: 60
         depends_on:
             - notification-db
         restart: on-failure
@@ -27,11 +32,16 @@ services:
     notification-db:
         networks:
             - notification
-        image: postgres:16.0-bookworm
-        environment:
-            POSTGRES_DB: mydatabase
-            POSTGRES_USER: myuser
-            POSTGRES_PASSWORD: mypassword
+        build:
+          context: postgres
+          dockerfile: Dockerfile
+        env_file:
+          - path: ../src/.env
         volumes:
             - notification_postgres_volume:/var/lib/postgresql/data
+        healthcheck:
+          test: [ "CMD-SHELL", "sh check_health.sh" ]
+          interval: 5s
+          timeout: 5s
+          retries: 60
         restart: on-failure

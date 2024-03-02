@@ -8,6 +8,13 @@ from user_management import settings
 
 
 class User(models.Model):
+    # the first element of each tuple is the actual value to be stored
+    # second element is the human-readable name for the value
+    OAUTH_CHOICES = [
+        (None, 'None'),
+        ('github', 'github'),
+        ('42api', '42api'),
+    ]
     username = models.CharField(max_length=settings.USERNAME_MAX_LENGTH, unique=True)
     password = models.CharField(max_length=settings.PASSWORD_MAX_LENGTH, null=True)
     email = models.EmailField(max_length=settings.EMAIL_MAX_LENGTH, unique=True)
@@ -23,6 +30,7 @@ class User(models.Model):
     account_deleted = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True)
     last_activity = models.DateTimeField(default=timezone.now)
+    oauth = models.CharField(max_length=7, choices=OAUTH_CHOICES, default=None, null=True)
 
     def verify_2fa(self, code):
         return pyotp.TOTP(self.totp_secret).verify(code)

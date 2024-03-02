@@ -8,4 +8,9 @@ export class BootstrapUtils {
     input.classList.remove('is-invalid');
     input.classList.add('is-valid');
   }
+
+  static setDefaultInputValidity(input) {
+    input.classList.remove('is-invalid');
+    input.classList.remove('is-valid');
+  }
 }

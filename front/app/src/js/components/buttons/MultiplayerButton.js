@@ -27,13 +27,24 @@ export class MultiplayerButton extends Component {
   postRender() {
     this.matchmakingButton = document.querySelector('#matchmaking');
     super.addComponentEventListener(
-        this.matchmakingButton, 'click', this.#matchmackingHandler,
+        this.matchmakingButton, 'click', this.#matchmakingHandler,
     );
     this.timer = document.querySelector('#timer');
     this.cancel = document.querySelector('#cancel');
   }
 
-  async #matchmackingHandler() {
+  disconnectedCallback() {
+    if (this.sio) {
+      try {
+        this.sio.disconnect();
+      } catch (error) {
+        ;
+      }
+    }
+    super.removeAllComponentEventListeners();
+  }
+
+  async #matchmakingHandler() {
     this.#startMatchmakingLoader();
     await this.#socketHandler();
   }

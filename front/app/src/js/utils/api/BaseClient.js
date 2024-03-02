@@ -3,6 +3,7 @@ import {JWT} from '@utils/JWT.js';
 import {UserManagementClient} from './UserManagementClient.js';
 import {userManagementClient} from '@utils/api';
 import {Cache} from '@utils/cache';
+import {Cookies} from '@js/Cookies.js';
 
 export class BaseApiClient {
   static accessToken = new JWT(null);
@@ -80,6 +81,7 @@ export class BaseApiClient {
   logout() {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
+    Cookies.removeAll();
     Cache.clear();
     this.accessToken = new JWT(null);
     const notificationComponent = document.querySelector(
@@ -92,6 +94,10 @@ export class BaseApiClient {
 
   get username() {
     return localStorage.getItem('username');
+  }
+
+  set username(username) {
+    localStorage.setItem('username', username);
   }
 
   get userId() {
