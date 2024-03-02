@@ -35,6 +35,7 @@
 > | `401`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ["Invalid token type. Token must be a <class 'bytes'>"]}                        |
 > | `409`       | `application/json` | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': list[int]} | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': [2, 56]} |
 > | `500`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['Error creating game server: reason']}                                         |
+> | `503`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['No available ports']}                                                         |
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
