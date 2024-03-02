@@ -46,7 +46,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description   | requirement |
 > |-----------------|--------|---------------|-------------|
@@ -81,7 +81,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description   | requirement |
 > |-----------------|--------|---------------|-------------|
@@ -189,7 +189,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description   | requirement |
 > |-----------------|--------|---------------|-------------|
@@ -240,7 +240,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description  | requirement |
 > |-----------------|--------|--------------|-------------|
@@ -292,7 +292,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description   | requirement |
 > |-----------------|--------|---------------|-------------|
@@ -334,7 +334,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description   | requirement |
 > |-----------------|--------|---------------|-------------|
@@ -381,7 +381,7 @@
 
 ### Request
 
-#### Header (not implemented)
+#### Header
 
 > | name            | type   | description  | requirement |
 > |-----------------|--------|--------------|-------------|
