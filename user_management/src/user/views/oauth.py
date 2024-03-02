@@ -69,7 +69,7 @@ class GitHubOAuth(BaseOAuth):
         return (
             f'{settings.GITHUB_AUTHORIZE_URL}'
             f'?client_id={settings.GITHUB_CLIENT_ID}'
-            f'&redirect_uri={settings.GITHUB_REDIRECT_URI}'
+            f'&redirect_uri={urllib.parse.quote_plus(settings.GITHUB_REDIRECT_URI)}' 
             f'&state={state}'
             f'&scope=user:email'
         )
@@ -86,7 +86,7 @@ class FtApiOAuth(BaseOAuth):
         return (
             f'{settings.FT_API_AUTHORIZE_URL}'
             f'?client_id={settings.FT_API_CLIENT_ID}'
-            f'&redirect_uri={settings.FT_API_REDIRECT_URI}'
+            f'&redirect_uri={urllib.parse.quote_plus(settings.FT_API_REDIRECT_URI)}'
             f'&response_type=code'
             f'&state={state}'
         )
