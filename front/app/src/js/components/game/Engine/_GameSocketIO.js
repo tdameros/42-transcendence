@@ -142,12 +142,12 @@ export class _GameSocketIO {
 
     this.#socketIO.on('player_scored_a_point', async (data) => {
       while (!(this.#engine.scene instanceof Scene)) {
-          await sleep(50);
+        await sleep(50);
       }
 
-      const player_location = new PlayerLocation(data['player_location']);
-      const match = player_location.getPlayerMatchFromScene(this.#engine.scene);
-      match.players[player_location.playerIndex].addPoint();
+      const playerLocation = new PlayerLocation(data['player_location']);
+      const match = playerLocation.getPlayerMatchFromScene(this.#engine.scene);
+      match.players[playerLocation.playerIndex].addPoint();
     });
 
     this.#socketIO.on('game_over', async (data) => {
