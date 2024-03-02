@@ -76,9 +76,6 @@ export class UserProfileHeader extends Component {
                         <button class="btn btn-sm me-2 ${placeholderClass}">
                             Send Friend Request
                         </button>
-                        <button class="btn btn-sm ${placeholderClass}">
-                            Challenge
-                        </button>
                     </div>
                 </div>
             </div>
@@ -104,9 +101,6 @@ export class UserProfileHeader extends Component {
     return (`
       <div class="d-flex">
         ${this.#renderFriendButton()}
-          <button class="btn btn-sm btn-outline-secondary">
-              Challenge
-          </button>
       </div>
     `);
   }
