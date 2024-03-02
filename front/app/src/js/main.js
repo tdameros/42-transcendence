@@ -17,7 +17,7 @@ const router = new Router(app, [
   new Route('/local/', 'local-component'),
   new Route('/multiplayer/', 'home-component'),
   new Route('/tournaments/', 'tournaments-component'),
-  new Route('/tournaments/page/:id', 'tournaments-component'),
+  new Route('/tournaments/page/:pageId/', 'tournaments-component'),
   new Route('/signin/', 'signin-component'),
   new Route('/signup/', 'signup-component'),
   new Route('/reset-password/', 'reset-password-component'),
