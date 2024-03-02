@@ -10,12 +10,22 @@ export class UserStatsClient extends BaseApiClient {
     'graph-win-rate': 'statistics/user/:user_id/graph/win_rate/',
     'graph-matches-played': 'statistics/user/:user_id/graph/matches_played/',
     'match-history': 'statistics/user/:user_id/history/',
+    'ranking': 'statistics/ranking/',
   };
 
   constructor() {
     super();
     this.URL = UserStatsClient.URL;
     this.URIs = UserStatsClient.URIs;
+  }
+
+  async getRanking(page, pageSize=50) {
+    const params = {
+      'page': page,
+      'page_size': pageSize,
+    };
+    const URL = `${this.URL}/${this.URIs['ranking']}`;
+    return await this.getAuthRequest(URL, params);
   }
 
   async getMatchHistory(userId, page, pageSize=10) {
