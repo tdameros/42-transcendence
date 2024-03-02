@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from common.src.internal_requests import InternalAuthRequests, InternalRequests
 from common.src.jwt_managers import user_authentication
-from user.models import User
+from user.models import User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import get_user_id
 from user_management.utils import generate_random_string
@@ -16,6 +16,7 @@ def anonymize_user(user):
     user.email = f'deleted_user_{generate_random_string(10)}@deleted'
     user.password = generate_random_string(20)
     user.avatar = None
+    UserOAuth.objects.filter(user_id=user.id).delete()
     user.save()
 
 
