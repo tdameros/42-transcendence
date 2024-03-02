@@ -56,15 +56,15 @@ services:
     tournament-db:
         networks:
             - tournament
-        image: postgres:16.0-bookworm
-        environment:
-            POSTGRES_DB: mydatabase
-            POSTGRES_USER: myuser
-            POSTGRES_PASSWORD: mypassword
+        build:
+            context: postgres
+            dockerfile: Dockerfile
+        env_file:
+            - path: ../src/.env
         volumes:
             - tournament_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+            test: [ "CMD-SHELL", "sh check_health.sh" ]
             interval: 5s
             timeout: 5s
             retries: 60
