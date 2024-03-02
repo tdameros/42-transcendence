@@ -27,6 +27,9 @@ export class TournamentsContent extends Component {
   }
 
   async postRender() {
+    this.pageId = this.getAttribute('pageId') || 1;
+    this.pageId = parseInt(this.pageId);
+
     this.tournamentsListComponent = document.querySelector(
         'tournaments-list-component',
     );
@@ -70,10 +73,12 @@ export class TournamentsContent extends Component {
     this.dispayFinishedTournaments = Cookies.get(
         TournamentsList.finishedCheckBoxCookie) === 'true';
     try {
-      const {response, body} = await tournamentClient.getTournaments(this.id,
+      const {response, body} = await tournamentClient.getTournaments(
+          this.pageId,
           10,
           this.displayPrivateTournaments,
-          this.dispayFinishedTournaments);
+          this.dispayFinishedTournaments,
+      );
       if (response.ok) {
         this.tournaments = body.tournaments;
         if (!await this.#addAdminUsernamesInTournaments(this.tournaments)) {

@@ -13,9 +13,11 @@ export class Tournaments extends Component {
       getRouter().redirect('/signin/');
       return false;
     }
+    const pageId = this.getAttribute('pageId');
     return (`
       <navbar-component nav-active="tournaments"></navbar-component>
-      <friends-sidebar-component main-component="tournaments-content-component" username="${this.getAttribute('id')}"></friends-sidebar-component>
+      <friends-sidebar-component main-component="tournaments-content-component" ${pageId ? `pageId=${pageId}`: ''}>
+      </friends-sidebar-component>
     `);
   }
 }

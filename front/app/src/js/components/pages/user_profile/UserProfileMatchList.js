@@ -161,7 +161,7 @@ export class UserProfileMatchList extends Component {
         </li>
         ${paginationItems.join('')}
         <li class="page-item">
-          <a class="page-link  ${nextPage === currentPage ? 'disabled': ''}" aria-label="Next"
+          <a class="page-link ${nextPage === currentPage ? 'disabled': ''}" aria-label="Next"
           page-number="${nextPage}">
             <span aria-hidden="true">&raquo;</span>
           </a>
