@@ -42,11 +42,37 @@ class User(models.Model):
         self.last_login = datetime.now(timezone.utc)
         self.save()
 
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
+    def __str__(self):
+        return self.username
+
 
 class PendingOAuth(models.Model):
     hashed_state = models.CharField(max_length=settings.OAUTH_STATE_MAX_LENGTH, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     source = models.CharField(max_length=settings.OAUTH_SOURCE_MAX_LENGTH)
+
+
+class UserOAuth(models.Model):
+    # the first element of each tuple is the actual value to be stored
+    # second element is the human-readable name for the value
+    OAUTH_SERVICES = [
+        ('github', 'github'),
+        ('42api', '42api'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='oauths')
+    service = models.CharField(max_length=20, choices=OAUTH_SERVICES)
+    service_id = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "User OAuth"
+        verbose_name_plural = "User OAuths"
+
+    def __str__(self):
+        return f"{self.user.username}'s {self.service} OAuth"
 
 
 class Friend(models.Model):

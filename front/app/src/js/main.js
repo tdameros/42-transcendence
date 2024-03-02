@@ -17,7 +17,7 @@ const router = new Router(app, [
   new Route('/local/', 'local-component'),
   new Route('/multiplayer/', 'home-component'),
   new Route('/tournaments/', 'tournaments-component'),
-  new Route('/tournaments/page/:id', 'tournaments-component'),
+  new Route('/tournaments/page/:pageId/', 'tournaments-component'),
   new Route('/ranking/', 'ranking-component'),
   new Route('/ranking/page/:pageId/', 'ranking-component'),
   new Route('/signin/', 'signin-component'),
