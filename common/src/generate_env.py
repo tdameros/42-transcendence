@@ -49,17 +49,14 @@ def generate_key(name, key, env_path):
     with open(env_path, 'a') as f:
         f.write(f'{name}={key}\n')
 
+
 def generate_database_credentials(microservice: str, host: str, env_path: str):
-    db_name = f'{microservice}_db'
-    db_user = f'{microservice}_user'
-    db_password = os.urandom(32).hex()
-    db_host = host
-    db_port = 5432
-    generate_key(f'POSTGRES_DB', db_name, env_path)
-    generate_key(f'POSTGRES_USER', db_user, env_path)
-    generate_key(f'POSTGRES_PASSWORD', db_password, env_path)
-    generate_key(f'POSTGRES_HOST', db_host, env_path)
-    generate_key(f'POSTGRES_PORT', db_port, env_path)
+    generate_key('POSTGRES_DB', f'{microservice}_db', env_path)
+    generate_key('POSTGRES_USER', f'{microservice}_user', env_path)
+    generate_key('POSTGRES_PASSWORD', os.urandom(32).hex(), env_path)
+    generate_key('POSTGRES_HOST', host, env_path)
+    generate_key('POSTGRES_PORT', 5432, env_path)
+
 
 # common
 generate_key('ACCESS_SERVICE_KEY', os.urandom(32).hex(), COMMON_ENV_FILE)
