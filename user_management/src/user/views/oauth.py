@@ -14,7 +14,8 @@ from user.models import PendingOAuth, User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (download_image_from_url,
-                                   generate_random_string, post_user_stats, is_valid_username)
+                                   generate_random_string, is_valid_username,
+                                   post_user_stats)
 
 
 class OAuthFactory:
@@ -69,7 +70,7 @@ class GitHubOAuth(BaseOAuth):
         return (
             f'{settings.GITHUB_AUTHORIZE_URL}'
             f'?client_id={settings.GITHUB_CLIENT_ID}'
-            f'&redirect_uri={urllib.parse.quote_plus(settings.GITHUB_REDIRECT_URI)}' 
+            f'&redirect_uri={urllib.parse.quote_plus(settings.GITHUB_REDIRECT_URI)}'
             f'&state={state}'
             f'&scope=user:email'
         )
@@ -258,6 +259,7 @@ class OAuthCallback(View):
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
         PendingOAuth.objects.filter(hashed_state=hashed_state).delete()
         PendingOAuth.objects.filter(created_at__lte=timezone.now() - timedelta(minutes=5)).delete()
+
 
 class UserCreationError(Exception):
     def __init__(self, message="User creation failed"):
