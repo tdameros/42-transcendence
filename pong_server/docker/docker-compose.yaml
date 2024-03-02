@@ -62,5 +62,5 @@ services:
             test: [ "CMD-SHELL", "redis-cli", "--raw", "INCR", "ping" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         restart: on-failure
