@@ -44,8 +44,22 @@ services:
             - ssl_certs:/app/ssl
             - common_code:/app/common
         command: /app/run.sh
+        depends_on:
+            pong-server-cache:
+                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        restart: on-failure
+
+    pong-server-cache:
+        networks:
+            - pong_server
+        image: redis:7.2.4-bookworm
+        healthcheck:
+            test: [ "CMD-SHELL", "redis-cli", "--raw", "INCR", "ping" ]
             interval: 5s
             timeout: 5s
             retries: 5
