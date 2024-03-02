@@ -29,6 +29,14 @@ export class Player {
     this.#board.updateFrame(timeDelta);
   }
 
+  addPoint() {
+    // TODO: add point to the player
+  }
+
+  resetPoints() {
+    // TODO: set player points to 0
+  }
+
   get threeJSGroup() {
     return this.#threeJSGroup;
   }

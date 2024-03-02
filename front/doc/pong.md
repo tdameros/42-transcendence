@@ -58,6 +58,7 @@
   >>                   },
   >>                   "ball_is_waiting": bool,
   >>                   "ball_start_time": Optinal[float] (Seconds since the Epoch)
+  >>                   "points": [int, int], // [player1_score, player2_score]
   >>               }
   >>           ],
   >> 
@@ -147,8 +148,27 @@
   >> If it doesn't exist, creates a new match with the `new_match_json`  
   >> Adds the player at [winner_index] to the match to the new match  
   >> Adds the player at [1 - winner_index] to the loosers list
- 
+
+- ### `player_scored_a_point`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'player_location': {
+  >>         'is_looser': False,
+  >>         'match_location': {
+  >>             'game_round': int,
+  >>             'match': int
+  >>         },
+  >>         'player_index': int
+  >>     }
+  >> }
+  >> ```
+  >
+  >> Should be sent when a player scores a point without winning the match
+  >> Work in progress 
+
 - ### `game_over`:
+  >> Argument:
   >> ```
   >> {
   >>     'winner_index': int
