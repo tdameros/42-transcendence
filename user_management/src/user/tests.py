@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from user.delete_inactive_users import remove_inactive_users
+from user.delete_inactive_users import remove_inactive_users, remove_old_pending_accounts
 from user.models import User
 from user_management import settings
 from user_management.JWTManager import (UserAccessJWTManager,
@@ -733,8 +733,25 @@ class TestDeleteInactiveUsersView(TestCase):
             fake_inactive_account.last_activity = (timezone.now() -
                                                    timedelta(days=settings.MAX_INACTIVITY_DAYS_BEFORE_DELETION + 1))
             fake_inactive_account.save()
+        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
+        self.assertEqual(User.objects.all().count(), 20)
         remove_inactive_users()
+        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
+
+        for i in range(0, 20):
+            fake_old_pending_accounts = User.objects.create(username=f'PendingAccount{i}',
+                                                            email=f'PendingAccount{i}@42.fr',
+                                                            password='Validpass42*',
+                                                            emailVerified=False)
+            fake_old_pending_accounts.date_joined = (
+                        timezone.now() - timedelta(days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION + 1))
+            fake_old_pending_accounts.save()
+
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
+        self.assertEqual(User.objects.all().count(), 20)
+        remove_old_pending_accounts()
+        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
+
 
 
 class TestSendUserInfosView(TestCase):
