@@ -11,6 +11,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from user.delete_inactive_users import remove_inactive_users
 from user.models import User
 from user_management import settings
 from user_management.JWTManager import (UserAccessJWTManager,
@@ -723,11 +724,8 @@ class TestEmailVerified(TestCase):
 
 
 class TestDeleteInactiveUsersView(TestCase):
-    @patch('common.src.internal_requests.InternalRequests.delete')
-    @patch('common.src.internal_requests.InternalRequests.post')
-    def test_delete_inactive_users(self, mock_internal_requests_delete, mock_internal_requests_post):
-        mock_internal_requests_delete.return_value.status_code = 200
-        mock_internal_requests_post.return_value.status_code = 200
+
+    def test_delete_inactive_users(self):
         for i in range(0, 20):
             fake_inactive_account = User.objects.create(username=f'InactiveAccount{i}',
                                                         email=f'InactiveAccount{i}@42.fr',
@@ -735,10 +733,7 @@ class TestDeleteInactiveUsersView(TestCase):
             fake_inactive_account.last_activity = (timezone.now() -
                                                    timedelta(days=settings.MAX_INACTIVITY_DAYS_BEFORE_DELETION + 1))
             fake_inactive_account.save()
-
-        url = reverse('delete-inactive-users')
-        response = self.client.post(url, headers={'Authorization': f'{settings.USER_MANAGEMENT_SECRET_KEY}'})
-        self.assertEqual(response.status_code, 200)
+        remove_inactive_users()
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
 
 

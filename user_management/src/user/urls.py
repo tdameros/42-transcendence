@@ -3,7 +3,6 @@ from django.urls import path
 
 from user.views.avatar import AvatarView, GetAvatarView
 from user.views.delete_account import DeleteAccountView
-from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
@@ -54,7 +53,6 @@ urlpatterns = [
     path('verify-email/<str:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
     path('avatar/<str:username>/', GetAvatarView.as_view(), name='avatar'),
     path('avatar/', AvatarView.as_view(), name='avatar'),
-    path('delete-inactive-users/', DeleteInactiveUsersView.as_view(), name='delete-inactive-users'),
     path('send-user-infos/', SendUserInfosView.as_view(), name='send-user-infos'),
     path('me/', MeView.as_view(), name='me'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
