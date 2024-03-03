@@ -5,14 +5,17 @@ export class _Board {
   #threeJSBoard;
   #pointElevation;
   #points = [];
+  #pointsLight = [];
   #delays = [];
   #score = 0;
   #side;
+  #pointColor;
 
   constructor() {}
 
-  async init(boardJson, side, maxScore) {
+  async init(boardJson, side, maxScore, pointColor=0x00ff00) {
     this.#side = side;
+    this.#pointColor = pointColor;
     const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
@@ -104,7 +107,7 @@ export class _Board {
 
     for (let i = 0; i < maxScore; i++) {
       this.#delays.push(Math.random());
-      const point = this.initScorePoint(pointRadius);
+      const point = this.initPointMesh(pointRadius);
       point.position.copy(pointStartPosition);
       point.position.x -= (pointOffset * i);
       point.rotation.x = this.#delays[i] * Math.PI;
@@ -112,10 +115,11 @@ export class _Board {
       point.rotation.z = this.#delays[i] * Math.PI;
       this.#points.push(point);
       this.#threeJSBoard.add(point);
+      this.initPointLight(point.position);
     }
   }
 
-  initScorePoint(pointRadius) {
+  initPointMesh(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
       color: 0xf0f0f0,
       metalness: 0.8,
@@ -128,11 +132,18 @@ export class _Board {
     );
   }
 
-  addPoint(color) {
-    this.#points[this.#score].material.color.set(color);
+  initPointLight(pointPosition) {
+    const light = new THREE.PointLight(this.#pointColor, 30, 10);
+    light.position.copy(pointPosition);
+    light.position.z += 2;
+    this.#pointsLight.push(light);
+  }
+
+  addPoint() {
+    this.#points[this.#score].material.color.set(this.#pointColor);
+    this.#threeJSBoard.add(this.#pointsLight[this.#score]);
 
     this.#score++;
-    console.log('Score:', this.#score);
   }
 
   resetPoints() {

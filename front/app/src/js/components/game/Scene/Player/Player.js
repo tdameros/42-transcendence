@@ -24,8 +24,13 @@ export class Player {
 
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     this.#board = new _Board();
-    await this.#board.init(playerJson['board'], index, 3);
+    if (index) {
+      await this.#board.init(playerJson['board'], index, 3, 0xff0000);
+    } else {
+      await this.#board.init(playerJson['board'], index, 3, 0xff00);
+    }
     this.#threeJSGroup.add(this.#board.threeJSBoard);
+    this.addPoint();
   }
 
   updateFrame(timeDelta, paddleBoundingBox) {
@@ -34,7 +39,7 @@ export class Player {
   }
 
   addPoint() {
-    this.#board.addPoint(0x00ff00);
+    this.#board.addPoint();
   }
 
   resetPoints() {
