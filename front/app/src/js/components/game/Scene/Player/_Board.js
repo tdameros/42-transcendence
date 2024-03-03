@@ -3,17 +3,9 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 export class _Board {
   #threeJSBoard;
+  #score = [];
 
-  constructor() {
-    // const size = boardJson['size'];
-    // this.#threeJSBoard = new THREE.Mesh(
-    //     new THREE.PlaneGeometry(size['x'], size['y']),
-    //     new THREE.MeshStandardMaterial({
-    //       color: 0x000044,
-    //       side: THREE.DoubleSide,
-    //     }),
-    // );
-  }
+  constructor() {}
 
   async init(boardJson, index) {
     const wallWidth = 1;
@@ -23,7 +15,7 @@ export class _Board {
     await this.initBoard(boardSize, index);
     await this.initWalls(boardSize);
     this.initGoal(boardSize, wallWidth, index);
-    this.initScore(boardSize, wallWidth, index, 3);
+    this.initScore(boardSize, wallWidth, index, 5);
     this.initLight(boardSize, index);
     this.#threeJSBoard.castShadow = false;
     this.#threeJSBoard.receiveShadow = true;
@@ -39,7 +31,11 @@ export class _Board {
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
     board.position.set(0., 0., 0.);
-    board.scale.set(boardSize.x / size.x, boardSize.y / size.y, boardSize.z / size.z);
+    board.scale.set(
+        boardSize.x / size.x,
+        boardSize.y / size.y,
+        boardSize.z / size.z,
+    );
     console.log(boardSize.z / size.z);
     this.#threeJSBoard.add(board);
   }
@@ -94,23 +90,32 @@ export class _Board {
       sign = 1;
     }
     const pointRadius = wallWidth / 3;
+    const pointOffset = sign * pointRadius * 3;
+    const pointStartPosition = new THREE.Vector3(
+        sign * boardSize.x / 2 - sign * boardSize.x / 6,
+        boardSize.y / 2 + wallWidth / 2,
+        boardSize.z,
+    );
+
+    for (let i = 0; i < maxScore; i++) {
+      const point = this.initScorePoint(pointRadius);
+      point.position.copy(pointStartPosition);
+      point.position.x -= (pointOffset * i);
+      this.#score.push(point);
+      this.#threeJSBoard.add(point);
+    }
+  }
+
+  initScorePoint(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
-      color: 0x00ff00,
+      color: 0xf0f0f0,
       metalness: 0.5,
     });
     material.flatShading = true;
-    const point = new THREE.Mesh(
+    return new THREE.Mesh(
         new THREE.IcosahedronGeometry(pointRadius),
         material,
     );
-    point.position.set(
-        sign * boardSize.x / 2 - sign * boardSize.x / 6,
-        boardSize.y / 2 + wallWidth / 2,
-        boardSize.z);
-    for (let i = 0; i < maxScore; i++) {
-      this.#threeJSBoard.add(point.clone());
-      point.position.x = point.position.x - sign * wallWidth;
-    }
   }
 
   initGoal(boardSize, wallWidth, index) {

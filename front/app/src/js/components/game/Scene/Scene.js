@@ -64,19 +64,7 @@ export class Scene {
     } else {
       this.setDarkTheme();
     }
-    
-    
-    // TODO rename me
-    let junk = new THREE.Vector3(0, 1, 0);
-    const axis = new THREE.Vector3(1, 0, 0);
-    const angle = Math.PI / 2;
-
-    junk.applyAxisAngle( axis, angle );
-
-
-
-    this.#sky.material.uniforms.up.value.set( junk.x, junk.y, junk.z);
-    //this.#sky.rotation.set(Math.PI / 2, 0, 0);
+    this.#sky.material.uniforms.up.value.set(0, 0, 1);
     this.#threeJSScene.add(this.#sky);
     const light = new THREE.AmbientLight(0xffffff, 0.2);
     this.#threeJSScene.add(light);
@@ -104,7 +92,7 @@ export class Scene {
   }
 
   setDarkTheme() {
-    this.#sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(-2), 0);
+    this.#sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(-5), 0);
     const uniforms = this.#sky.material.uniforms;
     uniforms.sunPosition.value.copy(this.#sun);
   }
@@ -205,36 +193,29 @@ export class Scene {
     const currentPlayerGamePosition = match.threeJSGroup.position;
     const xHeight = (this.#matchHalfWidth + this.#matchesXOffset * .5) /
       Math.tan(this.#engine.threeJS.getCameraHorizontalFOVRadian() * .5);
-    // Using matchesXOffset again to keep the same offset
     const yHeight = (this.#matchHalfHeight + this.#matchesXOffset * .5) /
       Math.tan(this.#engine.threeJS.getCameraVerticalFOVRadian() * .5);
     const cameraHeight = Math.max(xHeight, yHeight);
 
     const cameraPosition = new THREE.Vector3(
-        // currentPlayerGamePosition.x, cameraHeight, currentPlayerGamePosition.z,
-        currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight - 20,
+        currentPlayerGamePosition.x,
+        currentPlayerGamePosition.y,
+        cameraHeight - 20,
     );
     const cameraLookAt = currentPlayerGamePosition.clone();
     this.#engine.updateCamera(cameraPosition, cameraLookAt);
 
-    // Ancienne position de la caméra
-    const oldCameraPosition = cameraPosition;
-
-    // Nouvelle position de la caméra (zoomée)
     const newCameraPosition = new THREE.Vector3(
         currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight,
-        // currentPlayerGamePosition.x, cameraHeight + 20, currentPlayerGamePosition.z,
     );
 
-    // Créer un tween pour animer la position de la caméra
-    new TWEEN.Tween(oldCameraPosition)
-        .to(newCameraPosition, 3000) // Durée de l'animation (en millisecondes)
-        .easing(TWEEN.Easing.Quadratic.InOut) // Type d'interpolation pour une transition fluide
+    new TWEEN.Tween(cameraPosition)
+        .to(newCameraPosition, 3000)
+        .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(() => {
-            // Mise à jour de la position de la caméra à chaque étape de l'animation
-            this.#engine.updateCamera(oldCameraPosition, cameraLookAt);
+          this.#engine.updateCamera(cameraPosition, cameraLookAt);
         })
-        .start(); // Démarrer l'animation
+        .start();
   }
 
   static convertMatchLocationToKey(matchLocationJson) {
