@@ -41,7 +41,7 @@ export class SignUpContent extends Component {
                               <span class="input-group-text"
                                     id="inputGroupPrepend">@</span>
                               <input type="text" class="form-control" id="username"
-                                     placeholder="Username">
+                                     placeholder="Username" autocomplete="username">
                               <div id="username-feedback" class="invalid-feedback">
                                   Invalid username.
                               </div>
@@ -49,7 +49,7 @@ export class SignUpContent extends Component {
                       </div>
                       <div class="form-group mb-4">
                           <input type="email" class="form-control" id="email"
-                                 placeholder="Email">
+                                 placeholder="Email" autocomplete="email">
                           <div id="email-feedback" class="invalid-feedback">
                               Please enter a valid email.
                           </div>

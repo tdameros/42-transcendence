@@ -23,7 +23,7 @@ export class TournamentCreateContent extends Component {
                       <div class="form-group mb-4">
                           <div class="input-group has-validation">
                               <input type="text" class="form-control" id="name"
-                                     placeholder="Name">
+                                     placeholder="Name" autocomplete="off">
                               <div id="name-feedback" class="invalid-feedback">
                                   Invalid username.
                               </div>

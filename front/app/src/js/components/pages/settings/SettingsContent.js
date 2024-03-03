@@ -52,7 +52,8 @@ export class SettingsContent extends Component {
                               <span class="input-group-text"
                                     id="inputGroupPrepend">@</span>
                               <input type="text" class="form-control" id="username"
-                                     placeholder="New username" value="${this.defaultUsername}">
+                                     placeholder="New username" value="${this.defaultUsername}"
+                                     autocomplete="username">
                               <div id="username-feedback" class="invalid-feedback">
                                   Invalid username.
                               </div>
@@ -60,7 +61,8 @@ export class SettingsContent extends Component {
                       </div>
                       <div class="form-group mb-4">
                           <input type="email" class="form-control" id="email"
-                                 placeholder="New email" value="${this.defaultEmail}">
+                                 placeholder="New email" value="${this.defaultEmail}"
+                                 autocomplete="email">
                           <div id="email-feedback" class="invalid-feedback">
                               Please enter a valid email.
                           </div>
@@ -96,7 +98,7 @@ export class SettingsContent extends Component {
                       <div class="form-group mb-4">
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" id="two-fa-switch" ${this.defaultHas2FA ? 'checked': ''}>
-                          <label class="form-check-label" for="private-switch">Two-factor authentication</label>
+                          <label class="form-check-label" for="two-fa-switch">Two-factor authentication</label>
                          </div>
                       </div>
                   <alert-component id="alert-form" alert-display="false">
