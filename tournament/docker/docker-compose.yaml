@@ -17,9 +17,6 @@ services:
             interval: 5s
             timeout: 5s
             retries: 60
-        depends_on:
-            tournament:
-                condition: service_healthy
         restart: on-failure
 
     tournament:
@@ -48,9 +45,6 @@ services:
             interval: 5s
             timeout: 5s
             retries: 60
-        depends_on:
-            tournament-db:
-                condition: service_healthy
         restart: on-failure
 
     tournament-db:

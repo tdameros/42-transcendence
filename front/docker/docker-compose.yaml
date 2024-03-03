@@ -9,21 +9,6 @@ services:
             dockerfile: Dockerfile
         ports:
             - "443:443"
-        depends_on:
-            notification:
-                condition: service_healthy
-            tournament-nginx:
-                condition: service_healthy
-            user-management-nginx:
-                condition: service_healthy
-            pong-server-nginx:
-                condition: service_healthy
-            user-stats-nginx:
-                condition: service_healthy
-            crontab:
-                condition: service_started
-            front-vite:
-                condition: service_completed_successfully
         volumes:
             - front_dist_volume:/transcendence/
             - ssl_certs:/etc/nginx/ssl

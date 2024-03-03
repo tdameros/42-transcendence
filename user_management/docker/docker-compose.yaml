@@ -12,9 +12,6 @@ services:
             - "6002:443"
         volumes:
             - ssl_certs:/etc/nginx/ssl
-        depends_on:
-            user-management:
-                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
@@ -50,9 +47,6 @@ services:
             interval: 5s
             timeout: 5s
             retries: 60
-        depends_on:
-            user-management-db:
-                condition: service_healthy
         restart: on-failure
 
 
