@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {Component} from '@components';
 import {ToastNotifications} from '@components/notifications';
 import {userManagementClient} from '@utils/api';
+import {getRouter} from '@js/Router.js';
 
 import {Engine} from './Engine/Engine.js';
 import {Theme} from '@js/Theme.js';
