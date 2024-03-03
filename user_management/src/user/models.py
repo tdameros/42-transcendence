@@ -31,6 +31,7 @@ class User(models.Model):
     last_login = models.DateTimeField(null=True)
     last_activity = models.DateTimeField(default=timezone.now)
     oauth = models.CharField(max_length=7, choices=OAUTH_CHOICES, default=None, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     def verify_2fa(self, code):
         return pyotp.TOTP(self.totp_secret).verify(code)

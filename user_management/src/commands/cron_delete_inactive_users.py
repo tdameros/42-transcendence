@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from user.views.delete_inactive_users import DeleteInactiveUsersView
@@ -8,5 +7,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         view = DeleteInactiveUsersView()
-        request = type('Request', (object,), {'headers': {'Authorization': settings.USER_MANAGEMENT_SECRET_KEY}})
-        view.post(request)
+        view.remove_inactive_users()
+        view.remove_old_pending_accounts()
+
+
+
