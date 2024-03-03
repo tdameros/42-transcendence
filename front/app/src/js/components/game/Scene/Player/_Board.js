@@ -79,14 +79,29 @@ export class _Board {
       sign = -1;
     }
     const light = new THREE.PointLight(0xffffff, 250);
-    light.position.set(sign * boardSize['x'] / 2 + sign * 5, boardSize['y'] / 2 + 5, 10);
+    light.position.set(
+        sign * boardSize['x'] / 2 + sign * 5,
+        boardSize['y'] / 2 + 5, 10,
+    );
     this.#threeJSBoard.add(light.clone());
-    light.position.set(sign * boardSize['x'] / 2 + sign * 5, -boardSize['y'] / 2 - 5, 10);
+    light.position.set(
+        sign * boardSize['x'] / 2 + sign * 5,
+        -boardSize['y'] / 2 - 5,
+        10,
+    );
     this.#threeJSBoard.add(light.clone());
     if (sign === 1) {
-      light.position.set(-sign * boardSize['x'] / 2, boardSize['y'] / 2 + 5, 10);
+      light.position.set(
+          -sign * boardSize['x'] / 2,
+          boardSize['y'] / 2 + 5,
+          10,
+      );
       this.#threeJSBoard.add(light.clone());
-      light.position.set(-sign * boardSize['x'] / 2, -boardSize['y'] / 2 - 5, 10);
+      light.position.set(
+          -sign * boardSize['x'] / 2,
+          -boardSize['y'] / 2 - 5,
+          10,
+      );
       this.#threeJSBoard.add(light.clone());
     }
   }
@@ -159,7 +174,11 @@ export class _Board {
       sign = -1;
     }
     const goal = new THREE.Mesh(
-        new THREE.BoxGeometry(wallWidth / 2, boardSize.y + wallWidth * 2, boardSize.z * 2),
+        new THREE.BoxGeometry(
+            wallWidth / 2,
+            boardSize.y + wallWidth * 2,
+            boardSize.z * 2,
+        ),
         new THREE.MeshPhysicalMaterial({
           roughness: 0.2,
           metalness: 0.2,

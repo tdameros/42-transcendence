@@ -45,7 +45,7 @@ export class Scene {
     const loosersJson = sceneJson['loosers'];
     for (const looserJson of loosersJson) {
       const newLooser = new Player();
-      await newLooser.init(loosersJson);
+      await newLooser.init(looserJson);
       this.#loosers.push(newLooser);
       this.#threeJSScene.add(newLooser.threeJSGroup);
     }
