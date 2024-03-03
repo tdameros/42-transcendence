@@ -30,7 +30,6 @@ export class Player {
       await this.#board.init(playerJson['board'], index, 3, 0xff00);
     }
     this.#threeJSGroup.add(this.#board.threeJSBoard);
-    this.addPoint();
   }
 
   updateFrame(timeDelta, paddleBoundingBox) {

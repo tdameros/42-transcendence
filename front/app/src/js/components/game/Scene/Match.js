@@ -84,8 +84,7 @@ export class Match {
     for (let i = 0; i < points; i++) {
       newPlayer.addPoint();
     }
-    this.#players[index] = new Player(playerJson);
-    this.#players[index].init(playerJson, index);
+    this.#players[index] = newPlayer;
     this.#threeJSGroup.add(this.#players[index].threeJSGroup);
   }
 
