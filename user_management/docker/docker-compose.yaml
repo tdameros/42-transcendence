@@ -27,6 +27,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        env_file:
+            - path: ../src/.env
         command: sh -c "cp -r /app/user_management/* /app/src &&
                         cp /app/user_management/.env /app/src/.env &&
                         rm -rf /app/src/common &&

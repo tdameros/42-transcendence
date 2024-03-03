@@ -6,6 +6,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        env_file:
+          - path: ../src/.env
         command: sh -c "cp -r /app/notification /app/src &&
                         cp /app/notification/.env /app/src/.env &&
                         rm -rf /app/src/common &&
