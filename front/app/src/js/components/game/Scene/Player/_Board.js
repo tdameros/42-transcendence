@@ -8,7 +8,7 @@ export class _Board {
 
   constructor() {}
 
-  async init(boardJson, index) {
+  async init(boardJson, index, maxScore) {
     const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
@@ -16,7 +16,7 @@ export class _Board {
     await this.initBoard(boardSize, index);
     await this.initWalls(boardSize);
     this.initGoal(boardSize, wallWidth, index);
-    this.initScore(boardSize, wallWidth, index, 3);
+    this.initScore(boardSize, wallWidth, index, maxScore);
     this.initLight(boardSize, index);
     this.#threeJSBoard.castShadow = false;
     this.#threeJSBoard.receiveShadow = true;

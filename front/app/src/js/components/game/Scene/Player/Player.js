@@ -24,7 +24,7 @@ export class Player {
 
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     this.#board = new _Board();
-    await this.#board.init(playerJson['board'], index);
+    await this.#board.init(playerJson['board'], index, 3);
     this.#threeJSGroup.add(this.#board.threeJSBoard);
   }
 
