@@ -26,8 +26,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
         command: sh -c "cp -r /app/tournament /app/src &&
                         cp /app/tournament/.env /app/src/.env &&
                         rm -rf /app/src/common &&
@@ -55,10 +53,12 @@ services:
         build:
             context: postgres
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
         volumes:
             - tournament_postgres_volume:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: $TOURNAMENT_DB_NAME
+            POSTGRES_USER: $TOURNAMENT_DB_USER
+            POSTGRES_PASSWORD: $TOURNAMENT_DB_PASSWORD
         healthcheck:
             test: ["CMD-SHELL", "healthcheck.sh"]
             interval: 5s

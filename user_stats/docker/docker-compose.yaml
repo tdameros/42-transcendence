@@ -26,8 +26,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
         command: sh -c "cp -r /app/user_stats /app/src &&
                         cp /app/user_stats/.env /app/src/.env &&
                         rm -rf /app/src/common &&
@@ -55,8 +53,10 @@ services:
         build:
             context: postgres
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
+        environment:
+            POSTGRES_DB: $USER_STATS_DB_NAME
+            POSTGRES_USER: $USER_STATS_DB_USER
+            POSTGRES_PASSWORD: $USER_STATS_DB_PASSWORD
         volumes:
             - user_stats_postgres_volume:/var/lib/postgresql/data
         healthcheck:

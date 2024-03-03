@@ -1,7 +1,7 @@
 import os
 
 import generate_pair_of_keys
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values, set_key
 
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
@@ -25,6 +25,12 @@ TOURNAMENT_ENV_FILE = 'tournament/src/.env'
 GAME_CREATOR_ENV_FILE = 'pong_server/src/game_creator/.env'
 NOTIFICATION_ENV_FILE = 'notification/src/.env'
 MATCHMAKING_ENV_FILE = 'matchmaking/src/.env'
+
+USER_MANAGEMENT_POSTGRES_ENV_FILE = 'user_management/docker/postgres/.env'
+USER_STATS_POSTGRES_ENV_FILE = 'user_stats/docker/postgres/.env'
+TOURNAMENT_POSTGRES_ENV_FILE = 'tournament/docker/postgres/.env'
+NOTIFICATION_POSTGRES_ENV_FILE = 'notification/docker/postgres/.env'
+
 # add your env file here :P
 
 env_files = [
@@ -35,6 +41,7 @@ env_files = [
     GAME_CREATOR_ENV_FILE,
     NOTIFICATION_ENV_FILE,
     MATCHMAKING_ENV_FILE,
+
     # add your env file here :D
 ]
 
@@ -51,11 +58,21 @@ def generate_key(name, key, env_path):
 
 
 def generate_database_credentials(microservice: str, host: str, env_path: str):
-    generate_key('POSTGRES_DB', f'{microservice}_db', env_path)
-    generate_key('POSTGRES_USER', f'{microservice}_user', env_path)
-    generate_key('POSTGRES_PASSWORD', os.urandom(32).hex(), env_path)
-    generate_key('POSTGRES_HOST', host, env_path)
-    generate_key('POSTGRES_PORT', 5432, env_path)
+    microservice = microservice.replace('-', '_')
+    db = f'{microservice}_db'
+    user = f'{microservice}_user'
+    password = os.urandom(32).hex()
+    port = '5432'
+    set_key('.env', f'{microservice.upper()}_DB_NAME', db)
+    set_key('.env', f'{microservice.upper()}_DB_USER', user)
+    set_key('.env', f'{microservice.upper()}_DB_PASSWORD', password)
+    set_key('.env', f'{microservice.upper()}_DB_HOST', host)
+    set_key('.env', f'{microservice.upper()}_DB_PORT', port)
+    generate_key(f'POSTGRES_DB',  db, env_path)
+    generate_key(f'POSTGRES_USER', user, env_path)
+    generate_key(f'POSTGRES_PASSWORD', password, env_path)
+    generate_key(f'POSTGRES_HOST', host, env_path)
+    generate_key(f'POSTGRES_PORT', port, env_path)
 
 
 # common
