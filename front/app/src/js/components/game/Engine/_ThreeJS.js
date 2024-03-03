@@ -43,6 +43,7 @@ export class _ThreeJS {
 
     this.#camera.position.set(0., 0., 70.);
     this.#camera.lookAt(0., 0., -1.);
+    this.#camera.up.set( 0, 0, 1 );
   }
 
   #onWindowResize() {
