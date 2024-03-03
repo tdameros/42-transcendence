@@ -43,6 +43,7 @@ class Match(object):
             'ball': self._ball.to_json(),
             'ball_is_waiting': self._ball_is_waiting,
             'ball_start_time': ball_start_time,
+            'points': self._points,
         }
         if should_include_players:
             result['players'] = [player.to_json() if player else None
@@ -77,6 +78,7 @@ class Match(object):
             self._winner_index = player_index
             return
 
+        await EventEmitter.player_scored_a_point(self._players[player_index].get_location())
         await self._prepare_ball_for_match()
 
     def is_full(self) -> bool:
