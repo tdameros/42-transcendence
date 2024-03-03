@@ -41,38 +41,6 @@
 
 </details>
 
-## `/game_creator/create_private_game/`
-
-<details>
- <summary><code>POST</code></summary>
-
-### Request
-
-#### Header
-
-> | name            | type   | description       | requirement |
-> |-----------------|--------|-------------------|-------------|
-> | `Authorization` | String | User access token | Required    |
-
-#### Body
-
-> | name          | type | description | requirement |
-> |---------------|------|-------------|-------------|
-> | `opponent_id` | int  | Opponent ID | Required    |
-
-### Response
-
-#### Status code
-
-> | status code | content-type       | response              | example                                                             |
-> |-------------|--------------------|-----------------------|---------------------------------------------------------------------|
-> | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                                     |
-> | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['opponent field is missing']}                           |
-> | `401`       | `application/json` | {'errors': list[str]} | {'errors': ["Invalid token type. Token must be a <class 'bytes'>"]} |
-> | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']}                  |
-
-</details>
-
 ## `/game_creator/remove_players_current_game/`
 
 <details>
