@@ -41,6 +41,8 @@ if os.getenv('DEBUG') == 'True':
 else:
     DEBUG = False
 
+BASE_DOMAIN = common_settings.BASE_DOMAIN
+
 if DEBUG:
     FRONT_URL = "https://localhost:6002/"
 else:
@@ -49,7 +51,7 @@ else:
 if DEBUG:
     USER_MANAGEMENT_IP = 'http://localhost:8000/'
 else:
-    USER_MANAGEMENT_IP = 'https://localhost:6002/'
+    USER_MANAGEMENT_IP = f'https://{BASE_DOMAIN}:6002/'
 
 
 # FRONT_ACTIVE_ACCOUNT URL

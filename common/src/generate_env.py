@@ -60,6 +60,7 @@ def generate_database_credentials(microservice: str, host: str, env_path: str):
 
 # common
 generate_key('ACCESS_SERVICE_KEY', os.urandom(32).hex(), COMMON_ENV_FILE)
+generate_key('BASE_DOMAIN', os.getenv('BASE_DOMAIN'), COMMON_ENV_FILE)
 
 # user_management
 generate_pair_of_keys.generate_pair_of_keys()
