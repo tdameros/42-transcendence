@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import {Component} from '@components';
 import {ToastNotifications} from '@components/notifications';
+import {userManagementClient} from '@utils/api';
 
 import {Engine} from './Engine/Engine.js';
 
@@ -13,6 +14,10 @@ export class Game extends Component {
     super();
   }
   render() {
+    if (!userManagementClient.isAuth()) {
+      getRouter().redirect('/signin/');
+      return false;
+    }
     return (`
       <navbar-component></navbar-component>
       <div id="container"></div>
