@@ -33,6 +33,13 @@ export class Player {
     this.#board.updateFrame(timeDelta);
   }
 
+  addPoint() {
+    this.#board.addPoint();
+  }
+
+  resetPoints() {
+    this.#board.resetPoints();
+  }
   get threeJSGroup() {
     return this.#threeJSGroup;
   }

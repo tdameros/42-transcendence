@@ -4,6 +4,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 export class _Board {
   #threeJSBoard;
   #score = [];
+  #points = 0;
 
   constructor() {}
 
@@ -15,7 +16,7 @@ export class _Board {
     await this.initBoard(boardSize, index);
     await this.initWalls(boardSize);
     this.initGoal(boardSize, wallWidth, index);
-    this.initScore(boardSize, wallWidth, index, 5);
+    this.initScore(boardSize, wallWidth, index, 3);
     this.initLight(boardSize, index);
     this.#threeJSBoard.castShadow = false;
     this.#threeJSBoard.receiveShadow = true;
@@ -36,7 +37,6 @@ export class _Board {
         boardSize.y / size.y,
         boardSize.z / size.z,
     );
-    console.log(boardSize.z / size.z);
     this.#threeJSBoard.add(board);
   }
 
@@ -118,6 +118,18 @@ export class _Board {
     );
   }
 
+  addPoint(score, color) {
+    this.#score[this.#points].material.color.set(color);
+    this.#points++;
+  }
+
+  resetPoints() {
+    this.#points = 0;
+    for (let i = 0; i < this.#score.length; i++) {
+      this.#score[i].material.color.set(0xf0f0f0);
+    }
+  }
+
   initGoal(boardSize, wallWidth, index) {
     let sign = 1;
     if (index === 0) {
@@ -148,18 +160,11 @@ export class _Board {
 
     return new Promise((resolve, reject) => {
       loader.load(path,
-          // onLoad callback
           (gltf) => {
-            console.log('GLTF model loaded successfully:', gltf);
             resolve(gltf);
           },
-          // onProgress callback
-          (xhr) => {
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-          },
-          // onError callback
+          undefined,
           (error) => {
-            console.error('An error occurred while loading the GLTF model:', error);
             reject(error);
           },
       );
