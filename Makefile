@@ -100,3 +100,7 @@ delete_ssl_image:
 	if docker images | grep -q "$(SSL_IMAGE_NAME)"; then \
 		docker rmi $(SSL_IMAGE_NAME); \
     fi
+
+.PHONY: delete_env
+delete_env:
+	find . -name ".env" -delete

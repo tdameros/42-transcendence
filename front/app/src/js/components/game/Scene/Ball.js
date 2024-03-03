@@ -169,9 +169,14 @@ export class Ball {
   }
 
   #addBallToGroup() {
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(this.#radius, 10, 10),
-        new THREE.MeshStandardMaterial({color: 0xFFFFFF,
-          emissive: 0xFFFFFF}));
+    const ball = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(this.#radius, 16, 8),
+        new THREE.MeshPhysicalMaterial({
+          roughness: 0.2,
+          metalness: 0.5,
+          transmission: 0.75,
+        }),
+    );
     ball.position.set(0., 0., 0.);
     ball.castShadow = false;
     ball.receiveShadow = false;
@@ -179,7 +184,7 @@ export class Ball {
   }
 
   #addLightToGroup() {
-    const light = new THREE.PointLight(0xFFFFFF, 75.0, 40.);
+    const light = new THREE.PointLight(0xFFFFFF, 10.0, 10.);
     light.position.set(0., 0., 0.);
     light.castShadow = true;
     this.#threeJSGroup.add(light);

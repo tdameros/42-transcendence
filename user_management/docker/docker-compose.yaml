@@ -35,6 +35,10 @@ services:
                         python3 src/manage.py makemigrations &&
                         python3 src/manage.py migrate &&
                         gunicorn -c /app/gunicorn.conf.py"
+        environment:
+            POSTGRES_DB: $USER_MANAGEMENT_DB_NAME
+            POSTGRES_USER: $USER_MANAGEMENT_DB_USER
+            POSTGRES_PASSWORD: $USER_MANAGEMENT_DB_PASSWORD
         volumes:
             - user_management_code:/app/user_management
             - user_management_media_volume:/app/src/media
@@ -56,12 +60,14 @@ services:
         build:
             context: postgres
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
+        environment:
+            POSTGRES_DB: $USER_MANAGEMENT_DB_NAME
+            POSTGRES_USER: $USER_MANAGEMENT_DB_USER
+            POSTGRES_PASSWORD: $USER_MANAGEMENT_DB_PASSWORD
         volumes:
             - user_management_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "sh check_health.sh" ]
+            test: ["CMD-SHELL", "healthcheck.sh"]
             interval: 5s
             timeout: 5s
             retries: 60

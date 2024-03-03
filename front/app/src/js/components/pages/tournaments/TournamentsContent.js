@@ -1,7 +1,11 @@
 import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {Cookies} from '@js/Cookies.js';
-import {tournamentClient, userManagementClient} from '@utils/api';
+import {
+  tournamentClient,
+  userManagementClient,
+  pongServerClient,
+} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {TournamentsList} from './TournamentsList.js';
 
@@ -30,6 +34,10 @@ export class TournamentsContent extends Component {
     this.pageId = this.getAttribute('pageId') || 1;
     this.pageId = parseInt(this.pageId);
 
+    if (!await this.#searchIfGameExists()) {
+      return;
+    }
+
     this.tournamentsListComponent = document.querySelector(
         'tournaments-list-component',
     );
@@ -53,6 +61,25 @@ export class TournamentsContent extends Component {
     this.tournamentsListSelectedRow = null;
     this.tournaments = [];
     this.updateTournamentsList();
+  }
+
+  async #searchIfGameExists() {
+    try {
+      const {response, body} = await pongServerClient.getMyGamePort();
+      if (response.ok) {
+        if (body.port) {
+          getRouter().redirect(`/game/${body.port}/`);
+          return false;
+        }
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (e) {
+      ErrorPage.loadNetworkError();
+      return false;
+    }
   }
 
   #privateCheckBoxHandler() {
