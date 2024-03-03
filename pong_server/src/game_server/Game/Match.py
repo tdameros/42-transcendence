@@ -43,6 +43,7 @@ class Match(object):
             'ball': self._ball.to_json(),
             'ball_is_waiting': self._ball_is_waiting,
             'ball_start_time': ball_start_time,
+            'points': self._points,
         }
         if should_include_players:
             result['players'] = [player.to_json() if player else None
@@ -71,12 +72,13 @@ class Match(object):
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
-        await PostSender.post_add_point(Match.GAME_ID, player_index)
+        await PostSender.post_add_point(Match.GAME_ID, self._players[player_index].PLAYER_ID)
 
         if self._points[player_index] >= settings.POINTS_TO_WIN_MATCH:
             self._winner_index = player_index
             return
 
+        await EventEmitter.player_scored_a_point(self._players[player_index].get_location())
         await self._prepare_ball_for_match()
 
     def is_full(self) -> bool:

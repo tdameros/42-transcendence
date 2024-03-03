@@ -3,6 +3,9 @@ ssl/certs
 #env
 .env
 
+# PEM keys
+*.pem
+
 #DB
 volumes/
 

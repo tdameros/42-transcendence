@@ -3,6 +3,7 @@ import {Toast} from 'bootstrap';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
+import {Cookies} from '@js/Cookies.js';
 
 export class ToastNotifications extends Component {
   constructor() {
@@ -11,7 +12,7 @@ export class ToastNotifications extends Component {
   render() {
     return (`
       <div aria-live="polite" aria-atomic="true" class="position-relative">
-        <div class="toast-container p-3"><div>
+        <div class="toast-container p-3"></div>
       </div>
     `);
   }
@@ -19,8 +20,8 @@ export class ToastNotifications extends Component {
     return (`
       <style>
       .toast-container {
-        top: 0px;
-        right: 0px;
+        top: 0px!important;
+        right: 0px!important;
       }
       </style>
     `);
@@ -45,6 +46,32 @@ export class ToastNotifications extends Component {
     }
   }
 
+  static addPolicyNotification(policyMessage) {
+    const toastNotifications = document.querySelector(
+        'toast-notifications-component',
+    );
+    if (toastNotifications) {
+      toastNotifications.addPolicyNotification(policyMessage);
+    }
+  }
+
+  addPolicyNotification(policyMessage) {
+    const toastDiv = this.#generateToastPolicyNotification(
+        {message: policyMessage},
+    );
+    this.toastContainer.appendChild(toastDiv);
+    const toast = new Toast(toastDiv);
+    toast.show();
+    super.addComponentEventListener(toastDiv, 'hidden.bs.toast', () => {
+      try {
+        Cookies.add('policy', true);
+        this.toastContainer.removeChild(toastDiv);
+      } catch (error) {
+        ;
+      }
+    });
+  }
+
   addNotification(notification) {
     const toastDiv = this.#generateToastNotification(notification);
     toastDiv.setAttribute('toast-id', notification.id);
@@ -67,6 +94,8 @@ export class ToastNotifications extends Component {
       return this.#generateToastTournamentStartNotification(notification);
     } else if (notification.type === 'error') {
       return this.#generateToastErrorNotification(notification);
+    } else if (notification.type === 'policy') {
+      return this.#generateToastPolicyNotification(notification);
     }
   }
 
@@ -87,7 +116,7 @@ export class ToastNotifications extends Component {
             <div class="d-flex justify-content-start align-items-center">
                 <div class="d-flex align-items-center mb-1">
                     <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
-                           class="rounded-circle me-2"
+                           class="rounded-circle object-fit-cover me-2"
                            style="width: 40px; height: 40px; min-height: 40px; min-width: 40px">
                     <p class="mb-0 text-muted" style="font-size: 0.8rem;">
                         <a class="text-primary text-decoration-none" onclick="window.router.navigate('/profile/${username}/')">${username}</a>
@@ -208,6 +237,27 @@ export class ToastNotifications extends Component {
         <div class="d-flex align-items-center justify-content-between">
           <p class="m-0">${notification.message}</p>
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    `;
+    return toastDiv;
+  }
+
+  #generateToastPolicyNotification(notification) {
+    const toastDiv = document.createElement('div');
+    toastDiv.className = 'toast';
+    toastDiv.setAttribute('role', 'alert');
+    toastDiv.setAttribute('aria-live', 'assertive');
+    toastDiv.setAttribute('aria-atomic', 'true');
+    toastDiv.setAttribute('data-bs-autohide', 'false');
+    toastDiv.innerHTML = `
+      <div class="toast-header">
+        <strong class="me-auto">Privacy policy</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body bg-opacity-25">
+        <div class="d-flex align-items-center justify-content-between">
+          <p class="m-0" style="font-size: 12px"'>${notification.message}</p>
         </div>
       </div>
     `;

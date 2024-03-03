@@ -1,18 +1,21 @@
+import urllib
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from hashlib import sha256
 
 import requests
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views import View
 
-from user.models import PendingOAuth, User
+from user.models import PendingOAuth, User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import UserRefreshJWTManager
 from user_management.utils import (download_image_from_url,
-                                   generate_random_string, post_user_stats)
+                                   generate_random_string, is_valid_username,
+                                   post_user_stats)
 
 
 class OAuthFactory:
@@ -67,7 +70,7 @@ class GitHubOAuth(BaseOAuth):
         return (
             f'{settings.GITHUB_AUTHORIZE_URL}'
             f'?client_id={settings.GITHUB_CLIENT_ID}'
-            f'&redirect_uri={settings.GITHUB_REDIRECT_URI}'
+            f'&redirect_uri={urllib.parse.quote_plus(settings.GITHUB_REDIRECT_URI)}'
             f'&state={state}'
             f'&scope=user:email'
         )
@@ -84,7 +87,7 @@ class FtApiOAuth(BaseOAuth):
         return (
             f'{settings.FT_API_AUTHORIZE_URL}'
             f'?client_id={settings.FT_API_CLIENT_ID}'
-            f'&redirect_uri={settings.FT_API_REDIRECT_URI}'
+            f'&redirect_uri={urllib.parse.quote_plus(settings.FT_API_REDIRECT_URI)}'
             f'&response_type=code'
             f'&state={state}'
         )
@@ -122,8 +125,8 @@ class OAuthCallback(View):
         access_token = self.get_access_token(code)
         if not access_token:
             return redirect(f'{source}?error=Failed to retrieve access token')
-        login, avatar_url, email = self.get_user_infos(access_token, auth_service)
-        user, error = self.create_or_get_user(login, email, avatar_url)
+        login, avatar_url, email, api_id = self.get_user_infos(access_token, auth_service)
+        user, error = self.create_or_get_user(login, email, avatar_url, auth_service, api_id)
         if not user:
             return redirect(f'{source}?error={error}')
         success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
@@ -134,24 +137,55 @@ class OAuthCallback(View):
         return response
 
     @staticmethod
-    def create_or_get_user(login, email, avatar_url):
-        user = User.objects.filter(email=email).first()
-        if user is None:
-            search_user = User.objects.filter(username=login).first()
-            if search_user:
-                return None, 'User already exists with this username'
-            try:
-                user = User.objects.create(username=login, email=email, password=None)
-            except Exception:
-                return None, 'Failed to create user'
-            valid, errors = post_user_stats(user.id)
-            if not valid:
-                user.delete()
-                return None, 'Failed to post user stats'
-            if not download_image_from_url(avatar_url, user):
-                return None, 'Failed to download profile picture'
+    def create_or_get_user(login, email, avatar_url, auth_service, api_id):
+        try:
+            with transaction.atomic():
+                user = OAuthCallback._get_existing_user(auth_service, api_id, email)
+                if user:
+                    OAuthCallback._update_existing_user(user, auth_service, api_id)
+                    return user, None
+                login = OAuthCallback._generate_valid_username(login)
+                user = OAuthCallback._create_user(login, email, avatar_url, auth_service, api_id)
+                return user, None
+        except Exception as e:
+            return None, f'Failed to create user while executing OAuth process: {e}'
+
+    @staticmethod
+    def _get_existing_user(auth_service, api_id, email):
+        user_oauth = UserOAuth.objects.filter(service=auth_service, service_id=api_id).first()
+        if user_oauth:
+            return user_oauth.user
+        return User.objects.filter(email=email).first()
+
+    @staticmethod
+    def _update_existing_user(user, auth_service, api_id):
+        user_oauth, created = UserOAuth.objects.get_or_create(user=user, service=auth_service)
+        user_oauth.service_id = api_id
+        user_oauth.save()
+        user.last_activity = timezone.now()
+        user.save()
+        user.update_latest_login()
+
+    @staticmethod
+    def _generate_valid_username(login):
+        if User.objects.filter(username=login).exists() or not is_valid_username(login):
+            return generate_random_string(10)
+        return login
+
+    @staticmethod
+    def _create_user(login, email, avatar_url, auth_service, api_id):
+        try:
+            user = User.objects.create(username=login, email=email, password=None)
+            UserOAuth.objects.create(user=user, service=auth_service, service_id=api_id)
+            success, error = post_user_stats(user.id)
+            if not success:
+                raise UserCreationError(f'Failed to post user stats: {error}')
+            download_image_from_url(avatar_url, user)
+            user.emailVerified = True
             user.save()
-        return user, None
+            return user
+        except Exception:
+            raise UserCreationError('Failed to create user')
 
     @staticmethod
     def get_user_infos(access_token, auth_service):
@@ -168,10 +202,11 @@ class OAuthCallback(View):
             user_profile = response.json()
             login = user_profile['login']
             avatar_url = user_profile['avatar_url']
+            id_api = user_profile['id']
             email_url = settings.GITHUB_USER_PROFILE_URL + '/emails'
             response = requests.get(email_url, headers=headers)
             email = response.json()[0]['email']
-            return login, avatar_url, email
+            return login, avatar_url, email, id_api
         if auth_service == '42api':
             ft_api_user_profile_url = settings.FT_API_USER_PROFILE_URL
             headers = {
@@ -185,7 +220,8 @@ class OAuthCallback(View):
             login = user_profile['login']
             avatar_url = user_profile['image']['link']
             email = user_profile['email']
-            return login, avatar_url, email
+            id_api = user_profile['id']
+            return login, avatar_url, email, id_api
 
     @staticmethod
     def check_state(state):
@@ -223,3 +259,9 @@ class OAuthCallback(View):
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
         PendingOAuth.objects.filter(hashed_state=hashed_state).delete()
         PendingOAuth.objects.filter(created_at__lte=timezone.now() - timedelta(minutes=5)).delete()
+
+
+class UserCreationError(Exception):
+    def __init__(self, message="User creation failed"):
+        self.message = message
+        super().__init__(self.message)

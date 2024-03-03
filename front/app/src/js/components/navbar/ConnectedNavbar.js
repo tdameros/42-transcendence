@@ -30,6 +30,9 @@ export class ConnectedNavbar extends Component {
                       <li class="nav-item">
                           ${this.#generateNavLink('tournaments')}
                       </li>
+                      <li class="nav-item">
+                          ${this.#generateNavLink('ranking')}
+                      </li>
                   </ul>
                   <div class="d-flex align-items-center mb-2 mb-lg-0">
                       <search-nav-component class="me-2"></search-nav-component>
@@ -43,7 +46,7 @@ export class ConnectedNavbar extends Component {
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                           <img id="nav-profile-img" src="${userManagementClient.getURLAvatar(username)}"
                                                alt="profile image"
-                                               class="rounded-circle"
+                                               class="rounded-circle object-fit-cover"
                                                style="width: 40px; height: 40px;">
                                           <span id="nav-username">@${username}</span>
                                       </span>
@@ -51,7 +54,8 @@ export class ConnectedNavbar extends Component {
                               aria-labelledby="dropdownMenuLink">
                               <li><a class="dropdown-item"
                                      onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
-                              <li><a class="dropdown-item">Settings</a></li>
+                              <li><a class="dropdown-item"
+                                     onclick="window.router.navigate('/settings/')">Settings</a></li>
                               <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
                           </ul>
                       </div>
@@ -74,10 +78,12 @@ export class ConnectedNavbar extends Component {
     this.local = this.querySelector('#local');
     this.multiplayer = this.querySelector('#multiplayer');
     this.tournaments = this.querySelector('#tournaments');
+    this.ranking = this.querySelector('#ranking');
 
     super.addComponentEventListener(this.local, 'click', this.#navigate);
     super.addComponentEventListener(this.multiplayer, 'click', this.#navigate);
     super.addComponentEventListener(this.tournaments, 'click', this.#navigate);
+    super.addComponentEventListener(this.ranking, 'click', this.#navigate);
 
     const disablePaddingTop = this.getAttribute('disable-padding-top');
     if (disablePaddingTop !== 'true') {

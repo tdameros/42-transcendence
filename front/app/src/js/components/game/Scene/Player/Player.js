@@ -45,6 +45,7 @@ export class Player {
   resetPoints() {
     this.#board.resetPoints();
   }
+
   get threeJSGroup() {
     return this.#threeJSGroup;
   }

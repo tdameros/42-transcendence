@@ -7,16 +7,19 @@ export class _ThreeJS {
   #camera;
   #engine;
   #controls;
+
   constructor(engine) {
+    this.#engine = engine;
     this.#initRenderer();
     this.#initCamera();
-    this.#engine = engine;
     this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
     this.#controls.target.set(30, 25, 0);
-    window.addEventListener('resize', () => {
-      this.#onWindowResize();
-      this.#engine.resizeHandler();
-    }, false);
+    this.#engine.component.addComponentEventListener(window, 'resize',
+        () => {
+          this.#onWindowResize();
+          this.#engine.resizeHandler();
+        }, this,
+    );
   }
 
   #initRenderer() {
@@ -28,7 +31,7 @@ export class _ThreeJS {
     this.#renderer.setPixelRatio(window.devicePixelRatio);
     this.#renderer.setSize(window.innerWidth, window.innerHeight);
 
-    document.body.appendChild(this.#renderer.domElement);
+    this.#engine.component.appendChild(this.#renderer.domElement);
     RectAreaLightUniformsLib.init();
   }
 

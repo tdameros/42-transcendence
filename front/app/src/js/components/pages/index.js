@@ -1,6 +1,10 @@
 import {
+  ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
 } from './authentication';
 
@@ -15,11 +19,27 @@ import {
 } from './local';
 
 import {
+  PrivacyPolicy,
+  PrivacyPolicyContent,
+} from './privacy_policy';
+
+import {
+  Ranking,
+  RankingContent,
+} from './ranking';
+
+import {
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
 } from './reset_password';
+
+import {
+  Settings,
+  Settings2FA,
+  SettingsContent,
+} from './settings';
 
 import {
   TournamentBracket,
@@ -45,17 +65,28 @@ import {
 import {NotFound} from './NotFound.js';
 
 export {
+  ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Home,
   HomeContent,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,

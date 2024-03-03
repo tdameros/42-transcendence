@@ -1,7 +1,7 @@
 from django.conf.urls.static import static
 from django.urls import path
 
-from user.views.avatar import AvatarView
+from user.views.avatar import AvatarView, GetAvatarView
 from user.views.delete_account import DeleteAccountView
 from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
@@ -12,6 +12,7 @@ from user.views.friends import (FriendsAcceptView, FriendsDeclineView,
                                 FriendsView)
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
+from user.views.me import MeView
 from user.views.oauth import OAuth, OAuthCallback
 from user.views.refresh_JWT import RefreshJWT
 from user.views.search_username import SearchUsernameView
@@ -22,6 +23,7 @@ from user.views.two_fa import Disable2fa, Enable2fa, Verify2fa
 from user.views.update_infos import UpdateInfos
 from user.views.user_id import UserIdListView, UserIdView
 from user.views.username import UsernameView
+from user.views.verify_email import VerifyEmailView
 from user_management import settings
 
 urlpatterns = [
@@ -49,9 +51,12 @@ urlpatterns = [
     path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
     path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
-    path('avatar/<str:username>/', AvatarView.as_view(), name='avatar'),
+    path('verify-email/<str:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
+    path('avatar/<str:username>/', GetAvatarView.as_view(), name='avatar'),
+    path('avatar/', AvatarView.as_view(), name='avatar'),
     path('delete-inactive-users/', DeleteInactiveUsersView.as_view(), name='delete-inactive-users'),
     path('send-user-infos/', SendUserInfosView.as_view(), name='send-user-infos'),
+    path('me/', MeView.as_view(), name='me'),
     path('<str:username>/', UsernameView.as_view(), name='username'),
 ]
 

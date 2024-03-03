@@ -1,13 +1,15 @@
 export class Router {
   #routes;
   #app;
+  #appendSlash;
 
-  constructor(app, routes = []) {
+  constructor(app, routes = [], appendSlash=true) {
     if (Router.instance) {
       return Router.instance;
     }
     Router.instance = this;
     this.#routes = [];
+    this.#appendSlash = appendSlash;
     Object.assign(this.#routes, routes);
     this.#app = app;
     window.addEventListener('popstate', (event) => {
@@ -20,7 +22,10 @@ export class Router {
   }
 
   navigate(newPath) {
-    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    const newPathWithoutQuery = newPath.split('?')[0];
+    const {route, parametersValues} = this.#findMatchingRoute(
+        newPathWithoutQuery,
+    );
     if (route === null) {
       console.error(`Route not found`);
       return null;
@@ -32,19 +37,22 @@ export class Router {
   }
 
   init() {
-    const {route, parametersValues} = this.#findMatchingRoute(
-        document.location.pathname,
-    );
+    const URI = this.#getURIWithSlash(document.location.pathname);
+    const {route, parametersValues} = this.#findMatchingRoute(URI);
     if (route === null) {
       console.error(`Route not found`);
       return null;
     }
+    window.history.replaceState({}, '', URI + window.location.search);
     return this.#loadRoute(route, parametersValues);
   }
 
   redirect(newPath) {
+    const newPathWithoutQuery = newPath.split('?')[0];
     window.history.replaceState({}, '', newPath);
-    const {route, parametersValues} = this.#findMatchingRoute(newPath);
+    const {route, parametersValues} = this.#findMatchingRoute(
+        newPathWithoutQuery,
+    );
     if (route === null) {
       console.error(`Route not found`);
       return null;
@@ -85,6 +93,13 @@ export class Router {
       return null;
     }
     this.#loadRoute(route, parametersValues);
+  }
+
+  #getURIWithSlash(URI) {
+    if (this.#appendSlash && !URI.endsWith('/')) {
+      return URI + '/';
+    }
+    return URI;
   }
 
   static #setParametersInElement(element, parameters, values) {

@@ -23,7 +23,17 @@ export class UserManagementClient extends BaseApiClient {
     'friends-decline': 'user/friends/decline/',
     'friends-request': 'user/friends/request/',
     'friends': 'user/friends/',
-    'avatar': 'user/avatar/',
+    'avatar': 'user/avatar/:username/',
+    'change-avatar': 'user/avatar/',
+    'delete-avatar': 'user/avatar/',
+    'update-infos': 'user/update-infos/',
+    'verify-email': 'user/verify-email/:id/:token/',
+    'me': 'user/me/',
+    'send-user-infos': 'user/send-user-infos/',
+    'delete-account': 'user/delete-account/',
+    'enable-2fa': 'user/2fa/enable/',
+    'verify-2fa': 'user/2fa/verify/',
+    'disable-2fa': 'user/2fa/disable/',
   };
 
   constructor() {
@@ -32,8 +42,93 @@ export class UserManagementClient extends BaseApiClient {
     this.URIs = UserManagementClient.URIs;
   }
 
+  async disable2FA() {
+    const URL = `${this.URL}/${this.URIs['disable-2fa']}`;
+    return await this.postAuthRequest(URL, {});
+  }
+
+  async verify2FA(code) {
+    const body = {
+      'code': code,
+    };
+    const URL = `${this.URL}/${this.URIs['verify-2fa']}`;
+    return await this.postAuthRequest(URL, body);
+  }
+
+  async enable2FA() {
+    const auth = await this.authRequired();
+    if (!auth) {
+      return {response: {ok: false, status: 401}, body: {}};
+    }
+    const headers = {'Authorization': this.accessToken.jwt};
+    const URL = `${this.URL}/${this.URIs['enable-2fa']}`;
+    const options = {
+      method: 'POST',
+      headers: headers,
+    };
+    return {response: await fetch(URL, options), body: {}};
+  }
+
+  async deleteAccount() {
+    const URL = `${this.URL}/${this.URIs['delete-account']}`;
+    return await this.deleteAuthRequest(URL);
+  }
+
+  async sendUserInfos() {
+    const URL = `${this.URL}/${this.URIs['send-user-infos']}`;
+    return await this.getAuthRequest(URL);
+  }
+
+  async getMe() {
+    const URL = `${this.URL}/${this.URIs['me']}`;
+    return await this.getAuthRequest(URL);
+  }
+
+  async updateInfo(newUsername=null, newEmail=null, newPassword=null) {
+    const body = {
+      'change_list': [],
+    };
+    if (newUsername) {
+      body['username'] = newUsername;
+      body['change_list'].push('username');
+    }
+    if (newEmail) {
+      body['email'] = newEmail;
+      body['change_list'].push('email');
+    }
+    if (newPassword) {
+      body['password'] = newPassword;
+      body['change_list'].push('password');
+    }
+    const URL = `${this.URL}/${this.URIs['update-infos']}`;
+    return await this.postAuthRequest(URL, body);
+  }
+
+  async deleteAvatar(username) {
+    const URI = this.URIs['delete-avatar'].replace(':username', username);
+    const URL = `${this.URL}/${URI}`;
+    return await this.deleteAuthRequest(URL);
+  }
+
+  async changeAvatar(newAvatarInBase64, username) {
+    const body = {
+      'avatar': newAvatarInBase64,
+    };
+    const URI = this.URIs['change-avatar'].replace(':username', username);
+    const URL = `${this.URL}/${URI}`;
+    return await this.postAuthRequest(URL, body);
+  }
+
+  async verifyEmail(userId, token) {
+    const URI = this.URIs['verify-email']
+        .replace(':id', userId).replace(':token', token);
+    const URL = `${this.URL}/${URI}`;
+    return await JSONRequests.post(URL, {});
+  }
+
   getURLAvatar(username) {
-    return `${this.URL}/${this.URIs['avatar']}${username}/`;
+    const URI = this.URIs['avatar'].replace(':username', username);
+    return `${this.URL}/${URI}`;
   }
 
   async getFriends() {

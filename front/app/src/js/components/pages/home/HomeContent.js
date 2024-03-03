@@ -4,7 +4,8 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {NavbarUtils} from '@utils/NavbarUtils.js';
 import {Theme} from '@js/Theme.js';
-import {userManagementClient} from '../../../utils/api/index.js';
+import {userManagementClient} from '@utils/api';
+import {ToastNotifications} from '@components/notifications';
 
 export class HomeContent extends Component {
   constructor() {
@@ -95,7 +96,10 @@ export class HomeContent extends Component {
   async postRender() {
     this.container = document.querySelector('#container');
     if (!WebGL.isWebGLAvailable()) {
-      this.container.appendChild(WebGL.getWebGLErrorMessage());
+      ToastNotifications.addErrorNotification(
+          'WebGL is not available on this device',
+      );
+      console.error(WebGL.getWebGLErrorMessage());
       return;
     }
 

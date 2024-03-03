@@ -124,15 +124,15 @@ export class TournamentsList extends Component {
     return (`
       <ul class="pagination m-2">
         <li class="page-item">
-          <a class="page-link" aria-label="Previous"
-          onclick="window.router.navigate('/tournaments/page/${previousPage}')">
+          <a class="page-link ${previousPage === currentPage ? 'disabled': ''}" aria-label="Previous"
+          onclick="window.router.navigate('/tournaments/page/${previousPage}/')">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
         ${paginationItems.join('')}
         <li class="page-item">
-          <a class="page-link" aria-label="Next"
-          onclick="window.router.navigate('/tournaments/page/${nextPage}')">
+          <a class="page-link ${nextPage === currentPage ? 'disabled': ''}" aria-label="Next"
+          onclick="window.router.navigate('/tournaments/page/${nextPage}/')">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>
@@ -144,7 +144,7 @@ export class TournamentsList extends Component {
     return (`
     <li class="page-item">
       <a class="page-link ${active ? 'active' : ''}"
-      onclick="window.router.navigate('/tournaments/page/${pageNumber}')">${pageNumber}
+      onclick="window.router.navigate('/tournaments/page/${pageNumber}/')">${pageNumber}
       </a>
     </li>
   `);

@@ -16,10 +16,7 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
-        depends_on:
-            tournament:
-                condition: service_healthy
+            retries: 60
         restart: on-failure
 
     tournament:
@@ -30,6 +27,8 @@ services:
             context: .
             dockerfile: Dockerfile
         command: sh -c "cp -r /app/tournament /app/src &&
+                        cp /app/tournament/.env /app/src/.env &&
+                        rm -rf /app/src/common &&
                         cp -r /app/common /app/src/common &&
                         pip install --root-user-action=ignore --no-cache-dir -r /app/src/common/docker/requirements.txt &&
                         python3 src/manage.py makemigrations &&
@@ -45,25 +44,22 @@ services:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
             timeout: 5s
-            retries: 5
-        depends_on:
-            tournament-db:
-                condition: service_healthy
+            retries: 60
         restart: on-failure
 
     tournament-db:
         networks:
             - tournament
-        image: postgres:16.0-bookworm
-        environment:
-            POSTGRES_DB: mydatabase
-            POSTGRES_USER: myuser
-            POSTGRES_PASSWORD: mypassword
+        build:
+            context: postgres
+            dockerfile: Dockerfile
+        env_file:
+            - path: ../src/.env
         volumes:
             - tournament_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+            test: [ "CMD-SHELL", "sh check_health.sh" ]
             interval: 5s
             timeout: 5s
-            retries: 5
+            retries: 60
         restart: on-failure

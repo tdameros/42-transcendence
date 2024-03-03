@@ -27,17 +27,28 @@ import {
 } from './notifications';
 
 import {
+  ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Home,
   HomeContent,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,
@@ -59,6 +70,7 @@ import {
 import {
   Alert,
   Error,
+  ErrorContent,
 } from './utilities';
 
 import {
@@ -83,9 +95,15 @@ customElements.define('search-nav-component', SearchNav);
 customElements.define('notification-component', Notification);
 customElements.define('toast-notifications-component', ToastNotifications);
 
+customElements.define('activate-account-component', ActivateAccount);
+customElements.define(
+    'activate-account-content-component', ActivateAccountContent,
+);
 customElements.define('two-factor-auth-component', TwoFactorAuth);
 customElements.define('signin-component', SignIn);
+customElements.define('signin-content-component', SignInContent);
 customElements.define('signup-component', SignUp);
+customElements.define('signup-content-component', SignUpContent);
 
 customElements.define('home-component', Home);
 customElements.define('home-content-component', HomeContent);
@@ -93,10 +111,20 @@ customElements.define('home-content-component', HomeContent);
 customElements.define('local-component', Local);
 customElements.define('local-content-component', LocalContent);
 
+customElements.define('privacy-policy-component', PrivacyPolicy);
+customElements.define('privacy-policy-content-component', PrivacyPolicyContent);
+
+customElements.define('ranking-component', Ranking);
+customElements.define('ranking-content-component', RankingContent);
+
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
 customElements.define('reset-password-email-component', ResetPasswordEmail);
 customElements.define('reset-password-new-component', ResetPasswordNew);
+
+customElements.define('settings-component', Settings);
+customElements.define('settings-2fa-component', Settings2FA);
+customElements.define('settings-content-component', SettingsContent);
 
 customElements.define('tournament-bracket-component', TournamentBracket);
 customElements.define('tournament-create-component', TournamentCreate);
@@ -131,6 +159,7 @@ customElements.define(
 
 customElements.define('alert-component', Alert);
 customElements.define('error-component', Error);
+customElements.define('error-content-component', ErrorContent);
 
 customElements.define('game-component', Game);
 
@@ -144,15 +173,26 @@ export {
   ThemeButton,
   Friends,
   FriendsSidebar,
+  ActivateAccount,
+  ActivateAccountContent,
   SignIn,
+  SignInContent,
   SignUp,
+  SignUpContent,
   TwoFactorAuth,
   Local,
   LocalContent,
+  PrivacyPolicy,
+  PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
   ResetPasswordNew,
+  Settings,
+  Settings2FA,
+  SettingsContent,
   TournamentBracket,
   TournamentCreate,
   TournamentCreateContent,
@@ -172,6 +212,7 @@ export {
   NotFound,
   Alert,
   Error,
+  ErrorContent,
   Navbar,
   Notification,
 };

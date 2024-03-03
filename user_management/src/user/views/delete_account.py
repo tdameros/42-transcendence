@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -5,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from common.src.internal_requests import InternalAuthRequests, InternalRequests
 from common.src.jwt_managers import user_authentication
-from user.models import User
+from user.models import Friend, User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import get_user_id
 from user_management.utils import generate_random_string
@@ -16,15 +18,19 @@ def anonymize_user(user):
     user.email = f'deleted_user_{generate_random_string(10)}@deleted'
     user.password = generate_random_string(20)
     user.avatar = None
+    UserOAuth.objects.filter(user_id=user.id).delete()
     user.save()
 
 
 def delete_tournament(user, access_token):
     request = InternalRequests.delete(f'{settings.TOURNAMENT_URL}tournament/', headers={'Authorization': access_token})
-    if request.status_code != 200:
+    if not request.ok:
         raise Exception(f'Error deleting tournaments : {request.json()}')
-    request = InternalAuthRequests.post(f'{settings.TOURNAMENT_URL}tournament/player/anonymize/')
-    if request.status_code != 200:
+    request = InternalAuthRequests.post(
+        f'{settings.TOURNAMENT_URL}tournament/player/anonymize/',
+        data=json.dumps({'user_id': user.id}),
+    )
+    if not request.ok:
         raise Exception(f'Error anonymizing players : {request.json()}')
 
 
@@ -37,6 +43,12 @@ def delete_account(user_id, access_token):
         return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
     try:
         delete_tournament(user, access_token)
+    except Exception as e:
+        return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+    try:
+        friends = Friend.objects.filter(user=user.id)
+        for friend in friends:
+            Friend.objects.filter(user=friend.friend.id, friend=user.id).delete()
     except Exception as e:
         return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
     try:

@@ -1,3 +1,4 @@
+import datetime
 import json
 import math
 from typing import Any, Optional
@@ -12,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Tournament
 from api.views.tournament_views import TournamentView
+from common.src import settings as common_settings
 from common.src.internal_requests import InternalAuthRequests
 from common.src.jwt_managers import user_authentication
 from tournament import settings
@@ -39,10 +41,14 @@ class StartTournamentView(View):
             return JsonResponse(data={'errors': [start_error]}, status=403)
 
         tournament.status = Tournament.IN_PROGRESS
+        tournament.start_datetime = datetime.datetime.now(datetime.UTC)
 
         try:
             tournament.save()
-            StartTournamentView.send_tournament_start_notification(tournament)
+            game_created, game_creation_error, game_port = StartTournamentView.create_tournament_game(tournament)
+            if not game_created:
+                return JsonResponse({'errors': [game_creation_error]}, status=500)
+            StartTournamentView.send_tournament_start_notification(tournament, game_port)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
@@ -65,15 +71,14 @@ class StartTournamentView(View):
         return None
 
     @staticmethod
-    def send_tournament_start_notification(tournament: Tournament) -> None:
+    def send_tournament_start_notification(tournament: Tournament, game_port: int) -> None:
         players = tournament.players.all()
         players_id = [player.user_id for player in players]
         notification_data = {
             'title': f'Tournament `{tournament.name}` started',
             'type': 'tournament_start',
             'user_list': players_id,
-            # TODO: send tournament port instead of tournament id
-            'data': f'{tournament.id}'
+            'data': f'{game_port}'
         }
 
         response = InternalAuthRequests.post(
@@ -83,6 +88,41 @@ class StartTournamentView(View):
 
         if response.status_code != 201:
             raise Exception(f'Failed to send tournament start notification: {response.json()}')
+
+    @staticmethod
+    def create_tournament_game(tournament: Tournament) -> tuple[bool, Optional[str], Optional[int]]:
+        data = {
+            'request_issuer': 'tournament',
+            'game_id': tournament.id,
+            'players': StartTournamentView.get_players_list(tournament)
+        }
+
+        response = InternalAuthRequests.post(
+            url=common_settings.GAME_CREATOR_CREATE_GAME_ENDPOINT,
+            data=json.dumps(data)
+        )
+
+        if response.status_code != 201:
+            return False, f'Failed to create game: {response.json()}', None
+
+        return True, None, response.json()['port']
+
+    @staticmethod
+    def get_players_list(tournament: Tournament) -> list[Optional[int]]:
+        matches = tournament.matches.all()
+        players = []
+        nb_round = int(math.log2(len(matches) + 1))
+
+        for i in range(0, 2 ** (nb_round - 1)):
+            if matches[i].player_1 is not None:
+                players.append(matches[i].player_1.user_id)
+            else:
+                players.append(None)
+            if matches[i].player_2 is not None:
+                players.append(matches[i].player_2.user_id)
+            else:
+                players.append(None)
+        return players
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -263,7 +303,7 @@ class ManageTournamentView(View):
         if not valid_max_players:
             return False, max_players_error
         elif len(tournament_players) > new_max_players:
-            return False, f'You cannot set the max players to {new_max_players} because there are already '\
+            return False, f'You cannot set the max players to {new_max_players} because there are already ' \
                           f'{len(tournament_players)} players registered'
         return True, None
 

@@ -32,6 +32,7 @@ export class UserProfileHeader extends Component {
           border: 3px solid var(--bs-body-bg);
           border-radius: 50%;
           overflow: hidden;
+          background-color: var(--bs-card-bg);
       }
       
       .profile-img {
@@ -67,16 +68,13 @@ export class UserProfileHeader extends Component {
             <div id="profile-info" class="profile-info d-flex align-items-center">
                 <div id="picture-container" class="profile-img-container ">
                     <img src="/img/default_avatar.png" alt="Profile picture"
-                         class="profile-img mr-2 placeholder placeholder-lg">
+                         class="profile-img object-fit-cover mr-2 placeholder placeholder-lg">
                 </div>
                 <div class="user-info">
                     <h1 class="mt-4 ${placeholderClass} col-12">_</h1>
                     <div class="d-flex">
                         <button class="btn btn-sm me-2 ${placeholderClass}">
                             Send Friend Request
-                        </button>
-                        <button class="btn btn-sm ${placeholderClass}">
-                            Challenge
                         </button>
                     </div>
                 </div>
@@ -103,9 +101,6 @@ export class UserProfileHeader extends Component {
     return (`
       <div class="d-flex">
         ${this.#renderFriendButton()}
-          <button class="btn btn-sm btn-outline-secondary">
-              Challenge
-          </button>
       </div>
     `);
   }

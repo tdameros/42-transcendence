@@ -11,9 +11,12 @@ export class Alert extends Component {
   render() {
     this.message = this.getAttribute('alert-message');
     this.display = this.getAttribute('alert-display');
-    if (this.display === 'true') {
+    this.type = this.getAttribute('alert-type');
+    const alertColorClass = this.type === 'success' ?
+      'alert-success' : 'alert-danger';
+    if (this.display === 'true' ) {
       return (`
-      <div class="alert alert-danger alert-dismissible fade show"
+      <div class="alert ${alertColorClass} alert-dismissible fade show"
            role="alert">
         <p class="alert-content alert-form">${this.message}</p>
         <button id="alert-form" type="button" class="btn-close alert-content" data-bs-dismiss="alert"

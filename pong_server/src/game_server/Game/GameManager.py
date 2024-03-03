@@ -79,7 +79,8 @@ class GameManager(object):
     @staticmethod
     async def start_game():
         for match in GameManager._matches:
-            await match.start_match()
+            if match.get_player(0) is not None and match.get_player(1) is not None:
+                await match.start_match()
 
         scene = GameManager.get_scene()
         for client_id in ClientManager.CLIENTS_IDS:
@@ -121,6 +122,7 @@ class GameManager(object):
             match.get_player(looser_index).PLAYER_ID,
             match.get_player_score(looser_index)
         )
+        await ClientManager.unregister_player(match.get_player(looser_index).PLAYER_ID)
 
         if len(GameManager._matches) == 1:
             GameManager._is_game_over = True

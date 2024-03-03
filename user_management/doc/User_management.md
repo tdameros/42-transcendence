@@ -6,7 +6,7 @@
 
 ### Account creation
 
-will return a refresh token when successful
+will send an email to the user with a link to confirm the account
 
 <details>
  <summary><code>POST</code><code><b>/user/signup/</b></code></summary>
@@ -28,11 +28,33 @@ all fields are mandatory
 
 #### Responses
 
-> | http code | content-type       | response                                             |
-> |-----------|--------------------|------------------------------------------------------|
-> | `201`     | `application/json` | `{"refresh_token": "eyJhbGci.."}`                    |
-> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                  |
-> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}` |
+> | http code | content-type       | response                                                  |
+> |-----------|--------------------|-----------------------------------------------------------|
+> | `201`     | `application/json` | `{"message": "Account created, Verification email sent"}` |
+> | `401`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                       |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`      |
+
+</details>
+
+## `user/verify-email/<str:id>/<str:token>`
+
+NB : id is in base64
+
+### Verify the email of the user (and so the account)
+
+will return 200 if successful
+
+<details>
+ <summary><code>POST</code><code><b>/user/verify-email/</b></code></summary>
+
+
+#### Responses
+
+> | http code | content-type       | response                                                                      |
+> |-----------|--------------------|-------------------------------------------------------------------------------|
+> | `200`     | `application/json` | `{'message': 'user verified', 'refresh_token': refresh_token}`                |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                                         |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`                          |
 
 </details>
 
@@ -792,10 +814,11 @@ This endpoint allows the user to get and update his avatar.
 ### Get user's avatar
 
 <details>
- <summary><code>GET</code><code><b>/user/avatar/</b></code></summary>
+ <summary><code>GET</code><code><b>/user/avatar/<<e>str:username></b></code></summary>
 
 ### Parameters
 
+username of the user to retrieve
 
 #### Responses
 
@@ -813,7 +836,7 @@ This endpoint allows the user to get and update his avatar.
 <details>
  <summary><code>POST</code><code><b>/user/avatar/</b></code></summary>
 
-### Parameters
+### Headers
 
 Authorization: {access_token}
 
@@ -881,3 +904,52 @@ Authorization: {access_token}
 
 </details>
 
+## `/user/me/`
+
+### Retrieve user private infos
+
+This endpoint retrieves the user's private information.
+
+<details>
+ <summary><code>GET</code><code><b>/user/me/</b></code></summary>
+
+### Headers
+
+Authorization: {access_token}
+
+#### Responses
+
+> | http code | content-type       | response                                                    |
+> |-----------|--------------------|-------------------------------------------------------------|
+> | `200`     | `application/json` | `{"ok": "Email sent", "email": "************ra@gmail.com"}` |
+> | `400`     | `application/json` | `{"errors": ["..."]}`                                       |
+> | `500`     | `application/json` | `{"errors": ['An unexpected error occurred : ...']}`        |
+
+Json response :
+```json
+{
+    "username" : "Aurel",
+    "id": 1,
+    "email": "a@a.fr",
+    "has_2fa": true,
+    "OAuth": None
+ }
+ ```
+or 
+```json
+{
+    "username" : "Aurel",
+    "id": 1,
+    "email": "a@a.fr",
+    "has_2fa": false,
+    "OAuth": "github"
+}
+```
+
+for OAuth, value can be :
+- None
+- "github"
+- "42api"
+  (in case of doubt you can check the user model in models.py)
+
+</details>

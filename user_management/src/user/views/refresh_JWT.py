@@ -28,11 +28,18 @@ class RefreshJWT(View):
                 return JsonResponse(data={'errors': errors}, status=400)
             if user_id is None:
                 return JsonResponse(data={'errors': ['User not found']}, status=404)
-            if User.objects.get(id=user_id).account_deleted:
+            user = User.objects.get(id=user_id)
+            if user.account_deleted:
                 return JsonResponse(data={'errors': ['User deleted']}, status=404)
             success, access_token, errors = UserAccessJWTManager.generate_jwt(user_id)
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
+            try:
+                user.update_latest_login()
+                user.save()
+            except Exception as e:
+                return JsonResponse(
+                    data={'errors': [f'An error occurred while updating the last login date : {e}']}, status=500)
             return JsonResponse(data={'access_token': access_token}, status=200)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)

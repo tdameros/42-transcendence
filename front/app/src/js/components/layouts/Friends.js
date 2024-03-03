@@ -77,7 +77,7 @@ export class Friends extends Component {
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
           <img src="/img/default_avatar.png" alt="profile image"
-               class="rounded-circle me-2 placeholder placeholder-lg"
+               class="rounded-circle object-fit-cover me-2 placeholder placeholder-lg"
                style="width: 45px; height: 45px;">
           <div class="w-100">
               <span class="${placeholderClass} col-8">_</span>
@@ -151,7 +151,7 @@ export class Friends extends Component {
       <div class="card-body p-2">
         <div class="d-flex flex-row align-items-center">
           <img src="${userManagementClient.getURLAvatar(username)}" alt="profile image"
-               class="rounded-circle me-2"
+               class="rounded-circle object-fit-cover me-2"
                style="width: 45px; height: 45px;">
             <div>
               <p class="m-0">@${friend['username']}</p>

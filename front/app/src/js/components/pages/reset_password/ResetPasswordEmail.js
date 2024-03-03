@@ -4,6 +4,7 @@ import {BootstrapUtils} from '@utils/BootstrapUtils.js';
 import {userManagementClient} from '@utils/api';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {ResetPasswordCode} from './ResetPasswordCode.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class ResetPasswordEmail extends Component {
   constructor() {
@@ -23,7 +24,7 @@ export class ResetPasswordEmail extends Component {
                       </div>
                       <div class="form-group mb-4">
                           <input type="email" class="form-control" id="email"
-                                 placeholder="Email">
+                                 placeholder="Email" autocomplete="email">
                           <div id="email-feedback" class="invalid-feedback">
                               Please enter a valid email.
                           </div>
@@ -42,7 +43,7 @@ export class ResetPasswordEmail extends Component {
     return (`
       <style>
       #reset-password {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
   
       .reset-password-card {

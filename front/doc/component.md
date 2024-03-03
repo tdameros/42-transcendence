@@ -19,7 +19,8 @@ If the function returns `false`, the component is not loaded into the DOM
 and the postRender function is not called.
 
 ```javascript
-render() {
+render()
+{
   const message = 'Hello World!'
   return `
     <div>
@@ -34,7 +35,8 @@ render() {
 Returns the specific CSS content to be rendered inside the component.
 
 ```javascript
-style() {
+style()
+{
   return `
     <style>
       h1 {
@@ -50,7 +52,8 @@ style() {
 Executed after the component has been rendered.
 
 ```javascript
-postRender() {
+postRender()
+{
   this.title = this.querySelector('h1');
   super.addComponentEventListener('click', this.handleClick);
 }
@@ -61,7 +64,8 @@ postRender() {
 Executed when the component is updated.
 
 ```javascript
-update() {
+update()
+{
   this.title.textContent = 'updated!';
 }
 ```
@@ -74,7 +78,7 @@ update() {
 
 Adds an event listener to the component.
 
-Component event listener ensures that the "this" instance in the
+By default, component event listener ensures that the `this` instance in the
 callback is always defined as the instance of the component. Additionally, this
 system prevents event listener leaks even when the callbacks are anonymous
 functions.
@@ -86,11 +90,12 @@ super.addComponentEventListener(this.username, 'input', this.#usernameHandler);
 
 ### Parameters
 
-> | name       | data type   | description                                                       | type       |
-> |------------|-------------|-------------------------------------------------------------------|------------|
-> | `element`  | HTMLElement | Selected HTMLElement                                              | Required   |
-> | `event`    | String      | A case-sensitive string representing the event type to listen for | Required   |
-> | `callback` | Function    | Function call when an event is trigger                            | Required   |
+> | name               | data type   | description                                                      | type     |
+> |--------------------|-------------|------------------------------------------------------------------|----------|
+> | `element`          | HTMLElement | Selected HTMLElement                                             | Required |
+> | `event`            | String      | A case-sensitive string representing the event type to listen for | Required |
+> | `callback`         | Function    | Function call when an event is trigger                           | Required |
+> | `callbackInstance` | Instance    | The `this` instance used in the callback                           | Optional |
 
 ## removeComponentEventListener
 
@@ -106,7 +111,6 @@ super.removeComponentEventListener(this.username, 'input');
 > |------------|-------------|-----------------------------------------------------------------------------------|------------|
 > | `element`  | HTMLElement | Selected HTMLElement                                                              | Required   |
 > | `event`    | String      | A string which specifies the type of event for which to remove an event listener  | Required   |
-
 
 ## removeAllComponentEventListeners
 

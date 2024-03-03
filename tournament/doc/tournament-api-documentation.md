@@ -291,9 +291,16 @@ Anonymizes a user's nicknames
 <details>
  <summary><code>POST</code> <code><b>/tournament/player/anonymize</b></code></summary>
 
-### Parameters
+### Request
 
-None
+#### Body
+
+- The user id to anonymize
+
+> ```javascript
+> {
+>    "user_id": 1
+> }
 
 ### Responses
 
@@ -481,5 +488,27 @@ End a match
 > |-----------|--------------------|----------------------------------------|
 > | `200`     | `application/json` | `{"id": 1, "status": "Finished", ...}` |
 > | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`    |
+
+</details>
+
+--------------------------------------------------------------------------------
+
+## `/tournament/delete-inactive/`
+
+Delete inactive tournaments
+
+<details>
+ <summary><code>DELETE</code> <code><b>/tournament/delete-inactive/</b></code></summary>
+
+### Parameters
+
+None
+
+### Responses
+
+> | http code | content-type       | response                            |
+> |-----------|--------------------|-------------------------------------|
+> | `200`     | `application/json` | `{'message': 'Tournament deleted'}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`          |
 
 </details>

@@ -2,6 +2,9 @@ import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
+import {Cookies} from '@js/Cookies.js';
+import {TournamentsList} from '@pages/tournaments/TournamentsList.js';
 
 export class TournamentCreateContent extends Component {
   constructor() {
@@ -20,7 +23,7 @@ export class TournamentCreateContent extends Component {
                       <div class="form-group mb-4">
                           <div class="input-group has-validation">
                               <input type="text" class="form-control" id="name"
-                                     placeholder="Name">
+                                     placeholder="Name" autocomplete="off">
                               <div id="name-feedback" class="invalid-feedback">
                                   Invalid username.
                               </div>
@@ -65,7 +68,7 @@ export class TournamentCreateContent extends Component {
     return (`
       <style>
       #tournament {
-          height: 100vh;
+          height: calc(100vh - ${NavbarUtils.height}px);
       }
       
       .tournament-card {
@@ -122,6 +125,9 @@ export class TournamentCreateContent extends Component {
           name, maxPlayers, isPrivate, password,
       );
       if (response.ok) {
+        if (isPrivate) {
+          Cookies.add(TournamentsList.privateCheckBoxCookie, 'true');
+        }
         getRouter().navigate(`/tournaments/`);
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);

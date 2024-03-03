@@ -347,7 +347,11 @@ class AnonymizePlayer(TestCase):
         mock_authenticate_request.return_value = (True, None)
 
         url = reverse('player')
-        response = self.client.post(url, headers=get_fake_headers(1))
+        response = self.client.post(
+            url,
+            content_type='application/json',
+            data={'user_id': user['id']}
+        )
 
         players = Player.objects.filter(user_id=user['id'])
 
@@ -360,6 +364,10 @@ class AnonymizePlayer(TestCase):
         mock_authenticate_request.return_value = (True, None)
 
         url = reverse('player')
-        response = self.client.post(url, headers=get_fake_headers(50))
+        response = self.client.post(
+            url,
+            content_type='application/json',
+            data={'user_id': 50}
+        )
 
         self.assertEqual(response.status_code, 200)

@@ -1,10 +1,12 @@
-import {Scene} from '../Scene/Scene.js';
-
 import {io} from 'socket.io-client';
-import {PlayerLocation} from '../Scene/PlayerLocation.js';
-import {sleep} from '../sleep.js';
 
 import {userManagementClient} from '@utils/api';
+import {ToastNotifications} from '@components/notifications';
+import {getRouter} from '@js/Router.js';
+
+import {Scene} from '../Scene/Scene.js';
+import {PlayerLocation} from '../Scene/PlayerLocation.js';
+import {sleep} from '../sleep.js';
 
 export class _GameSocketIO {
   #engine;
@@ -22,17 +24,23 @@ export class _GameSocketIO {
     });
 
     this.#socketIO.on('connect', async () => {
-      console.log('connection to game server established');
       this.#isConnected = true;
     });
 
     this.#socketIO.on('connect_error', (jsonString) => {
-      const error = JSON.parse(jsonString.message);
-      if (error['status'] !== 0) {
+      let error;
+      try {
+        error = JSON.parse(jsonString.message);
+      } catch {
+        ToastNotifications.addErrorNotification('Server connection error');
+        return;
+      }
+      if (error['status_code'] !== 0) {
         console.error('Connection error:', error['message']);
+        ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
       } else {
-        console.log('The game is already over');
-        // TODO handle game over
+        ToastNotifications.addErrorNotification('The game is already over');
+        getRouter().redirect('/');
       }
     });
 
@@ -42,7 +50,8 @@ export class _GameSocketIO {
 
     this.#socketIO.on('fatal_error', async (data) => {
       console.error('Server fatal error: ', data['error_message']);
-      // TODO exit game
+      ToastNotifications.addErrorNotification(`Server fatal error: ${data['error_message']}`);
+      getRouter().redirect('/');
     });
 
     this.#socketIO.on('debug', (message) => {
@@ -125,10 +134,21 @@ export class _GameSocketIO {
       this.#engine.scene.addWinnerToMatch(
           newMatchJson['location'], winner, winnerIndex, newWinnerIndex,
       );
+      winner.resetPoints();
 
       this.#engine.scene.deleteMatch(finishedMatchLocation);
 
       this.#engine.scene.updateCamera();
+    });
+
+    this.#socketIO.on('player_scored_a_point', async (data) => {
+      while (!(this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
+
+      const playerLocation = new PlayerLocation(data['player_location']);
+      const match = playerLocation.getPlayerMatchFromScene(this.#engine.scene);
+      match.players[playerLocation.playerIndex].addPoint();
     });
 
     this.#socketIO.on('game_over', async (data) => {
@@ -141,6 +161,10 @@ export class _GameSocketIO {
     });
 
     this.#socketIO.connect();
+  }
+
+  disconnect() {
+    this.#socketIO.disconnect();
   }
 
   emit(event, data) {

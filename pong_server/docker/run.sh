@@ -22,5 +22,6 @@ cp -r /app/common/ /app/src/game_creator/common
 rm -rf /app/src/game_server/common
 cp -r /app/common/ /app/src/game_server/common
 
+
 # Run game_creator
 gunicorn -c /app/gunicorn.conf.py

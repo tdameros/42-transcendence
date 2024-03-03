@@ -3,8 +3,17 @@ import {notificationClient, userManagementClient} from '@utils/api';
 import {FriendsCache} from '@utils/cache';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {getRouter} from '@js/Router.js';
+import {ToastNotifications} from './ToastNotifications.js';
+import {Cookies} from '@js/Cookies.js';
 
 export class Notification extends Component {
+  static privacyPolicyMessage = `
+    We use cookies on our website to enhance your user experience.
+    By continuing to use our site, you consent to the use of these cookies in accordance with our privacy policy.
+
+    For more information on our use of cookies and how we protect your personal data, please refer to our <a class='text-primary text-decoration-none' onclick="window.router.navigate('/privacy-policy/')">privacy policy<a>.
+  `;
+
   constructor() {
     super();
     this.notifications = [];
@@ -32,6 +41,11 @@ export class Notification extends Component {
     this.toastNotifications = this.querySelector(
         'toast-notifications-component',
     );
+    if (!Cookies.get('policy')) {
+      ToastNotifications.addPolicyNotification(
+          Notification.privacyPolicyMessage,
+      );
+    }
   }
 
   async tryConnect() {

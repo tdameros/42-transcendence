@@ -26,4 +26,8 @@ export class PlayerLocation {
     }
     return this.getPlayerMatchFromScene(scene).players[this.#playerIndex];
   }
+
+  get playerIndex() {
+    return this.#playerIndex;
+  }
 }
