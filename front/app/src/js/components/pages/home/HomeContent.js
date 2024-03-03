@@ -4,8 +4,10 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {NavbarUtils} from '@utils/NavbarUtils.js';
 import {Theme} from '@js/Theme.js';
-import {userManagementClient} from '@utils/api';
+import {userManagementClient, pongServerClient} from '@utils/api';
 import {ToastNotifications} from '@components/notifications';
+import {getRouter} from '@js/Router.js';
+import {ErrorPage} from '@js/utils/ErrorPage.js';
 
 export class HomeContent extends Component {
   constructor() {
@@ -94,6 +96,9 @@ export class HomeContent extends Component {
     `);
   }
   async postRender() {
+    if (!await this.#searchIfGameExists()) {
+      return;
+    }
     this.container = document.querySelector('#container');
     if (!WebGL.isWebGLAvailable()) {
       ToastNotifications.addErrorNotification(
@@ -117,6 +122,31 @@ export class HomeContent extends Component {
     super.addComponentEventListener(document, Theme.event, this.themeEvent);
     this.generateText();
   }
+
+  async #searchIfGameExists() {
+    if (!userManagementClient.isAuth()) {
+      return true;
+    }
+    try {
+      this.innerHTML = this.renderLoader() + this.style();
+      const {response, body} = await pongServerClient.getMyGamePort();
+      if (response.ok) {
+        if (body.port) {
+          getRouter().redirect(`/game/${body.port}/`);
+          return false;
+        }
+        this.innerHTML = this.render() + this.style();
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (e) {
+      ErrorPage.loadNetworkError();
+      return false;
+    }
+  }
+
 
   resizeEvent(event) {
     this.renderer.setSize(
@@ -314,6 +344,16 @@ export class HomeContent extends Component {
         <div>
             <button class="btn btn-primary btn-lg action-button" onclick="window.router.navigate('/signin/')">Sign in</button>
         </div>
+    `);
+  }
+
+  renderLoader() {
+    return (`
+      <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - ${NavbarUtils.height}px)">
+          <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+      </div>
     `);
   }
 }
