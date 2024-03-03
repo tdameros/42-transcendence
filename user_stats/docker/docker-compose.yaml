@@ -53,12 +53,14 @@ services:
         build:
             context: postgres
             dockerfile: Dockerfile
-        env_file:
-            - path: ../src/.env
+        environment:
+            POSTGRES_DB: $USER_STATS_DB_NAME
+            POSTGRES_USER: $USER_STATS_DB_USER
+            POSTGRES_PASSWORD: $USER_STATS_DB_PASSWORD
         volumes:
             - user_stats_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "sh check_health.sh" ]
+            test: ["CMD-SHELL", "healthcheck.sh"]
             interval: 5s
             timeout: 5s
             retries: 60

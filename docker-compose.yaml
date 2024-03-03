@@ -117,6 +117,9 @@ services:
         extends:
             file: notification/docker/docker-compose.yaml
             service: notification
+        depends_on:
+            notification-db:
+                condition: service_healthy
     notification-db:
         extends:
             file: notification/docker/docker-compose.yaml
@@ -135,6 +138,8 @@ services:
             user-stats-nginx:
                 condition: service_healthy
             pong-server-nginx:
+                condition: service_healthy
+            notification:
                 condition: service_healthy
 
 
