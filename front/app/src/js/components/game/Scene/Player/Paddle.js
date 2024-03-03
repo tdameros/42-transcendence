@@ -103,10 +103,10 @@ export class Paddle {
 
     const xDirectionToLookAt = 1.;
     if (this.#paddleIsOnTheRight) {
-      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., -0.25);
+      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.25);
       this.#light.lookAt(-xDirectionToLookAt, 0., 0.);
     } else {
-      this.#light.position.set(this.#paddleSize.x * 0.5, 0., -0.25);
+      this.#light.position.set(this.#paddleSize.x * 0.5, 0., 0.25);
       this.#light.lookAt(xDirectionToLookAt, 0., 0.);
     }
     this.#threeJSGroup.add(this.#light);
