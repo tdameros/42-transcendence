@@ -9,32 +9,40 @@ export class Player {
   #paddle;
 
 
-  constructor(playerJson) {
+  constructor() {
+  }
+
+  async init(playerJson, index) {
     const position = playerJson['position'];
     this.#threeJSGroup.position.set(position['x'],
         position['y'],
         position['z']);
 
     this.#moveSpeed = playerJson['move_speed'];
-    this.#board = new _Board(playerJson['board']);
     this.#paddle = new Paddle(playerJson['paddle'],
         this.#threeJSGroup.position);
 
-    this.#threeJSGroup.add(this.#board.threeJSBoard);
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
+    this.#board = new _Board();
+    if (index) {
+      await this.#board.init(playerJson['board'], index, 3, 0xff0000);
+    } else {
+      await this.#board.init(playerJson['board'], index, 3, 0xff00);
+    }
+    this.#threeJSGroup.add(this.#board.threeJSBoard);
   }
 
   updateFrame(timeDelta, paddleBoundingBox) {
     this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
-    this.#board.updateFrame(timeDelta);
+    this.#board.updateFrame();
   }
 
   addPoint() {
-    // TODO: add point to the player
+    this.#board.addPoint();
   }
 
   resetPoints() {
-    // TODO: set player points to 0
+    this.#board.resetPoints();
   }
 
   get threeJSGroup() {

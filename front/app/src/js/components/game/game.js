@@ -6,6 +6,8 @@ import {ToastNotifications} from '@components/notifications';
 import {userManagementClient} from '@utils/api';
 
 import {Engine} from './Engine/Engine.js';
+import {Theme} from '@js/Theme.js';
+import TWEEN from '@tweenjs/tween.js';
 
 export class Game extends Component {
   static gameURL = `https://${window.location.hostname}`;
@@ -65,12 +67,22 @@ export class Game extends Component {
       const delta = clock.getDelta();
       engine.scene.updateFrame(delta);
 
+      TWEEN.update();
+      engine.threeJS.updateControls();
       engine.renderFrame();
     });
   }
 
   getGameURL(port) {
     return `${Game.gameURL}:${port}/`;
+  }
+
+  themeEvent(event) {
+    if (Theme.get() === 'light') {
+      this.engine.scene.setLightTheme();
+    } else {
+      this.engine.scene.setDarkTheme();
+    }
   }
 
   style() {
