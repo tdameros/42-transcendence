@@ -1,7 +1,7 @@
 import os
 
 import generate_pair_of_keys
-from dotenv import load_dotenv, dotenv_values, set_key
+from dotenv import load_dotenv, set_key
 
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
@@ -68,11 +68,11 @@ def generate_database_credentials(microservice: str, host: str, env_path: str):
     set_key('.env', f'{microservice.upper()}_DB_PASSWORD', password)
     set_key('.env', f'{microservice.upper()}_DB_HOST', host)
     set_key('.env', f'{microservice.upper()}_DB_PORT', port)
-    generate_key(f'POSTGRES_DB',  db, env_path)
-    generate_key(f'POSTGRES_USER', user, env_path)
-    generate_key(f'POSTGRES_PASSWORD', password, env_path)
-    generate_key(f'POSTGRES_HOST', host, env_path)
-    generate_key(f'POSTGRES_PORT', port, env_path)
+    generate_key('POSTGRES_DB',  db, env_path)
+    generate_key('POSTGRES_USER', user, env_path)
+    generate_key('POSTGRES_PASSWORD', password, env_path)
+    generate_key('POSTGRES_HOST', host, env_path)
+    generate_key('POSTGRES_PORT', port, env_path)
 
 
 # common
