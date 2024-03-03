@@ -44,7 +44,7 @@
 ## `/game_creator/remove_players_current_game/`
 
 <details>
- <summary><code>DELETE</code></summary>
+ <summary><code>POST</code></summary>
 
 ### Info
 > This should only be used by game_server

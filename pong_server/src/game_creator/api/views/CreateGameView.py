@@ -29,8 +29,7 @@ class CreateGameView(View):
 
             PlayerManager.add_players(players, port)
 
-            return JsonResponse({'port': port},
-                                status=201)
+            return JsonResponse({'port': port}, status=201)
 
         except JsonResponseException as json_response_exception:
             return json_response_exception.to_json_response()

@@ -100,6 +100,10 @@ services:
         extends:
             file: pong_server/docker/docker-compose.yaml
             service: pong-server
+    pong-server-cache:
+        extends:
+            file: pong_server/docker/docker-compose.yaml
+            service: pong-server-cache
     pong-server-nginx:
         extends:
             file: pong_server/docker/docker-compose.yaml

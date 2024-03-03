@@ -29,7 +29,7 @@ APPEND_SLASH = False
 SECRET_KEY = os.getenv('GAME_CREATOR_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -76,6 +76,24 @@ WSGI_APPLICATION = 'game_creator.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {}
+
+CACHE_TIMEOUT = 3600  # In seconds (1 hour)
+if DEBUG:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unix:/tmp/memcached.sock',
+            'TIMEOUT': CACHE_TIMEOUT,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': 'redis://pong-server-cache:6379/1',
+            'TIMEOUT': CACHE_TIMEOUT,
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

@@ -43,7 +43,7 @@ class PostGetPlayersGamePortViewTest(TestCaseNoDatabase):
         self.assertEqual(status, expected_status)
 
     def test_valid_request(self):
-        PlayerManager._users = {}
+        PlayerManager.clear()
         player_1_port = 4242
         player_2_port = 42322
         PlayerManager.add_players([1], player_1_port)

@@ -31,7 +31,7 @@ class GetMyGamePortViewTest(TestCaseNoDatabase):
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_request_player_in_game(self, mock_authenticate):
-        PlayerManager._users = {}
+        PlayerManager.clear()
         player_id = 1
         port = 4242
         PlayerManager.add_players([player_id], port)
@@ -42,7 +42,7 @@ class GetMyGamePortViewTest(TestCaseNoDatabase):
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_request_player_not_in_game(self, mock_authenticate):
-        PlayerManager._users = {}
+        PlayerManager.clear()
         payload = {'user_id': 1}
         mock_authenticate.return_value = (True, payload, None)
 

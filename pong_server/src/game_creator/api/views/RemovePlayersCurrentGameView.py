@@ -10,9 +10,9 @@ from common.src.jwt_managers import service_authentication
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(service_authentication(['DELETE']), name='dispatch')
+@method_decorator(service_authentication(['POST']), name='dispatch')
 class RemovePlayersCurrentGameView(View):
-    def delete(self, request):
+    def post(self, request):
         try:
             players: list[int] = get_player_list(request)
 
