@@ -11,7 +11,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from user.delete_inactive_users import remove_inactive_users, remove_old_pending_accounts
+from user.delete_inactive_users import (remove_inactive_users,
+                                        remove_old_pending_accounts)
 from user.models import User
 from user_management import settings
 from user_management.JWTManager import (UserAccessJWTManager,
@@ -744,14 +745,13 @@ class TestDeleteInactiveUsersView(TestCase):
                                                             password='Validpass42*',
                                                             emailVerified=False)
             fake_old_pending_accounts.date_joined = (
-                        timezone.now() - timedelta(days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION + 1))
+                    timezone.now() - timedelta(days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION + 1))
             fake_old_pending_accounts.save()
 
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
         self.assertEqual(User.objects.all().count(), 20)
         remove_old_pending_accounts()
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
-
 
 
 class TestSendUserInfosView(TestCase):
