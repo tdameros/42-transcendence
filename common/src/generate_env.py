@@ -1,7 +1,8 @@
 import os
 
-import generate_pair_of_keys
 from dotenv import load_dotenv
+
+import generate_pair_of_keys
 
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
@@ -46,6 +47,9 @@ for env_file in env_files:
 
 
 def generate_key(name, key, env_path):
+    if key is None:
+        raise ValueError(f'Key {name} is missing from the .env file.'
+                         f'\nCheck the .env_example file for more information.')
     with open(env_path, 'a') as f:
         f.write(f'{name}={key}\n')
 
