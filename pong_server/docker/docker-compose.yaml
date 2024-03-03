@@ -13,9 +13,6 @@ services:
             dockerfile: Dockerfile
         volumes:
             - ssl_certs:/etc/nginx/ssl
-        depends_on:
-            pong-server:
-                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
