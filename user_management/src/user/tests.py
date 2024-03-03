@@ -742,8 +742,9 @@ class TestDeleteInactiveUsersView(TestCase):
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
 
 
-@patch('common.src.internal_requests.InternalRequests.get')
 class TestSendUserInfosView(TestCase):
+
+    @patch('common.src.internal_requests.InternalRequests.get')
     def test_send_user_infos(self, mock_internal_requests_get):
         # mock handling
         mock_internal_requests_get.return_value.status_code = 200
@@ -772,7 +773,7 @@ class TestSendUserInfosView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestMe(TestCase):
+class TestMeView(TestCase):
 
     def test_me(self):
         Aurel1 = User.objects.create(username='Aurel1', email='a@a.fr', password='Validpass42*')

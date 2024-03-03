@@ -45,7 +45,6 @@ if DEBUG:
 else:
     USER_MANAGEMENT_IP = 'https://localhost:6002/'
 
-
 # FRONT_ACTIVE_ACCOUNT URL
 if DEBUG:
     FRONT_ACTIVE_ACCOUNT_URL = 'http://localhost:8080/account/active/'
@@ -76,24 +75,28 @@ ALLOWED_HOSTS = ['*']
 MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
 MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION = 1
 
+# account creation rules
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
 EMAIL_VERIFICATION_TOKEN_MAX_LENGTH = 100
+TLD_MAX_LENGTH = 15  # TLD stands for Top level domain ( .fr, .com ...)
 USERNAME_MAX_LENGTH = 20
 USERNAME_MIN_LENGTH = 2
 PASSWORD_MIN_LENGTH = 8
 PASSWORD_MAX_LENGTH = 100
+
 ELO_DEFAULT = 500
-TLD_MAX_LENGTH = 15
+MAX_USERNAME_SEARCH_RESULTS = 10
 FORGOT_PASSWORD_CODE_MAX_LENGTH = 6
 FORGOT_PASSWORD_CODE_EXPIRATION_MINUTES = 15
+
+# to send email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-MAX_USERNAME_SEARCH_RESULTS = 10
 
 # 2fa
 TOTP_SECRET_MAX_LENGTH = 32
@@ -120,9 +123,10 @@ APPEND_SLASH = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
 
 # SECURITY WARNING: keep the secret key used in production secret!
-error_message = f"tried to load {os.path.join(BASE_DIR, '.env')}"
 SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
 USER_MANAGEMENT_SECRET_KEY = os.getenv('USER_MANAGEMENT_SECRET_KEY')
+
+# Json Web Tokens
 USER_MANAGEMENT_FOLDER = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ACCESS_PRIVATE_KEY = open(f'{USER_MANAGEMENT_FOLDER}/src/private_access_jwt_key.pem').read()
 ACCESS_PUBLIC_KEY = common_settings.ACCESS_PUBLIC_KEY
