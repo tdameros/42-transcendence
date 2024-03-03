@@ -41,9 +41,6 @@ services:
             - ssl_certs:/app/ssl
             - common_code:/app/common
         command: /app/run.sh
-        depends_on:
-            pong-server-cache:
-                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
             interval: 5s
