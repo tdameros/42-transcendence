@@ -63,7 +63,7 @@ services:
         volumes:
             - user_management_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-            test: [ "CMD-SHELL", "sh check_health.sh" ]
+            test: ["CMD-SHELL", "healthcheck.sh"]
             interval: 5s
             timeout: 5s
             retries: 60
