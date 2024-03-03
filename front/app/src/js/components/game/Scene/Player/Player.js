@@ -30,11 +30,11 @@ export class Player {
 
   updateFrame(timeDelta, paddleBoundingBox) {
     this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
-    this.#board.updateFrame(timeDelta);
+    this.#board.updateFrame();
   }
 
   addPoint() {
-    this.#board.addPoint();
+    this.#board.addPoint(0x00ff00);
   }
 
   resetPoints() {

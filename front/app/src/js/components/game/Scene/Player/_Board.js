@@ -3,29 +3,33 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 export class _Board {
   #threeJSBoard;
-  #score = [];
-  #points = 0;
+  #pointElevation;
+  #points = [];
+  #delays = [];
+  #score = 0;
+  #side;
 
   constructor() {}
 
-  async init(boardJson, index, maxScore) {
+  async init(boardJson, side, maxScore) {
+    this.#side = side;
     const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
     boardSize.z = 1;
-    await this.initBoard(boardSize, index);
+    await this.initBoard(boardSize);
     await this.initWalls(boardSize);
-    this.initGoal(boardSize, wallWidth, index);
-    this.initScore(boardSize, wallWidth, index, maxScore);
-    this.initLight(boardSize, index);
+    this.initGoal(boardSize, wallWidth);
+    this.initScore(boardSize, wallWidth, maxScore);
+    this.initLight(boardSize);
     this.#threeJSBoard.castShadow = false;
     this.#threeJSBoard.receiveShadow = true;
   }
 
-  async initBoard(boardSize, index) {
+  async initBoard(boardSize) {
     const gltf = await this.loadGLTFModel('/assets/models/board.glb');
     const board = gltf.scene;
-    if (index === 1) {
+    if (this.#side === 1) {
       board.rotateZ(Math.PI);
     }
     const boundingBox = new THREE.Box3().setFromObject(board);
@@ -66,9 +70,9 @@ export class _Board {
     return wall;
   }
 
-  initLight(boardSize, index) {
+  initLight(boardSize) {
     let sign = 1;
-    if (index === 0) {
+    if (this.#side === 0) {
       sign = -1;
     }
     const light = new THREE.PointLight(0xffffff, 250);
@@ -84,24 +88,29 @@ export class _Board {
     }
   }
 
-  initScore(boardSize, wallWidth, index, maxScore) {
+  initScore(boardSize, wallWidth, maxScore) {
     let sign = -1;
-    if (index === 0) {
+    if (this.#side === 0) {
       sign = 1;
     }
-    const pointRadius = wallWidth / 3;
+    const pointRadius = wallWidth /1.5;
     const pointOffset = sign * pointRadius * 3;
     const pointStartPosition = new THREE.Vector3(
         sign * boardSize.x / 2 - sign * boardSize.x / 6,
         boardSize.y / 2 + wallWidth / 2,
-        boardSize.z,
+        boardSize.z + pointRadius * 2,
     );
+    this.#pointElevation = pointStartPosition.z;
 
     for (let i = 0; i < maxScore; i++) {
+      this.#delays.push(Math.random());
       const point = this.initScorePoint(pointRadius);
       point.position.copy(pointStartPosition);
       point.position.x -= (pointOffset * i);
-      this.#score.push(point);
+      point.rotation.x = this.#delays[i] * Math.PI;
+      point.rotation.y = this.#delays[i] * Math.PI;
+      point.rotation.z = this.#delays[i] * Math.PI;
+      this.#points.push(point);
       this.#threeJSBoard.add(point);
     }
   }
@@ -109,7 +118,8 @@ export class _Board {
   initScorePoint(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
       color: 0xf0f0f0,
-      metalness: 0.5,
+      metalness: 0.8,
+      roughness: 0.2,
     });
     material.flatShading = true;
     return new THREE.Mesh(
@@ -118,21 +128,23 @@ export class _Board {
     );
   }
 
-  addPoint(score, color) {
-    this.#score[this.#points].material.color.set(color);
-    this.#points++;
+  addPoint(color) {
+    this.#points[this.#score].material.color.set(color);
+
+    this.#score++;
+    console.log('Score:', this.#score);
   }
 
   resetPoints() {
-    this.#points = 0;
-    for (let i = 0; i < this.#score.length; i++) {
-      this.#score[i].material.color.set(0xf0f0f0);
+    this.#score = 0;
+    for (let i = 0; i < this.#points.length; i++) {
+      this.#points[i].material.color.set(0xf0f0f0);
     }
   }
 
-  initGoal(boardSize, wallWidth, index) {
+  initGoal(boardSize, wallWidth) {
     let sign = 1;
-    if (index === 0) {
+    if (this.#side === 0) {
       sign = -1;
     }
     const goal = new THREE.Mesh(
@@ -147,8 +159,18 @@ export class _Board {
     this.#threeJSBoard.add(goal);
   }
 
-  updateFrame(timeDelta) {
-    return;
+  updateFrame() {
+    const currentTime = Date.now();
+    const frequency = 300;
+    const amplitude = 0.3;
+    this.#points.forEach((point, index) => {
+      const delayedTime = currentTime - (frequency / this.#delays[index]);
+      const offset = Math.sin(delayedTime / frequency) * amplitude;
+      point.position.z = this.#pointElevation + offset;
+      point.rotation.x += Math.PI / frequency;
+      point.rotation.y += Math.PI / frequency;
+      point.rotation.z += Math.PI / frequency;
+    });
   }
 
   get threeJSBoard() {
