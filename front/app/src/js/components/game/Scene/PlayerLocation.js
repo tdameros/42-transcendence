@@ -30,4 +30,8 @@ export class PlayerLocation {
   get playerIndex() {
     return this.#playerIndex;
   }
+
+  get isLooser() {
+    return this.#isLooser;
+  }
 }

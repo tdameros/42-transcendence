@@ -157,7 +157,15 @@ export class _GameSocketIO {
       }
       console.log('game_over received');
 
-      // TODO: show game over screen
+      const winnerIndex = data['winner_index'];
+      this.#engine.scene.matches[0].players[winnerIndex].addPoint();
+      const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
+      if (!currentPlayerLocation.isLooser &&
+          currentPlayerLocation.playerIndex === winnerIndex) {
+        // TODO Handle the case when the player wins the game
+      } else {
+        // TODO Handle the case when the player looses the game
+      }
     });
 
     this.#socketIO.connect();
