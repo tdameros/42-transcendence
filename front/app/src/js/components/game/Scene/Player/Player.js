@@ -48,6 +48,10 @@ export class Player {
     this.#board.resetPoints();
   }
 
+  get score() {
+    return this.#board.score;
+  }
+
   get threeJSGroup() {
     return this.#threeJSGroup;
   }
