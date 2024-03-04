@@ -34,8 +34,8 @@ class SendUserInfosView(View):
             return JsonResponse(data={'error': f'Error while sending email: {e}'}, status=500)
 
     def _prepare_email(self, recipient_email):
-        subject = "Your user infos"
-        message = 'Here is your user infos in CSV files.'
+        subject = "Your user information"
+        message = 'Here are the data related to your account in CSV files.'
         from_email = settings.EMAIL_HOST_USER
         return EmailMessage(subject, message, from_email, [recipient_email])
 
