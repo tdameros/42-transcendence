@@ -66,6 +66,7 @@ export class Game extends Component {
       console.error('Port attribute is not set');
       return;
     }
+    this.addComponentEventListener(document, Theme.event, this.themeEvent);
     this.start_game(this.getGameURL(port));
   }
 
