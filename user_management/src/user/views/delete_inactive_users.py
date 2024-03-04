@@ -1,29 +1,29 @@
-from django.utils import timezone
 from django.http import HttpRequest, JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from common.src.jwt_managers import service_authentication
 from user.models import User
 from user.views.delete_account import delete_account
 from user_management import settings
 from user_management.JWTManager import UserAccessJWTManager
 
-from common.src.jwt_managers import service_authentication
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(service_authentication(['DELETE']), name='dispatch')
 class DeleteInactiveUsersView(View):
-        @staticmethod
-        def delete(request: HttpRequest) -> JsonResponse:
-            response = remove_inactive_users()
-            if response:
-                return JsonResponse({'errors': [response]}, status=500)
-            response = remove_old_pending_accounts()
-            if response:
-                return JsonResponse({'errors': [response]}, status=500)
-            return JsonResponse({'message': 'Inactive users deleted'}, status=200)
+    @staticmethod
+    def delete(request: HttpRequest) -> JsonResponse:
+        response = remove_inactive_users()
+        if response:
+            return JsonResponse({'errors': [response]}, status=500)
+        response = remove_old_pending_accounts()
+        if response:
+            return JsonResponse({'errors': [response]}, status=500)
+        return JsonResponse({'message': 'Inactive users deleted'}, status=200)
+
 
 def remove_inactive_users():
     try:

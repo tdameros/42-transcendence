@@ -3,13 +3,13 @@ from django.urls import path
 
 from user.views.avatar import AvatarView, GetAvatarView
 from user.views.delete_account import DeleteAccountView
+from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.forgot_password import (ForgotPasswordChangePasswordView,
                                         ForgotPasswordCheckCodeView,
                                         ForgotPasswordSendCodeView)
 from user.views.friends import (FriendsAcceptView, FriendsDeclineView,
                                 FriendsRequestView, FriendStatusView,
                                 FriendsView)
-from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.me import MeView
