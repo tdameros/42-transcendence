@@ -64,12 +64,13 @@ export class _GameSocketIO {
       }
       console.log('game scene received');
 
-      this.#engine.scene = new Scene;
-      await this.#engine.scene.init(
+      const scene = new Scene();
+      await scene.init(
           this.#engine,
           data['scene'],
           data['player_location'],
       );
+      this.#engine.scene = scene;
       this.#engine.scene.updateCamera();
       this.#engine.startListeningForKeyHooks();
     });
@@ -128,7 +129,7 @@ export class _GameSocketIO {
           .players[winnerIndex];
 
       const newMatchJson = data['new_match_json'];
-      this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
+      await this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
 
       const newWinnerIndex = finishedMatchLocation['match'] % 2;
       this.#engine.scene.addWinnerToMatch(
