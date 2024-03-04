@@ -9,6 +9,7 @@ from user.views.forgot_password import (ForgotPasswordChangePasswordView,
 from user.views.friends import (FriendsAcceptView, FriendsDeclineView,
                                 FriendsRequestView, FriendStatusView,
                                 FriendsView)
+from user.views.delete_inactive_users import DeleteInactiveUsersView
 from user.views.is_email_taken import IsEmailTakenView
 from user.views.is_username_taken import IsUsernameTakenView
 from user.views.me import MeView
@@ -48,6 +49,7 @@ urlpatterns = [
     path('friends/accept/', FriendsAcceptView.as_view(), name='friends-accept'),
     path('friends/decline/', FriendsDeclineView.as_view(), name='friends-decline'),
     path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
+    path('delete-inactive-users/', DeleteInactiveUsersView.as_view(), name='delete-inactive-users'),
     path('id-list/', UserIdListView.as_view(), name='user-id-list'),
     path('id/<int:user_id>/', UserIdView.as_view(), name='user-id'),
     path('verify-email/<str:user_id>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),

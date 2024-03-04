@@ -20,13 +20,6 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CRON_SCRIPT_PATH = os.path.join(BASE_DIR, 'commands')
-COMMANDS_LOG_PATH = os.path.join(CRON_SCRIPT_PATH, 'commands.log')
-
-CRONJOBS = [
-    ('0 0 * * *', 'myapp.commands.delete_inactive_users', f'>> {COMMANDS_LOG_PATH} 2>&1'),
-]
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
