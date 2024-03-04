@@ -11,4 +11,4 @@ response = InternalAuthRequests.delete(
 if not response.ok:
     logging.error(f'Error deleting inactive users: {response.text}')
 else:
-    logging.critical('Inactive users deleted')
+    logging.info('Inactive users deleted')
