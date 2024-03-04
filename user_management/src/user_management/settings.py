@@ -20,19 +20,6 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CRON_SCRIPT_PATH = os.path.join(BASE_DIR, 'commands')
-COMMANDS_LOG_PATH = os.path.join(CRON_SCRIPT_PATH, 'commands.log')
-
-CRONJOBS = [
-    ('0 0 * * *', 'myapp.commands.delete_inactive_users', f'>> {COMMANDS_LOG_PATH} 2>&1'),
-]
-
-MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
@@ -40,8 +27,6 @@ if os.getenv('DEBUG') == 'True':
     DEBUG = True
 else:
     DEBUG = False
-
-BASE_DOMAIN = common_settings.BASE_DOMAIN
 
 if DEBUG:
     FRONT_URL = "https://localhost:6002/"
@@ -51,7 +36,7 @@ else:
 if DEBUG:
     USER_MANAGEMENT_IP = 'http://localhost:8000/'
 else:
-    USER_MANAGEMENT_IP = f'https://{BASE_DOMAIN}:6002/'
+    USER_MANAGEMENT_IP = 'https://localhost:6002/'
 
 
 # FRONT_ACTIVE_ACCOUNT URL
@@ -81,6 +66,7 @@ else:
 ALLOWED_HOSTS = ['*']
 
 MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
+MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION = 1
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
 EMAIL_VERIFICATION_TOKEN_MAX_LENGTH = 100
