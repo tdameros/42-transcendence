@@ -38,7 +38,7 @@ class PostCreateGameTest(TestCaseNoDatabase):
                 raise Exception(f'Failed to generate jwt: {errors}')
 
         if reset_player_manager:
-            PlayerManager._users = {}
+            PlayerManager.clear()
 
         response = self.client.post(
             url,

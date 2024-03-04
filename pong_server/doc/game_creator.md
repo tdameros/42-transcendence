@@ -35,47 +35,16 @@
 > | `401`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ["Invalid token type. Token must be a <class 'bytes'>"]}                        |
 > | `409`       | `application/json` | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': list[int]} | {'errors': ['Some player(s) are already in a game'], 'players_already_in_a_game': [2, 56]} |
 > | `500`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['Error creating game server: reason']}                                         |
+> | `503`       | `application/json` | {'errors': list[str]}                                                                        | {'errors': ['No available ports']}                                                         |
 
 ----------------------------------------------------------------------------------------------------------------------------------------
-
-</details>
-
-## `/game_creator/create_private_game/`
-
-<details>
- <summary><code>POST</code></summary>
-
-### Request
-
-#### Header
-
-> | name            | type   | description       | requirement |
-> |-----------------|--------|-------------------|-------------|
-> | `Authorization` | String | User access token | Required    |
-
-#### Body
-
-> | name          | type | description | requirement |
-> |---------------|------|-------------|-------------|
-> | `opponent_id` | int  | Opponent ID | Required    |
-
-### Response
-
-#### Status code
-
-> | status code | content-type       | response              | example                                                             |
-> |-------------|--------------------|-----------------------|---------------------------------------------------------------------|
-> | `201`       | `application/json` | {'port': int}         | {'port': 60000}                                                     |
-> | `400`       | `application/json` | {'errors': list[str]} | {'errors': ['opponent field is missing']}                           |
-> | `401`       | `application/json` | {'errors': list[str]} | {'errors': ["Invalid token type. Token must be a <class 'bytes'>"]} |
-> | `500`       | `application/json` | {'errors': list[str]} | {'errors': ['Error creating game server: reason']}                  |
 
 </details>
 
 ## `/game_creator/remove_players_current_game/`
 
 <details>
- <summary><code>DELETE</code></summary>
+ <summary><code>POST</code></summary>
 
 ### Info
 > This should only be used by game_server

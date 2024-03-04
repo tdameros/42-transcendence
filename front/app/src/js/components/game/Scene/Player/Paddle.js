@@ -91,23 +91,22 @@ export class Paddle {
         new THREE.BoxGeometry(this.#paddleSize.x,
             this.#paddleSize.y,
             this.#paddleSize.z),
-        new THREE.MeshStandardMaterial({color: color,
-          emissive: color}));
-    this.#paddleObject.position.set(0., 0., 0.);
+        new THREE.MeshStandardMaterial({color: color}));
+    this.#paddleObject.position.set(0., 0., 0.25);
     this.#paddleObject.castShadow = true;
     this.#paddleObject.receiveShadow = false;
     this.#threeJSGroup.add(this.#paddleObject);
   }
 
   #addLightToGroup(color) {
-    this.#light = new THREE.RectAreaLight(color, 100., 1., 5.);
+    this.#light = new THREE.RectAreaLight(color, 10., 1., 5.);
 
-    const xDirectionToLookAt = 999999999999999.;
+    const xDirectionToLookAt = 1.;
     if (this.#paddleIsOnTheRight) {
-      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.);
+      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.25);
       this.#light.lookAt(-xDirectionToLookAt, 0., 0.);
     } else {
-      this.#light.position.set(this.#paddleSize.x * 0.5, 0., 0.);
+      this.#light.position.set(this.#paddleSize.x * 0.5, 0., 0.25);
       this.#light.lookAt(xDirectionToLookAt, 0., 0.);
     }
     this.#threeJSGroup.add(this.#light);

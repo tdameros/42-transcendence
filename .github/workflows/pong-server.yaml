@@ -60,6 +60,7 @@ jobs:
                   export PONG_GAME_SERVERS_MAX_PORT=42210
                   export GAME_SERVER_PATH=`pwd`/pong_server/src/game_server/
                   export PATH_TO_SSL_CERTS=`pwd`/ssl/certs/
+                  export DEBUG=True
 
                   cd pong_server/src/game_creator/
                   python3 manage.py test

@@ -4,8 +4,9 @@
     export PONG_GAME_SERVERS_MAX_PORT=42210
     export GAME_SERVER_PATH=~/git/transcendence/pong_server/src/game_server/
     export PATH_TO_SSL_CERTS=~/git/transcendence/ssl/certs/
+    export DEBUG=True
 
-    cd src/game_creator/ &&
+    cd src/game_creator/
     python3 manage.py test
 )
 exit_code=$?

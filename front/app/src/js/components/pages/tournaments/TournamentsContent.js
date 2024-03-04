@@ -1,7 +1,11 @@
 import {Component} from '@components';
 import {ErrorPage} from '@utils/ErrorPage.js';
 import {Cookies} from '@js/Cookies.js';
-import {tournamentClient, userManagementClient} from '@utils/api';
+import {
+  tournamentClient,
+  userManagementClient,
+  pongServerClient,
+} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {TournamentsList} from './TournamentsList.js';
 
@@ -27,6 +31,13 @@ export class TournamentsContent extends Component {
   }
 
   async postRender() {
+    this.pageId = this.getAttribute('pageId') || 1;
+    this.pageId = parseInt(this.pageId);
+
+    if (!await this.#searchIfGameExists()) {
+      return;
+    }
+
     this.tournamentsListComponent = document.querySelector(
         'tournaments-list-component',
     );
@@ -52,6 +63,25 @@ export class TournamentsContent extends Component {
     this.updateTournamentsList();
   }
 
+  async #searchIfGameExists() {
+    try {
+      const {response, body} = await pongServerClient.getMyGamePort();
+      if (response.ok) {
+        if (body.port) {
+          getRouter().redirect(`/game/${body.port}/`);
+          return false;
+        }
+        return true;
+      } else {
+        getRouter().redirect('/signin/');
+        return false;
+      }
+    } catch (e) {
+      ErrorPage.loadNetworkError();
+      return false;
+    }
+  }
+
   #privateCheckBoxHandler() {
     Cookies.add(TournamentsList.privateCheckBoxCookie,
         this.privateCheckBox.checked);
@@ -70,10 +100,12 @@ export class TournamentsContent extends Component {
     this.dispayFinishedTournaments = Cookies.get(
         TournamentsList.finishedCheckBoxCookie) === 'true';
     try {
-      const {response, body} = await tournamentClient.getTournaments(this.id,
+      const {response, body} = await tournamentClient.getTournaments(
+          this.pageId,
           10,
           this.displayPrivateTournaments,
-          this.dispayFinishedTournaments);
+          this.dispayFinishedTournaments,
+      );
       if (response.ok) {
         this.tournaments = body.tournaments;
         if (!await this.#addAdminUsernamesInTournaments(this.tournaments)) {

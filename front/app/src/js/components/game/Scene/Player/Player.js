@@ -9,24 +9,47 @@ export class Player {
   #paddle;
 
 
-  constructor(playerJson) {
+  constructor() {
+  }
+
+  async init(playerJson, index) {
     const position = playerJson['position'];
     this.#threeJSGroup.position.set(position['x'],
         position['y'],
         position['z']);
 
     this.#moveSpeed = playerJson['move_speed'];
-    this.#board = new _Board(playerJson['board']);
     this.#paddle = new Paddle(playerJson['paddle'],
         this.#threeJSGroup.position);
 
-    this.#threeJSGroup.add(this.#board.threeJSBoard);
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
+    this.#board = new _Board();
+    const pointsToWinMatch = 3;
+    if (index) {
+      await this.#board.init(
+          playerJson['board'], index, pointsToWinMatch, 0xff0000);
+    } else {
+      await this.#board.init(
+          playerJson['board'], index, pointsToWinMatch, 0xff00);
+    }
+    this.#threeJSGroup.add(this.#board.threeJSBoard);
   }
 
   updateFrame(timeDelta, paddleBoundingBox) {
     this.#paddle.updateFrame(timeDelta, paddleBoundingBox);
-    this.#board.updateFrame(timeDelta);
+    this.#board.updateFrame();
+  }
+
+  addPoint() {
+    this.#board.addPoint();
+  }
+
+  resetPoints() {
+    this.#board.resetPoints();
+  }
+
+  get score() {
+    return this.#board.score;
   }
 
   get threeJSGroup() {

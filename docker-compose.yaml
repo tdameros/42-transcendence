@@ -8,6 +8,21 @@ services:
         extends:
             file: front/docker/docker-compose.yaml
             service: front-nginx
+        depends_on:
+            notification:
+                condition: service_healthy
+            tournament-nginx:
+                condition: service_healthy
+            user-management-nginx:
+                condition: service_healthy
+            pong-server-nginx:
+                condition: service_healthy
+            user-stats-nginx:
+                condition: service_healthy
+            crontab:
+                condition: service_started
+            front-vite:
+                condition: service_completed_successfully
 
     front-vite:
         extends:
@@ -19,6 +34,9 @@ services:
         extends:
             file: user_management/docker/docker-compose.yaml
             service: user-management
+        depends_on:
+            user-management-db:
+                condition: service_healthy
     user-management-db:
         extends:
             file: user_management/docker/docker-compose.yaml
@@ -27,12 +45,18 @@ services:
         extends:
             file: user_management/docker/docker-compose.yaml
             service: user-management-nginx
+        depends_on:
+            user-management:
+                condition: service_healthy
 
     #User stats
     user-stats:
         extends:
             file: user_stats/docker/docker-compose.yaml
             service: user-stats
+        depends_on:
+            user-stats-db:
+                condition: service_healthy
     user-stats-db:
         extends:
             file: user_stats/docker/docker-compose.yaml
@@ -41,6 +65,9 @@ services:
         extends:
             file: user_stats/docker/docker-compose.yaml
             service: user-stats-nginx
+        depends_on:
+            user-stats:
+                condition: service_healthy
 
     # Matchmaking
     matchmaking:
@@ -53,6 +80,9 @@ services:
         extends:
             file: tournament/docker/docker-compose.yaml
             service: tournament
+        depends_on:
+            tournament-db:
+                condition: service_healthy
     tournament-db:
         extends:
             file: tournament/docker/docker-compose.yaml
@@ -61,22 +91,38 @@ services:
         extends:
             file: tournament/docker/docker-compose.yaml
             service: tournament-nginx
+        depends_on:
+            tournament:
+                condition: service_healthy
 
     # Server Side Pong
     pong-server:
         extends:
             file: pong_server/docker/docker-compose.yaml
             service: pong-server
+        depends_on:
+            pong-server-cache:
+                condition: service_healthy
+    pong-server-cache:
+        extends:
+            file: pong_server/docker/docker-compose.yaml
+            service: pong-server-cache
     pong-server-nginx:
         extends:
             file: pong_server/docker/docker-compose.yaml
             service: pong-server-nginx
+        depends_on:
+            pong-server:
+                condition: service_healthy
 
     # Notification
     notification:
         extends:
             file: notification/docker/docker-compose.yaml
             service: notification
+        depends_on:
+            notification-db:
+                condition: service_healthy
     notification-db:
         extends:
             file: notification/docker/docker-compose.yaml
@@ -87,6 +133,17 @@ services:
         extends:
             file: crontab/docker-compose.yaml
             service: crontab
+        depends_on:
+            tournament-nginx:
+                condition: service_healthy
+            user-management-nginx:
+                condition: service_healthy
+            user-stats-nginx:
+                condition: service_healthy
+            pong-server-nginx:
+                condition: service_healthy
+            notification:
+                condition: service_healthy
 
 
 networks:

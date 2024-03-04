@@ -69,3 +69,9 @@ class EventEmitter(object):
         await Server.emit('fatal_error', rooms.ALL_PLAYERS, {
             'error_message': error,
         })
+
+    @staticmethod
+    async def player_scored_a_point(player_location: PlayerLocation):
+        await Server.emit('player_scored_a_point', rooms.ALL_PLAYERS, {
+            'player_location': player_location.to_json()
+        })

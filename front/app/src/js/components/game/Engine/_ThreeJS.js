@@ -1,21 +1,41 @@
 import * as THREE from 'three';
 import {RectAreaLightUniformsLib} from 'three/addons';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class _ThreeJS {
   #renderer;
   #camera;
   #engine;
+  #controls;
 
   constructor(engine) {
     this.#engine = engine;
     this.#initRenderer();
     this.#initCamera();
+    this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
+    this.#controls.target.set(30, 25, 0);
     this.#engine.component.addComponentEventListener(window, 'resize',
         () => {
           this.#onWindowResize();
           this.#engine.resizeHandler();
         }, this,
     );
+  }
+
+  get width() {
+    const style = window.getComputedStyle(this.#engine.component.container);
+    const marginLeft = style.getPropertyValue('margin-left');
+    const marginRight = style.getPropertyValue('margin-right');
+    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
+  }
+
+  get height() {
+    const style = window.getComputedStyle(this.#engine.component.container);
+    const marginTop = style.getPropertyValue('margin-top');
+    const marginBottom = style.getPropertyValue('margin-bottom');
+    return window.innerHeight - NavbarUtils.height -
+      parseInt(marginTop) - parseInt(marginBottom) - 2;
   }
 
   #initRenderer() {
@@ -25,26 +45,28 @@ export class _ThreeJS {
     this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.#renderer.setPixelRatio(window.devicePixelRatio);
-    this.#renderer.setSize(window.innerWidth, window.innerHeight);
+    this.#renderer.setSize(this.width, this.height);
 
-    this.#engine.component.appendChild(this.#renderer.domElement);
+    this.#renderer.domElement.classList.add('rounded');
+    this.#engine.component.container.appendChild(this.#renderer.domElement);
     RectAreaLightUniformsLib.init();
   }
 
   #initCamera() {
     this.#camera = new THREE.PerspectiveCamera(59,
-        window.innerWidth / window.innerHeight,
+        this.width / this.height,
         0.1,
         1000);
 
     this.#camera.position.set(0., 0., 70.);
     this.#camera.lookAt(0., 0., -1.);
+    this.#camera.up.set( 0, 0, 1 );
   }
 
   #onWindowResize() {
-    this.#renderer.setSize(window.innerWidth, window.innerHeight);
+    this.#renderer.setSize(this.width, this.height);
 
-    this.#camera.aspect = window.innerWidth / window.innerHeight;
+    this.#camera.aspect = this.width / this.height;
     this.#camera.updateProjectionMatrix();
   }
 
@@ -62,7 +84,7 @@ export class _ThreeJS {
 
   getCameraHorizontalFOVRadian() {
     const vFOV = this.getCameraVerticalFOVRadian();
-    const aspect = window.innerWidth / window.innerHeight;
+    const aspect = this.width / this.height;
     return 2. * Math.atan(Math.tan(vFOV / 2.) * aspect);
   }
 
@@ -72,6 +94,10 @@ export class _ThreeJS {
 
   stopAnimationLoop() {
     this.#renderer.setAnimationLoop(null);
+  }
+
+  updateControls() {
+    this.#controls.update();
   }
 
   renderFrame(scene) {

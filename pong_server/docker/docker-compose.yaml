@@ -13,9 +13,6 @@ services:
             dockerfile: Dockerfile
         volumes:
             - ssl_certs:/etc/nginx/ssl
-        depends_on:
-            pong-server:
-                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost/health/" ]
             interval: 5s
@@ -46,6 +43,17 @@ services:
         command: /app/run.sh
         healthcheck:
             test: [ "CMD-SHELL", "curl -kf https://localhost:8000/health/" ]
+            interval: 5s
+            timeout: 5s
+            retries: 60
+        restart: on-failure
+
+    pong-server-cache:
+        networks:
+            - pong_server
+        image: redis:7.2.4-bookworm
+        healthcheck:
+            test: [ "CMD-SHELL", "redis-cli", "--raw", "INCR", "ping" ]
             interval: 5s
             timeout: 5s
             retries: 60

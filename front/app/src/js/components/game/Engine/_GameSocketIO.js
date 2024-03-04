@@ -64,7 +64,8 @@ export class _GameSocketIO {
       }
       console.log('game scene received');
 
-      this.#engine.scene = new Scene(
+      this.#engine.scene = new Scene;
+      await this.#engine.scene.init(
           this.#engine,
           data['scene'],
           data['player_location'],
@@ -133,10 +134,21 @@ export class _GameSocketIO {
       this.#engine.scene.addWinnerToMatch(
           newMatchJson['location'], winner, winnerIndex, newWinnerIndex,
       );
+      winner.resetPoints();
 
       this.#engine.scene.deleteMatch(finishedMatchLocation);
 
       this.#engine.scene.updateCamera();
+    });
+
+    this.#socketIO.on('player_scored_a_point', async (data) => {
+      while (!(this.#engine.scene instanceof Scene)) {
+        await sleep(50);
+      }
+
+      const playerLocation = new PlayerLocation(data['player_location']);
+      const match = playerLocation.getPlayerMatchFromScene(this.#engine.scene);
+      match.players[playerLocation.playerIndex].addPoint();
     });
 
     this.#socketIO.on('game_over', async (data) => {
@@ -145,7 +157,31 @@ export class _GameSocketIO {
       }
       console.log('game_over received');
 
-      // TODO: show game over screen
+      const winnerIndex = data['winner_index'];
+      this.#engine.scene.matches[0].players[winnerIndex].addPoint();
+      const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
+      if (currentPlayerLocation.isLooser) {
+        // TODO Handle the case where the player lost before the final
+        this.#engine.component.loadEndGameCard('eliminated', 0, 0);
+      } else if (currentPlayerLocation.playerIndex === winnerIndex) {
+        // TODO Handle the case when the player wins the game
+        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
+            this.#engine.scene,
+        );
+        const winnerScore = finalMatch.players[winnerIndex].score;
+        const looserScore = finalMatch.players[1 - winnerIndex].score;
+        this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+      } else {
+        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
+            this.#engine.scene,
+        );
+        const winnerScore = finalMatch.players[winnerIndex].score;
+        const looserScore = finalMatch.players[1 - winnerIndex].score;
+        this.#engine.component.loadEndGameCard(
+            'loose', winnerScore, looserScore,
+        );
+        // TODO Handle the case when the player looses the game
+      }
     });
 
     this.#socketIO.connect();

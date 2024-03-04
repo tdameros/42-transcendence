@@ -40,6 +40,8 @@ import {
   LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,
@@ -112,6 +114,9 @@ customElements.define('local-content-component', LocalContent);
 customElements.define('privacy-policy-component', PrivacyPolicy);
 customElements.define('privacy-policy-content-component', PrivacyPolicyContent);
 
+customElements.define('ranking-component', Ranking);
+customElements.define('ranking-content-component', RankingContent);
+
 customElements.define('reset-password-component', ResetPassword);
 customElements.define('reset-password-code-component', ResetPasswordCode);
 customElements.define('reset-password-email-component', ResetPasswordEmail);
@@ -179,6 +184,8 @@ export {
   LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
+  Ranking,
+  RankingContent,
   ResetPassword,
   ResetPasswordCode,
   ResetPasswordEmail,

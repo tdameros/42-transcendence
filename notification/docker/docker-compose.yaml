@@ -6,6 +6,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        
+          
         command: sh -c "cp -r /app/notification /app/src &&
                         cp /app/notification/.env /app/src/.env &&
                         rm -rf /app/src/common &&
@@ -25,8 +27,6 @@ services:
           interval: 5s
           timeout: 5s
           retries: 60
-        depends_on:
-            - notification-db
         restart: on-failure
 
     notification-db:
@@ -35,12 +35,14 @@ services:
         build:
           context: postgres
           dockerfile: Dockerfile
-        env_file:
-          - path: ../src/.env
+        environment:
+            POSTGRES_DB: $NOTIFICATION_DB_NAME
+            POSTGRES_USER: $NOTIFICATION_DB_USER
+            POSTGRES_PASSWORD: $NOTIFICATION_DB_PASSWORD
         volumes:
             - notification_postgres_volume:/var/lib/postgresql/data
         healthcheck:
-          test: [ "CMD-SHELL", "sh check_health.sh" ]
+          test: ["CMD-SHELL", "healthcheck.sh"]
           interval: 5s
           timeout: 5s
           retries: 60
