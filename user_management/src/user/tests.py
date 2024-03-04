@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from user.delete_inactive_users import (remove_inactive_users,
+from user.views.delete_inactive_users import (remove_inactive_users,
                                         remove_old_pending_accounts)
 from user.models import User
 from user_management import settings
