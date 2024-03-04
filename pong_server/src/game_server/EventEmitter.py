@@ -11,10 +11,14 @@ from vector_to_dict import vector_to_dict
 
 class EventEmitter(object):
     @staticmethod
-    async def scene(sid: str, player_location: PlayerLocation, scene: dict):
+    async def scene(sid: str,
+                    player_location: PlayerLocation,
+                    scene: dict,
+                    game_has_started: bool):
         await Server.emit('scene', sid, {
             'scene': scene,
-            'player_location': player_location.to_json()
+            'player_location': player_location.to_json(),
+            'game_has_started': game_has_started,
         })
 
     @staticmethod

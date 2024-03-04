@@ -15,6 +15,7 @@ class EventHandler(object):
     def init():
         Server.sio.on('connect')(EventHandler._connect)
         Server.sio.on('disconnect')(EventHandler._disconnect)
+        Server.sio.on('player_is_ready')(EventHandler._player_is_ready)
         Server.sio.on('update_paddle')(EventHandler._update_paddle)
 
     @staticmethod
@@ -30,10 +31,10 @@ class EventHandler(object):
                 await Server.sio.disconnect(previous_sid)
 
             await ClientManager.add_newly_connected_user(user_id, sid)
-            if GameManager.has_game_started():
-                await EventEmitter.scene(sid,
-                                         GameManager.get_player(user_id).get_location(),
-                                         GameManager.get_scene())
+            await EventEmitter.scene(sid,
+                                     GameManager.get_player(user_id).get_location(),
+                                     GameManager.get_scene(),
+                                     GameManager.has_game_started())
         except ConnectError as e:
             logging.warning(f'{sid} failed to connect: {e.MESSAGE} (status {e.STATUS_CODE})')
             raise e.to_socket_io_exception()
@@ -59,6 +60,10 @@ class EventHandler(object):
     @staticmethod
     async def _disconnect(sid: str):
         await ClientManager.remove_disconnected_user(sid)
+
+    @staticmethod
+    async def _player_is_ready(sid: str, _data):
+        ClientManager.add_ready_player(ClientManager.get_user_id(sid))
 
     @staticmethod
     async def _update_paddle(sid: str, player_data):

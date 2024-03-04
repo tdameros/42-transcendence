@@ -86,6 +86,7 @@
   >>         },
   >>         'player_index': int
   >>     }
+  >>     'game_has_started': bool,
   >> }
   >> ```
   >

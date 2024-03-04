@@ -79,17 +79,10 @@ class GameManager(object):
 
     @staticmethod
     async def start_game():
+        GameManager._has_game_started = True
         for match in GameManager._matches:
             if match.get_player(0) is not None and match.get_player(1) is not None:
                 await match.start_match()
-
-        scene = GameManager.get_scene()
-        for client_id in ClientManager.CLIENTS_IDS:
-            client_sid = ClientManager.get_user_sid(client_id)
-            player_location = GameManager._player_map[client_id].get_location()
-            if client_sid is not None:
-                await EventEmitter.scene(client_sid, player_location, scene)
-        GameManager._has_game_started = True
 
         await GameManager.game_loop()
 

@@ -12,6 +12,7 @@ export class _GameSocketIO {
   #engine;
   #socketIO;
   #isConnected = false;
+  #gameHasStarted = false;
 
   constructor(engine) {
     this.#engine = engine;
@@ -72,7 +73,14 @@ export class _GameSocketIO {
       );
       this.#engine.scene = scene;
       this.#engine.scene.updateCamera();
-      this.#engine.startListeningForKeyHooks();
+      this.#gameHasStarted = data['game_has_started'];
+      if (this.#gameHasStarted) {
+        this.#engine.startListeningForKeyHooks();
+      } else {
+        this.emit('player_is_ready', {});
+        console.log('waiting for other players'); // TODO remove me
+        // TODO display waiting for other players message
+      }
     });
 
     this.#socketIO.on('update_paddle', async (data) => {
@@ -92,6 +100,13 @@ export class _GameSocketIO {
         await sleep(50);
       }
       console.log('prepare_ball_for_match received');
+
+      if (!this.#gameHasStarted) {
+        this.#gameHasStarted = true;
+        this.#engine.startListeningForKeyHooks();
+        console.log('Game is starting'); // TODO remove me
+        // TODO remove waiting for other players message
+      }
 
       const match = this.#engine.scene
           .getMatchFromLocation(data['match_location']);
