@@ -15,12 +15,37 @@ export class _ThreeJS {
     this.#initCamera();
     this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
     this.#controls.target.set(30, 25, 0);
+    this.#checkOrientation();
     this.#engine.component.addComponentEventListener(window, 'resize',
         () => {
+          this.#checkOrientation();
           this.#onWindowResize();
           this.#engine.resizeHandler();
         }, this,
     );
+  }
+
+  #checkOrientation() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    try {
+      if (screenHeight > screenWidth) {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape');
+        } else if (screen.lockOrientation) {
+          screen.lockOrientation('landscape');
+        }
+      } else {
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        } else if (screen.unlockOrientation) {
+          screen.unlockOrientation();
+        }
+      }
+    } catch (error) {
+      ;
+    }
   }
 
   get width() {

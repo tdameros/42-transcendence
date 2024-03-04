@@ -3,6 +3,8 @@ export class _KeyHookHandler {
   #upKeyIsPressed = false;
   #downKeyIsPressed = false;
   #serverKnownMovement = 'none';
+  #upTouchStart = false;
+  #downTouchStart = false;
 
   constructor(engine) {
     this.#engine = engine;
@@ -10,12 +12,12 @@ export class _KeyHookHandler {
 
   startListeningForKeyHooks() {
     this.#engine.component.addComponentEventListener(
-        window, 'keydown', async () => {
+        window, 'keydown', async (event) => {
           await this.#onKeyPress(event);
         }, this,
     );
     this.#engine.component.addComponentEventListener(
-        window, 'keyup', async () => {
+        window, 'keyup', async (event) => {
           await this.#onKeyRelease(event);
         }, this,
     );
@@ -24,6 +26,48 @@ export class _KeyHookHandler {
           await this.#onFocusLoss();
         }, this,
     );
+    const canvas = this.#engine.component.querySelector('canvas');
+    this.#engine.component.addComponentEventListener(
+        canvas, 'touchstart', async (event) => {
+          await this.touchStart(event);
+        }, this,
+    );
+    this.#engine.component.addComponentEventListener(
+        canvas, 'touchend', async (event) => {
+          await this.touchEnd(event);
+        }, this,
+    );
+  }
+
+  async touchStart(event) {
+    const touch = event.touches[0];
+    if (screen.orientation.type.indexOf('landscape') !== -1) {
+      if (touch.clientX < window.innerWidth / 2) {
+        await this.#pressUpKey();
+        this.#upTouchStart = true;
+      } else {
+        await this.#pressDownKey();
+        this.#downTouchStart = true;
+      }
+    } else {
+      if (touch.clientY < window.innerHeight / 2) {
+        await this.#pressUpKey();
+        this.#upTouchStart = true;
+      } else {
+        await this.#pressDownKey();
+        this.#downTouchStart = true;
+      }
+    }
+  }
+
+  async touchEnd(event) {
+    if (this.#upTouchStart) {
+      await this.#releaseUpKey();
+      this.#upTouchStart = false;
+    } else if (this.#downTouchStart) {
+      await this.#releaseDownKey();
+      this.#downTouchStart = false;
+    }
   }
 
   async #onKeyPress(event) {
