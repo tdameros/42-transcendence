@@ -128,4 +128,8 @@ export class _ThreeJS {
   renderFrame(scene) {
     this.#renderer.render(scene, this.#camera);
   }
+
+  get controls() {
+    return this.#controls;
+  }
 }

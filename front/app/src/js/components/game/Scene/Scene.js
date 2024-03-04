@@ -85,6 +85,7 @@ export class Scene {
     this.#matchHalfHeight = sceneJson['match_half_height'];
     this.#matchesXOffset = sceneJson['matches_x_offset'];
     this.#matchesYOffset = sceneJson['matches_y_offset'];
+    this.#engine.threeJS.controls.target.set(30, 25, 0);
   }
 
   setLightTheme() {
