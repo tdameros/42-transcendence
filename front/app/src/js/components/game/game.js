@@ -135,6 +135,9 @@ export class Game extends Component {
     if (this.engine) {
       this.engine.disconnectFromServer();
     }
+    try {
+      this.engine.stopAnimationLoop();
+    } catch (error) {}
     super.removeAllComponentEventListeners();
   }
 
