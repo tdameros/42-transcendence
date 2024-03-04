@@ -157,7 +157,31 @@ export class _GameSocketIO {
       }
       console.log('game_over received');
 
-      // TODO: show game over screen
+      const winnerIndex = data['winner_index'];
+      this.#engine.scene.matches[0].players[winnerIndex].addPoint();
+      const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
+      if (currentPlayerLocation.isLooser) {
+        // TODO Handle the case where the player lost before the final
+        this.#engine.component.loadEndGameCard('eliminated', 0, 0);
+      } else if (currentPlayerLocation.playerIndex === winnerIndex) {
+        // TODO Handle the case when the player wins the game
+        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
+            this.#engine.scene,
+        );
+        const winnerScore = finalMatch.players[winnerIndex].score;
+        const looserScore = finalMatch.players[1 - winnerIndex].score;
+        this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+      } else {
+        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
+            this.#engine.scene,
+        );
+        const winnerScore = finalMatch.players[winnerIndex].score;
+        const looserScore = finalMatch.players[1 - winnerIndex].score;
+        this.#engine.component.loadEndGameCard(
+            'loose', winnerScore, looserScore,
+        );
+        // TODO Handle the case when the player looses the game
+      }
     });
 
     this.#socketIO.connect();

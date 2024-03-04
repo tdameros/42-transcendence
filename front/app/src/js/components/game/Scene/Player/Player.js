@@ -24,10 +24,13 @@ export class Player {
 
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     this.#board = new _Board();
+    const pointsToWinMatch = 3;
     if (index) {
-      await this.#board.init(playerJson['board'], index, 3, 0xff0000);
+      await this.#board.init(
+          playerJson['board'], index, pointsToWinMatch, 0xff0000);
     } else {
-      await this.#board.init(playerJson['board'], index, 3, 0xff00);
+      await this.#board.init(
+          playerJson['board'], index, pointsToWinMatch, 0xff00);
     }
     this.#threeJSGroup.add(this.#board.threeJSBoard);
   }
@@ -43,6 +46,10 @@ export class Player {
 
   resetPoints() {
     this.#board.resetPoints();
+  }
+
+  get score() {
+    return this.#board.score;
   }
 
   get threeJSGroup() {

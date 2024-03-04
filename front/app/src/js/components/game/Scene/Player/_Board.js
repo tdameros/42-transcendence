@@ -168,6 +168,10 @@ export class _Board {
     }
   }
 
+  get score() {
+    return this.#score;
+  }
+
   initGoal(boardSize, wallWidth) {
     let sign = 1;
     if (this.#side === 0) {

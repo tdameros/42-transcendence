@@ -263,6 +263,10 @@ export class Scene {
     return this.#matches;
   }
 
+  get currentPlayerLocation() {
+    return this.#currentPlayerLocation;
+  }
+
   get threeJSScene() {
     return this.#threeJSScene;
   }
