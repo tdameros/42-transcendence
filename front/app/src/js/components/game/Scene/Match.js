@@ -26,8 +26,8 @@ export class Match {
 
     if (shouldCreatePlayers === true) {
       const playersJson = matchJson['players'];
-      this.#createPlayer(playersJson[0], 0, points[0]);
-      this.#createPlayer(playersJson[1], 1, points[1]);
+      await this.#createPlayer(playersJson[0], 0, points[0]);
+      await this.#createPlayer(playersJson[1], 1, points[1]);
     }
 
     this.#threeJSGroup.add(this.#ball.threeJSGroup);
@@ -75,12 +75,12 @@ export class Match {
     return this.#threeJSGroup.position;
   }
 
-  #createPlayer(playerJson, index, points) {
+  async #createPlayer(playerJson, index, points) {
     if (playerJson === null) {
       return;
     }
     const newPlayer = new Player();
-    newPlayer.init(playerJson, index);
+    await newPlayer.init(playerJson, index);
     for (let i = 0; i < points; i++) {
       newPlayer.addPoint();
     }
