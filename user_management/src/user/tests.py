@@ -12,6 +12,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from user.models import User
+from user.views.delete_inactive_users import (remove_inactive_users,
+                                              remove_old_pending_accounts)
 from user_management import settings
 from user_management.JWTManager import (UserAccessJWTManager,
                                         UserRefreshJWTManager)
@@ -723,11 +725,8 @@ class TestEmailVerified(TestCase):
 
 
 class TestDeleteInactiveUsersView(TestCase):
-    @patch('common.src.internal_requests.InternalRequests.delete')
-    @patch('common.src.internal_requests.InternalRequests.post')
-    def test_delete_inactive_users(self, mock_internal_requests_delete, mock_internal_requests_post):
-        mock_internal_requests_delete.return_value.status_code = 200
-        mock_internal_requests_post.return_value.status_code = 200
+
+    def test_delete_inactive_users(self):
         for i in range(0, 20):
             fake_inactive_account = User.objects.create(username=f'InactiveAccount{i}',
                                                         email=f'InactiveAccount{i}@42.fr',
@@ -735,15 +734,28 @@ class TestDeleteInactiveUsersView(TestCase):
             fake_inactive_account.last_activity = (timezone.now() -
                                                    timedelta(days=settings.MAX_INACTIVITY_DAYS_BEFORE_DELETION + 1))
             fake_inactive_account.save()
+        self.assertEqual(User.objects.filter(account_deleted=False).count(), 20)
+        self.assertEqual(User.objects.all().count(), 20)
+        remove_inactive_users()
+        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
 
-        url = reverse('delete-inactive-users')
-        response = self.client.post(url, headers={'Authorization': f'{settings.USER_MANAGEMENT_SECRET_KEY}'})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
+        for i in range(0, 20):
+            fake_old_pending_accounts = User.objects.create(username=f'PendingAccount{i}',
+                                                            email=f'PendingAccount{i}@42.fr',
+                                                            password='Validpass42*',
+                                                            emailVerified=False)
+            fake_old_pending_accounts.date_joined = (
+                    timezone.now() - timedelta(days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION + 1))
+            fake_old_pending_accounts.save()
+
+        self.assertEqual(User.objects.filter(account_deleted=False).count(), 40)
+        remove_old_pending_accounts()
+        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
 
 
-@patch('common.src.internal_requests.InternalRequests.get')
 class TestSendUserInfosView(TestCase):
+
+    @patch('common.src.internal_requests.InternalRequests.get')
     def test_send_user_infos(self, mock_internal_requests_get):
         # mock handling
         mock_internal_requests_get.return_value.status_code = 200
@@ -772,7 +784,7 @@ class TestSendUserInfosView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestMe(TestCase):
+class TestMeView(TestCase):
 
     def test_me(self):
         Aurel1 = User.objects.create(username='Aurel1', email='a@a.fr', password='Validpass42*')

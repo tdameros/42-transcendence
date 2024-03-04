@@ -41,6 +41,12 @@ export class HomeContent extends Component {
           }
       }
       
+      @media (max-height: 400px) {
+           #text {
+        font-size: 10px;
+        }
+      }
+      
       @media only screen and (max-aspect-ratio: 1/1) {
           #text {
               top: 10%;
