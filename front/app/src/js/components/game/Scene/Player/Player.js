@@ -12,7 +12,7 @@ export class Player {
   constructor() {
   }
 
-  async init(playerJson, index) {
+  async init(playerJson, index, pointsToWinMatch) {
     const position = playerJson['position'];
     this.#threeJSGroup.position.set(position['x'],
         position['y'],
@@ -24,7 +24,6 @@ export class Player {
 
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     this.#board = new _Board();
-    const pointsToWinMatch = 3;
     if (index) {
       await this.#board.init(
           playerJson['board'], index, pointsToWinMatch, 0xff0000);

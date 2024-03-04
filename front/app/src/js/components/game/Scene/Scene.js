@@ -27,16 +27,18 @@ export class Scene {
   #matchesYOffset;
   #sky;
   #sun;
+  #pointsToWinMatch;
 
   constructor() {}
 
   async init(engine, sceneJson, playerLocationJson) {
     this.#engine = engine;
 
+    this.#pointsToWinMatch = sceneJson['points_to_win_match'];
     const matchesJson = sceneJson['matches'];
     for (const matchJson of matchesJson) {
       const newMatch = new Match();
-      await newMatch.init(matchJson, true);
+      await newMatch.init(matchJson, true, this.#pointsToWinMatch);
       this.#matches.push(newMatch);
       this.#addMatchToMatchMap(newMatch, matchJson['location']);
       this.#threeJSScene.add(newMatch.threeJSGroup);
@@ -254,7 +256,7 @@ export class Scene {
     }
 
     match = new Match();
-    await match.init(matchJson, false);
+    await match.init(matchJson, false, this.#pointsToWinMatch);
     this.#matches.push(match);
     this.#matches_map[key] = match;
     this.#threeJSScene.add(match.threeJSGroup);

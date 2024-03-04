@@ -74,6 +74,7 @@ class GameManager(object):
             'match_half_height': settings.MATCH_SIZE[1] * 0.5,
             'matches_x_offset': settings.MATCHES_X_OFFSET,
             'matches_y_offset': settings.MATCHES_Y_OFFSET,
+            'points_to_win_match': settings.POINTS_TO_WIN_MATCH,
         }
 
     @staticmethod
