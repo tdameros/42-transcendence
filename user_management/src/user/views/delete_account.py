@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpRequest, JsonResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -17,7 +18,22 @@ def anonymize_user(user):
     user.username = f'Deleted User {generate_random_string(7)}'
     user.email = f'deleted_user_{generate_random_string(10)}@deleted'
     user.password = generate_random_string(20)
+    if user.avatar:
+        user.avatar.delete()
     user.avatar = None
+    user.emailVerified = False
+    user.emailVerificationToken = None
+    user.emailVerificationTokenExpiration = None
+    user.forgotPasswordCode = None
+    user.forgotPasswordCodeExpiration = None
+    user.has_2fa = False
+    user.totp_secret = None
+    user.totp_config_url = None
+    user.account_deleted = True
+    user.last_login = None
+    user.last_activity = timezone.now()
+    user.date_joined = timezone.now()
+
     UserOAuth.objects.filter(user_id=user.id).delete()
     user.save()
 

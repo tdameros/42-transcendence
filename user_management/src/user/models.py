@@ -41,6 +41,11 @@ class User(models.Model):
 
     def update_latest_login(self):
         self.last_login = datetime.now(timezone.utc)
+        self.last_activity = datetime.now(timezone.utc)
+        self.save()
+
+    def update_latest_activity(self):
+        self.last_activity = datetime.now(timezone.utc)
         self.save()
 
     class Meta:

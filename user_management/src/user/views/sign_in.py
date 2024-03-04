@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.hashers import check_password
+from django.db import transaction
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -14,6 +15,12 @@ def return_refresh_token(user):
     success, refresh_token, errors = UserRefreshJWTManager.generate_jwt(user.id)
     if success is False:
         return JsonResponse(data={'errors while creating jwt': errors}, status=500)
+    with transaction.atomic():
+        try:
+            user.update_latest_activity()
+        except Exception as e:
+            return JsonResponse(data={'errors': [f'An error occurred while updating the last login date : {e}']},
+                                status=500)
     return JsonResponse(data={'refresh_token': refresh_token}, status=200)
 
 
