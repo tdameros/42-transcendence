@@ -23,14 +23,21 @@ class ClientManager(object):
     #             dict[sid, user_id]
     _user_id_map: dict[str, int] = {}
 
+    _ready_players: set[int] = set()
+
     @staticmethod
     def init(clients_ids: list[int]):
         ClientManager.CLIENTS_IDS = clients_ids
         ClientManager._clients_registered_in_game_creator = clients_ids.copy()
 
     @staticmethod
-    def have_all_players_joined():
-        return len(ClientManager._sid_map) == len(ClientManager.CLIENTS_IDS)
+    def are_all_players_ready():
+        return len(ClientManager._ready_players) == len(ClientManager.CLIENTS_IDS)
+
+    @staticmethod
+    def add_ready_player(user_id: int):
+        if user_id not in ClientManager._ready_players:
+            ClientManager._ready_players.add(user_id)
 
     @staticmethod
     def get_user_sid(user_id: int) -> Optional[str]:
@@ -48,10 +55,14 @@ class ClientManager(object):
 
     @staticmethod
     async def remove_disconnected_user(sid: str):
-        user_id = ClientManager._user_id_map[sid]
-        del ClientManager._sid_map[user_id]
-        del ClientManager._user_id_map[sid]
-        await Server.sio.leave_room(sid, rooms.ALL_PLAYERS)
+        try:
+            user_id = ClientManager._user_id_map[sid]
+            del ClientManager._sid_map[user_id]
+            del ClientManager._user_id_map[sid]
+            ClientManager._ready_players.remove(user_id)
+            await Server.sio.leave_room(sid, rooms.ALL_PLAYERS)
+        except KeyError:
+            pass
 
     @staticmethod
     async def disconnect_all_users():

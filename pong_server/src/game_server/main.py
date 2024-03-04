@@ -4,6 +4,7 @@ import logging
 import os
 import ssl
 import sys
+import time
 from typing import Optional
 
 from ClientManager import ClientManager
@@ -16,9 +17,11 @@ from shared_code.setup_logging import setup_logging
 
 async def background_task():
     try:
-        while not ClientManager.have_all_players_joined():
-            # TODO Add a time out and make the players that don't join forfeit
-            #      their games
+        start_time: float = time.time()
+        timeout: int = 120  # seconds (2 minutes)
+        while not ClientManager.are_all_players_ready():
+            if time.time() - start_time > timeout:
+                break
             await Server.sio.sleep(.3)
 
         await GameManager.start_game()  # Blocks till the game is over

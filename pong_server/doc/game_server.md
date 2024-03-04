@@ -19,6 +19,9 @@
   >> The connection is refused and an error message is sent to be received by
   >> the connect_error event on the client
 
+- ### `player_is_ready`:
+  > Must be sent once the scene is loaded by the client
+
 - ### `update_player`:
   >> Argument:
   >> ```

@@ -27,16 +27,18 @@ export class Scene {
   #matchesYOffset;
   #sky;
   #sun;
+  #pointsToWinMatch;
 
   constructor() {}
 
   async init(engine, sceneJson, playerLocationJson) {
     this.#engine = engine;
 
+    this.#pointsToWinMatch = sceneJson['points_to_win_match'];
     const matchesJson = sceneJson['matches'];
     for (const matchJson of matchesJson) {
       const newMatch = new Match();
-      await newMatch.init(matchJson, true);
+      await newMatch.init(matchJson, true, this.#pointsToWinMatch);
       this.#matches.push(newMatch);
       this.#addMatchToMatchMap(newMatch, matchJson['location']);
       this.#threeJSScene.add(newMatch.threeJSGroup);
@@ -83,6 +85,7 @@ export class Scene {
     this.#matchHalfHeight = sceneJson['match_half_height'];
     this.#matchesXOffset = sceneJson['matches_x_offset'];
     this.#matchesYOffset = sceneJson['matches_y_offset'];
+    this.#engine.threeJS.controls.target.set(30, 25, 0);
   }
 
   setLightTheme() {
@@ -122,6 +125,7 @@ export class Scene {
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
+      this.#engine.component.loadEndGameCard('eliminated', 0, 0);
     }
     match.removePlayer(looserIndex);
 
@@ -253,7 +257,7 @@ export class Scene {
     }
 
     match = new Match();
-    await match.init(matchJson, false);
+    await match.init(matchJson, false, this.#pointsToWinMatch);
     this.#matches.push(match);
     this.#matches_map[key] = match;
     this.#threeJSScene.add(match.threeJSGroup);

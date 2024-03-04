@@ -15,37 +15,12 @@ export class _ThreeJS {
     this.#initCamera();
     this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
     this.#controls.target.set(30, 25, 0);
-    this.#checkOrientation();
     this.#engine.component.addComponentEventListener(window, 'resize',
         () => {
-          this.#checkOrientation();
           this.#onWindowResize();
           this.#engine.resizeHandler();
         }, this,
     );
-  }
-
-  #checkOrientation() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    try {
-      if (screenHeight > screenWidth) {
-        if (screen.orientation && screen.orientation.lock) {
-          screen.orientation.lock('landscape');
-        } else if (screen.lockOrientation) {
-          screen.lockOrientation('landscape');
-        }
-      } else {
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        } else if (screen.unlockOrientation) {
-          screen.unlockOrientation();
-        }
-      }
-    } catch (error) {
-      ;
-    }
   }
 
   get width() {
@@ -64,12 +39,12 @@ export class _ThreeJS {
   }
 
   #initRenderer() {
-    this.#renderer = new THREE.WebGLRenderer({antialias: true});
+    this.#renderer = new THREE.WebGLRenderer({antialias: false});
 
     this.#renderer.shadowMap.enabled = true;
     this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this.#renderer.setPixelRatio(window.devicePixelRatio);
+    this.#renderer.setPixelRatio(window.devicePixelRatio * 0.5);
     this.#renderer.setSize(this.width, this.height);
 
     this.#renderer.domElement.classList.add('rounded');
@@ -127,5 +102,9 @@ export class _ThreeJS {
 
   renderFrame(scene) {
     this.#renderer.render(scene, this.#camera);
+  }
+
+  get controls() {
+    return this.#controls;
   }
 }

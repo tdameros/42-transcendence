@@ -5,17 +5,22 @@ export class _Board {
   #threeJSBoard;
   #pointElevation;
   #points = [];
-  #pointsLight = [];
   #delays = [];
   #score = 0;
   #side;
   #pointColor;
+  #board;
+  #goal;
+
+  static #leftSideColor = 0x00ff00;
+  static #rightSideColor = 0xff0000;
 
   constructor() {}
 
-  async init(boardJson, side, maxScore, pointColor=0x00ff00) {
+  async init(boardJson, side, maxScore) {
     this.#side = side;
-    this.#pointColor = pointColor;
+    this.#pointColor = this.#side ?
+        _Board.#rightSideColor : _Board.#leftSideColor;
     const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
@@ -31,20 +36,20 @@ export class _Board {
 
   async initBoard(boardSize) {
     const gltf = await this.loadGLTFModel('/assets/models/board.glb');
-    const board = gltf.scene;
+    this.#board = gltf.scene;
     if (this.#side === 1) {
-      board.rotateZ(Math.PI);
+      this.#board.rotateZ(Math.PI);
     }
-    const boundingBox = new THREE.Box3().setFromObject(board);
+    const boundingBox = new THREE.Box3().setFromObject(this.#board);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    board.position.set(0., 0., 0.);
-    board.scale.set(
+    this.#board.position.set(0., 0., 0.);
+    this.#board.scale.set(
         boardSize.x / size.x,
         boardSize.y / size.y,
         boardSize.z / size.z,
     );
-    this.#threeJSBoard.add(board);
+    this.#threeJSBoard.add(this.#board);
   }
 
   async initWalls(boardSize) {
@@ -74,36 +79,9 @@ export class _Board {
   }
 
   initLight(boardSize) {
-    let sign = 1;
-    if (this.#side === 0) {
-      sign = -1;
-    }
     const light = new THREE.PointLight(0xffffff, 250);
-    light.position.set(
-        sign * boardSize['x'] / 2 + sign * 5,
-        boardSize['y'] / 2 + 5, 10,
-    );
+    light.position.set(0, 0, 10);
     this.#threeJSBoard.add(light.clone());
-    light.position.set(
-        sign * boardSize['x'] / 2 + sign * 5,
-        -boardSize['y'] / 2 - 5,
-        10,
-    );
-    this.#threeJSBoard.add(light.clone());
-    if (sign === 1) {
-      light.position.set(
-          -sign * boardSize['x'] / 2,
-          boardSize['y'] / 2 + 5,
-          10,
-      );
-      this.#threeJSBoard.add(light.clone());
-      light.position.set(
-          -sign * boardSize['x'] / 2,
-          -boardSize['y'] / 2 - 5,
-          10,
-      );
-      this.#threeJSBoard.add(light.clone());
-    }
   }
 
   initScore(boardSize, wallWidth, maxScore) {
@@ -111,7 +89,7 @@ export class _Board {
     if (this.#side === 0) {
       sign = 1;
     }
-    const pointRadius = wallWidth /1.5;
+    const pointRadius = wallWidth / 1.5;
     const pointOffset = sign * pointRadius * 3;
     const pointStartPosition = new THREE.Vector3(
         sign * boardSize.x / 2 - sign * boardSize.x / 6,
@@ -130,15 +108,12 @@ export class _Board {
       point.rotation.z = this.#delays[i] * Math.PI;
       this.#points.push(point);
       this.#threeJSBoard.add(point);
-      this.initPointLight(point.position);
     }
   }
 
   initPointMesh(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
-      color: 0xf0f0f0,
-      metalness: 0.8,
-      roughness: 0.2,
+      color: 0xa0a0a0,
     });
     material.flatShading = true;
     return new THREE.Mesh(
@@ -147,16 +122,8 @@ export class _Board {
     );
   }
 
-  initPointLight(pointPosition) {
-    const light = new THREE.PointLight(this.#pointColor, 30, 10);
-    light.position.copy(pointPosition);
-    light.position.z += 2;
-    this.#pointsLight.push(light);
-  }
-
   addPoint() {
     this.#points[this.#score].material.color.set(this.#pointColor);
-    this.#threeJSBoard.add(this.#pointsLight[this.#score]);
 
     this.#score++;
   }
@@ -177,7 +144,7 @@ export class _Board {
     if (this.#side === 0) {
       sign = -1;
     }
-    const goal = new THREE.Mesh(
+    this.#goal = new THREE.Mesh(
         new THREE.BoxGeometry(
             wallWidth / 2,
             boardSize.y + wallWidth * 2,
@@ -189,8 +156,9 @@ export class _Board {
           transmission: 1,
         }),
     );
-    goal.position.set(sign * boardSize.x / 2 + sign * wallWidth / 4, 0, 0);
-    this.#threeJSBoard.add(goal);
+    this.#goal.position
+        .set(sign * boardSize.x / 2 + sign * wallWidth / 4, 0, 0);
+    this.#threeJSBoard.add(this.#goal);
   }
 
   updateFrame() {
@@ -205,6 +173,17 @@ export class _Board {
       point.rotation.y += Math.PI / frequency;
       point.rotation.z += Math.PI / frequency;
     });
+  }
+
+  changeSide() {
+    this.#side = 1 - this.#side;
+    this.#pointColor = this.#side ?
+        _Board.#rightSideColor : _Board.#leftSideColor;
+    this.#board.rotateZ(Math.PI);
+    for (const point of this.#points) {
+      point.position.x *= -1;
+    }
+    this.#goal.position.x *= -1;
   }
 
   get threeJSBoard() {
