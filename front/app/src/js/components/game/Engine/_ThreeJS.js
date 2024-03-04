@@ -64,7 +64,7 @@ export class _ThreeJS {
   }
 
   #initRenderer() {
-    this.#renderer = new THREE.WebGLRenderer({antialias: true});
+    this.#renderer = new THREE.WebGLRenderer({antialias: false});
 
     this.#renderer.shadowMap.enabled = true;
     this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;

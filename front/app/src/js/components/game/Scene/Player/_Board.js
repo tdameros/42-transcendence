@@ -5,7 +5,6 @@ export class _Board {
   #threeJSBoard;
   #pointElevation;
   #points = [];
-  #pointsLight = [];
   #delays = [];
   #score = 0;
   #side;
@@ -74,36 +73,9 @@ export class _Board {
   }
 
   initLight(boardSize) {
-    let sign = 1;
-    if (this.#side === 0) {
-      sign = -1;
-    }
     const light = new THREE.PointLight(0xffffff, 250);
-    light.position.set(
-        sign * boardSize['x'] / 2 + sign * 5,
-        boardSize['y'] / 2 + 5, 10,
-    );
+    light.position.set(0, 0, 10);
     this.#threeJSBoard.add(light.clone());
-    light.position.set(
-        sign * boardSize['x'] / 2 + sign * 5,
-        -boardSize['y'] / 2 - 5,
-        10,
-    );
-    this.#threeJSBoard.add(light.clone());
-    if (sign === 1) {
-      light.position.set(
-          -sign * boardSize['x'] / 2,
-          boardSize['y'] / 2 + 5,
-          10,
-      );
-      this.#threeJSBoard.add(light.clone());
-      light.position.set(
-          -sign * boardSize['x'] / 2,
-          -boardSize['y'] / 2 - 5,
-          10,
-      );
-      this.#threeJSBoard.add(light.clone());
-    }
   }
 
   initScore(boardSize, wallWidth, maxScore) {
@@ -130,15 +102,12 @@ export class _Board {
       point.rotation.z = this.#delays[i] * Math.PI;
       this.#points.push(point);
       this.#threeJSBoard.add(point);
-      this.initPointLight(point.position);
     }
   }
 
   initPointMesh(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
-      color: 0xf0f0f0,
-      metalness: 0.8,
-      roughness: 0.2,
+      color: 0xa0a0a0,
     });
     material.flatShading = true;
     return new THREE.Mesh(
@@ -147,16 +116,8 @@ export class _Board {
     );
   }
 
-  initPointLight(pointPosition) {
-    const light = new THREE.PointLight(this.#pointColor, 30, 10);
-    light.position.copy(pointPosition);
-    light.position.z += 2;
-    this.#pointsLight.push(light);
-  }
-
   addPoint() {
     this.#points[this.#score].material.color.set(this.#pointColor);
-    this.#threeJSBoard.add(this.#pointsLight[this.#score]);
 
     this.#score++;
   }
