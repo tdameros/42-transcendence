@@ -24,13 +24,7 @@ export class Player {
 
     this.#threeJSGroup.add(this.#paddle.threeJSGroup);
     this.#board = new _Board();
-    if (index) {
-      await this.#board.init(
-          playerJson['board'], index, pointsToWinMatch, 0xff0000);
-    } else {
-      await this.#board.init(
-          playerJson['board'], index, pointsToWinMatch, 0xff00);
-    }
+    await this.#board.init(playerJson['board'], index, pointsToWinMatch);
     this.#threeJSGroup.add(this.#board.threeJSBoard);
   }
 
@@ -68,5 +62,6 @@ export class Player {
         this.#threeJSGroup.position.y,
         this.#threeJSGroup.position.z);
     this.#paddle.changeSide();
+    this.#board.changeSide();
   }
 }

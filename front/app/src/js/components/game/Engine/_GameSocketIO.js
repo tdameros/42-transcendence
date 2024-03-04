@@ -178,29 +178,55 @@ export class _GameSocketIO {
 
       const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
       if (currentPlayerLocation.isLooser) {
+        this.#handleGameOverPlayerHasNotReachedTheFinal();
         return;
       }
 
+      const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
+          this.#engine.scene);
+      const winnerScore = finalMatch.players[winnerIndex].score;
+      const looserScore = finalMatch.players[1 - winnerIndex].score;
+
       if (currentPlayerLocation.playerIndex === winnerIndex) {
-        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
-            this.#engine.scene,
-        );
-        const winnerScore = finalMatch.players[winnerIndex].score;
-        const looserScore = finalMatch.players[1 - winnerIndex].score;
-        this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
-      } else {
-        const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
-            this.#engine.scene,
-        );
-        const winnerScore = finalMatch.players[winnerIndex].score;
-        const looserScore = finalMatch.players[1 - winnerIndex].score;
-        this.#engine.component.loadEndGameCard(
-            'loose', winnerScore, looserScore,
-        );
+        if (this.#engine.scene.loosers.length !== 0) {
+          this.#handleGameOverPlayerWonTournamentFinal(winnerScore,
+              looserScore);
+          return;
+        }
+        this.#handleGameOverPlayerWon1v1(winnerScore, looserScore);
+        return;
       }
+
+      if (this.#engine.scene.loosers.length !== 0) {
+        this.#handleGameOverPlayerLostTournamentFinal(winnerScore,
+            looserScore);
+        return;
+      }
+      this.#handleGameOverPlayerLost1v1(winnerScore, looserScore);
     });
 
     this.#socketIO.connect();
+  }
+
+  #handleGameOverPlayerHasNotReachedTheFinal() {
+    // TODO remove the eliminated message if it still exists
+    // TODO display tournament over message
+  }
+
+  #handleGameOverPlayerWonTournamentFinal(winnerScore, looserScore) {
+    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+  }
+
+  #handleGameOverPlayerWon1v1(winnerScore, looserScore) {
+    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+  }
+
+  #handleGameOverPlayerLostTournamentFinal(winnerScore, looserScore) {
+    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
+  }
+
+  #handleGameOverPlayerLost1v1(winnerScore, looserScore) {
+    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
   }
 
   disconnect() {

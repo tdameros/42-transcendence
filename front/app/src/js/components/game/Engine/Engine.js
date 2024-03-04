@@ -77,6 +77,11 @@ export class Engine {
   }
 
   updateCamera(cameraPosition, cameraLookAt) {
+    this.#threeJS.controls.target.set(
+        cameraLookAt.x,
+        cameraLookAt.y,
+        cameraLookAt.z,
+    );
     this.#threeJS.setCameraPosition(cameraPosition);
     this.#threeJS.setCameraLookAt(cameraLookAt);
   }
