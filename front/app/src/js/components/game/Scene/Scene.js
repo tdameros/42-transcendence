@@ -245,7 +245,7 @@ export class Scene {
     this.#threeJSScene.remove(match.threeJSGroup);
   }
 
-  createMatchIfDoesntExist(matchJson) {
+  async createMatchIfDoesntExist(matchJson) {
     const key = Scene.convertMatchLocationToKey(matchJson['location']);
     let match = this.getMatchFromKey(key);
     if (match !== undefined) {
@@ -253,7 +253,7 @@ export class Scene {
     }
 
     match = new Match();
-    match.init(matchJson, false);
+    await match.init(matchJson, false);
     this.#matches.push(match);
     this.#matches_map[key] = match;
     this.#threeJSScene.add(match.threeJSGroup);
