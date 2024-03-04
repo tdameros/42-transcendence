@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-if os.getenv('DEBUG') == 'True':
-    DEBUG = True
-else:
-    DEBUG = False
+# if os.getenv('DEBUG') == 'True':
+DEBUG = True
+# else:
+#     DEBUG = False
 
 if DEBUG:
     FRONT_URL = "https://localhost:6002/"
@@ -66,6 +66,7 @@ else:
 ALLOWED_HOSTS = ['*']
 
 MAX_INACTIVITY_DAYS_BEFORE_DELETION = 365
+MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION = 1
 EMAIL_MAX_LENGTH = 60
 EMAIL_LOCAL_PART_MIN_LENGTH = 1
 EMAIL_VERIFICATION_TOKEN_MAX_LENGTH = 100

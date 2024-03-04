@@ -734,7 +734,7 @@ class TestDeleteInactiveUsersView(TestCase):
             fake_inactive_account.last_activity = (timezone.now() -
                                                    timedelta(days=settings.MAX_INACTIVITY_DAYS_BEFORE_DELETION + 1))
             fake_inactive_account.save()
-        self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
+        self.assertEqual(User.objects.filter(account_deleted=False).count(), 20)
         self.assertEqual(User.objects.all().count(), 20)
         remove_inactive_users()
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
@@ -748,8 +748,7 @@ class TestDeleteInactiveUsersView(TestCase):
                     timezone.now() - timedelta(days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION + 1))
             fake_old_pending_accounts.save()
 
-        self.assertEqual(User.objects.filter(account_deleted=True).count(), 20)
-        self.assertEqual(User.objects.all().count(), 20)
+        self.assertEqual(User.objects.filter(account_deleted=False).count(), 40)
         remove_old_pending_accounts()
         self.assertEqual(User.objects.filter(account_deleted=True).count(), 0)
 
