@@ -45,7 +45,7 @@ class SendUserInfosView(View):
             user_info = {
                 'username': user.username,
                 'email': user.email,
-                'avatar': f'{settings.USER_MANAGEMENT_URL}user/avatar/{user.username}/',
+                'avatar': f'{settings.USER_MANAGEMENT_IP}user/avatar/{user.username}/',
                 'two_fa': user.has_2fa,
                 'last_login': user.last_login,
                 'last_activity': user.last_activity,
