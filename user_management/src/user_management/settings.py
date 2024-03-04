@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# if os.getenv('DEBUG') == 'True':
-DEBUG = True
-# else:
-#     DEBUG = False
+if os.getenv('DEBUG') == 'True':
+    DEBUG = True
+else:
+    DEBUG = False
 
 if DEBUG:
     FRONT_URL = "https://localhost:6002/"
