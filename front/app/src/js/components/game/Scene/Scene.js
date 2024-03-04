@@ -122,6 +122,7 @@ export class Scene {
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
+      this.#engine.component.loadEndGameCard('eliminated', 0, 0);
     }
     match.removePlayer(looserIndex);
 
