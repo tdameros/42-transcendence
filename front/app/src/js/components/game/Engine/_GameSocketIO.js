@@ -189,10 +189,14 @@ export class _GameSocketIO {
   }
 
   disconnect() {
-    this.#socketIO.disconnect();
+    try {
+      this.#socketIO.disconnect();
+    } catch (error) {}
   }
 
   emit(event, data) {
-    this.#socketIO.emit(event, data);
+    try {
+      this.#socketIO.emit(event, data);
+    } catch (error) {}
   }
 }
