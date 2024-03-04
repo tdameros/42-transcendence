@@ -1,8 +1,7 @@
 import os
 
-from dotenv import load_dotenv, set_key
-
 import generate_pair_of_keys
+from dotenv import load_dotenv, set_key
 
 # If you are not in prod, this script shall be called once from root.
 # If the app is live, this script shall be called once from the makefile (generate_env rule).
