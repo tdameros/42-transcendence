@@ -26,7 +26,10 @@ SSL_IMAGE_NAME                  =   ssl_certificate_generator
 
 .PHONY: all
 all:
-	if [ ! -e ssl/certs/certificate.crt ] && [ ! -e ssl/certs/certificate.crt ]; then \
+	if [ ! -e common/src/.env ]; then \
+  		$(MAKE) generate_env; \
+    fi
+	if [ ! -e ssl/certs/certificate.crt ] && [ ! -e ssl/certs/private.crt ]; then \
   		$(MAKE) generate_ssl_certificate; \
   		echo "SSL certificate generated"; \
     fi

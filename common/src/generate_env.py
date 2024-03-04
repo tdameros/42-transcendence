@@ -53,6 +53,9 @@ for env_file in env_files:
 
 
 def generate_key(name, key, env_path):
+    if key is None:
+        print(f'[WARNING]Key {name} is missing from the .env file.'
+              f'\nCheck the .env_example file for more information.')
     with open(env_path, 'a') as f:
         f.write(f'{name}={key}\n')
 
@@ -68,7 +71,7 @@ def generate_database_credentials(microservice: str, host: str, env_path: str):
     set_key('.env', f'{microservice.upper()}_DB_PASSWORD', password)
     set_key('.env', f'{microservice.upper()}_DB_HOST', host)
     set_key('.env', f'{microservice.upper()}_DB_PORT', port)
-    generate_key('POSTGRES_DB',  db, env_path)
+    generate_key('POSTGRES_DB', db, env_path)
     generate_key('POSTGRES_USER', user, env_path)
     generate_key('POSTGRES_PASSWORD', password, env_path)
     generate_key('POSTGRES_HOST', host, env_path)
@@ -77,6 +80,7 @@ def generate_database_credentials(microservice: str, host: str, env_path: str):
 
 # common
 generate_key('ACCESS_SERVICE_KEY', os.urandom(32).hex(), COMMON_ENV_FILE)
+generate_key('BASE_DOMAIN', os.getenv('BASE_DOMAIN'), COMMON_ENV_FILE)
 
 # user_management
 generate_pair_of_keys.generate_pair_of_keys()
