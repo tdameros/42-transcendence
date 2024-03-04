@@ -35,7 +35,7 @@ class RefreshJWT(View):
             if success is False:
                 return JsonResponse(data={'errors': errors}, status=400)
             try:
-                user.update_latest_login()
+                user.update_latest_activity()
                 user.save()
             except Exception as e:
                 return JsonResponse(

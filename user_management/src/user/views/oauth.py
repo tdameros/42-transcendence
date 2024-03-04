@@ -162,8 +162,6 @@ class OAuthCallback(View):
         user_oauth, created = UserOAuth.objects.get_or_create(user=user, service=auth_service)
         user_oauth.service_id = api_id
         user_oauth.save()
-        user.last_activity = timezone.now()
-        user.save()
         user.update_latest_login()
 
     @staticmethod
