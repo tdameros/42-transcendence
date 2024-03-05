@@ -353,7 +353,6 @@ export class SettingsContent extends Component {
 
   async #trashAvatarHandler(event) {
     event.preventDefault();
-    console.log('trash');
     this.hasChangeAvatar = true;
     this.base64Avatar = null;
     this.avatar.src = '/img/default_avatar.png';
