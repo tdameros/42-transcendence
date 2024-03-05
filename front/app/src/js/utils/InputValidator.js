@@ -46,7 +46,7 @@ export class InputValidator {
   }
 
   static isAlphaNumeric(string) {
-    const alphaNumericRegex = /^[a-zA-Z0-9_]+$/;
+    const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
     return alphaNumericRegex.test(string);
   }
 
