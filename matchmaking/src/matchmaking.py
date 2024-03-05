@@ -41,7 +41,7 @@ class Matchmaking:
 
     def add_player(self, player: Player) -> Optional[str]:
         for queue_player in self.queue:
-            if queue_player.sid == player.sid:
+            if queue_player.user_id == player.user_id:
                 return error.ALREADY_IN_QUEUE
         self.queue.append(player)
         return None
