@@ -115,7 +115,6 @@ class GetGraph(GraphTest):
         for value in body['graph']:
             self.assertEqual(value['value'], 1)
 
-
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
