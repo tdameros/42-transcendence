@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from dateutil import parser
 from django.test import TestCase
@@ -9,7 +10,9 @@ from api.models import Match, User
 
 
 class MatchTest(TestCase):
-    def post_match(self, body):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_match(self, body, mock_post):
+        mock_post.return_value = (True, None)
         url = reverse('match')
         response = self.client.post(url, json.dumps(body), content_type='application/json')
         return response

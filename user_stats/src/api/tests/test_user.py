@@ -38,7 +38,9 @@ class UserTest(TestCase):
         response = self.client.delete(url)
         return response
 
-    def post_match(self, body: dict):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_match(self, body: dict, mock_authenticate):
+        mock_authenticate.return_value = (True, None)
         url = reverse('match')
         response = self.client.post(url, json.dumps(body), content_type='application/json')
         return response
