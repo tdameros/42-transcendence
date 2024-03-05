@@ -81,23 +81,17 @@ class UserGraph:
         data = []
         user = User.objects.get(pk=user_id)
         matches = Match.objects.filter(user_id=user_id)
-        for date in intervals:
-            lower_match = matches.filter(date__lt=date).order_by('-date').first()
-            if lower_match is not None:
-                lower_value = getattr(lower_match, f'user_{field}')
-            else:
-                lower_value = 0
-            match = matches.filter(date__gte=date).order_by('date').first()
-            if match is not None:
-                match_value = getattr(match, f'user_{field}')
-            else:
-                match_value = getattr(user, field)
-                if lower_match is None or lower_match.date < intervals[0]:
-                    lower_value = match_value
-            value = match_value - lower_value
+        for index in range(len(intervals) - 1):
+            start = intervals[index]
+            end = intervals[index + 1]
+            lower_match = matches.filter(date__gte=start).order_by('date').first()
+            lower_value = getattr(lower_match, f'user_{field}') if lower_match else getattr(user, field)
+            upper_match = matches.filter(date__gte=end).order_by('date').first()
+            upper_value = getattr(upper_match, f'user_{field}') if upper_match else getattr(user, field)
+            value = upper_value - lower_value
             data.append({
                 'value': value,
-                'date': date,
+                'date': start,
             })
         return data
 
@@ -125,7 +119,7 @@ class UserGraph:
         intervals = []
 
         interval = timezone.timedelta(seconds=(end - start).total_seconds() / num_points)
-        for i in range(num_points):
+        for i in range(num_points + 1):
             intervals.append(start + interval * i)
         return intervals
 

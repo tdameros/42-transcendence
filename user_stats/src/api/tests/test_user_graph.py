@@ -116,6 +116,41 @@ class GetGraph(GraphTest):
             self.assertEqual(value['value'], 1)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def test_valid_many_daily_matches(self, mock_authenticate):
+        mock_authenticate.return_value = (True, {'id': 1}, None)
+        data = {
+            'winner_id': 1,
+            'loser_id': 2,
+            'winner_score': 2,
+            'loser_score': 1,
+        }
+        date = NOW - timezone.timedelta(days=2)
+        date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        for i in range(10):
+            date = date.replace(hour=i)
+            data['date'] = date.isoformat()
+            self.post_match(data)
+        date = NOW - timezone.timedelta(days=1)
+        data['date'] = date.isoformat()
+        self.post_match(data)
+        start = NOW - timezone.timedelta(days=2)
+        start = start.replace(hour=0, minute=0, second=0, microsecond=0)
+        end = start + timezone.timedelta(days=7)
+        response_elo, response_win_rate, response_matches_played = self.get_graph(
+            1,
+            start,
+            end,
+            7
+        )
+        self.assertEqual(response_elo.status_code, 200)
+        self.assertEqual(response_win_rate.status_code, 200)
+        self.assertEqual(response_matches_played.status_code, 200)
+        body = response_matches_played.json()
+        self.assertEqual(body['num_points'], 7)
+        self.assertEqual(len(body['graph']), 7)
+        self.assertEqual(body['graph'][0]['value'], 10)
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_invalid_user_id(self, mock_authenticate):
         mock_authenticate.return_value = (True, {'id': 1}, None)
         response_elo, response_win_rate, response_matches_played = self.get_graph(
@@ -311,8 +346,29 @@ class GetGraph(GraphTest):
             NOW - timezone.timedelta(days=10),
             7)
         self.assertEqual(response_elo.status_code, 200)
+        body = response_elo.json()
+        num_points = body['num_points']
+        graph = body['graph']
+        self.assertEqual(num_points, 1)
+        self.assertEqual(len(graph), num_points)
+        self.assertEqual(graph[0]['value'], 1000)
+
         self.assertEqual(response_win_rate.status_code, 200)
+        body = response_win_rate.json()
+        num_points = body['num_points']
+        graph = body['graph']
+        self.assertEqual(num_points, 1)
+        self.assertEqual(len(graph), num_points)
+        self.assertEqual(graph[0]['value'], 0)
+
         self.assertEqual(response_matches_played.status_code, 200)
+        body = response_matches_played.json()
+        num_points = body['num_points']
+        graph = body['graph']
+        self.assertEqual(num_points, 7)
+        self.assertEqual(len(graph), num_points)
+        for value in graph:
+            self.assertEqual(value['value'], 0)
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_valid_no_progress_after_matches(self, mock_authenticate):
