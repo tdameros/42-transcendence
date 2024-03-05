@@ -105,7 +105,7 @@ export class _Board {
     const pointRadius = wallWidth / 1.5;
     const pointOffset = sign * pointRadius * 3;
     const pointStartPosition = new THREE.Vector3(
-        sign * boardSize.x / 2 - sign * boardSize.x / 6,
+        sign * boardSize.x / 3,
         boardSize.y / 2 + wallWidth / 2,
         boardSize.z + pointRadius * 2,
     );
@@ -122,6 +122,21 @@ export class _Board {
       this.#points.push(point);
       this.#threeJSBoard.add(point);
     }
+    const width = Math.abs(
+        this.#points[0].position.x - this.#points[maxScore - 1].position.x,
+    );
+    const middle = -(sign * width) / 2 + this.#points[0].position.x;
+    const light = new THREE.RectAreaLight(
+        0xffffff,
+        5,
+        width,
+        pointRadius * 2,
+    );
+    light.position.set(middle, pointStartPosition.y, pointStartPosition.z + 4);
+    light.lookAt(middle, pointStartPosition.y, pointStartPosition.z);
+    this.#threeJSBoard.add(light.clone());
+    light.position.y *= -1;
+    this.#threeJSBoard.add(light.clone());
   }
 
   initPointMesh(pointRadius) {
