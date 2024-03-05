@@ -5,9 +5,10 @@ import TWEEN from '@tweenjs/tween.js';
 import {Match} from './Match';
 import {PlayerLocation} from './PlayerLocation';
 import {Player} from './Player/Player';
-import {BallBoundingBox, PaddleBoundingBox} from './boundingBoxes';
+import {PaddleBoundingBox} from './PaddleBoundingBox.js';
 import {Sky} from 'three/addons/objects/Sky.js';
 import {Theme} from '@js/Theme.js';
+import {jsonToVector3} from '@components/game/jsonToVector3.js';
 
 export class Scene {
   #engine;
@@ -16,7 +17,6 @@ export class Scene {
   #matches_map = {};
   #currentPlayerLocation;
   #loosers = [];
-  #ballBoundingBox;
   #paddleBoundingBox;
   #isLooserCamera = false;
   #matchesMiddleX;
@@ -28,6 +28,7 @@ export class Scene {
   #sky;
   #sun;
   #pointsToWinMatch;
+  #boardSize;
 
   constructor() {}
 
@@ -74,10 +75,8 @@ export class Scene {
     this.#currentPlayerLocation = new PlayerLocation(playerLocationJson);
 
     const playerJson = matchesJson[0]['players'][0];
-    this.#ballBoundingBox = new BallBoundingBox(
-        playerJson, matchesJson[0]['ball']['radius'],
-    );
     this.#paddleBoundingBox = new PaddleBoundingBox(playerJson);
+    this.#boardSize = jsonToVector3(playerJson['board']['size']);
 
     this.#matchesMiddleX = sceneJson['matches_middle']['x'];
     this.#matchesMiddleY = sceneJson['matches_middle']['y'];
@@ -107,7 +106,7 @@ export class Scene {
           timeDelta,
           currentTime,
           this.#paddleBoundingBox,
-          this.#ballBoundingBox,
+          this.#boardSize,
       );
     }
 

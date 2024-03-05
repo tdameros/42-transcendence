@@ -33,7 +33,7 @@ export class Match {
     this.#threeJSGroup.add(this.#ball.threeJSGroup);
   }
 
-  updateFrame(timeDelta, currentTime, paddleBoundingBox, ballBoundingBox) {
+  updateFrame(timeDelta, currentTime, paddleBoundingBox, boardSize) {
     if (this.#players[0] !== null) {
       this.#players[0].updateFrame(timeDelta, paddleBoundingBox);
     }
@@ -50,10 +50,7 @@ export class Match {
       this.#ballIsWaiting = false;
     }
     if (this.#ballIsWaiting === false) {
-      this.#ball.updateFrame(timeDelta,
-          ballBoundingBox,
-          this.#players[0].paddle,
-          this.#players[1].paddle);
+      this.#ball.updateFrame(timeDelta, boardSize, this);
     }
   }
 

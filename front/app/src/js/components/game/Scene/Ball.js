@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {jsonToVector3} from '../jsonToVector3';
-import {Segment2} from './Segment2';
+import {CollisionHandler} from '@components/game/Scene/CollisionHandler.js';
 
 export class Ball {
   #threeJSGroup = new THREE.Group();
@@ -30,142 +30,22 @@ export class Ball {
         ballMovementJson['z']);
   }
 
-  updateFrame(timeDelta, matchBoundingBox, leftPaddle, rightPaddle) {
-    if (this.#movement.x === 0.) return;
-
-    const previousPosition = new THREE.Vector2(this.#threeJSGroup.position.x,
-        this.#threeJSGroup.position.y);
-
-    const radiusCompensator = this.#movement.clone()
-        .normalize()
-        .multiplyScalar(this.#radius / 2.);
-    this.#threeJSGroup.position.add(this.#movement.clone()
-        .multiplyScalar(timeDelta)
-        .add(radiusCompensator));
-
-    const travel = new Segment2(previousPosition,
-        this.#threeJSGroup.position);
-
-    if (this.#handleCollisions(travel,
-        matchBoundingBox,
-            this.#movement.x < 0. ? leftPaddle : rightPaddle,
-            timeDelta)) {
-      this.#threeJSGroup.position.sub(radiusCompensator);
-    }
-  }
-
-  #handleCollisions(travel, matchBoundingBox, paddle, timeDelta) {
-    if (this.#handlePaddleCollision(travel, paddle, timeDelta)) {
-      return true;
+  updateFrame(timeDelta, boardSize, match) {
+    if (this.#movement.x === 0. || timeDelta === 0.) {
+      return;
     }
 
-    if (this.#handleMatchPoint(matchBoundingBox)) {
-      return false;
+    let collisionHandler;
+    if (this.#movement.x < 0.) {
+      collisionHandler = new CollisionHandler(match.players[0].paddle,
+          boardSize);
+    } else {
+      collisionHandler = new CollisionHandler(match.players[1].paddle,
+          boardSize);
     }
-
-    this.#handleBoardCollision(matchBoundingBox);
-    return true;
-  }
-
-  #handlePaddleCollision(travel, paddle, timeDelta) {
-    const {point: topIntersection,
-      t: topT} = travel.intersect(paddle.topCollisionSegment);
-    const {point: frontIntersection,
-      t: frontT} = travel.intersect(paddle.frontCollisionSegment);
-    const {point: bottomIntersection,
-      t: bottomT} = travel.intersect(paddle.bottomCollisionSegment);
-
-    const {
-      closestIntersection,
-      closestT,
-      axeToChange,
-      yDirection,
-    } = this.#getClosestIntersection(topIntersection, topT,
-        frontIntersection, frontT,
-        bottomIntersection, bottomT);
-
-    if (closestIntersection === null) return false;
-
-    this.#threeJSGroup.position.set(closestIntersection.x,
-        closestIntersection.y,
-        this.#threeJSGroup.position.z);
-
-    if (axeToChange === 'x') {
-      this.#movement.x = -this.#movement.x * this.#acceleration;
-    } else if ((yDirection === '+' && this.#movement.y < 0.) ||
-                (yDirection === '-' && this.#movement.y > 0.)) {
-      this.#movement.y = -this.#movement.y * this.#acceleration;
-    }
-    this.#threeJSGroup.position
-        .add(this.#movement.clone()
-            .multiplyScalar(timeDelta * (1. - closestT)));
-    return true;
-  }
-
-  #handleMatchPoint(matchBoundingBox) {
-    if (this.#threeJSGroup.position.x <= matchBoundingBox.x_min) {
-      this.#threeJSGroup.position.x = matchBoundingBox.x_min;
-      this.#movement.set(0., 0., 0.);
-      return true;
-    } else if (this.#threeJSGroup.position.x >= matchBoundingBox.x_max) {
-      this.#threeJSGroup.position.x = matchBoundingBox.x_max;
-      this.#movement.set(0., 0., 0.);
-      return true;
-    } // TODO This should mark a point
-    return false;
-  }
-
-  #handleBoardCollision(matchBoundingBox) {
-    if (this.#threeJSGroup.position.y < matchBoundingBox.y_min) {
-      const oppositeMovement =
-          (matchBoundingBox.y_min - this.#threeJSGroup.position.y) *
-                this.#acceleration;
-      this.#threeJSGroup.position.y = matchBoundingBox.y_min + oppositeMovement;
-
-      this.#movement.y = -this.#movement.y * this.#acceleration;
-    } else if (this.#threeJSGroup.position.y > matchBoundingBox.y_max) {
-      const oppositeMovement =
-          (matchBoundingBox.y_max - this.#threeJSGroup.position.y) *
-                this.#acceleration;
-      this.#threeJSGroup.position.y = matchBoundingBox.y_max + oppositeMovement;
-
-      this.#movement.y = -this.#movement.y * this.#acceleration;
-    }
-  }
-
-  #getClosestIntersection(topIntersection, topT,
-      frontIntersection, frontT,
-      bottomIntersection, bottomT) {
-    let closestIntersection = null;
-    let closestT = Number.MAX_VALUE;
-    let axeToChange = null;
-    let yDirection = null;
-
-    if (topIntersection !== null) {
-      closestIntersection = topIntersection;
-      closestT = topT;
-      axeToChange = 'y';
-      yDirection = '+';
-    }
-    if (frontIntersection !== null) {
-      if (frontT < closestT) {
-        closestIntersection = frontIntersection;
-        closestT = frontT;
-        axeToChange = 'x';
-      }
-    }
-    if (bottomIntersection !== null) {
-      if (bottomT < closestT) {
-        return {closestIntersection: bottomIntersection,
-          closestT: closestT,
-          axeToChange: 'y',
-          yDirection: '-'};
-      }
-    }
-    return {closestIntersection: closestIntersection,
-      closestT: closestT,
-      axeToChange: axeToChange,
-      yDirection: yDirection};
+    collisionHandler.updateBallPositionAndMovement(
+        this, timeDelta, match, this.#radius,
+    );
   }
 
   #addBallToGroup() {
@@ -194,6 +74,14 @@ export class Ball {
     return this.#threeJSGroup;
   }
 
+  get acceleration() {
+    return this.#acceleration;
+  }
+
+  getPosition() {
+    return this.#threeJSGroup.position;
+  }
+
   setPosition(positionJson) {
     this.#threeJSGroup.position.set(positionJson['x'],
         positionJson['y'],
@@ -204,5 +92,17 @@ export class Ball {
     this.#movement.set(movementJson['x'],
         movementJson['y'],
         movementJson['z']);
+  }
+
+  get movement() {
+    return this.#movement;
+  }
+
+  setMovementX(x) {
+    this.#movement.x = x;
+  }
+
+  setMovementY(y) {
+    this.#movement.y = y;
   }
 }
