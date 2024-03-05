@@ -19,7 +19,7 @@ class MatchPositionCalculator(object):
         else:
             x, y = MatchPositionCalculator._calculate_x_y_not_first_game_round(match_location)
 
-        match_position = numpy.array([x, y, 0.])
+        match_position = numpy.array([x, y, 0.], dtype=float)
         MatchPositionCalculator.match_positions[match_location] = match_position
         return match_position.copy()
 

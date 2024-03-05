@@ -20,10 +20,12 @@ class Player(object):
         sign = 1. if is_player_on_the_right else -1.
         self._position: numpy.ndarray = numpy.array([settings.BOARD_SIZE[0] / 2. * sign,
                                                      0.,
-                                                     0.])
+                                                     0.],
+                                                    dtype=float)
         self._paddle: Paddle = Paddle(numpy.array([settings.PADDLE_X_POSITION * sign,
                                                    0.,
-                                                   settings.PADDLE_SIZE[2] / 2. + 0.001]),
+                                                   settings.PADDLE_SIZE[2] / 2. + 0.001],
+                                                  dtype=float),
                                       self._position)
         self._board: _Board = _Board()
 

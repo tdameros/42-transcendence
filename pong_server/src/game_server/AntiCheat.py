@@ -17,7 +17,7 @@ class AntiCheat(object):
         paddle: Paddle = player.get_paddle()
 
         fixed_paddle_position: Optional[float] \
-            = (AntiCheat._get_fixed_paddle_position(client_paddle_position, paddle))
+            = AntiCheat._get_fixed_paddle_position(client_paddle_position, paddle)
 
         cheat_or_high_latency: bool = fixed_paddle_position is not None
 
