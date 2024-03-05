@@ -89,8 +89,10 @@ def is_valid_email(email):
         return False, f'Email {email} already taken'
     if len(email) > settings.EMAIL_MAX_LENGTH:
         return False, f'Email length {len(email)} > {settings.EMAIL_MAX_LENGTH}'
-    if any(char not in f'{string.ascii_letters}{string.digits}@_-.' for char in email):
+    if any(char not in f'{string.ascii_letters}{string.digits}@.' for char in email):
         return False, 'Invalid character in email address'
+    if '..' in email:
+        return False, 'Email contains consecutive "." characters'
     if '@' not in email:
         return False, 'Email missing @'
     if '.' not in email:
