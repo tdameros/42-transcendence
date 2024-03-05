@@ -5,11 +5,8 @@ import TWEEN from '@tweenjs/tween.js';
 import {Match} from './Match';
 import {PlayerLocation} from './PlayerLocation';
 import {Player} from './Player/Player';
-import {PaddleBoundingBox} from './PaddleBoundingBox.js';
-import {Sky} from 'three/addons/objects/Sky.js';
-import {Theme} from '@js/Theme.js';
 import {jsonToVector3} from '@components/game/jsonToVector3.js';
-import {BallBoundingBox, PaddleBoundingBox} from './boundingBoxes';
+import {PaddleBoundingBox} from './PaddleBoundingBox.js';
 import {SceneSky} from './SceneSky.js';
 
 export class Scene {
