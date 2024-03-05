@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {SceneSky} from './SceneSky.js';
 
 export class LoadingScreenScene {
   #threeJSScene = new THREE.Scene();
@@ -8,6 +9,7 @@ export class LoadingScreenScene {
   #ball2Direction = new THREE.Vector3(-0.3, 0.3, 0.);
   #board;
   #boardBounds;
+  #sky;
 
   constructor(matchesJson) {
     const ballGeometry = new THREE.BoxGeometry(1., 1., 1.);
@@ -51,7 +53,18 @@ export class LoadingScreenScene {
     light.shadow.mapSize.height = 2048;
     this.#threeJSScene.add(light);
 
+    this.#sky = new SceneSky();
+    this.#threeJSScene.add(this.#sky.sky);
+
     this.#setBoardBounds();
+  }
+
+  setLightTheme() {
+    this.#sky.setLightTheme();
+  }
+
+  setDarkTheme() {
+    this.#sky.setDarkTheme();
   }
 
   updateFrame(timeDelta) {
