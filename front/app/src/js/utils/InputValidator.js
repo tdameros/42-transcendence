@@ -53,6 +53,9 @@ export class InputValidator {
   static isValidEmail(email) {
     const emailRegex = /^[\w-_.]+@([\w-]+\.)+[\w-]{2,}$/;
     const missingRequirements = [];
+    if (email.indexOf('..') !== -1) {
+      missingRequirements.push(InputValidator.MessageEmailInvalidFormat);
+    }
     if (email.length > InputValidator.emailMaxLength) {
       missingRequirements.push(InputValidator.MessageEmailMaxLength);
     }
