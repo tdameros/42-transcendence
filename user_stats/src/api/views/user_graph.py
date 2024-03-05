@@ -80,12 +80,21 @@ class UserGraph:
     def deltasample_data(user_id: int, intervals: list, field: str) -> list:
         data = []
         user = User.objects.get(pk=user_id)
-        max_val = 0
+        matches = Match.objects.filter(user_id=user_id)
         for date in intervals:
-            match = Match.objects.filter(user_id=user_id, date__gte=date).order_by('date').first()
-            match_value = getattr(match, f'user_{field}') if match else getattr(user, field)
-            value = match_value - max_val
-            max_val = max(max_val, match_value)
+            lower_match = matches.filter(date__lt=date).order_by('-date').first()
+            if lower_match is not None:
+                lower_value = getattr(lower_match, f'user_{field}')
+            else:
+                lower_value = 0
+            match = matches.filter(date__gte=date).order_by('date').first()
+            if match is not None:
+                match_value = getattr(match, f'user_{field}')
+            else:
+                match_value = getattr(user, field)
+                if lower_match is None or lower_match.date < intervals[0]:
+                    lower_value = match_value
+            value = match_value - lower_value
             data.append({
                 'value': value,
                 'date': date,
@@ -115,7 +124,7 @@ class UserGraph:
     def get_database_intervals(start: Any, end: Any, num_points: int) -> list:
         intervals = []
 
-        interval = timezone.timedelta(seconds=(end - start).total_seconds() / (num_points - 1))
+        interval = timezone.timedelta(seconds=(end - start).total_seconds() / num_points)
         for i in range(num_points):
             intervals.append(start + interval * i)
         return intervals
