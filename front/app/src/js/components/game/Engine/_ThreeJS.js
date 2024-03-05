@@ -14,7 +14,7 @@ export class _ThreeJS {
     this.#initRenderer();
     this.#initCamera();
     this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
-    this.#controls.target.set(30, 25, 0);
+    this.#controls.target.set(0, 0, 0);
     this.#engine.component.addComponentEventListener(window, 'resize',
         () => {
           this.#onWindowResize();
@@ -58,7 +58,7 @@ export class _ThreeJS {
         0.1,
         1000);
 
-    this.#camera.position.set(0., 0., 70.);
+    this.#camera.position.set(35, -35, 35.);
     this.#camera.lookAt(0., 0., -1.);
     this.#camera.up.set( 0, 0, 1 );
   }
