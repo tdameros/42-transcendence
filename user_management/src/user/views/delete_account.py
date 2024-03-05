@@ -11,7 +11,8 @@ from common.src.jwt_managers import user_authentication
 from user.models import Friend, User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import get_user_id
-from user_management.utils import generate_random_string, post_friends_increment
+from user_management.utils import (generate_random_string,
+                                   post_friends_increment)
 
 
 def anonymize_user(user):
