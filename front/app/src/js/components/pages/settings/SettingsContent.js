@@ -39,18 +39,20 @@ export class SettingsContent extends Component {
               <div class="card-body m-2">
                   <h2 class="card-title text-center m-5">Settings</h2>
                   <form id="settings-form">
-                  <div class="form-group mb-4 d-flex justify-content-center position-relative">
-                    <div class="position-relative">
-                      <img id="avatar" src="${userManagementClient.getURLAvatar(username)}" class="rounded-circle object-fit-cover" style="width: 125px; height: 125px;">
-                      <button id="trash-icon" class="btn btn-danger btn-sm position-absolute bottom-0 end-0">
-                          <i class="bi bi-trash-fill"></i>
-                      </button>
-                    </div>
-                  </div>
+                      <div class="form-group mb-4 d-flex justify-content-center position-relative">
+                          <div class="position-relative">
+                              <img id="avatar" src="${userManagementClient.getURLAvatar(username)}"
+                                   class="rounded-circle object-fit-cover" style="width: 125px; height: 125px;">
+                              <button id="trash-icon" type="button"
+                                      class="btn btn-danger btn-sm position-absolute bottom-0 end-0">
+                                  <i class="bi bi-trash-fill"></i>
+                              </button>
+                          </div>
+                      </div>
                       <div class="form-group mb-4">
                           <div class="input-group has-validation">
-                              <span class="input-group-text"
-                                    id="inputGroupPrepend">@</span>
+                                    <span class="input-group-text"
+                                          id="inputGroupPrepend">@</span>
                               <input type="text" class="form-control" id="username"
                                      placeholder="New username" value="${this.defaultUsername}"
                                      autocomplete="username">
@@ -74,8 +76,8 @@ export class SettingsContent extends Component {
                                      placeholder="New password">
                               <span id="password-eye"
                                     class="input-group-text dynamic-hover">
-                                  <i class="bi bi-eye-fill"></i>
-                              </span>
+                                        <i class="bi bi-eye-fill"></i>
+                                    </span>
                               <div id="password-feedback" class="invalid-feedback">
                                   Invalid password.
                               </div>
@@ -88,54 +90,57 @@ export class SettingsContent extends Component {
                                      placeholder="Confirm new password">
                               <span id="confirm-password-eye"
                                     class="input-group-text dynamic-hover">
-                                  <i class="bi bi-eye-fill"></i>
-                              </span>
+                                        <i class="bi bi-eye-fill"></i>
+                                    </span>
                               <div id="confirm-password-feedback" class="invalid-feedback">
                                   Passwords do not match.
                               </div>
                           </div>
                       </div>
                       <div class="form-group mb-4">
-                        <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" id="two-fa-switch" ${this.defaultHas2FA ? 'checked': ''}>
-                          <label class="form-check-label" for="two-fa-switch">Two-factor authentication</label>
-                         </div>
+                          <div class="form-check form-switch">
+                              <input class="form-check-input" type="checkbox" id="two-fa-switch" ${this.defaultHas2FA ?
+                              'checked': ''}>
+                              <label class="form-check-label" for="two-fa-switch">Two-factor authentication</label>
+                          </div>
                       </div>
-                  <alert-component id="alert-form" alert-display="false">
-                  </alert-component>
-                  <div class="d-flex flex-row mb-2">
-                      <button id="export-button" class="btn btn-success">Export data</button>
-                      <button id="delete-button" class="btn btn-danger ms-2">Delete account</button>
-                  </div>
-                  <div class="d-flex">
-                      <button id="save-button" type="submit" class="btn btn-primary mb-2" disabled>Save changes</button>
-                  </div>
+                      <alert-component id="alert-form" alert-display="false">
+                      </alert-component>
+                      <div class="d-flex flex-row mb-2">
+                          <button id="export-button" type="button" class="btn btn-success">Export data</button>
+                          <button id="delete-button" type="button" class="btn btn-danger ms-2">Delete account</button>
+                      </div>
+                      <div class="d-flex">
+                          <button id="save-button" type="submit" class="btn btn-primary mb-2" disabled>Save changes</button>
+                      </div>
                   </form>
               </div>
           </div>
       </div>
-          <div class="modal fade" id="confirm-delete-modal" aria-hidden="true" tabindex="-1">
-              <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h1 class="modal-title fs-5 text-danger">Confirm Account Deletion</h1>
-                          <button type="button" class="btn-close"
-                                  data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <form>
+      <div class="modal fade" id="confirm-delete-modal" aria-hidden="true" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h1 class="modal-title fs-5 text-danger">Confirm Account Deletion</h1>
+                      <button type="button" class="btn-close"
+                              data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form>
                       <div class="modal-body d-flex flex-column justify-content-center">
-        <p>Are you sure you want to delete your account? This action cannot be undone and all your data will be anonimized.</p>
+                          <p>Are you sure you want to delete your account? This action cannot be undone and all your data will
+                              be anonimized.</p>
                           <alert-component id="alert-delete"
                                            alert-display="false"></alert-component>
                       </div>
                       <div class="modal-footer">
-                        <button id="cancel-button" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button id="delete-account-btn" type="button" class="btn btn-danger">Delete</button>
+                          <button id="cancel-button" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel
+                          </button>
+                          <button id="delete-account-btn" type="button" class="btn btn-danger">Delete</button>
                       </div>
-                      </form>
-                  </div>
+                  </form>
               </div>
           </div>
+      </div>
     `);
   }
 
