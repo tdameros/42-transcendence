@@ -39,12 +39,12 @@ export class _ThreeJS {
   }
 
   #initRenderer() {
-    this.#renderer = new THREE.WebGLRenderer({antialias: false});
+    this.#renderer = new THREE.WebGLRenderer({antialias: true});
 
     this.#renderer.shadowMap.enabled = true;
     this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this.#renderer.setPixelRatio(window.devicePixelRatio * 0.5);
+    this.#renderer.setPixelRatio(window.devicePixelRatio);
     this.#renderer.setSize(this.width, this.height);
 
     this.#renderer.domElement.classList.add('rounded');
