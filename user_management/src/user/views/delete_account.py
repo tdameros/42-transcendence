@@ -11,7 +11,8 @@ from common.src.jwt_managers import user_authentication
 from user.models import Friend, User, UserOAuth
 from user_management import settings
 from user_management.JWTManager import get_user_id
-from user_management.utils import generate_random_string
+from user_management.utils import (generate_random_string,
+                                   post_friends_increment)
 
 
 def anonymize_user(user):
@@ -64,6 +65,7 @@ def delete_account(user_id, access_token):
     try:
         friends = Friend.objects.filter(user=user.id)
         for friend in friends:
+            post_friends_increment(friend.friend.id, {'increment': False})
             Friend.objects.filter(user=friend.friend.id, friend=user.id).delete()
     except Exception as e:
         return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
