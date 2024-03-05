@@ -52,9 +52,9 @@ export class Ball {
     const ball = new THREE.Mesh(
         new THREE.IcosahedronGeometry(this.#radius, 16, 8),
         new THREE.MeshPhysicalMaterial({
-          roughness: 0.2,
-          metalness: 0.5,
-          transmission: 0.75,
+          roughness: 0.5,
+          metalness: 1,
+          color: 0xffffff,
         }),
     );
     ball.position.set(0., 0., 0.);

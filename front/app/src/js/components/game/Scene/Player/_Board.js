@@ -27,7 +27,6 @@ export class _Board {
     boardSize.z = 1;
     await this.initBoard(boardSize);
     await this.initWalls(boardSize);
-    this.initGoal(boardSize, wallWidth);
     this.initScore(boardSize, wallWidth, maxScore);
     this.initLight(boardSize);
     this.#threeJSBoard.castShadow = false;
@@ -53,15 +52,29 @@ export class _Board {
   }
 
   async initWalls(boardSize) {
+    let sign = -1;
+    if (this.#side === 0) {
+      sign = 1;
+    }
     const wallWidth = 1;
-    const wallLeft = await this.initWall(boardSize, wallWidth);
-    const wallRight = await this.initWall(boardSize, wallWidth);
+    const wall = await this.initWall(boardSize, wallWidth);
+    const goalWall = await this.initWall(
+        {x: boardSize.y + 2 * wallWidth, z: boardSize.z},
+        wallWidth,
+    );
 
-    wallLeft.position.set(0, boardSize.y / 2 + wallWidth / 2, 0);
-    wallRight.position.set(0, -boardSize.y / 2 - wallWidth / 2, 0);
-    wallLeft.rotateZ(Math.PI);
-    this.#threeJSBoard.add(wallLeft);
-    this.#threeJSBoard.add(wallRight);
+    wall.position.set(0, -boardSize.y / 2 - wallWidth / 2, 0);
+    this.#threeJSBoard.add(wall.clone());
+    wall.position.set(0, boardSize.y / 2 + wallWidth / 2, 0);
+    wall.rotateZ(Math.PI);
+    this.#threeJSBoard.add(wall.clone());
+    if (this.#side === 0) {
+      goalWall.rotateZ(Math.PI);
+    }
+    goalWall.position
+        .set(-sign * boardSize.x / 2 - sign * wallWidth / 2, 0, 0);
+    goalWall.rotateZ(Math.PI / 2);
+    this.#threeJSBoard.add(goalWall);
   }
 
   async initWall(boardSize, wallWidth) {
@@ -92,7 +105,7 @@ export class _Board {
     const pointRadius = wallWidth / 1.5;
     const pointOffset = sign * pointRadius * 3;
     const pointStartPosition = new THREE.Vector3(
-        sign * boardSize.x / 2 - sign * boardSize.x / 6,
+        sign * boardSize.x / 3,
         boardSize.y / 2 + wallWidth / 2,
         boardSize.z + pointRadius * 2,
     );
@@ -109,11 +122,28 @@ export class _Board {
       this.#points.push(point);
       this.#threeJSBoard.add(point);
     }
+    const width = Math.abs(
+        this.#points[0].position.x - this.#points[maxScore - 1].position.x,
+    );
+    const middle = -(sign * width) / 2 + this.#points[0].position.x;
+    const light = new THREE.RectAreaLight(
+        0xffffff,
+        5,
+        width,
+        pointRadius * 2,
+    );
+    light.position.set(middle, pointStartPosition.y, pointStartPosition.z + 4);
+    light.lookAt(middle, pointStartPosition.y, pointStartPosition.z);
+    this.#threeJSBoard.add(light.clone());
+    light.position.y *= -1;
+    this.#threeJSBoard.add(light.clone());
   }
 
   initPointMesh(pointRadius) {
     const material = new THREE.MeshStandardMaterial({
-      color: 0xa0a0a0,
+      color: 0xf0f0f0,
+      metalness: 0.8,
+      roughness: 0.2,
     });
     material.flatShading = true;
     return new THREE.Mesh(
@@ -137,28 +167,6 @@ export class _Board {
 
   get score() {
     return this.#score;
-  }
-
-  initGoal(boardSize, wallWidth) {
-    let sign = 1;
-    if (this.#side === 0) {
-      sign = -1;
-    }
-    this.#goal = new THREE.Mesh(
-        new THREE.BoxGeometry(
-            wallWidth / 2,
-            boardSize.y + wallWidth * 2,
-            boardSize.z * 2,
-        ),
-        new THREE.MeshPhysicalMaterial({
-          roughness: 0.2,
-          metalness: 0.2,
-          transmission: 1,
-        }),
-    );
-    this.#goal.position
-        .set(sign * boardSize.x / 2 + sign * wallWidth / 4, 0, 0);
-    this.#threeJSBoard.add(this.#goal);
   }
 
   updateFrame() {
