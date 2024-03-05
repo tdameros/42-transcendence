@@ -8,7 +8,7 @@ from vector_to_dict import vector_to_dict
 class Paddle(object):
     def __init__(self, position: numpy.ndarray, player_position: numpy.ndarray):
         self._position: numpy.ndarray = position.copy()
-        self._movement: numpy.ndarray = numpy.array([0., 0., 0.])
+        self._movement: numpy.ndarray = numpy.array([0., 0., 0.], dtype=float)
 
         self._paddle_is_on_the_right: bool = self._position[0] > 0.
 
@@ -53,13 +53,13 @@ class Paddle(object):
     def get_position(self):
         return self._position
 
-    def get_top_collision_segment(self):
+    def get_top_collision_segment(self) -> Segment2:
         return self._top_collision_segment
 
-    def get_front_collision_segment(self):
+    def get_front_collision_segment(self) -> Segment2:
         return self._front_collision_segment
 
-    def get_bottom_collision_segment(self):
+    def get_bottom_collision_segment(self) -> Segment2:
         return self._bottom_collision_segment
 
     def set_paddle_is_on_the_right(self, paddle_is_on_the_right: bool):
@@ -78,14 +78,14 @@ class Paddle(object):
         y_bottom = (self._player_position[1] + self._position[1]
                     - settings.PADDLE_SIZE[1] * 0.5)
 
-        top_left = numpy.array([x_left, y_top])
-        top_right = numpy.array([x_right, y_top])
-        bottom_right = numpy.array([x_right, y_bottom])
-        bottom_left = numpy.array([x_left, y_bottom])
+        top_left = numpy.array([x_left, y_top], dtype=float)
+        top_right = numpy.array([x_right, y_top], dtype=float)
+        bottom_right = numpy.array([x_right, y_bottom], dtype=float)
+        bottom_left = numpy.array([x_left, y_bottom], dtype=float)
 
-        self._top_collision_segment = Segment2(top_left, top_right)
-        self._bottom_collision_segment = Segment2(bottom_left, bottom_right)
+        self._top_collision_segment: Segment2 = Segment2(top_left, top_right)
+        self._bottom_collision_segment: Segment2 = Segment2(bottom_left, bottom_right)
         if self._paddle_is_on_the_right:
-            self._front_collision_segment = Segment2(top_left, bottom_left)
+            self._front_collision_segment: Segment2 = Segment2(top_left, bottom_left)
         else:
-            self._front_collision_segment = Segment2(top_right, bottom_right)
+            self._front_collision_segment: Segment2 = Segment2(top_right, bottom_right)

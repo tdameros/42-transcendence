@@ -3,10 +3,16 @@ import * as THREE from 'three';
 export class Segment2 {
   #begin = new THREE.Vector2;
   #end = new THREE.Vector2;
+  #vector = new THREE.Vector2;
 
-  constructor(begin, end) {
+  constructor(begin, end, vector=null) {
     this.#begin.set(begin.x, begin.y);
     this.#end.set(end.x, end.y);
+    if (vector !== null) {
+      this.#vector.set(vector.x, vector.y);
+    } else {
+      this.#vector.set(end.x - begin.x, end.y - begin.y);
+    }
   }
 
   intersect(segment2) {
@@ -24,21 +30,21 @@ export class Segment2 {
                 (this.#end.y - this.#begin.y);
 
     if (bottom === 0) {
-      return {point: null, t: null};
+      return {intersection: null, t: null};
     }
 
     const t1 = t1Top / bottom;
     if (t1 < 0 || t1 > 1) {
-      return {point: null, t: null};
+      return {intersection: null, t: null};
     }
 
     const t2 = t2Top / bottom;
     if (t2 < 0 || t2 > 1) {
-      return {point: null, t: null};
+      return {intersection: null, t: null};
     }
 
     return {
-      point: new THREE.Vector2(this.#begin.x + t1 *
+      intersection: new THREE.Vector2(this.#begin.x + t1 *
           (this.#end.x - this.#begin.x),
       this.#begin.y + t1 * (this.#end.y - this.#begin.y)),
       t: t1,
@@ -51,5 +57,9 @@ export class Segment2 {
 
   get end() {
     return this.#end;
+  }
+
+  get vector() {
+    return this.#vector;
   }
 }
