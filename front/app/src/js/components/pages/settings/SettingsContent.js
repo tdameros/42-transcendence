@@ -127,8 +127,8 @@ export class SettingsContent extends Component {
                   </div>
                   <form>
                       <div class="modal-body d-flex flex-column justify-content-center">
-                          <p>Are you sure you want to delete your account? This action cannot be undone and all your data will
-                              be anonimized.</p>
+                          <p>Are you sure you want to delete your account? This action cannot be undone, and all your data will
+                              be anonymized.</p>
                           <alert-component id="alert-delete"
                                            alert-display="false"></alert-component>
                       </div>
