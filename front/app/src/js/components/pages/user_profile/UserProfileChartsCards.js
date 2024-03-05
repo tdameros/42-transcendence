@@ -71,6 +71,7 @@ export class UserProfileChartsCards extends Component {
   }
 
   #generateRankConfig(dates, eloScores, winRates) {
+    winRates = winRates.map((rate) => rate.toFixed(2));
     const labels = Array.from(
         dates, (date) => this.#formatDateWithoutTime(date),
     );
@@ -105,13 +106,16 @@ export class UserProfileChartsCards extends Component {
           tooltip: {
             callbacks: {
               title: function(tooltipItems) {
-                const index = tooltipItems[0].parsed.x;
-                return tooltipItems[0].dataset.labelsToolTip[index];
+                try {
+                  const index = tooltipItems[0].parsed.x;
+                  return tooltipItems[0].dataset.labelsToolTip[index];
+                } catch (error) { }
               },
               label: function(tooltipItems) {
-                const unit = tooltipItems.datasetIndex === 0 ? '' : '%';
-                const newLabel = `${tooltipItems.dataset.label} : ${tooltipItems.parsed.y}${unit}`;
-                return newLabel;
+                try {
+                  const unit = tooltipItems.datasetIndex === 0 ? '' : '%';
+                  return `${tooltipItems.dataset.label} : ${tooltipItems.parsed.y}${unit}`;
+                } catch (error) { }
               },
             },
           },
@@ -151,7 +155,9 @@ export class UserProfileChartsCards extends Component {
             ticks: {
               maxTicksLimit: 5,
               callback: function(value, index, values) {
-                return value + '%';
+                try {
+                  return value + '%';
+                } catch (error) { }
               },
             },
           },
