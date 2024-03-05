@@ -13,6 +13,7 @@ from common.src.jwt_managers import user_authentication
 from user import error_messages
 from user.models import Friend, User
 from user_management.JWTManager import get_user_id
+from user_management.utils import post_friends_increment
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -67,18 +68,8 @@ class FriendsBaseView(View):
         data = {
             'increment': increment,
         }
-        FriendsBaseView.post_friends_increment(user_id, data)
-        FriendsBaseView.post_friends_increment(friend_id, data)
-
-    @staticmethod
-    def post_friends_increment(user_id: int, data: dict) -> JsonResponse:
-        url = settings.USER_STATS_USER_ENDPOINT + str(user_id) + settings.USER_STATS_FRIENDS_ENDPOINT
-        try:
-            response = InternalAuthRequests.post(url, data=json.dumps(data))
-        except Exception as e:
-            raise Exception(f'Failed to access user-stats : {e}')
-        if not response.ok:
-            raise Exception(f'Failed to update friends in user-stats : {response.text}')
+        post_friends_increment(user_id, data)
+        post_friends_increment(friend_id, data)
 
 
 class FriendsView(FriendsBaseView):

@@ -132,8 +132,18 @@ def post_user_stats(user_id: int) -> (bool, list):
             f'{common.USER_STATS_USER_ENDPOINT}{user_id}/',
             data=json.dumps({})
         )
-    except requests.exceptions.RequestException:
-        return False, ['Could not access user-stats']
+    except Exception as e:
+        return False, [f'Failed to access user-stats : {e}']
     if not response.ok:
-        return False, ['Could not create user in user-stats']
+        return False, ['Failed to create user in user-stats']
     return True, None
+
+
+def post_friends_increment(user_id: int, data: dict) -> None:
+    url = common.USER_STATS_USER_ENDPOINT + str(user_id) + common.USER_STATS_FRIENDS_ENDPOINT
+    try:
+        response = InternalAuthRequests.post(url, data=json.dumps(data))
+    except Exception as e:
+        raise Exception(f'Failed to access user-stats : {e}')
+    if not response.ok:
+        raise Exception(f'Failed to update friends in user-stats : {response.text}')
