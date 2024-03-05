@@ -51,7 +51,13 @@ class SignUpView(View):
         message = f'Click on the link to verify your email: {verif_link}'
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list)
+        try:
+            send_mail(subject, message, from_email, recipient_list)
+        except Exception as e:
+            user.delete()
+            return JsonResponse(data={'errors': [
+                f'An error occurred while sending the verification email : {e}'
+            ]}, status=500)
 
         try:
             user.save()

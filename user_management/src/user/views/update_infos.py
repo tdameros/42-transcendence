@@ -36,7 +36,7 @@ class UserUpdateInfosManager:
             value = json_request.get(field)
             success, update_errors = UserUpdateInfosManager.update_user_field(user_id, field, value)
             if not success:
-                errors.append({field: update_errors})
+                errors.append(update_errors)
                 return False, errors
 
         return True, None
@@ -51,7 +51,7 @@ class UserUpdateInfosManager:
 
                 valid, error_message = validator(value)
                 if not valid:
-                    errors.append({field: error_message})
+                    errors.append(error_message)
 
     @staticmethod
     def update_user_field(user_id, field_name, new_value):

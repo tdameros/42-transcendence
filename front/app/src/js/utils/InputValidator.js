@@ -46,13 +46,16 @@ export class InputValidator {
   }
 
   static isAlphaNumeric(string) {
-    const alphaNumericRegex = /^[a-zA-Z0-9_]+$/;
+    const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
     return alphaNumericRegex.test(string);
   }
 
   static isValidEmail(email) {
     const emailRegex = /^[\w-_.]+@([\w-]+\.)+[\w-]{2,}$/;
     const missingRequirements = [];
+    if (email.indexOf('..') !== -1) {
+      missingRequirements.push(InputValidator.MessageEmailInvalidFormat);
+    }
     if (email.length > InputValidator.emailMaxLength) {
       missingRequirements.push(InputValidator.MessageEmailMaxLength);
     }

@@ -73,9 +73,13 @@ export class _KeyHookHandler {
   async #onKeyPress(event) {
     switch (event.key) {
       case 'w':
+      case 'W':
+      case 'ArrowUp':
         await this.#pressUpKey();
         return;
       case 's':
+      case 'S':
+      case 'ArrowDown':
         await this.#pressDownKey();
         return;
       default:
@@ -104,9 +108,13 @@ export class _KeyHookHandler {
   async #onKeyRelease(event) {
     switch (event.key) {
       case 'w':
+      case 'W':
+      case 'ArrowUp':
         await this.#releaseUpKey();
         return;
       case 's':
+      case 'S':
+      case 'ArrowDown':
         await this.#releaseDownKey();
         return;
       default:

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {SceneSky} from './SceneSky.js';
 
 export class LoadingScreenScene {
   #threeJSScene = new THREE.Scene();
@@ -8,45 +9,62 @@ export class LoadingScreenScene {
   #ball2Direction = new THREE.Vector3(-0.3, 0.3, 0.);
   #board;
   #boardBounds;
+  #sky;
 
   constructor(matchesJson) {
     const ballGeometry = new THREE.BoxGeometry(1., 1., 1.);
 
     this.#ball1 = new THREE.Mesh(ballGeometry,
         new THREE.MeshStandardMaterial({color: 0x00ff00}));
-    this.#ball1.position.set(-17., 0., 0.5);
+    this.#ball1.position.set(-17., 0., 1);
     this.#ball1.castShadow = true;
     this.#ball1.receiveShadow = true;
     this.#threeJSScene.add(this.#ball1);
 
     this.#ball2 = new THREE.Mesh(ballGeometry,
         new THREE.MeshStandardMaterial({color: 0xff0000}));
-    this.#ball2.position.set(17., 0., 0.5);
+    this.#ball2.position.set(17., 0., 1);
     this.#ball2.castShadow = true;
     this.#ball2.receiveShadow = true;
     this.#threeJSScene.add(this.#ball2);
 
 
-    this.#board = new THREE.Mesh(new THREE.PlaneGeometry(40., 20.),
-        new THREE.MeshStandardMaterial({color: 0x0000ff}));
+    this.#board = new THREE.Mesh(
+        new THREE.BoxGeometry(30, 20., 1.),
+        new THREE.MeshStandardMaterial({color: 0x246FA8}),
+    );
     this.#board.position.set(0., 0., 0.);
     this.#board.castShadow = false;
     this.#board.receiveShadow = true;
     this.#threeJSScene.add(this.#board);
 
     const light = new THREE.DirectionalLight(0xFFFFFF, 10.0);
-    light.position.set(20., 5., 10.);
+    light.position.set(20., -5, 10.);
     light.target.position.set(0., 0., 0.);
     light.castShadow = true;
+    light.shadow.bias = -0.01;
     light.shadow.camera.near = 0.1;
     light.shadow.camera.far = 50.0;
     light.shadow.camera.left = 25.;
     light.shadow.camera.right = -25.;
     light.shadow.camera.top = 25.;
     light.shadow.camera.bottom = -25.;
+    light.shadow.mapSize.width = 2048;
+    light.shadow.mapSize.height = 2048;
     this.#threeJSScene.add(light);
 
+    this.#sky = new SceneSky();
+    this.#threeJSScene.add(this.#sky.sky);
+
     this.#setBoardBounds();
+  }
+
+  setLightTheme() {
+    this.#sky.setLightTheme();
+  }
+
+  setDarkTheme() {
+    this.#sky.setDarkTheme();
   }
 
   updateFrame(timeDelta) {

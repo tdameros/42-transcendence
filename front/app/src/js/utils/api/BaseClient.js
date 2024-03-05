@@ -90,6 +90,7 @@ export class BaseApiClient {
     if (notificationComponent) {
       notificationComponent.disconnect();
     }
+    window.location.reload();
   }
 
   get username() {

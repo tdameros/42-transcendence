@@ -168,8 +168,10 @@ export class UserProfileContent extends Component {
     const startDate = new Date();
     startDate.setDate(currentDate.getDate() - currentDate.getDay() +
       (currentDate.getDay() === 0 ? -6 : 1));
+    startDate.setHours(0, 0, 0, 0);
     const endDate = new Date();
     endDate.setDate(startDate.getDate() + 7);
+    endDate.setHours(0, 0, 0, 0);
     return {startDate, endDate};
   }
 
