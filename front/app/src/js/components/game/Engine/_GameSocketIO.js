@@ -7,41 +7,69 @@ import {getRouter} from '@js/Router.js';
 import {Scene} from '../Scene/Scene.js';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 export class _GameSocketIO {
   #engine;
   #socketIO;
   #isConnected = false;
   #gameHasStarted = false;
+  #reconnectAttempts = 0;
+  #maxReconnectAttempts = 5;
 
   constructor(engine) {
     this.#engine = engine;
   }
 
   async init(URI) {
+    if (this.#reconnectAttempts >= this.#maxReconnectAttempts) {
+      getRouter().redirect('/');
+      return;
+    }
+    let accessToken;
+    try {
+      accessToken = await userManagementClient.getValidAccessToken();
+      if (accessToken === null) {
+        getRouter().redirect('/signin/');
+        return;
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+      return;
+    }
     this.#socketIO = io(URI, {
       auth: {
-        token: await userManagementClient.getValidAccessToken()},
+        token: accessToken,
+      },
     });
 
     this.#socketIO.on('connect', async () => {
       this.#isConnected = true;
     });
 
-    this.#socketIO.on('connect_error', (jsonString) => {
+    this.#socketIO.on('connect_error', async (jsonString) => {
       let error;
       try {
         error = JSON.parse(jsonString.message);
       } catch {
         ToastNotifications.addErrorNotification('Server connection error');
+        this.disconnect();
+        this.#reconnectAttempts++;
+        await sleep(2000);
+        await this.init(URI);
         return;
       }
-      if (error['status_code'] !== 0) {
+      if (error['status_code'] === 0 || error['status_code'] === 1) {
+        ToastNotifications.addErrorNotification(error['message']);
+        getRouter().redirect('/');
+        return;
+      } else {
         console.error('Connection error:', error['message']);
         ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
-      } else {
-        ToastNotifications.addErrorNotification('The game is already over');
-        getRouter().redirect('/');
+        this.disconnect();
+        this.#reconnectAttempts++;
+        await sleep(2000);
+        await this.init(URI);
       }
     });
 
