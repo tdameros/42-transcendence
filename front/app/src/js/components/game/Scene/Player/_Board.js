@@ -21,6 +21,7 @@ export class _Board {
     this.#side = side;
     this.#pointColor = this.#side ?
         _Board.#rightSideColor : _Board.#leftSideColor;
+    const wallWidth = 1;
     this.#threeJSBoard = new THREE.Group();
     const boardSize = boardJson['size'];
     boardSize.z = 1;
