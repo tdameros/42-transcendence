@@ -53,7 +53,7 @@ export class ConnectedNavbar extends Component {
                           <ul class="dropdown-menu dropdown-menu-end"
                               aria-labelledby="dropdownMenuLink">
                               <li><a class="dropdown-item"
-                                     onclick="window.router.navigate('/profile/${username}/')">Profil</a></li>
+                                     onclick="window.router.navigate('/profile/${username}/')">Profile</a></li>
                               <li><a class="dropdown-item"
                                      onclick="window.router.navigate('/settings/')">Settings</a></li>
                               <li><a id="logout" class="dropdown-item text-danger">Sign out</a></li>
