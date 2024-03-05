@@ -19,7 +19,9 @@ class ProgressTest(TestCase):
 
         return response
 
-    def post_match(self, body):
+    @patch('common.src.jwt_managers.ServiceAccessJWT.authenticate')
+    def post_match(self, body, mock_post):
+        mock_post.return_value = (True, None)
         url = reverse('match')
         response = self.client.post(url, json.dumps(body), content_type='application/json')
         return response
