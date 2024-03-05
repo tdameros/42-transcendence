@@ -10,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 import api.error_message as error
 from api.models import Match, User
-from user_stats import settings
 from common.src.jwt_managers import service_authentication
+from user_stats import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
