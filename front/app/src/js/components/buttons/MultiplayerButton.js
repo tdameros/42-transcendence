@@ -73,7 +73,7 @@ export class MultiplayerButton extends Component {
 
     this.sio.on('connect_error', (error) => {
       ToastNotifications.addErrorNotification(
-          'Server connection error: ' + error.message
+          'Server connection error: ' + error.message,
       );
       this.#cancelQueue();
     });
