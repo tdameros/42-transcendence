@@ -27,7 +27,7 @@ export class _Board {
     boardSize.z = 1;
     await this.initBoard(boardSize);
     await this.initWalls(boardSize);
-    // this.initGoal(boardSize, wallWidth);
+    this.initGoal(boardSize, wallWidth);
     this.initScore(boardSize, wallWidth, maxScore);
     this.initLight(boardSize);
     this.#threeJSBoard.castShadow = false;
