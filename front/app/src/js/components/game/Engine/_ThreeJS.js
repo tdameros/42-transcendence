@@ -44,7 +44,7 @@ export class _ThreeJS {
     this.#renderer.shadowMap.enabled = true;
     this.#renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this.#renderer.setPixelRatio(window.devicePixelRatio);
+    this.#renderer.setPixelRatio(window.devicePixelRatio * 0.8);
     this.#renderer.setSize(this.width, this.height);
 
     this.#renderer.domElement.classList.add('rounded');

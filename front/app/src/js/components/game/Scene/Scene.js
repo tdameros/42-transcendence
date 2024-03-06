@@ -183,7 +183,7 @@ export class Scene {
     const cameraPosition = new THREE.Vector3(
         currentPlayerGamePosition.x,
         currentPlayerGamePosition.y,
-        cameraHeight - 20,
+        cameraHeight - 10,
     );
     const cameraLookAt = currentPlayerGamePosition.clone();
     this.#engine.updateCamera(cameraPosition, cameraLookAt);
