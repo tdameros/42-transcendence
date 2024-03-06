@@ -9,6 +9,7 @@ from api.views.manage_tournament_views import (ManageTournamentView,
 from api.views.matches_views import MatchesView
 from api.views.self_ongoing_tournament import SelfOnGoingTournament
 from api.views.tournament_players_views import (AnonymizePlayerView,
+                                                KickPlayerView,
                                                 TournamentPlayersView)
 from api.views.tournament_views import TournamentView
 
@@ -23,6 +24,7 @@ urlpatterns = [
     path('<int:tournament_id>/match/end/', EndMatchView.as_view(), name='end-match'),
     path('<int:tournament_id>/match/add-point/', AddPointView.as_view(), name='add-point'),
     path('player/anonymize/', AnonymizePlayerView.as_view(), name='player'),
+    path('<int:tournament_id>/player/<int:user_id>/', KickPlayerView.as_view(), name='kick-player'),
     path('self/ongoing/', SelfOnGoingTournament.as_view(), name='self-ongoing'),
     path('delete-inactive/', DeleteInactiveTournamentView.as_view(), name='delete-inactive-tournament')
 ]

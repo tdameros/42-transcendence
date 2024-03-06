@@ -203,3 +203,38 @@ class AnonymizePlayerView(View):
         if not isinstance(user_id, int):
             return False, error.USER_ID_INVALID
         return True, None
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_authentication(['GET', 'POST', 'DELETE']), name='dispatch')
+class KickPlayerView(View):
+    @staticmethod
+    def delete(request: HttpRequest, tournament_id: int, user_id: int) -> JsonResponse:
+        admin_id = get_user_id(request)
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if admin_id != tournament.admin_id:
+            return JsonResponse({'errors': [error.NOT_OWNER]}, status=403)
+
+        try:
+            player = tournament.players.get(user_id=user_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'errors': [error.NOT_REGISTERED]}, status=404)
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if tournament.status != Tournament.CREATED:
+            return JsonResponse({'errors': [error.ALREADY_STARTED]}, status=403)
+
+        try:
+            player.delete()
+        except Exception as e:
+            return JsonResponse({'errors': [str(e)]}, status=500)
+
+        return JsonResponse({'message': f'You kicked the player with id `{user_id}`'}, status=200)
