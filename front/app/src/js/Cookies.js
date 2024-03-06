@@ -14,7 +14,9 @@ export class Cookies {
   }
 
   static add(name, value) {
-    document.cookie = `${name}=${value};path=/;${Cookies.#securePart}`;
+    const expireDate = new Date();
+    expireDate.setFullYear(expireDate.getFullYear() + 1);
+    document.cookie = `${name}=${value};path=/;expires=${expireDate.toUTCString()};${Cookies.#securePart}`;
   }
 
   static remove(name) {
