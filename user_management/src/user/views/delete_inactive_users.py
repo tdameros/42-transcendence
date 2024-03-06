@@ -44,6 +44,7 @@ def remove_old_pending_accounts():
     try:
         pending_accounts = User.objects.filter(
             emailVerified=False,
+            account_deleted=False,
             date_joined__lt=timezone.now() - timezone.timedelta(
                 days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION)
         )
