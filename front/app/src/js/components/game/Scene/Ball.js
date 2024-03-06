@@ -35,17 +35,10 @@ export class Ball {
       return;
     }
 
-    let collisionHandler;
-    if (this.#movement.x < 0.) {
-      collisionHandler = new CollisionHandler(match.players[0].paddle,
-          boardSize);
-    } else {
-      collisionHandler = new CollisionHandler(match.players[1].paddle,
-          boardSize);
-    }
-    collisionHandler.updateBallPositionAndMovement(
-        this, timeDelta, match, this.#radius,
-    );
+    const collisionHandler = this.#movement.x < 0. ?
+        new CollisionHandler(match.players[0].paddle, boardSize) :
+        new CollisionHandler(match.players[1].paddle, boardSize);
+    collisionHandler.updateBallPositionAndMovement(timeDelta, match);
   }
 
   #addBallToGroup() {
@@ -104,5 +97,9 @@ export class Ball {
 
   setMovementY(y) {
     this.#movement.y = y;
+  }
+
+  get radius() {
+    return this.#radius;
   }
 }

@@ -19,6 +19,14 @@
   >> ```
   >
   >> Prints debug_message on `console.log`
+ 
+- ### `sync_time`:
+  >> Argument:
+  >> ```
+  >> 'server_time': float (Seconds since the Epoch)
+  >> ```
+  >
+  >> Allows the client to adapt to latency
 
 - ### `scene`:
   >> Argument:
@@ -87,6 +95,7 @@
   >>         'player_index': int
   >>     }
   >>     'game_has_started': bool,
+  >>     'server_time': float (Seconds since the Epoch)
   >> }
   >> ```
   >
@@ -138,7 +147,8 @@
   >>         'match': int
   >>     },
   >>     'position': {'x': float, 'y': float, 'z': float},
-  >>     'movement': {'x': float, 'y': float, 'z': float}
+  >>     'movement': {'x': float, 'y': float, 'z': float},
+  >>     'time_at_update': float (Seconds since the Epoch),
   >> }
   >> ```
   >
