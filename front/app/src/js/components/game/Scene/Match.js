@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import {Player} from './Player/Player';
 import {Ball} from './Ball';
-import {ServerTimeFixer} from "@components/game/ServerTime.js";
+import {ServerTimeFixer} from '@components/game/ServerTime.js';
 
 export class Match {
   #threeJSGroup = new THREE.Group();

@@ -8,8 +8,8 @@ import {Scene} from '../Scene/Scene.js';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
 import {ErrorPage} from '@utils/ErrorPage.js';
-import {CollisionHandler} from "@components/game/Scene/CollisionHandler.js";
-import {ServerTimeFixer} from "@components/game/ServerTime.js";
+import {CollisionHandler} from '@components/game/Scene/CollisionHandler.js';
+import {ServerTimeFixer} from '@components/game/ServerTime.js';
 
 export class _GameSocketIO {
   #engine;

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from ssl import SSLContext
 from typing import Optional
