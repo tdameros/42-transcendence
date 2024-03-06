@@ -58,7 +58,7 @@ export class SearchNav extends Component {
   }
 
   async #searchBarHandler(event) {
-    if (event.target.value.length < 3) {
+    if (event.target.value.length < 2) {
       this.searchResults.style.display = 'none';
       return;
     }
