@@ -36,6 +36,7 @@ def remove_inactive_users():
             response = delete_account(user.id, access_token)
             if response.get('errors'):
                 return f'Error deleting user {user.id} : {response}'
+        return f'Inactive users deleted : {inactive_users}'
     except Exception as e:
         return f'Error fetching users : {e}'
 
@@ -47,7 +48,19 @@ def remove_old_pending_accounts():
             date_joined__lt=timezone.now() - timezone.timedelta(
                 days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION)
         )
+        deleted_accounts = ""
+        timezone_infos = f'timezone.now() : {timezone.now()} \n'
         for user in pending_accounts:
+            date_joined__lt_calculus = timezone.now() - timezone.timedelta(
+                days=settings.MAX_DAYS_BEFORE_PENDING_ACCOUNTS_DELETION)
+            deleted_accounts += (f'id : {user.id}, '
+                                 f'username : {user.username}, '
+                                 f'email : {user.email}, '
+                                 f'emailVerified : {user.emailVerified},'
+                                 f'last_activity : {user.last_activity},'
+                                 f'date_joined : {user.date_joined},'
+                                 f'date_joined__lt calculus : {date_joined__lt_calculus} \n')
             user.delete()
+        return f'Pending accounts deleted : {deleted_accounts} \n @{timezone_infos}'
     except Exception as e:
         return f'Error deleting pending accounts : {e}'
