@@ -22,10 +22,10 @@ class EventHandler(object):
     async def _connect(sid: str, _environ, auth):
         try:
             logging.info(f'{sid} connected')
+            if Server.should_stop or GameManager.is_game_over():
+                raise ConnectError('The game is over', 0)
 
             user_id: int = EventHandler._authenticate_user(auth)
-            if GameManager.is_game_over():
-                raise ConnectError('The game is over', 0)
             previous_sid = ClientManager.get_user_sid(user_id)
             if previous_sid:
                 await Server.sio.disconnect(previous_sid)
