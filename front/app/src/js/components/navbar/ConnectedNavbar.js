@@ -103,7 +103,6 @@ export class ConnectedNavbar extends Component {
 
   #logout() {
     userManagementClient.logout();
-    getRouter().navigate('/');
   }
 
   #generateNavLink(linkId) {
