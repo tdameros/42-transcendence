@@ -210,12 +210,17 @@ class AnonymizePlayerView(View):
 class KickPlayerView(View):
     @staticmethod
     def delete(request: HttpRequest, tournament_id: int, user_id: int) -> JsonResponse:
+        admin_id = get_user_id(request)
+
         try:
             tournament = Tournament.objects.get(id=tournament_id)
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
+
+        if admin_id != tournament.admin_id:
+            return JsonResponse({'errors': [error.NOT_OWNER]}, status=403)
 
         try:
             player = tournament.players.get(user_id=user_id)

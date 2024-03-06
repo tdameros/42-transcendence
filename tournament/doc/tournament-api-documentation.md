@@ -330,6 +330,28 @@ Anonymizes a user's nicknames
 
 --------------------------------------------------------------------------------
 
+## `/tournament/{tournament_id}/player/{user_id}`
+
+Kick a player from a tournament
+
+<details>
+ <summary><code>DELETE</code> <code><b>/tournament/{tournament_id}/player/{user_id}</b></code></summary>
+
+### Request
+
+None
+
+### Responses
+
+> | http code | content-type       | response                                                   |
+> |-----------|--------------------|------------------------------------------------------------|
+> | `200`     | `application/json` | `{"message": "You kicked the player with id `{user_id}`"}` |
+> | `400`     | `application/json` | `{"errors": ["AAA", "BBB", "..."]}`                        |
+
+</details>
+
+--------------------------------------------------------------------------------
+
 ## `/tournament/{id}/matches`
 
 ### Manage matches of a tournament
