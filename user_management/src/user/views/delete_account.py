@@ -22,7 +22,7 @@ def anonymize_user(user):
     if user.avatar:
         user.avatar.delete()
     user.avatar = None
-    user.emailVerified = False
+    user.emailVerified = True
     user.emailVerificationToken = None
     user.emailVerificationTokenExpiration = None
     user.forgotPasswordCode = None
