@@ -371,3 +371,53 @@ class AnonymizePlayer(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
+
+class KickPlayerTest(TestCase):
+    def setUp(self):
+        tournament = Tournament.objects.create(id=1, name='tournament', admin_id=1, max_players=16, status=0)
+        for i in range(0, 16):
+            Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=tournament)
+        tournament_started = Tournament.objects.create(id=2, name='tournament', admin_id=1, max_players=16, status=1)
+        for i in range(0, 16):
+            Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=tournament_started)
+        tournament_finished = Tournament.objects.create(id=3, name='tournament', admin_id=1, max_players=16, status=2)
+        for i in range(0, 16):
+            Player.objects.create(nickname=f'player {i}', user_id=(i + 1), tournament=tournament_finished)
+
+    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
+    def kick_player(self, tournament_id, user_id, mock_authenticate_request):
+        user = {'id': 1}
+        mock_authenticate_request.return_value = (True, user, None)
+        url = reverse('kick-player', args=(tournament_id, user_id))
+
+        response = self.client.delete(url, content_type='application/json', headers=get_fake_headers(1))
+
+        body = json.loads(response.content.decode('utf8'))
+
+        return response, body
+
+    def test_kick_player(self):
+        response, body = self.kick_player(1, 1)
+
+        self.assertEqual(response.status_code, 200)
+        tournament = Tournament.objects.get(id=1)
+        self.assertEqual(tournament.players.count(), 15)
+
+    def test_kick_player_started(self):
+        response, body = self.kick_player(2, 1)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], [error.ALREADY_STARTED])
+
+    def test_kick_player_finished(self):
+        response, body = self.kick_player(3, 1)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(body['errors'], [error.ALREADY_STARTED])
+
+    def test_not_register(self):
+        response, body = self.kick_player(1, 50)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(body['errors'], [error.NOT_REGISTERED])
