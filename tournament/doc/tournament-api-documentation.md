@@ -282,6 +282,24 @@ Add a player to a specific tournament
 
 </details>
 
+Leave a tournament
+
+<details>
+ <summary><code>DELETE</code> <code><b>/tournament/{id}/players</b></code></summary>
+
+### Request
+
+None
+
+### Responses
+
+> | http code | content-type       | response                                          |
+> |-----------|--------------------|---------------------------------------------------|
+> | `200`     | `application/json` | `{"players": [{"nickname": "Player", ...}, ...]}` |
+> | `404`     | `application/json` | `{"errors": ["AAA", ...]}`                        |
+
+</details>
+
 --------------------------------------------------------------------------------
 
 ## `/tournament/player`
