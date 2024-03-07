@@ -109,8 +109,8 @@ export class _GameSocketIO {
         this.#engine.startListeningForKeyHooks();
       } else {
         this.emit('player_is_ready', {});
-        console.log('waiting for other players'); // TODO remove me
-        // TODO display waiting for other players message
+        this.#engine.component.addWaitingForOpponent();
+        this.#engine.scene.updateCamera(true);
       }
     });
 
@@ -137,6 +137,8 @@ export class _GameSocketIO {
         this.#engine.startListeningForKeyHooks();
         console.log('Game is starting'); // TODO remove me
         // TODO remove waiting for other players message
+        this.#engine.component.removeWaitingForOpponent();
+        this.#engine.component.startCountdown(data['ball_start_time']);
       }
 
       const match = this.#engine.scene
@@ -242,22 +244,23 @@ export class _GameSocketIO {
   #handleGameOverPlayerHasNotReachedTheFinal() {
     // TODO remove the eliminated message if it still exists
     // TODO display tournament over message
+    this.#engine.component.addEndGameCard('eliminated', 0, 0);
   }
 
   #handleGameOverPlayerWonTournamentFinal(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('win', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerWon1v1(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('win', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerLostTournamentFinal(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('loose', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerLost1v1(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('loose', winnerScore, looserScore);
   }
 
   disconnect(stopReconnect = true) {
