@@ -1,3 +1,4 @@
+import logging
 import urllib
 from abc import ABC, abstractmethod
 from datetime import timedelta
@@ -33,13 +34,26 @@ class BaseOAuth(ABC):
 
     @staticmethod
     def create_pending_oauth(source):
-        state = generate_random_string(settings.OAUTH_STATE_MAX_LENGTH)
-        hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
-        PendingOAuth.objects.create(hashed_state=hashed_state, source=source)
-        return state
+        try:
+            state = generate_random_string(settings.OAUTH_STATE_MAX_LENGTH)
+            hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
+            PendingOAuth.objects.create(hashed_state=hashed_state, source=source)
+        except (TypeError, AttributeError, UnicodeEncodeError) as e:
+            return None, e, 400
+        except Exception as e:
+            logging.error(f'Failed to create pending oauth : {e}')
+            return None, e, 500
+        return state, None, 200
+
+    def handle_auth(self, request, source):
+        state, e, status_code = self.create_pending_oauth(source)
+        if not state:
+            return JsonResponse(data={'errors': [f'Failed to create pending oauth : {e}']}, status=status_code)
+        authorization_url = self.get_authorization_url(state)
+        return JsonResponse(data={'redirection_url': authorization_url}, status=200)
 
     @abstractmethod
-    def handle_auth(self, request, source):
+    def get_authorization_url(self, state):
         pass
 
 
@@ -60,13 +74,9 @@ class OAuth(View):
 
 
 class GitHubOAuth(BaseOAuth):
-    def handle_auth(self, request, source):
-        state = self.create_pending_oauth(source)
-        authorization_url = self.get_github_authorization_url(state)
-        return JsonResponse(data={'redirection_url': authorization_url}, status=200)
 
     @staticmethod
-    def get_github_authorization_url(state):
+    def get_authorization_url(state):
         return (
             f'{settings.GITHUB_AUTHORIZE_URL}'
             f'?client_id={settings.GITHUB_CLIENT_ID}'
@@ -77,13 +87,9 @@ class GitHubOAuth(BaseOAuth):
 
 
 class FtApiOAuth(BaseOAuth):
-    def handle_auth(self, request, source):
-        state = self.create_pending_oauth(source)
-        authorization_url = self.get_ft_api_authorization_url(state)
-        return JsonResponse(data={'redirection_url': authorization_url}, status=200)
 
     @staticmethod
-    def get_ft_api_authorization_url(state):
+    def get_authorization_url(state):
         return (
             f'{settings.FT_API_AUTHORIZE_URL}'
             f'?client_id={settings.FT_API_CLIENT_ID}'
@@ -98,6 +104,7 @@ class OAuthCallback(View):
     client_id = None
     client_secret = None
     redirect_uri = None
+    auth_supported = False
 
     def set_params(self, auth_service):
         if auth_service == 'github':
@@ -105,11 +112,13 @@ class OAuthCallback(View):
             self.client_id = settings.GITHUB_CLIENT_ID
             self.client_secret = settings.GITHUB_CLIENT_SECRET
             self.redirect_uri = settings.GITHUB_REDIRECT_URI
+            self.auth_supported = True
         elif auth_service == '42api':
             self.access_token_url = settings.FT_API_ACCESS_TOKEN_URL
             self.client_id = settings.FT_API_CLIENT_ID
             self.client_secret = settings.FT_API_CLIENT_SECRET
             self.redirect_uri = settings.FT_API_REDIRECT_URI
+            self.auth_supported = True
 
     def get(self, request, auth_service):
         if request.GET.get('error'):
@@ -117,7 +126,13 @@ class OAuthCallback(View):
                             f'Could not authenticate with {auth_service}')
         code = request.GET.get('code')
         state = request.GET.get('state')
-        source = self.get_source_url(state)
+        source, errors = self.get_source_url(state)
+        if not source or self.auth_supported is False:
+            source = settings.FRONT_URL
+            if not source:
+                return redirect(f'{source}?error=No pending oauth found for this state')
+            if self.auth_supported is False:
+                return redirect(f'{source}?error=Auth service not supported')
         self.set_params(auth_service)
         if self.check_state(state) is False:
             return redirect(f'{source}?error=Invalid State')
@@ -223,9 +238,12 @@ class OAuthCallback(View):
 
     @staticmethod
     def check_state(state):
-        hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
-        pending_oauth = PendingOAuth.objects.filter(hashed_state=hashed_state).first()
-        if pending_oauth is None:
+        try:
+            hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
+            pending_oauth = PendingOAuth.objects.filter(hashed_state=hashed_state).first()
+            if pending_oauth is None:
+                return False
+        except Exception:
             return False
         return True
 
@@ -250,8 +268,14 @@ class OAuthCallback(View):
         return access_token
 
     def get_source_url(self, state):
-        pending_oauth = PendingOAuth.objects.filter(hashed_state=sha256(str(state).encode('utf-8')).hexdigest()).first()
-        return pending_oauth.source
+        try:
+            pending_oauth = PendingOAuth.objects.filter(
+                hashed_state=sha256(str(state).encode('utf-8')).hexdigest()).first()
+        except Exception as e:
+            return None, e
+        if not pending_oauth:
+            return None, "No pending oauth found for this state"
+        return pending_oauth.source, None
 
     def flush_pending_oauth(self, state):
         hashed_state = sha256(str(state).encode('utf-8')).hexdigest()
