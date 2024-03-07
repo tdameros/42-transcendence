@@ -1,12 +1,14 @@
 import WebGL from 'three/addons/capabilities/WebGL.js';
+import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 
 import {Component} from '@components';
 import {ToastNotifications} from '@components/notifications';
 import {userManagementClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
+import {Theme} from '@js/Theme.js';
 
 import {Engine} from './Engine/Engine.js';
-import {Theme} from '@js/Theme.js';
 
 export class Game extends Component {
   static gameURL = `https://${window.location.hostname}`;
@@ -22,8 +24,6 @@ export class Game extends Component {
     return (`
       <navbar-component></navbar-component>
       <div id="container" class="m-2 position-relative">
-        <div id="end-game-card" class="card d-none">
-        </div>
       </div>
     `);
   }
@@ -43,6 +43,11 @@ export class Game extends Component {
       }
       
     #end-game-card {
+      width : 300px;
+      height: 200px;
+    }
+    
+    #game-display {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -68,20 +73,62 @@ export class Game extends Component {
     this.start_game(this.getGameURL(port));
   }
 
-  loadEndGameCard(status, playerScore, opponentScore) {
-    this.endGameCard = this.querySelector('#end-game-card');
-    this.endGameCard.innerHTML = `
-     <div class="card-header text-center">
-        ${this.renderEndGameCardTitle(status)}
-     </div>
-     <div class="card-body d-flex flex-column justify-content-center align-items-center">
-        ${this.renderCardBody(status, playerScore, opponentScore)}
-    </div>`;
-    this.endGameCard.classList.remove('d-none');
-    const canvas = this.querySelector('canvas');
-    if (canvas) {
-      canvas.style.filter = 'blur(5px)';
-    }
+  addWaitingForOpponent() {
+    this.addGameDisplay();
+    this.gameDisplay.innerHTML = `
+      <h2 class="text-center">Waiting for opponent</h2>
+      <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    `;
+    this.enableGameBlur();
+  }
+
+  removeWaitingForOpponent() {
+    this.removeGameDisplay();
+    this.disableGameBlur();
+  }
+
+  startCountdown(startDateInSeconds) {
+    const currentDateInSeconds = Date.now() / 1000;
+    const secondsLeft = Math.round(
+        (startDateInSeconds - currentDateInSeconds),
+    );
+    this.displayCountdown(secondsLeft);
+  }
+
+  displayCountdown(secondsLeft) {
+    this.enableGameBlur();
+    this.addGameDisplay();
+    this.gameDisplay.innerHTML = `
+        <h1 class="text-center fs-1 m-0">${secondsLeft}</h1>
+    `;
+    const countDownInterval = setInterval(() => {
+      secondsLeft -= 1;
+      if (secondsLeft <= 0) {
+        clearInterval(countDownInterval);
+        this.removeGameDisplay();
+        this.disableGameBlur();
+        return;
+      }
+      this.gameDisplay.innerHTML = `
+        <h1 class="text-center fs-1 m-0">${secondsLeft}</h1>
+      `;
+    }, 1000);
+  }
+
+  addEndGameCard(status, playerScore, opponentScore) {
+    this.enableGameBlur();
+    this.addGameDisplay();
+    this.gameDisplay.innerHTML = `
+      <div id="end-game-card" class="card">
+        <div class="card-header text-center">
+            ${this.renderEndGameCardTitle(status)}
+         </div>
+         <div class="card-body d-flex justify-content-center align-items-center">
+            ${this.renderCardBody(status, playerScore, opponentScore)}
+        </div>
+      </div>
+    `;
     const spectateButton = this.querySelector('#spectate-button');
     if (spectateButton) {
       super.addComponentEventListener(
@@ -91,24 +138,23 @@ export class Game extends Component {
   }
 
   #spectateButtonHandler() {
-    const canvas = this.querySelector('canvas');
-    if (canvas) {
-      canvas.style.filter = 'blur(0px)';
-    }
-    this.endGameCard.classList.add('d-none');
+    this.disableGameBlur();
+    this.removeGameDisplay();
   }
 
   renderCardBody(status, playerScore, opponentScore) {
     if (status === 'eliminated') {
       return (`
-        <btn class="btn btn-primary " onclick="window.router.navigate('/')">Go home</btn>
-        <btn class="btn btn-secondary me-3" id="spectate-button">Spectate</btn>
+        <btn class="btn btn-primary ms-2 me-2" onclick="window.router.navigate('/')">Go home</btn>
+        <btn class="btn btn-secondary ms-2 me-2" id="spectate-button">Spectate</btn>
       `);
     } else {
       return (`
-        <h5 class="m-0 text-muted ">Game result</h5>
-        <h3 class="card-text">${playerScore} - ${opponentScore}</h3>
-        <btn class="btn btn-primary " onclick="window.router.navigate('/')">Go home</btn>
+        <div class="d-flex flex-column justify-content-center align-items-center">
+          <h5 class="m-0 text-muted ">Game result</h5>
+          <h3 class="card-text">${playerScore} - ${opponentScore}</h3>
+          <btn class="btn btn-primary " onclick="window.router.navigate('/')">Go home</btn>
+        </div>
       `);
     }
   }
@@ -128,6 +174,39 @@ export class Game extends Component {
       `);
     }
   }
+
+  enableGameBlur() {
+    const canvas = this.querySelector('canvas');
+    if (canvas) {
+      canvas.style.filter = 'blur(5px)';
+    }
+  }
+
+  disableGameBlur() {
+    const canvas = this.querySelector('canvas');
+    if (canvas) {
+      canvas.style.filter = 'blur(0px)';
+    }
+  }
+
+  addGameDisplay() {
+    if (this.gameDisplay) {
+      this.removeGameDisplay();
+    }
+    this.gameDisplay = document.createElement('div');
+    this.gameDisplay.id = 'game-display';
+    this.gameDisplay.classList.add(
+        'd-flex', 'flex-column', 'justify-content-center', 'align-items-center',
+    );
+    this.container.appendChild(this.gameDisplay);
+  }
+
+  removeGameDisplay() {
+    if (this.gameDisplay) {
+      this.gameDisplay.remove();
+    }
+  }
+
 
   disconnectedCallback() {
     if (this.engine) {

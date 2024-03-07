@@ -27,6 +27,7 @@ export class Scene {
   #sky;
   #pointsToWinMatch;
   #boardSize;
+  #animationHeight = 20;
 
   constructor() {}
 
@@ -103,7 +104,6 @@ export class Scene {
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
-      this.#engine.component.loadEndGameCard('eliminated', 0, 0);
     }
     match.removePlayer(looserIndex);
 
@@ -138,7 +138,7 @@ export class Scene {
         .paddle.setDirection(direction);
   }
 
-  updateCamera() {
+  updateCamera(animation = false) {
     if (this.#isLooserCamera) {
       return;
     }
@@ -149,7 +149,7 @@ export class Scene {
     if (currentPlayerMatch === null) {
       this.#setSpectatorCameraSettings();
     } else {
-      this.#setMatchCameraSettings(currentPlayerMatch);
+      this.#setMatchCameraSettings(currentPlayerMatch, animation);
     }
   }
 
@@ -171,33 +171,38 @@ export class Scene {
     this.#engine.updateCamera(cameraPosition, cameraLookAt);
   }
 
-  #setMatchCameraSettings(match) {
+  #setMatchCameraSettings(match, animation = false) {
     const currentPlayerGamePosition = match.threeJSGroup.position;
     const xHeight = (this.#matchHalfWidth + this.#matchesXOffset * .5) /
       Math.tan(this.#engine.threeJS.getCameraHorizontalFOVRadian() * .5);
     const yHeight = (this.#matchHalfHeight + this.#matchesXOffset * .5) /
       Math.tan(this.#engine.threeJS.getCameraVerticalFOVRadian() * .5);
-    const cameraHeight = Math.max(xHeight, yHeight);
+    const cameraHeight = Math.max(xHeight, yHeight) -
+        animation * this.#animationHeight;
 
     const cameraPosition = new THREE.Vector3(
         currentPlayerGamePosition.x,
         currentPlayerGamePosition.y,
-        cameraHeight - 10,
+        cameraHeight,
     );
     const cameraLookAt = currentPlayerGamePosition.clone();
     this.#engine.updateCamera(cameraPosition, cameraLookAt);
 
-    const newCameraPosition = new THREE.Vector3(
-        currentPlayerGamePosition.x, currentPlayerGamePosition.y, cameraHeight,
-    );
+    if (animation) {
+      const newCameraPosition = new THREE.Vector3(
+          currentPlayerGamePosition.x,
+          currentPlayerGamePosition.y,
+          cameraHeight + this.#animationHeight,
+      );
 
-    new TWEEN.Tween(cameraPosition)
-        .to(newCameraPosition, 3000)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(() => {
-          this.#engine.updateCamera(cameraPosition, cameraLookAt);
-        })
-        .start();
+      new TWEEN.Tween(cameraPosition)
+          .to(newCameraPosition, 3000)
+          .easing(TWEEN.Easing.Quadratic.InOut)
+          .onUpdate(() => {
+            this.#engine.updateCamera(cameraPosition, cameraLookAt);
+          })
+          .start();
+    }
   }
 
   static convertMatchLocationToKey(matchLocationJson) {
