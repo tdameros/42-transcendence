@@ -16,7 +16,7 @@ export class ServerTimeFixer {
     this.#timeOffsetsIndex = (this.#timeOffsetsIndex + 1) %
         this.#timeOffsetsSize;
 
-    this.#divider = Math.min(this.#divider + 1, this.#timeOffsetsSize);
+    this.#divider = Math.min(this.#divider + 1., this.#timeOffsetsSize);
     this.#averageTimeOffset = this.#timeOffsetSum / this.#divider;
   }
 
