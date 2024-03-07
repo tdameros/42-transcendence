@@ -13,7 +13,7 @@ MATCHES_Y_OFFSET: float = MATCH_SIZE[1] / 4.
 
 BALL_RADIUS: float = 1.
 BALL_ACCELERATION: float = 1.1
-BALL_WAITING_TIME_SEC: float = 2.
+BALL_WAITING_TIME_SEC: float = 3.
 
 PADDLE_SIZE: numpy.ndarray = numpy.array([1., 5., 1.], dtype=float)
 PADDLE_MOVE_SPEED: float = 9.

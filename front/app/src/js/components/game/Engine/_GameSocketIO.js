@@ -3,11 +3,11 @@ import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
 import {ToastNotifications} from '@components/notifications';
 import {getRouter} from '@js/Router.js';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 import {Scene} from '../Scene/Scene.js';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
-import {ErrorPage} from '@utils/ErrorPage.js';
 import {CollisionHandler} from '@components/game/Scene/CollisionHandler.js';
 import {ServerTimeFixer} from '@components/game/ServerTime.js';
 
@@ -23,6 +23,9 @@ export class _GameSocketIO {
   }
 
   async init(URI) {
+    if (this.#reconnectAttempts === -1) {
+      return;
+    }
     if (this.#reconnectAttempts >= this.#maxReconnectAttempts) {
       getRouter().redirect('/');
       return;
@@ -52,7 +55,7 @@ export class _GameSocketIO {
         error = JSON.parse(jsonString.message);
       } catch {
         ToastNotifications.addErrorNotification('Server connection error');
-        this.disconnect();
+        this.disconnect(false);
         this.#reconnectAttempts++;
         await sleep(2000);
         await this.init(URI);
@@ -65,7 +68,7 @@ export class _GameSocketIO {
       } else {
         console.error('Connection error:', error['message']);
         ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
-        this.disconnect();
+        this.disconnect(false);
         this.#reconnectAttempts++;
         await sleep(2000);
         await this.init(URI);
@@ -105,8 +108,8 @@ export class _GameSocketIO {
         this.#engine.startListeningForKeyHooks();
       } else {
         this.emit('player_is_ready', {});
-        console.log('waiting for other players'); // TODO remove me
-        // TODO display waiting for other players message
+        this.#engine.component.addWaitingForOpponent();
+        this.#engine.scene.updateCamera(true);
       }
     });
 
@@ -131,8 +134,8 @@ export class _GameSocketIO {
       if (!this.#gameHasStarted) {
         this.#gameHasStarted = true;
         this.#engine.startListeningForKeyHooks();
-        console.log('Game is starting'); // TODO remove me
-        // TODO remove waiting for other players message
+        this.#engine.component.removeWaitingForOpponent();
+        this.#engine.component.startCountdown(data['ball_start_time']);
       }
 
       const match = this.#engine.scene
@@ -250,28 +253,30 @@ export class _GameSocketIO {
   }
 
   #handleGameOverPlayerHasNotReachedTheFinal() {
-    // TODO remove the eliminated message if it still exists
-    // TODO display tournament over message
+    this.#engine.component.addEndGameCard('eliminated', 0, 0);
   }
 
   #handleGameOverPlayerWonTournamentFinal(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('win', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerWon1v1(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('win', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('win', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerLostTournamentFinal(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('loose', winnerScore, looserScore);
   }
 
   #handleGameOverPlayerLost1v1(winnerScore, looserScore) {
-    this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
+    this.#engine.component.addEndGameCard('loose', winnerScore, looserScore);
   }
 
-  disconnect() {
+  disconnect(stopReconnect = true) {
     try {
+      if (stopReconnect) {
+        this.#reconnectAttempts = -1;
+      }
       this.#socketIO.disconnect();
     } catch (error) {}
   }
