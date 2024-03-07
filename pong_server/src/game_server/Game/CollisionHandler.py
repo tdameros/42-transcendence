@@ -49,14 +49,14 @@ class _Wall(_APhysicalObject):
             if travel_top < self.y:
                 return current_closest_physical_object_hit
             self.intersection = ((travel.vector / travel.vector[1]
-                                 * (self.y - travel.begin[1] - settings.BALL_RADIUS))
+                                  * (self.y - travel.begin[1] - settings.BALL_RADIUS))
                                  + travel.begin)
         else:
             travel_bottom = travel.end[1] - settings.BALL_RADIUS
             if travel_bottom > self.y:
                 return current_closest_physical_object_hit
             self.intersection = ((travel.vector / travel.vector[1]
-                                 * (self.y - travel.begin[1] + settings.BALL_RADIUS))
+                                  * (self.y - travel.begin[1] + settings.BALL_RADIUS))
                                  + travel.begin)
 
         self.t = (self.intersection[0] - travel.begin[0]) / travel.vector[0]
@@ -98,14 +98,14 @@ class _Goal(_APhysicalObject):
             if travel_right < self.x:
                 return current_closest_physical_object_hit
             self.intersection = ((travel.vector / travel.vector[0]
-                                 * (self.x - travel.begin[0] - settings.BALL_RADIUS))
+                                  * (self.x - travel.begin[0] - settings.BALL_RADIUS))
                                  + travel.begin)
         else:
             travel_left = travel.end[0] - settings.BALL_RADIUS
             if travel_left > self.x:
                 return current_closest_physical_object_hit
             self.intersection = ((travel.vector / travel.vector[0]
-                                 * (self.x - travel.begin[0] + settings.BALL_RADIUS))
+                                  * (self.x - travel.begin[0] + settings.BALL_RADIUS))
                                  + travel.begin)
 
         self.t = (self.intersection[0] - travel.begin[0]) / travel.vector[0]
@@ -133,18 +133,18 @@ class _PhysicalPaddle(_APhysicalObject):
         self.bottom: Segment2 = paddle.get_bottom_collision_segment()
 
         # Used to prevent the ball from getting stuck in the paddle
-        self._paddle_was_already_hit: bool = False
+        self.paddle_was_hit: bool = False
 
-        self._closest_side_hit: Optional[str] = None
+        self.closest_side_hit: Optional[str] = None
 
     def intersect(self,
                   travel: Segment2,
                   current_closest_physical_object_hit: Optional[_APhysicalObject]
                   ) -> Optional[_APhysicalObject]:
-        if self._paddle_was_already_hit:
+        if self.paddle_was_hit:
             return current_closest_physical_object_hit
         self._calculate_closest_side_hit(travel)
-        if self._closest_side_hit is None:
+        if self.closest_side_hit is None:
             return current_closest_physical_object_hit
         if current_closest_physical_object_hit is None:
             return self
@@ -153,7 +153,7 @@ class _PhysicalPaddle(_APhysicalObject):
         return current_closest_physical_object_hit
 
     def _calculate_closest_side_hit(self, travel: Segment2):
-        self._closest_side_hit = None
+        self.closest_side_hit = None
         self._intersect_top(travel)
         self._intersect_front(travel)
         self._intersect_bottom(travel)
@@ -165,7 +165,7 @@ class _PhysicalPaddle(_APhysicalObject):
         if intersection is None:
             return
         if self.t is None or self.t > t:
-            self._closest_side_hit = 'top'
+            self.closest_side_hit = 'top'
             self.t = t
             self.intersection = intersection
 
@@ -174,7 +174,7 @@ class _PhysicalPaddle(_APhysicalObject):
         if intersection is None:
             return
         if self.t is None or self.t > t:
-            self._closest_side_hit = 'front'
+            self.closest_side_hit = 'front'
             self.t = t
             self.intersection = intersection
 
@@ -185,7 +185,7 @@ class _PhysicalPaddle(_APhysicalObject):
         if intersection is None:
             return
         if self.t is None or self.t > t:
-            self._closest_side_hit = 'bottom'
+            self.closest_side_hit = 'bottom'
             self.t = t
             self.intersection = intersection
 
@@ -209,18 +209,15 @@ class _PhysicalPaddle(_APhysicalObject):
                                ball,
                                collision_handler: 'CollisionHandler',
                                match) -> Optional[Segment2]:
-        self._paddle_was_already_hit = True
+        self.paddle_was_hit = True
         new_travel_vector = travel.vector * (1. - self.t)
-        if self._closest_side_hit == 'up' or self._closest_side_hit == 'down':
-            ball.set_movement_y(ball.get_movement()[1] * -settings.BALL_ACCELERATION)
-            new_travel_vector[1] *= -settings.BALL_ACCELERATION
-        else:
+        if self.closest_side_hit == 'front':
             ball.set_movement_x(ball.get_movement()[0] * -settings.BALL_ACCELERATION)
             new_travel_vector[0] *= -settings.BALL_ACCELERATION
             ball.set_position(self.intersection)
-            await EventEmitter.update_ball(
-                match.LOCATION, ball.get_position(), ball.get_movement()
-            )
+        else:
+            ball.set_movement_y(ball.get_movement()[1] * -settings.BALL_ACCELERATION)
+            new_travel_vector[1] *= -settings.BALL_ACCELERATION
         return Segment2(self.intersection,
                         self.intersection + new_travel_vector,
                         new_travel_vector)
@@ -250,9 +247,14 @@ class CollisionHandler(object):
             )
             if closest_object_hit is None:
                 ball.set_position(travel.end)
-                return
+                break
             travel = await closest_object_hit.handle_collision(
                 travel, ball, self, match
+            )
+        if (self.physical_paddle.paddle_was_hit
+                and self.physical_paddle.closest_side_hit == 'front'):
+            await EventEmitter.update_ball(
+                match.LOCATION, ball.get_position(), ball.get_movement(),
             )
 
     def _get_closest_object_hit(self, travel, physical_paddle: _PhysicalPaddle):

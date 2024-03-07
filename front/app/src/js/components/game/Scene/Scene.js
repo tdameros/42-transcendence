@@ -257,4 +257,8 @@ export class Scene {
   get loosers() {
     return this.#loosers;
   }
+
+  get boardSize() {
+    return this.#boardSize;
+  }
 }
