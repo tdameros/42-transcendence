@@ -1,6 +1,4 @@
 import WebGL from 'three/addons/capabilities/WebGL.js';
-import * as THREE from 'three';
-import TWEEN from '@tweenjs/tween.js';
 
 import {Component} from '@components';
 import {ToastNotifications} from '@components/notifications';
