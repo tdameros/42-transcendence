@@ -99,16 +99,8 @@ export class Paddle {
   }
 
   #addLightToGroup(color) {
-    this.#light = new THREE.RectAreaLight(color, 10., 1., 5.);
-
-    const xDirectionToLookAt = 1.;
-    if (this.#paddleIsOnTheRight) {
-      this.#light.position.set(-(this.#paddleSize.x * 0.5), 0., 0.75);
-      this.#light.lookAt(-xDirectionToLookAt, 0., 0.);
-    } else {
-      this.#light.position.set(this.#paddleSize.x * 0.5, 0., 0.75);
-      this.#light.lookAt(xDirectionToLookAt, 0., 0.);
-    }
+    this.#light = new THREE.PointLight(color, 20., 10.);
+    this.#light.position.z += this.#paddleSize.z * 2;
     this.#threeJSGroup.add(this.#light);
   }
 

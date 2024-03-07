@@ -8,11 +8,12 @@ import {ErrorPage} from '@utils/ErrorPage.js';
 import {Scene} from '../Scene/Scene.js';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
+import {CollisionHandler} from '@components/game/Scene/CollisionHandler.js';
+import {ServerTimeFixer} from '@components/game/ServerTime.js';
 
 export class _GameSocketIO {
   #engine;
   #socketIO;
-  #isConnected = false;
   #gameHasStarted = false;
   #reconnectAttempts = 0;
   #maxReconnectAttempts = 5;
@@ -46,9 +47,7 @@ export class _GameSocketIO {
       },
     });
 
-    this.#socketIO.on('connect', async () => {
-      this.#isConnected = true;
-    });
+    this.#socketIO.on('connect', async () => {});
 
     this.#socketIO.on('connect_error', async (jsonString) => {
       let error;
@@ -90,12 +89,12 @@ export class _GameSocketIO {
       console.log('Server debug message: ', message);
     });
 
-    this.#socketIO.on('scene', async (data) => {
-      while (!this.#isConnected) {
-        await sleep(50);
-      }
-      console.log('game scene received');
+    this.#socketIO.on('sync_time', (serverTime) => {
+      ServerTimeFixer.updateServerLatency(serverTime);
+    });
 
+    this.#socketIO.on('scene', async (data) => {
+      ServerTimeFixer.updateServerLatency(data['server_time']);
       const scene = new Scene();
       await scene.init(
           this.#engine,
@@ -109,6 +108,7 @@ export class _GameSocketIO {
         this.#engine.startListeningForKeyHooks();
       } else {
         this.emit('player_is_ready', {});
+        // TODO display waiting for other players message
         this.#engine.component.addWaitingForOpponent();
         this.#engine.scene.updateCamera(true);
       }
@@ -144,7 +144,7 @@ export class _GameSocketIO {
       const match = this.#engine.scene
           .getMatchFromLocation(data['match_location']);
       match.prepare_ball_for_match(
-          data['ball_start_time'],
+          ServerTimeFixer.fixServerTime(data['ball_start_time']),
           data['ball_movement'],
       );
     });
@@ -157,8 +157,22 @@ export class _GameSocketIO {
 
       const match = this.#engine.scene
           .getMatchFromLocation(data['match_location']);
-      match.setBallMovement(data['movement']);
+      const movement = data['movement'];
+      match.setBallMovement(movement);
       match.setBallPosition(data['position']);
+
+      const paddle = movement['x'] < 0. ?
+          match.players[0].paddle :
+          match.players[1].paddle;
+      const timeAtUpdate = ServerTimeFixer
+          .fixServerTime(data['time_at_update']);
+      const now = Date.now();
+      if (timeAtUpdate >= now) {
+        return;
+      }
+      const timeDelta = (now - timeAtUpdate) / 1000.;
+      new CollisionHandler(paddle, this.#engine.scene.boardSize)
+          .updateBallPositionAndMovement(timeDelta, match);
     });
 
     this.#socketIO.on('player_won_match', async (data) => {

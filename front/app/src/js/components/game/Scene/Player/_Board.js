@@ -122,21 +122,6 @@ export class _Board {
       this.#points.push(point);
       this.#threeJSBoard.add(point);
     }
-    const width = Math.abs(
-        this.#points[0].position.x - this.#points[maxScore - 1].position.x,
-    );
-    const middle = -(sign * width) / 2 + this.#points[0].position.x;
-    const light = new THREE.RectAreaLight(
-        0xffffff,
-        5,
-        width,
-        pointRadius * 2,
-    );
-    light.position.set(middle, pointStartPosition.y, pointStartPosition.z + 4);
-    light.lookAt(middle, pointStartPosition.y, pointStartPosition.z);
-    this.#threeJSBoard.add(light.clone());
-    light.position.y *= -1;
-    this.#threeJSBoard.add(light.clone());
   }
 
   initPointMesh(pointRadius) {

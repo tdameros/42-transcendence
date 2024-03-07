@@ -29,8 +29,7 @@ export class Scene {
   #boardSize;
   #animationHeight = 20;
 
-  constructor() {
-  }
+  constructor() {}
 
   async init(engine, sceneJson, playerLocationJson) {
     this.#engine = engine;
@@ -262,5 +261,9 @@ export class Scene {
 
   get loosers() {
     return this.#loosers;
+  }
+
+  get boardSize() {
+    return this.#boardSize;
   }
 }

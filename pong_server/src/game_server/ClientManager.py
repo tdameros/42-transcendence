@@ -93,7 +93,7 @@ class ClientManager(object):
         try:
             response = InternalAuthRequests.post(url, json.dumps(body))
         except requests.exceptions.RequestException as e:
-            logging.critical(f'Connection error during {calling_function_name}: {e}')
+            logging.error(f'Connection error during {calling_function_name}: {e}')
             return False
         if not response.ok:
             try:
@@ -101,7 +101,7 @@ class ClientManager(object):
             except Exception:
                 error = response.text
 
-            logging.critical(f'Server error {response.status_code} during'
-                             f'{calling_function_name}: {error}')
+            logging.error(f'Server error {response.status_code} during'
+                          f'{calling_function_name}: {error}')
             return False
         return True
