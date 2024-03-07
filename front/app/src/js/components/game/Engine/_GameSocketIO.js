@@ -108,7 +108,6 @@ export class _GameSocketIO {
         this.#engine.startListeningForKeyHooks();
       } else {
         this.emit('player_is_ready', {});
-        // TODO display waiting for other players message
         this.#engine.component.addWaitingForOpponent();
         this.#engine.scene.updateCamera(true);
       }
@@ -135,8 +134,6 @@ export class _GameSocketIO {
       if (!this.#gameHasStarted) {
         this.#gameHasStarted = true;
         this.#engine.startListeningForKeyHooks();
-        console.log('Game is starting'); // TODO remove me
-        // TODO remove waiting for other players message
         this.#engine.component.removeWaitingForOpponent();
         this.#engine.component.startCountdown(data['ball_start_time']);
       }
@@ -256,8 +253,6 @@ export class _GameSocketIO {
   }
 
   #handleGameOverPlayerHasNotReachedTheFinal() {
-    // TODO remove the eliminated message if it still exists
-    // TODO display tournament over message
     this.#engine.component.addEndGameCard('eliminated', 0, 0);
   }
 
