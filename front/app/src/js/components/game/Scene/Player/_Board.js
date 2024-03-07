@@ -155,7 +155,7 @@ export class _Board {
   }
 
   updateFrame() {
-    const currentTime = Date.now();
+    const currentTime = Number(Date.now());
     const frequency = 300;
     const amplitude = 0.3;
     this.#points.forEach((point, index) => {

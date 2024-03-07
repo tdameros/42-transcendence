@@ -79,8 +79,7 @@ export class Scene {
     this.#sky.setDarkTheme();
   }
 
-  updateFrame(timeDelta) {
-    const currentTime = Date.now();
+  updateFrame(currentTime, timeDelta) {
     for (const match of this.#matches) {
       match.updateFrame(
           timeDelta,

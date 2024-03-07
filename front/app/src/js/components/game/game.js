@@ -1,5 +1,4 @@
 import WebGL from 'three/addons/capabilities/WebGL.js';
-import * as THREE from 'three';
 
 import {Component} from '@components';
 import {ToastNotifications} from '@components/notifications';
@@ -8,7 +7,6 @@ import {getRouter} from '@js/Router.js';
 
 import {Engine} from './Engine/Engine.js';
 import {Theme} from '@js/Theme.js';
-import TWEEN from '@tweenjs/tween.js';
 
 export class Game extends Component {
   static gameURL = `https://${window.location.hostname}`;
@@ -151,24 +149,11 @@ export class Game extends Component {
     }
     this.engine = new Engine(this);
 
-    this.displayScene(this.engine);
+    this.engine.displayLoadingScene();
     this.engine.connectToServer(URI)
         .catch((error) => {
           console.error('Error connecting to server:', error);
         });
-  }
-
-  displayScene(engine) {
-    const clock = new THREE.Clock();
-
-    engine.setAnimationLoop(() => {
-      const delta = clock.getDelta();
-      engine.scene.updateFrame(delta);
-
-      TWEEN.update();
-      engine.threeJS.updateControls();
-      engine.renderFrame();
-    });
   }
 
   getGameURL(port) {

@@ -19,12 +19,15 @@
   >> ```
   >
   >> Prints debug_message on `console.log`
- 
-- ### `sync_time`:
+
+- ### `time_sync`:
   >> Argument:
   >> ```
-  >> 'server_time': float (Seconds since the Epoch)
-  >> ```
+  >> {
+  >>     'time1': time1 (value sent during `request_time_sync` event),
+  >>     'time2': float (Seconds since the Epoch on server side)
+  >> }
+  >> ``` 
   >
   >> Allows the client to adapt to latency
 
@@ -95,7 +98,6 @@
   >>         'player_index': int
   >>     }
   >>     'game_has_started': bool,
-  >>     'server_time': float (Seconds since the Epoch)
   >> }
   >> ```
   >
