@@ -3,11 +3,11 @@ import {io} from 'socket.io-client';
 import {userManagementClient} from '@utils/api';
 import {ToastNotifications} from '@components/notifications';
 import {getRouter} from '@js/Router.js';
+import {ErrorPage} from '@utils/ErrorPage.js';
 
 import {Scene} from '../Scene/Scene.js';
 import {PlayerLocation} from '../Scene/PlayerLocation.js';
 import {sleep} from '../sleep.js';
-import {ErrorPage} from '@utils/ErrorPage.js';
 
 export class _GameSocketIO {
   #engine;
@@ -22,6 +22,9 @@ export class _GameSocketIO {
   }
 
   async init(URI) {
+    if (this.#reconnectAttempts === -1) {
+      return;
+    }
     if (this.#reconnectAttempts >= this.#maxReconnectAttempts) {
       getRouter().redirect('/');
       return;
@@ -53,7 +56,7 @@ export class _GameSocketIO {
         error = JSON.parse(jsonString.message);
       } catch {
         ToastNotifications.addErrorNotification('Server connection error');
-        this.disconnect();
+        this.disconnect(false);
         this.#reconnectAttempts++;
         await sleep(2000);
         await this.init(URI);
@@ -66,7 +69,7 @@ export class _GameSocketIO {
       } else {
         console.error('Connection error:', error['message']);
         ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
-        this.disconnect();
+        this.disconnect(false);
         this.#reconnectAttempts++;
         await sleep(2000);
         await this.init(URI);
@@ -257,8 +260,11 @@ export class _GameSocketIO {
     this.#engine.component.loadEndGameCard('loose', winnerScore, looserScore);
   }
 
-  disconnect() {
+  disconnect(stopReconnect = true) {
     try {
+      if (stopReconnect) {
+        this.#reconnectAttempts = -1;
+      }
       this.#socketIO.disconnect();
     } catch (error) {}
   }
