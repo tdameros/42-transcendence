@@ -7,6 +7,8 @@ export class Ball {
   #movement;
   #acceleration;
   #radius;
+  #mesh;
+  #light;
 
   constructor(ballJson) {
     this.#radius = ballJson['radius'];
@@ -42,7 +44,7 @@ export class Ball {
   }
 
   #addBallToGroup() {
-    const ball = new THREE.Mesh(
+    this.#mesh = new THREE.Mesh(
         new THREE.IcosahedronGeometry(this.#radius, 16, 8),
         new THREE.MeshPhysicalMaterial({
           roughness: 0.5,
@@ -50,17 +52,22 @@ export class Ball {
           color: 0xffffff,
         }),
     );
-    ball.position.set(0., 0., 0.);
-    ball.castShadow = false;
-    ball.receiveShadow = false;
-    this.#threeJSGroup.add(ball);
+    this.#mesh.position.set(0., 0., 0.);
+    this.#mesh.castShadow = false;
+    this.#mesh.receiveShadow = false;
+    this.#threeJSGroup.add(this.#mesh);
+  }
+
+  removeBall() {
+    this.#threeJSGroup.remove(this.#mesh);
+    this.#threeJSGroup.remove(this.#light);
   }
 
   #addLightToGroup() {
-    const light = new THREE.PointLight(0xFFFFFF, 10.0, 10.);
-    light.position.set(0., 0., 0.);
-    light.castShadow = true;
-    this.#threeJSGroup.add(light);
+    this.#light = new THREE.PointLight(0xFFFFFF, 10.0, 10.);
+    this.#light.position.set(0., 0., 0.);
+    this.#light.castShadow = true;
+    this.#threeJSGroup.add(this.#light);
   }
 
   get threeJSGroup() {
