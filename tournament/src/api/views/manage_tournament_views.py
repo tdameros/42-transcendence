@@ -77,7 +77,7 @@ class StartTournamentView(View):
         players = tournament.players.all()
         players_id = [player.user_id for player in players]
         notification_data = {
-            'title': f'Tournament `{tournament.name}` started',
+            'title': tournament.name,
             'type': 'tournament_start',
             'user_list': players_id,
             'data': f'{game_port}'
