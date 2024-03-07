@@ -144,7 +144,6 @@ class StartTournamentView(View):
         return players_list
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(user_authentication(['GET', 'DELETE', 'PATCH']), name='dispatch')
 class ManageTournamentView(View):
