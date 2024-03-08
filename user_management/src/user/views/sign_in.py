@@ -67,9 +67,10 @@ class SignInView(View):
         user, error = SignInView.get_user_by_login(login)
         if user is None:
             validation_errors.append(error)
-        elif user is not None and check_password(password, user.password) is False:
+            return None, validation_errors
+        elif user.password is None or check_password(password, user.password) is False:
             validation_errors.append('Invalid password')
-        if user is not None and user.emailVerified is False:
+        if user.emailVerified is False:
             validation_errors.append('User not verified')
         return user, validation_errors
 
