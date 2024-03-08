@@ -105,7 +105,6 @@ export class _ThreeJS {
   }
 
   clearRenderer() {
-    this.#renderer.clear();
     this.#renderer.dispose();
   }
 
