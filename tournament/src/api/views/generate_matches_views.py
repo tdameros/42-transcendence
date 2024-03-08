@@ -3,7 +3,6 @@ import math
 import random
 from typing import Optional
 
-import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
@@ -13,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from api import error_message as error
 from api.models import Match, Player, Tournament
 from api.views.match_utils import MatchUtils
+from common.src.internal_requests import InternalRequests
 from common.src.jwt_managers import user_authentication
 from tournament import settings
 from tournament.get_user import get_user_id
@@ -146,7 +146,7 @@ class GenerateMatchesView(View):
     @staticmethod
     def get_elo(player: Player, jwt: str) -> int:
         headers = {'Authorization': jwt}
-        response = requests.get(f'{settings.USER_STATS_USER_ENDPOINT}{player.user_id}', headers=headers)
+        response = InternalRequests.get(f'{settings.USER_STATS_USER_ENDPOINT}{player.user_id}', headers=headers)
 
         if response.status_code == 200:
             body = response.json()
