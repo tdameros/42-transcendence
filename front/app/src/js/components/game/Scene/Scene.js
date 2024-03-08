@@ -129,6 +129,11 @@ export class Scene {
     match.addPlayer(winner, newWinnerIndex);
   }
 
+  removeBallFromMatch(matchLocationJson) {
+    const match = this.getMatchFromLocation(matchLocationJson);
+    match.ball.removeBall();
+  }
+
   getCurrentPlayerPaddlePositionY() {
     return this.#currentPlayerLocation.getPlayerFromScene(this)
         .paddle.getPosition().y;

@@ -182,6 +182,7 @@ export class _GameSocketIO {
       const finishedMatchLocation = data['finished_match_location'];
       this.#engine.scene.removeLooserFromMatch(finishedMatchLocation,
           1 - winnerIndex);
+      this.#engine.scene.removeBallFromMatch(finishedMatchLocation);
 
       const winner = this.#engine.scene
           .getMatchFromLocation(finishedMatchLocation)
@@ -219,6 +220,7 @@ export class _GameSocketIO {
 
       const winnerIndex = data['winner_index'];
       this.#engine.scene.matches[0].players[winnerIndex].addPoint();
+      this.#engine.scene.matches[0].ball.removeBall();
 
       const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
       if (currentPlayerLocation.isLooser) {
