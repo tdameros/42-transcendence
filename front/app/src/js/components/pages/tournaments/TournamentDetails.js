@@ -148,6 +148,7 @@ export class TournamentDetails extends Component {
     this.joinBtn = this.querySelector('#join-btn');
     this.startBtn = this.querySelector('#start-btn');
     this.deleteBtn = this.querySelector('#delete-btn');
+    this.leaveBtn = this.querySelector('#leave-btn');
     if (this.joinBtn) {
       super.addComponentEventListener(
           this.joinBtn, 'click', this.#joinBtnHandler,
@@ -161,6 +162,11 @@ export class TournamentDetails extends Component {
     if (this.startBtn) {
       super.addComponentEventListener(
           this.startBtn, 'click', this.#startBtnHandler,
+      );
+    }
+    if (this.leaveBtn) {
+      super.addComponentEventListener(
+          this.leaveBtn, 'click', this.#leaveBtnHandler,
       );
     }
   }
@@ -177,6 +183,7 @@ export class TournamentDetails extends Component {
     return (`
         ${tournament['name']} 
         ${this.#canJoin(tournament, userId) ? `<button id="join-btn" type="button" class="btn btn-success btn-sm">Join</button>` : ''}
+        ${this.#canLeave(tournament, userId) ? `<button id="leave-btn" type="button" class="btn btn-danger btn-sm">Leave</button>`: ''}
     `);
   }
 
@@ -190,6 +197,18 @@ export class TournamentDetails extends Component {
       }
     }
     return true;
+  }
+
+  #canLeave(tournament, userId) {
+    if (tournament['status'] !== 'Created') {
+      return false;
+    }
+    for (const player of tournament['players']) {
+      if (player['user-id'] === userId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   #generatePlayersList(players) {
@@ -280,8 +299,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         getRouter().navigate('/tournaments/');
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
@@ -319,6 +337,22 @@ export class TournamentDetails extends Component {
       } else {
         this.joinModalAlert.setAttribute('alert-message', body['errors'][0]);
         this.joinModalAlert.setAttribute('alert-display', 'true');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #leaveBtnHandler() {
+    try {
+      const {response, body} = await tournamentClient.leaveTournament(
+          this.tournamentId,
+      );
+      if (response.ok) {
+        await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
