@@ -33,6 +33,10 @@ a {
     cursor: pointer;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .dynamic-hover:hover {
     filter: brightness(var(--hover-brightness));
 }

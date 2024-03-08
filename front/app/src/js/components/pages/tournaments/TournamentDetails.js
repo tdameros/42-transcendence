@@ -5,6 +5,7 @@ import {Modal} from 'bootstrap';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ToastNotifications} from '@components/notifications';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -80,7 +81,7 @@ export class TournamentDetails extends Component {
       this.joinModalNickname.value = '';
     });
     this.alertModal = this.querySelector('#alert-modal');
-    const navbarHeight = document.body.style.paddingTop;
+    const navbarHeight = NavbarUtils.height;
     const cardHeight = this.querySelector('.card').offsetHeight;
     this.body.style.maxHeight = `calc(100vh - ${navbarHeight} - ${cardHeight}px)`;
   }
@@ -140,7 +141,7 @@ export class TournamentDetails extends Component {
     this.header.innerHTML = this.#generateHeader(this.tournament, this.userId);
     if (this.tournament['status'] === 'Created') {
       this.body.innerHTML = this.#generatePlayersList(
-          this.tournament['players'], this.userId,
+          this.tournament, this.userId,
       );
     } else {
       await this.#loadBracket();
@@ -148,6 +149,12 @@ export class TournamentDetails extends Component {
     this.joinBtn = this.querySelector('#join-btn');
     this.startBtn = this.querySelector('#start-btn');
     this.deleteBtn = this.querySelector('#delete-btn');
+    this.leaveBtn = this.querySelector('#leave-btn');
+    this.kickBtns = this.querySelectorAll('.kick-btn');
+    this.#addEventListeners();
+  }
+
+  #addEventListeners() {
     if (this.joinBtn) {
       super.addComponentEventListener(
           this.joinBtn, 'click', this.#joinBtnHandler,
@@ -161,6 +168,16 @@ export class TournamentDetails extends Component {
     if (this.startBtn) {
       super.addComponentEventListener(
           this.startBtn, 'click', this.#startBtnHandler,
+      );
+    }
+    if (this.leaveBtn) {
+      super.addComponentEventListener(
+          this.leaveBtn, 'click', this.#leaveBtnHandler,
+      );
+    }
+    for (const kickBtn of this.kickBtns) {
+      super.addComponentEventListener(
+          kickBtn, 'click', this.#kickBtnHandler,
       );
     }
   }
@@ -177,6 +194,7 @@ export class TournamentDetails extends Component {
     return (`
         ${tournament['name']} 
         ${this.#canJoin(tournament, userId) ? `<button id="join-btn" type="button" class="btn btn-success btn-sm">Join</button>` : ''}
+        ${this.#canLeave(tournament, userId) ? `<button id="leave-btn" type="button" class="btn btn-danger btn-sm">Leave</button>`: ''}
     `);
   }
 
@@ -192,8 +210,20 @@ export class TournamentDetails extends Component {
     return true;
   }
 
-  #generatePlayersList(players) {
-    if (players.length === 0) {
+  #canLeave(tournament, userId) {
+    if (tournament['status'] !== 'Created') {
+      return false;
+    }
+    for (const player of tournament['players']) {
+      if (player['user-id'] === userId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  #generatePlayersList(tournament, userId) {
+    if (tournament['players'].length === 0) {
       return (`
         <div class="text-center text-secondary" role="alert">
           No players registered yet
@@ -202,15 +232,20 @@ export class TournamentDetails extends Component {
     }
     return (`
       <ul class="list-group list-group-flush">
-        ${this.#generatePlayerListItems(players)}
+        ${this.#generatePlayerListItems(tournament, userId)}
       </ul>
     `);
   }
 
-  #generatePlayerListItems(players) {
-    return players.map((player) => {
+  #generatePlayerListItems(tournament, userId) {
+    return tournament['players'].map((player) => {
       return (`
-        <li class="list-group-item">${player['nickname']}</li>
+        <li class="list-group-item d-flex align-items-center">
+            ${player['nickname']}
+            ${tournament['admin-id'] === userId ? `
+              <i player-id="${player['user-id']}" class="ms-2 bi bi-x-circle text-danger cursor-pointer kick-btn"></i>
+            ` : ''}
+        </li>
       `);
     }).join('');
   }
@@ -280,8 +315,7 @@ export class TournamentDetails extends Component {
       if (response.ok) {
         getRouter().navigate('/tournaments/');
       } else {
-        this.alertModal.setAttribute('alert-message', body['errors'][0]);
-        this.alertModal.setAttribute('alert-display', 'true');
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();
@@ -319,6 +353,39 @@ export class TournamentDetails extends Component {
       } else {
         this.joinModalAlert.setAttribute('alert-message', body['errors'][0]);
         this.joinModalAlert.setAttribute('alert-display', 'true');
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #leaveBtnHandler() {
+    try {
+      const {response, body} = await tournamentClient.leaveTournament(
+          this.tournamentId,
+      );
+      if (response.ok) {
+        await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #kickBtnHandler(event) {
+    const playerId = event.target.getAttribute('player-id');
+    try {
+      const {response, body} = await tournamentClient.kickPlayer(
+          this.tournamentId, playerId,
+      );
+      if (response.ok) {
+        await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
       }
     } catch (error) {
       ErrorPage.loadNetworkError();

@@ -420,7 +420,7 @@ class KickPlayerTest(TestCase):
         response, body = self.kick_player(1, 50, 1)
 
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(body['errors'], [error.NOT_REGISTERED])
+        self.assertEqual(body['errors'], [error.USER_NOT_REGISTERED])
 
     def test_not_owner(self):
         response, body = self.kick_player(1, 1, 3)
