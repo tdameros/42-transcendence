@@ -3,7 +3,6 @@ import math
 import random
 from typing import Optional
 
-import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
