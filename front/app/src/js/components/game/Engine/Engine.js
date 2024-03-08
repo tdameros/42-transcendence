@@ -4,6 +4,8 @@ import {_ThreeJS} from './_ThreeJS';
 import {_KeyHookHandler} from './_KeyHookHandler';
 import {LoadingScreenScene} from '../Scene/LoadingScreenScene';
 import {_GameSocketIO} from './_GameSocketIO.js';
+import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 
 export class Engine {
   #threeJS;
@@ -64,12 +66,51 @@ export class Engine {
     this.#threeJS.stopAnimationLoop();
   }
 
+  displayLoadingScene() {
+    const clock = new THREE.Clock();
+
+    this.setAnimationLoop(() => {
+      const delta = clock.getDelta();
+      this.scene.updateFrame(delta);
+
+      TWEEN.update();
+      this.threeJS.updateControls();
+      this.renderFrame();
+    });
+  }
+
+  displayGameScene() {
+    const clock = new THREE.Clock();
+    let currentTime = Number(Date.now());
+    let requestTimeSyncTime = currentTime;
+
+    this.setAnimationLoop(() => {
+      if (currentTime >= requestTimeSyncTime) {
+        this.socket.requestTimeSync(currentTime);
+        // Wait 2 sec before next time sync
+        requestTimeSyncTime = currentTime + 2000;
+      }
+      const delta = clock.getDelta();
+      this.scene.updateFrame(currentTime, delta);
+
+      TWEEN.update();
+      this.threeJS.updateControls();
+      this.renderFrame();
+
+      currentTime = Number(Date.now());
+    });
+  }
+
   get component() {
     return this.#component;
   }
 
   set socket(socket) {
     this.#socket = socket;
+  }
+
+  get socket() {
+    return this.#socket;
   }
 
   get threeJS() {

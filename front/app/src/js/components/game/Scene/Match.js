@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import {Player} from './Player/Player';
 import {Ball} from './Ball';
-import {ServerTimeFixer} from '@components/game/ServerTime.js';
+import {ServerTime} from '@components/game/ServerTime.js';
 
 export class Match {
   #threeJSGroup = new THREE.Group();
@@ -16,7 +16,7 @@ export class Match {
   async init(matchJson, shouldCreatePlayers, pointsToWinMatch) {
     this.#ball = new Ball(matchJson['ball']);
     this.#ballIsWaiting = matchJson['ball_is_waiting'];
-    this.#ballStartTime = ServerTimeFixer.fixServerTime(
+    this.#ballStartTime = ServerTime.fixServerTime(
         matchJson['ball_start_time']);
 
     const position = matchJson['position'];

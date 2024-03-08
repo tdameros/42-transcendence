@@ -80,8 +80,7 @@ export class Scene {
     this.#sky.setDarkTheme();
   }
 
-  updateFrame(timeDelta) {
-    const currentTime = Date.now();
+  updateFrame(currentTime, timeDelta) {
     for (const match of this.#matches) {
       match.updateFrame(
           timeDelta,
@@ -127,11 +126,6 @@ export class Scene {
     }
     const match = this.getMatchFromLocation(matchLocationJson);
     match.addPlayer(winner, newWinnerIndex);
-  }
-
-  removeBallFromMatch(matchLocationJson) {
-    const match = this.getMatchFromLocation(matchLocationJson);
-    match.ball.removeBall();
   }
 
   getCurrentPlayerPaddlePositionY() {

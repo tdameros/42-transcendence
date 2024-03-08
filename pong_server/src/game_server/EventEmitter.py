@@ -12,8 +12,11 @@ from vector_to_dict import vector_to_dict
 
 class EventEmitter(object):
     @staticmethod
-    async def sync_time(current_time: float):
-        await Server.emit('sync_time', rooms.ALL_PLAYERS, current_time)
+    async def time_sync(sid, time1: any):
+        await Server.emit('time_sync', sid, {
+            'time1': time1,
+            'time2': time.time()
+        })
 
     @staticmethod
     async def scene(sid: str,
@@ -24,7 +27,6 @@ class EventEmitter(object):
             'scene': scene,
             'player_location': player_location.to_json(),
             'game_has_started': game_has_started,
-            'server_time': time.time()
         })
 
     @staticmethod

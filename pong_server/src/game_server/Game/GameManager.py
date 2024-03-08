@@ -89,12 +89,8 @@ class GameManager(object):
     @staticmethod
     async def game_loop():
         clock = Clock()
-        current_time, time_delta = clock.get_time()
-        next_sync = current_time
         while True:
-            if current_time >= next_sync:
-                await EventEmitter.sync_time(current_time)
-                next_sync = current_time + 1.  # Sync every second
+            current_time, time_delta = clock.get_time()
             finished_matches: list[Match] = []
 
             for match in GameManager._matches:
@@ -108,8 +104,6 @@ class GameManager(object):
             await Server.sio.sleep(0.01)
             if GameManager._is_game_over:
                 return
-
-            current_time, time_delta = clock.get_time()
 
     @staticmethod
     async def match_was_won(match: Match):
