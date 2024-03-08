@@ -94,6 +94,10 @@ export class Ball {
         movementJson['z']);
   }
 
+  set movement(movement) {
+    this.#movement.set(movement.x, movement.y, 0.);
+  }
+
   get movement() {
     return this.#movement;
   }

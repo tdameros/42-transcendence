@@ -123,9 +123,9 @@ export class Paddle {
     this.#topCollisionSegment = new Segment2(topLeft, topRight);
     this.#bottomCollisionSegment = new Segment2(bottomLeft, bottomRight);
     if (this.#paddleIsOnTheRight) {
-      this.#frontCollisionSegment = new Segment2(topLeft, bottomLeft);
+      this.#frontCollisionSegment = new Segment2(bottomLeft, topLeft);
     } else {
-      this.#frontCollisionSegment = new Segment2(topRight, bottomRight);
+      this.#frontCollisionSegment = new Segment2(bottomRight, topRight);
     }
   }
 
@@ -139,6 +139,10 @@ export class Paddle {
 
   get bottomCollisionSegment() {
     return this.#bottomCollisionSegment;
+  }
+
+  get paddleIsOnTheRight() {
+    return this.#paddleIsOnTheRight;
   }
 
   changeSide() {

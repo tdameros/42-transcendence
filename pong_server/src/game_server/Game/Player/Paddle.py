@@ -62,6 +62,9 @@ class Paddle(object):
     def get_bottom_collision_segment(self) -> Segment2:
         return self._bottom_collision_segment
 
+    def is_paddle_on_the_right(self) -> bool:
+        return self._paddle_is_on_the_right
+
     def set_paddle_is_on_the_right(self, paddle_is_on_the_right: bool):
         if paddle_is_on_the_right != self._paddle_is_on_the_right:
             self._position[0] *= -1
@@ -86,6 +89,6 @@ class Paddle(object):
         self._top_collision_segment: Segment2 = Segment2(top_left, top_right)
         self._bottom_collision_segment: Segment2 = Segment2(bottom_left, bottom_right)
         if self._paddle_is_on_the_right:
-            self._front_collision_segment: Segment2 = Segment2(top_left, bottom_left)
+            self._front_collision_segment: Segment2 = Segment2(bottom_left, top_left)
         else:
-            self._front_collision_segment: Segment2 = Segment2(top_right, bottom_right)
+            self._front_collision_segment: Segment2 = Segment2(bottom_right, top_right)

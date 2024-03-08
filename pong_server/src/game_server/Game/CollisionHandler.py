@@ -72,9 +72,9 @@ class _Wall(_APhysicalObject):
                                ball,
                                collision_handler: 'CollisionHandler',
                                _match_location) -> Optional[Segment2]:
-        ball.set_movement_y(ball.get_movement()[1] * -settings.BALL_ACCELERATION)
+        ball.set_movement_y(ball.get_movement()[1] * -1.)
         new_travel_vector = travel.vector * (1 - self.t)
-        new_travel_vector[1] *= -settings.BALL_ACCELERATION
+        new_travel_vector[1] *= -1.
         return Segment2(self.intersection,
                         self.intersection + new_travel_vector,
                         new_travel_vector)
@@ -128,9 +128,10 @@ class _Goal(_APhysicalObject):
 class _PhysicalPaddle(_APhysicalObject):
     def __init__(self, paddle: Paddle):
         super().__init__()
-        self.top: Segment2 = paddle.get_top_collision_segment()
-        self.front: Segment2 = paddle.get_front_collision_segment()
-        self.bottom: Segment2 = paddle.get_bottom_collision_segment()
+        self._top: Segment2 = paddle.get_top_collision_segment()
+        self._front: Segment2 = paddle.get_front_collision_segment()
+        self._bottom: Segment2 = paddle.get_bottom_collision_segment()
+        self._paddleIsOnTheRight: bool = paddle.is_paddle_on_the_right()
 
         # Used to prevent the ball from getting stuck in the paddle
         self.paddle_was_hit: bool = False
@@ -161,7 +162,7 @@ class _PhysicalPaddle(_APhysicalObject):
     def _intersect_top(self, travel: Segment2):
         if travel.vector[1] > 0:
             return
-        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self.top)
+        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self._top)
         if intersection is None:
             return
         if self.t is None or self.t > t:
@@ -170,7 +171,7 @@ class _PhysicalPaddle(_APhysicalObject):
             self.intersection = intersection
 
     def _intersect_front(self, travel: Segment2):
-        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self.front)
+        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self._front)
         if intersection is None:
             return
         if self.t is None or self.t > t:
@@ -181,7 +182,7 @@ class _PhysicalPaddle(_APhysicalObject):
     def _intersect_bottom(self, travel: Segment2):
         if travel.vector[1] < 0:
             return
-        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self.bottom)
+        intersection, t = _PhysicalPaddle._circle_segment_intersection(travel, self._bottom)
         if intersection is None:
             return
         if self.t is None or self.t > t:
@@ -211,13 +212,26 @@ class _PhysicalPaddle(_APhysicalObject):
                                match) -> Optional[Segment2]:
         self.paddle_was_hit = True
         new_travel_vector = travel.vector * (1. - self.t)
-        if self.closest_side_hit == 'front':
-            ball.set_movement_x(ball.get_movement()[0] * -settings.BALL_ACCELERATION)
-            new_travel_vector[0] *= -settings.BALL_ACCELERATION
-            ball.set_position(self.intersection)
+        if self.closest_side_hit != 'front':
+            ball.set_movement_y(ball.get_movement()[1] * -1.)
+            new_travel_vector[1] *= -1.
         else:
-            ball.set_movement_y(ball.get_movement()[1] * -settings.BALL_ACCELERATION)
-            new_travel_vector[1] *= -settings.BALL_ACCELERATION
+            paddle_half_height = self._front.vector[1] / 2.
+            movement_reference = numpy.array([
+                self._front.begin[0],
+                self._front.begin[1] + paddle_half_height
+            ], dtype=float)
+            if self._paddleIsOnTheRight:
+                movement_reference[0] += paddle_half_height
+            else:
+                movement_reference[0] -= paddle_half_height
+
+            normalized_movement = self.intersection - movement_reference
+            normalized_movement /= numpy.linalg.norm(normalized_movement)
+            ball.set_movement(normalized_movement
+                              * numpy.linalg.norm(ball.get_movement())
+                              * settings.BALL_ACCELERATION)
+            new_travel_vector = normalized_movement * numpy.linalg.norm(new_travel_vector)
         return Segment2(self.intersection,
                         self.intersection + new_travel_vector,
                         new_travel_vector)

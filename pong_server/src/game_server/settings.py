@@ -12,11 +12,12 @@ MATCHES_X_OFFSET: float = MATCH_SIZE[0] / 4.
 MATCHES_Y_OFFSET: float = MATCH_SIZE[1] / 4.
 
 BALL_RADIUS: float = 1.
+BALL_BASE_SPEED: float = 15.
 BALL_ACCELERATION: float = 1.1
 BALL_WAITING_TIME_SEC: float = 3.
 
 PADDLE_SIZE: numpy.ndarray = numpy.array([1., 5., 1.], dtype=float)
-PADDLE_MOVE_SPEED: float = 9.
+PADDLE_MOVE_SPEED: float = 15.
 PADDLE_X_POSITION: float = BOARD_SIZE[0] * 0.5 - BALL_RADIUS * 1.5 - PADDLE_SIZE[0] * 0.5
 PADDLE_BOUNDING_BOX: PaddleBoundingBox = PaddleBoundingBox()
 
