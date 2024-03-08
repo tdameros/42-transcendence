@@ -225,7 +225,7 @@ class KickPlayerView(View):
         try:
             player = tournament.players.get(user_id=user_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'errors': [error.NOT_REGISTERED]}, status=404)
+            return JsonResponse({'errors': [error.USER_NOT_REGISTERED]}, status=404)
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 

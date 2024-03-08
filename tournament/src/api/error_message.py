@@ -26,6 +26,7 @@ NICKNAME_TOO_LONG = f'Nickname must contain less than {settings.MAX_NICKNAME_LEN
 NICKNAME_INVALID_CHAR = 'Nickname may only contain letters, numbers and spaces'
 
 NOT_REGISTERED = 'You are not registered for this tournament'
+USER_NOT_REGISTERED = 'User is not registered for this tournament'
 CANT_LEAVE = 'You can not leave this tournament'
 
 NOT_OWNER = 'You are not the owner of this tournament'
