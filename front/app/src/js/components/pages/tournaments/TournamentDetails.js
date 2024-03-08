@@ -243,7 +243,7 @@ export class TournamentDetails extends Component {
   async #generateMatches() {
     try {
       const {response, body} = await tournamentClient.generateMatches(
-          this.tournamentId,
+          this.tournamentId, false,
       );
       if (response.ok) {
         await this.loadTournamentDetails(this.tournamentId);
