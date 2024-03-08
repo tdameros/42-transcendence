@@ -127,13 +127,13 @@ class OAuthCallback(View):
         code = request.GET.get('code')
         state = request.GET.get('state')
         source, errors = self.get_source_url(state)
+        self.set_params(auth_service)
         if not source or self.auth_supported is False:
             source = settings.FRONT_URL
             if not source:
                 return redirect(f'{source}?error=No pending oauth found for this state')
             if self.auth_supported is False:
                 return redirect(f'{source}?error=Auth service not supported')
-        self.set_params(auth_service)
         if self.check_state(state) is False:
             return redirect(f'{source}?error=Invalid State')
         self.flush_pending_oauth(state)
