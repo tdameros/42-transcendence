@@ -44,13 +44,20 @@ class SignInView(View):
 
         try:
             user, validation_errors = SignInView.signin_infos_validation(json_request)
-            if validation_errors:
-                return JsonResponse(data={'errors': validation_errors}, status=401)
+        except Exception as e:
+            return JsonResponse(
+                data={'errors': [
+                    f'An unexpected error occurred while validating the information: {e}. '
+                    f'Validation errors : {validation_errors}']},
+                status=500)
+        if validation_errors:
+            return JsonResponse(data={'errors': validation_errors}, status=401)
+        try:
             if user.has_2fa:
                 return handle_2fa_code(user, json_request)
             return return_refresh_token(user)
         except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred while handling 2fa: {e}']}, status=500)
 
     @staticmethod
     def signin_infos_validation(json_request):
