@@ -5,6 +5,7 @@ import {Modal} from 'bootstrap';
 import {tournamentClient} from '@utils/api';
 import {getRouter} from '@js/Router.js';
 import {ToastNotifications} from '@components/notifications';
+import {NavbarUtils} from '@utils/NavbarUtils.js';
 
 export class TournamentDetails extends Component {
   constructor() {
@@ -80,7 +81,7 @@ export class TournamentDetails extends Component {
       this.joinModalNickname.value = '';
     });
     this.alertModal = this.querySelector('#alert-modal');
-    const navbarHeight = document.body.style.paddingTop;
+    const navbarHeight = NavbarUtils.height;
     const cardHeight = this.querySelector('.card').offsetHeight;
     this.body.style.maxHeight = `calc(100vh - ${navbarHeight} - ${cardHeight}px)`;
   }
@@ -140,7 +141,7 @@ export class TournamentDetails extends Component {
     this.header.innerHTML = this.#generateHeader(this.tournament, this.userId);
     if (this.tournament['status'] === 'Created') {
       this.body.innerHTML = this.#generatePlayersList(
-          this.tournament['players'], this.userId,
+          this.tournament, this.userId,
       );
     } else {
       await this.#loadBracket();
@@ -149,6 +150,11 @@ export class TournamentDetails extends Component {
     this.startBtn = this.querySelector('#start-btn');
     this.deleteBtn = this.querySelector('#delete-btn');
     this.leaveBtn = this.querySelector('#leave-btn');
+    this.kickBtns = this.querySelectorAll('.kick-btn');
+    this.#addEventListeners();
+  }
+
+  #addEventListeners() {
     if (this.joinBtn) {
       super.addComponentEventListener(
           this.joinBtn, 'click', this.#joinBtnHandler,
@@ -167,6 +173,11 @@ export class TournamentDetails extends Component {
     if (this.leaveBtn) {
       super.addComponentEventListener(
           this.leaveBtn, 'click', this.#leaveBtnHandler,
+      );
+    }
+    for (const kickBtn of this.kickBtns) {
+      super.addComponentEventListener(
+          kickBtn, 'click', this.#kickBtnHandler,
       );
     }
   }
@@ -211,8 +222,8 @@ export class TournamentDetails extends Component {
     return false;
   }
 
-  #generatePlayersList(players) {
-    if (players.length === 0) {
+  #generatePlayersList(tournament, userId) {
+    if (tournament['players'].length === 0) {
       return (`
         <div class="text-center text-secondary" role="alert">
           No players registered yet
@@ -221,15 +232,20 @@ export class TournamentDetails extends Component {
     }
     return (`
       <ul class="list-group list-group-flush">
-        ${this.#generatePlayerListItems(players)}
+        ${this.#generatePlayerListItems(tournament, userId)}
       </ul>
     `);
   }
 
-  #generatePlayerListItems(players) {
-    return players.map((player) => {
+  #generatePlayerListItems(tournament, userId) {
+    return tournament['players'].map((player) => {
       return (`
-        <li class="list-group-item">${player['nickname']}</li>
+        <li class="list-group-item d-flex align-items-center">
+            ${player['nickname']}
+            ${tournament['admin-id'] === userId ? `
+              <i player-id="${player['user-id']}" class="ms-2 bi bi-x-circle text-danger cursor-pointer kick-btn"></i>
+            ` : ''}
+        </li>
       `);
     }).join('');
   }
@@ -347,6 +363,23 @@ export class TournamentDetails extends Component {
     try {
       const {response, body} = await tournamentClient.leaveTournament(
           this.tournamentId,
+      );
+      if (response.ok) {
+        await this.loadTournamentDetails(this.tournamentId);
+        await this.parent.updateTournamentsList();
+      } else {
+        ToastNotifications.addErrorNotification(body['errors'][0]);
+      }
+    } catch (error) {
+      ErrorPage.loadNetworkError();
+    }
+  }
+
+  async #kickBtnHandler(event) {
+    const playerId = event.target.getAttribute('player-id');
+    try {
+      const {response, body} = await tournamentClient.kickPlayer(
+          this.tournamentId, playerId,
       );
       if (response.ok) {
         await this.loadTournamentDetails(this.tournamentId);

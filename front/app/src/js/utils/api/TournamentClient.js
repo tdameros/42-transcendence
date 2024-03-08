@@ -13,12 +13,21 @@ export class TournamentClient extends BaseApiClient {
     'generate-matches': 'tournament/:id/matches/generate/',
     'tournament-create': 'tournament/',
     'tournament-leave': 'tournament/:id/players/',
+    'tournament-kick': 'tournament/:id/player/:playerId/',
   };
 
   constructor() {
     super();
     this.URL = TournamentClient.URL;
     this.URIs = TournamentClient.URIs;
+  }
+
+  async kickPlayer(tournamentId, playerId) {
+    const URI = this.URIs['tournament-kick']
+        .replace(':id', tournamentId)
+        .replace(':playerId', playerId);
+    const URL = `${this.URL}/${URI}`;
+    return await this.deleteAuthRequest(URL);
   }
 
   async leaveTournament(tournamentId) {
