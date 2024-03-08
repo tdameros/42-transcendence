@@ -28,6 +28,8 @@ export class Engine {
   }
 
   disconnectFromServer() {
+    this.clearScene(this.#scene.threeJSScene);
+    this.#threeJS.clearRenderer();
     try {
       this.#socket.disconnect();
       return true;
@@ -55,7 +57,21 @@ export class Engine {
   }
 
   set scene(newScene) {
+    this.clearScene(this.#scene.threeJSScene);
     this.#scene = newScene;
+  }
+
+  clearScene(scene) {
+    while (scene.children.length > 0) {
+      this.clearScene(scene.children[0]);
+      scene.remove(scene.children[0]);
+    }
+    if (scene.geometry) {
+      scene.geometry.dispose();
+    }
+    if (scene.material) {
+      scene.material.dispose();
+    }
   }
 
   setAnimationLoop(loopFunction) {

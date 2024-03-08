@@ -104,6 +104,10 @@ export class _ThreeJS {
     this.#renderer.render(scene, this.#camera);
   }
 
+  clearRenderer() {
+    this.#renderer.dispose();
+  }
+
   get controls() {
     return this.#controls;
   }
