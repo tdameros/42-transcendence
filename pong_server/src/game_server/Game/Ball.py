@@ -45,9 +45,15 @@ class Ball(object):
             self._movement[1] = random.uniform(-max_y, -min_y)
         else:
             self._movement[1] = random.uniform(min_y, max_y)
+        self._movement = (self._movement / numpy.linalg.norm(self._movement)
+                          * settings.BALL_BASE_SPEED)
 
     def get_movement(self) -> numpy.ndarray:
         return self._movement
+
+    def set_movement(self, movement: numpy.ndarray):
+        self._movement[0] = movement[0]
+        self._movement[1] = movement[1]
 
     def set_movement_x(self, x: float):
         self._movement[0] = x

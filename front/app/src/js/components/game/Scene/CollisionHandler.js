@@ -61,9 +61,9 @@ class _Wall extends _APhysicalObject {
   }
 
   handleCollision(travel, ball, collisionHandler, _match) {
-    ball.setMovementY(ball.movement.y * -ball.acceleration);
+    ball.setMovementY(ball.movement.y * -1);
     const newTravelVector = travel.vector.multiplyScalar(1 - this.t);
-    newTravelVector.y *= -ball.acceleration;
+    newTravelVector.y *= -1;
     return new Segment2(
         this.intersection,
         this.intersection.clone().add(newTravelVector),
@@ -127,12 +127,17 @@ class _Goal extends _APhysicalObject {
 class _PhysicalPaddle extends _APhysicalObject {
   #paddleWasAlreadyHit;
   #closestSideHit;
+  #top;
+  #front;
+  #bottom;
+  #paddleIsOnTheRight;
 
   constructor(paddle) {
     super();
-    this.top = paddle.topCollisionSegment;
-    this.front = paddle.frontCollisionSegment;
-    this.bottom = paddle.bottomCollisionSegment;
+    this.#top = paddle.topCollisionSegment;
+    this.#front = paddle.frontCollisionSegment;
+    this.#bottom = paddle.bottomCollisionSegment;
+    this.#paddleIsOnTheRight = paddle.paddleIsOnTheRight;
 
     // Used to prevent the ball from getting stuck in the paddle
     this.#paddleWasAlreadyHit = false;
@@ -169,7 +174,7 @@ class _PhysicalPaddle extends _APhysicalObject {
       return;
     }
     const {intersection, t} = _PhysicalPaddle.#circleSegmentIntersection(
-        travel, this.top, ballRadius,
+        travel, this.#top, ballRadius,
     );
     if (intersection === null) {
       return;
@@ -183,7 +188,7 @@ class _PhysicalPaddle extends _APhysicalObject {
 
   #intersectFront(travel, ballRadius) {
     const {intersection, t} = _PhysicalPaddle.#circleSegmentIntersection(
-        travel, this.front, ballRadius,
+        travel, this.#front, ballRadius,
     );
     if (intersection === null) {
       return;
@@ -200,7 +205,7 @@ class _PhysicalPaddle extends _APhysicalObject {
       return;
     }
     const {intersection, t} = _PhysicalPaddle.#circleSegmentIntersection(
-        travel, this.bottom, ballRadius,
+        travel, this.#bottom, ballRadius,
     );
     if (intersection === null) {
       return;
@@ -231,13 +236,27 @@ class _PhysicalPaddle extends _APhysicalObject {
 
   handleCollision(travel, ball, collisionHandler, _match) {
     this.#paddleWasAlreadyHit = true;
-    const newTravelVector = travel.vector.multiplyScalar(1. - this.t);
-    if (this.#closestSideHit === 'front') {
-      ball.setMovementX(ball.movement.x * -ball.acceleration);
-      newTravelVector.x *= -ball.acceleration;
+    let newTravelVector = travel.vector.multiplyScalar(1. - this.t);
+    if (this.#closestSideHit !== 'front') {
+      ball.setMovementY(ball.movement.y * -1);
+      newTravelVector.y *= -1;
     } else {
-      ball.setMovementY(ball.movement.y * -ball.acceleration);
-      newTravelVector.y *= -ball.acceleration;
+      const paddleHalfHeight = this.#front.vector.y / 2.;
+      const movementReference = this.#front.begin.clone();
+      movementReference.y += paddleHalfHeight;
+      if (this.#paddleIsOnTheRight) {
+        movementReference.x += paddleHalfHeight;
+      } else {
+        movementReference.x -= paddleHalfHeight;
+      }
+
+      const normalizedMovement = this.intersection.clone()
+          .sub(movementReference)
+          .normalize();
+      ball.movement = normalizedMovement.clone()
+          .multiplyScalar(ball.movement.length() * ball.acceleration);
+      newTravelVector = normalizedMovement
+          .multiplyScalar(newTravelVector.length());
     }
     return new Segment2(this.intersection,
         this.intersection.clone().add(newTravelVector),
