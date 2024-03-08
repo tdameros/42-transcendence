@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 import numpy
@@ -10,6 +11,13 @@ from vector_to_dict import vector_to_dict
 
 
 class EventEmitter(object):
+    @staticmethod
+    async def time_sync(sid, time1: any):
+        await Server.emit('time_sync', sid, {
+            'time1': time1,
+            'time2': time.time()
+        })
+
     @staticmethod
     async def scene(sid: str,
                     player_location: PlayerLocation,
@@ -49,7 +57,8 @@ class EventEmitter(object):
         await Server.emit('update_ball', rooms.ALL_PLAYERS, {
             'match_location': match_location.to_json(),
             'position': vector_to_dict(position),
-            'movement': vector_to_dict(movement)
+            'movement': vector_to_dict(movement),
+            'time_at_update': time.time(),
         })
 
     @staticmethod

@@ -16,16 +16,17 @@ class EventHandler(object):
         Server.sio.on('connect')(EventHandler._connect)
         Server.sio.on('disconnect')(EventHandler._disconnect)
         Server.sio.on('player_is_ready')(EventHandler._player_is_ready)
+        Server.sio.on('request_time_sync')(EventHandler._request_time_sync)
         Server.sio.on('update_paddle')(EventHandler._update_paddle)
 
     @staticmethod
     async def _connect(sid: str, _environ, auth):
         try:
             logging.info(f'{sid} connected')
+            if Server.should_stop or GameManager.is_game_over():
+                raise ConnectError('The game is over', 0)
 
             user_id: int = EventHandler._authenticate_user(auth)
-            if GameManager.is_game_over():
-                raise ConnectError('The game is over', 0)
             previous_sid = ClientManager.get_user_sid(user_id)
             if previous_sid:
                 await Server.sio.disconnect(previous_sid)
@@ -64,6 +65,12 @@ class EventHandler(object):
     @staticmethod
     async def _player_is_ready(sid: str, _data):
         ClientManager.add_ready_player(ClientManager.get_user_id(sid))
+
+    @staticmethod
+    async def _request_time_sync(sid: str, time1):
+        # No need to check time1 type as the server only sends it back to the client without
+        # using it
+        await EventEmitter.time_sync(sid, time1)
 
     @staticmethod
     async def _update_paddle(sid: str, player_data):

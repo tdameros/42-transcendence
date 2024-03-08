@@ -20,6 +20,17 @@
   >
   >> Prints debug_message on `console.log`
 
+- ### `time_sync`:
+  >> Argument:
+  >> ```
+  >> {
+  >>     'time1': time1 (value sent during `request_time_sync` event),
+  >>     'time2': float (Seconds since the Epoch on server side)
+  >> }
+  >> ``` 
+  >
+  >> Allows the client to adapt to latency
+
 - ### `scene`:
   >> Argument:
   >> ```
@@ -138,7 +149,8 @@
   >>         'match': int
   >>     },
   >>     'position': {'x': float, 'y': float, 'z': float},
-  >>     'movement': {'x': float, 'y': float, 'z': float}
+  >>     'movement': {'x': float, 'y': float, 'z': float},
+  >>     'time_at_update': float (Seconds since the Epoch),
   >> }
   >> ```
   >

@@ -22,7 +22,21 @@
 - ### `player_is_ready`:
   > Must be sent once the scene is loaded by the client
 
-- ### `update_player`:
+- ### `request_time_sync`:
+  >> Argument:
+  >> ```
+  >> time1: any
+  >> ``` 
+  >
+  >> Response: Event `time_sync`
+  >> ```
+  >> {
+  >>     'time1': time1 (same as the given argument),
+  >>     'time2': float (Seconds since the Epoch on server side)
+  >> }
+  >> ``` 
+
+- ### `update_paddle`:
   >> Argument:
   >> ```
   >> {

@@ -45,10 +45,12 @@ class StartTournamentView(View):
 
         try:
             tournament.save()
-            game_created, game_creation_error, game_port = StartTournamentView.create_tournament_game(tournament)
+            game_created, game_creation_error, response = StartTournamentView.create_tournament_game(tournament)
             if not game_created:
-                return JsonResponse({'errors': [game_creation_error]}, status=500)
-            StartTournamentView.send_tournament_start_notification(tournament, game_port)
+                tournament.status = Tournament.CREATED
+                tournament.save()
+                return JsonResponse({'errors': [game_creation_error]}, status=response.status_code)
+            StartTournamentView.send_tournament_start_notification(tournament, response.json()['port'])
         except Exception as e:
             return JsonResponse({'errors': [str(e)]}, status=500)
 
@@ -75,7 +77,7 @@ class StartTournamentView(View):
         players = tournament.players.all()
         players_id = [player.user_id for player in players]
         notification_data = {
-            'title': f'Tournament `{tournament.name}` started',
+            'title': tournament.name,
             'type': 'tournament_start',
             'user_list': players_id,
             'data': f'{game_port}'
@@ -90,7 +92,7 @@ class StartTournamentView(View):
             raise Exception(f'Failed to send tournament start notification: {response.json()}')
 
     @staticmethod
-    def create_tournament_game(tournament: Tournament) -> tuple[bool, Optional[str], Optional[int]]:
+    def create_tournament_game(tournament: Tournament) -> tuple[bool, Optional[str], any]:
         data = {
             'request_issuer': 'tournament',
             'game_id': tournament.id,
@@ -102,10 +104,17 @@ class StartTournamentView(View):
             data=json.dumps(data)
         )
 
-        if response.status_code != 201:
-            return False, f'Failed to create game: {response.json()}', None
+        if response.status_code == 409:
+            players_list = StartTournamentView.get_players_already_in_game(
+                tournament,
+                response.json()['players_already_in_a_game']
+            )
+            return False, f'Some players are already in a game: {players_list}', response
 
-        return True, None, response.json()['port']
+        if response.status_code != 201:
+            return False, f'Failed to create game: {response.json()}', response
+
+        return True, None, response
 
     @staticmethod
     def get_players_list(tournament: Tournament) -> list[Optional[int]]:
@@ -123,6 +132,16 @@ class StartTournamentView(View):
             else:
                 players.append(None)
         return players
+
+    @staticmethod
+    def get_players_already_in_game(tournament: Tournament, players_already_in_game: list[int]) -> list[str]:
+        players_list = []
+        players = tournament.players.all()
+
+        for player in players:
+            if player.user_id in players_already_in_game:
+                players_list.append(player.nickname)
+        return players_list
 
 
 @method_decorator(csrf_exempt, name='dispatch')

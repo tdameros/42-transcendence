@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from ssl import SSLContext
 from typing import Optional
@@ -59,13 +58,9 @@ class Server(object):
             await Server.sio.sleep(5)
             if Server.should_stop:  # set to True by background task
                 logging.debug('Cleaning up before exiting')
-                loop = asyncio.get_running_loop()
-                tasks = [task for task in asyncio.all_tasks()
-                         if task is not asyncio.current_task()]
-                for task in tasks:
-                    task.cancel()
+                await Server._app.shutdown()
+                await Server._app.cleanup()
                 await Server._runner.cleanup()
-                loop.stop()
                 return Server.exit_code
 
     @staticmethod

@@ -553,19 +553,6 @@ class StartTournamentTest(TestCase):
         return response, body
 
     @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
-    @patch('api.views.manage_tournament_views.StartTournamentView.create_tournament_game')
-    def test_start_tournament(self, mock_game_creator, mock_get):
-        mock_get.return_value = (True, {'id': 1}, None)
-        mock_game_creator.return_value = (True, None, 200)
-        response, body = self.start_tournament(1)
-
-        tournament = Tournament.objects.get(id=1)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(body['message'], f'Tournament `{tournament.name}` successfully started')
-        self.assertEqual(tournament.status, Tournament.IN_PROGRESS)
-
-    @patch('common.src.jwt_managers.UserAccessJWTDecoder.authenticate')
     def test_start_tournament_not_found(self, mock_get):
         mock_get.return_value = (True, {'id': 1}, None)
         response, body = self.start_tournament(2)

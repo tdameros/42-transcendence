@@ -58,7 +58,7 @@ export class _Board {
     }
     const wallWidth = 1;
     const wall = await this.initWall(boardSize, wallWidth);
-    const goalWall = await this.initWall(
+    this.#goal = await this.initWall(
         {x: boardSize.y + 2 * wallWidth, z: boardSize.z},
         wallWidth,
     );
@@ -69,12 +69,12 @@ export class _Board {
     wall.rotateZ(Math.PI);
     this.#threeJSBoard.add(wall.clone());
     if (this.#side === 0) {
-      goalWall.rotateZ(Math.PI);
+      this.#goal.rotateZ(Math.PI);
     }
-    goalWall.position
+    this.#goal.position
         .set(-sign * boardSize.x / 2 - sign * wallWidth / 2, 0, 0);
-    goalWall.rotateZ(Math.PI / 2);
-    this.#threeJSBoard.add(goalWall);
+    this.#goal.rotateZ(Math.PI / 2);
+    this.#threeJSBoard.add(this.#goal);
   }
 
   async initWall(boardSize, wallWidth) {
@@ -122,21 +122,6 @@ export class _Board {
       this.#points.push(point);
       this.#threeJSBoard.add(point);
     }
-    const width = Math.abs(
-        this.#points[0].position.x - this.#points[maxScore - 1].position.x,
-    );
-    const middle = -(sign * width) / 2 + this.#points[0].position.x;
-    const light = new THREE.RectAreaLight(
-        0xffffff,
-        5,
-        width,
-        pointRadius * 2,
-    );
-    light.position.set(middle, pointStartPosition.y, pointStartPosition.z + 4);
-    light.lookAt(middle, pointStartPosition.y, pointStartPosition.z);
-    this.#threeJSBoard.add(light.clone());
-    light.position.y *= -1;
-    this.#threeJSBoard.add(light.clone());
   }
 
   initPointMesh(pointRadius) {
@@ -170,7 +155,7 @@ export class _Board {
   }
 
   updateFrame() {
-    const currentTime = Date.now();
+    const currentTime = Number(Date.now());
     const frequency = 300;
     const amplitude = 0.3;
     this.#points.forEach((point, index) => {
@@ -192,6 +177,8 @@ export class _Board {
       point.position.x *= -1;
     }
     this.#goal.position.x *= -1;
+    this.#goal.rotateY(Math.PI);
+    this.#goal.rotateX(Math.PI);
   }
 
   get threeJSBoard() {
