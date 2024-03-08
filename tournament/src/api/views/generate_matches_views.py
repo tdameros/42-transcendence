@@ -146,7 +146,7 @@ class GenerateMatchesView(View):
     @staticmethod
     def get_elo(player: Player, jwt: str) -> int:
         headers = {'Authorization': jwt}
-        response = InternalRequests.get(f'{settings.USER_STATS_USER_ENDPOINT}{player.user_id}', headers=headers)
+        response = InternalRequests.get(f'{settings.USER_STATS_USER_ENDPOINT}{player.user_id}/', headers=headers)
 
         if response.status_code == 200:
             body = response.json()
