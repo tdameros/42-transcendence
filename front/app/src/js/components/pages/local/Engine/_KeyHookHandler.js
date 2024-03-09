@@ -2,8 +2,8 @@ export class _KeyHookHandler {
   #engine;
   #upKeyIsPressed = [false, false];
   #downKeyIsPressed = [false, false];
-  #upTouchStart = false;
-  #downTouchStart = false;
+  #upTouchStart = [false, false];
+  #downTouchStart = [false, false];
 
   constructor(engine) {
     this.#engine = engine;
@@ -39,33 +39,62 @@ export class _KeyHookHandler {
   }
 
   touchStart(event) {
-    const touch = event.touches[0];
-    if (screen.orientation.type.indexOf('landscape') !== -1) {
+    for (const touch of event.touches) {
       if (touch.clientX < window.innerWidth / 2) {
-        this.#pressUpKey();
-        this.#upTouchStart = true;
+        this.touchStartLeft(touch);
       } else {
-        this.#pressDownKey();
-        this.#downTouchStart = true;
-      }
-    } else {
-      if (touch.clientY < window.innerHeight / 2) {
-        this.#pressUpKey();
-        this.#upTouchStart = true;
-      } else {
-        this.#pressDownKey();
-        this.#downTouchStart = true;
+        this.touchStartRight(touch);
       }
     }
   }
 
+  touchStartLeft(touch) {
+    if (touch.clientY < window.innerHeight / 2) {
+      this.#pressUpKey(0);
+      this.#upTouchStart[0] = true;
+    } else {
+      this.#pressDownKey(0);
+      this.#downTouchStart[0] = true;
+    }
+  }
+
+  touchStartRight(touch) {
+    if (touch.clientY < window.innerHeight / 2) {
+      this.#pressUpKey(1);
+      this.#upTouchStart[1] = true;
+    } else {
+      this.#pressDownKey(1);
+      this.#downTouchStart[1] = true;
+    }
+  }
+
   touchEnd(event) {
-    if (this.#upTouchStart) {
-      this.#releaseUpKey();
-      this.#upTouchStart = false;
-    } else if (this.#downTouchStart) {
-      this.#releaseDownKey();
-      this.#downTouchStart = false;
+    for (const touch of event.changedTouches) {
+      if (touch.clientX < window.innerWidth / 2) {
+        this.touchEndLeft();
+      } else {
+        this.touchEndRight();
+      }
+    }
+  }
+
+  touchEndLeft() {
+    if (this.#upTouchStart[0]) {
+      this.#releaseUpKey(0);
+      this.#upTouchStart[0] = false;
+    } else if (this.#downTouchStart[0]) {
+      this.#releaseDownKey(0);
+      this.#downTouchStart[0] = false;
+    }
+  }
+
+  touchEndRight() {
+    if (this.#upTouchStart[1]) {
+      this.#releaseUpKey(1);
+      this.#upTouchStart[1] = false;
+    } else if (this.#downTouchStart[1]) {
+      this.#releaseDownKey(1);
+      this.#downTouchStart[1] = false;
     }
   }
 
