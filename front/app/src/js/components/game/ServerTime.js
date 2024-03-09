@@ -33,6 +33,9 @@ export class ServerTime {
   }
 
   static fixServerTime(serverTime) {
+    if (serverTime === null) {
+      return null;
+    }
     return this.#secondsToMs(serverTime) + this.#averageTimeOffset;
   }
 
