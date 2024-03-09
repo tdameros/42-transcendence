@@ -75,7 +75,7 @@
   >> 
   >>         "loosers": [
   >>             (List of players with the same structure as the players in the matches exept the position is global)
-  >>         ]
+  >>         ],
   >> 
   >>         'matches_middle': {
   >>             'x': float,
@@ -87,7 +87,7 @@
   >>         'matches_y_offset': float,
   >>
   >>         'points_to_win_match': int,
-  >>     }
+  >>     },
   >>
   >>     'player_location': { // Location of current client
   >>         'is_looser': bool,
@@ -95,8 +95,8 @@
   >>             'game_round': int,
   >>             'match': int
   >>         },
-  >>         'player_index': int
-  >>     }
+  >>         'player_index': int,
+  >>     },
   >>     'game_has_started': bool,
   >> }
   >> ```

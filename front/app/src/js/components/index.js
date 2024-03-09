@@ -37,7 +37,6 @@ import {
   Home,
   HomeContent,
   Local,
-  LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
   Ranking,
@@ -109,7 +108,6 @@ customElements.define('home-component', Home);
 customElements.define('home-content-component', HomeContent);
 
 customElements.define('local-component', Local);
-customElements.define('local-content-component', LocalContent);
 
 customElements.define('privacy-policy-component', PrivacyPolicy);
 customElements.define('privacy-policy-content-component', PrivacyPolicyContent);
@@ -181,7 +179,6 @@ export {
   SignUpContent,
   TwoFactorAuth,
   Local,
-  LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
   Ranking,
