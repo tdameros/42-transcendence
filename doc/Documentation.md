@@ -13,10 +13,17 @@ this documentation details the different endpoints of each microservice.
 > #### Retrieve information from a specific template
 
 ## Front
-> ### [Front documentation](../front/doc/front.md)
-> ### [/component](../front/doc/component.md)
-> ### [/router](../front/doc/router.md)
-> ### [/cookies](../front/doc/cookies.md)
+> ### [Router](../front/doc/router.md)
+>
+> ##### A client side router for single page application
+
+> ### [Component](../front/doc/component.md)
+>
+> ##### A custom HTML element for building web components
+
+> ### [Cookies](../front/doc/cookies.md)
+>
+> ##### A simple and convenient way to manage cookies in a web application
 
 ## Matchmaking
 ### [Events sent by the client](../matchmaking/doc/matchmaking-documentation.md#events-sent-by-the-client)
