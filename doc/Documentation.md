@@ -29,6 +29,10 @@ this documentation details the different endpoints of each microservice.
 > ### [/tournament](../tournament/doc/tournament-api-documentation.md#tournament)
 > 
 > #### Create / retrieve tournament
+ 
+> ### [/tournament/self](../tournament/doc/tournament-api-documentation.md#tournamentself)
+>
+> #### Manage user's tournaments
 
 > ### [/tournament/{id}](../tournament/doc/tournament-api-documentation.md#tournamentid)
 >
@@ -39,6 +43,10 @@ this documentation details the different endpoints of each microservice.
 > #### Manage players of a tournament
 
 > ### [/tournament/{id}/matches](../tournament/doc/tournament-api-documentation.md#tournamentidmatches)
+>
+> #### Manage matches of a tournament
+
+> ### [/tournament/{id}/match](../tournament/doc/tournament-api-documentation.md#tournamentidmatch)
 >
 > #### Manage matches of a tournament
 
