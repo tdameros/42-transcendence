@@ -1,4 +1,4 @@
-import {Segment2} from '@components/game/Scene/Segment2.js';
+import {Segment2} from '@components/pages/local/Scene/Segment2.js';
 
 
 class _APhysicalObject {
@@ -116,7 +116,8 @@ class _Goal extends _APhysicalObject {
     return currentClosestPhysicalObjectHit;
   }
 
-  handleCollision(_travel, _ball, _collisionHandler, _match) {
+  handleCollision(_travel, _ball, _collisionHandler, match) {
+    match.playerMarkedPoint(1 - this.isRight);
     return null;
   }
 }

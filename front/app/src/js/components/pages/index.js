@@ -15,7 +15,6 @@ import {
 
 import {
   Local,
-  LocalContent,
 } from './local';
 
 import {
@@ -75,7 +74,6 @@ export {
   Home,
   HomeContent,
   Local,
-  LocalContent,
   PrivacyPolicy,
   PrivacyPolicyContent,
   Ranking,
