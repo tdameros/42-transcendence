@@ -286,9 +286,18 @@ export class _GameSocketIO {
       await sleep(50);
     }
     console.log('game_over received');
-
+    for (const looser of this.#engine.scene.loosers) {
+      if (!looser.isCurrentPlayer) {
+        looser.paddle.setDirection('none');
+      }
+    }
     const winnerIndex = data;
     const finalMatch = this.#engine.scene.matches[0];
+    for (const player of finalMatch.players) {
+      if (!player.isCurrentPlayer) {
+        player.paddle.setDirection('none');
+      }
+    }
 
     finalMatch.players[winnerIndex].addPoint();
     finalMatch.ball.removeBall();
