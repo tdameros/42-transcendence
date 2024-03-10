@@ -16,8 +16,13 @@ from vector_to_dict import vector_to_dict
 class Match(object):
     GAME_ID: int  # Game ID is not the ID of the match, it is the ID of the game
 
-    def __init__(self, game_id: int, match_location: MatchLocation):
+    def __init__(self,
+                 game_id: int,
+                 match_location: MatchLocation,
+                 is_animating: bool):
         Match.GAME_ID = game_id
+
+        self._is_animating = is_animating
 
         self.LOCATION: MatchLocation = match_location
         self._points: list[int] = [0, 0]
@@ -54,12 +59,15 @@ class Match(object):
         await self._prepare_ball_for_match()
 
     async def update(self, current_time: float, time_delta: float):
-        if self._players[0]:
+        if self._is_animating:
+            self.animate(current_time)
+
+        if self._players[0] and not self._players[0].is_animating():
             self._players[0].update(time_delta)
-        if self._players[1]:
+        if self._players[1] and not self._players[1].is_animating():
             self._players[1].update(time_delta)
 
-        if not self._ball_start_time:
+        if self._is_animating or not self._ball_start_time:
             return
 
         if self._ball_is_waiting and current_time >= self._ball_start_time:
@@ -69,6 +77,18 @@ class Match(object):
                                     time_delta,
                                     self._players[0].get_paddle(),
                                     self._players[1].get_paddle())
+
+    def animate(self, current_time: float) -> bool:
+        if self._players[0]:
+            player1_is_animating = self._players[0].animate(current_time)
+        else:
+            player1_is_animating = True
+        if self._players[1]:
+            player2_is_animating = self._players[1].animate(current_time)
+        else:
+            player2_is_animating = True
+        if not player1_is_animating and not player2_is_animating:
+            self._is_animating = False
 
     async def player_marked_point(self, player_index: int):
         self._points[player_index] += 1
@@ -94,6 +114,12 @@ class Match(object):
         await EventEmitter.prepare_ball_for_match(self.LOCATION,
                                                   self._ball.get_movement(),
                                                   self._ball_start_time)
+
+    def set_is_animating(self, is_animating: bool):
+        self._is_animating = is_animating
+
+    def is_animating(self):
+        return self._is_animating
 
     def get_player(self, index: int) -> Optional[Player]:
         return self._players[index]

@@ -89,7 +89,7 @@ class EventHandler(object):
             paddle_position = player.get_paddle().get_position()
             paddle_position[1] = client_paddle_position
             await EventEmitter.update_paddle(
-                player.get_location(), direction, paddle_position, None
+                player.get_location(), direction, paddle_position[1], None
             )
         else:
             await AntiCheat.update_paddle_position_and_direction(client_paddle_position,
