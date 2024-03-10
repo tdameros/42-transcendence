@@ -186,7 +186,6 @@ export class _GameSocketIO {
     const match = this.#engine.scene
         .getMatchFromLocation(data['match_location']);
     const ballStartTime = ServerTime.fixServerTime(data['ball_start_time']);
-    match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
     if (!this.#gameHasStarted) {
       this.#gameHasStarted = true;
       this.#engine.startListeningForKeyHooks();
@@ -196,6 +195,7 @@ export class _GameSocketIO {
         match.players[1].isCurrentPlayer && !match.hasMatchStarted()) {
       this.#engine.scene.updateCamera();
     }
+    match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
   }
 
   async #updateBallEventHandler(data) {
