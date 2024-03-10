@@ -55,9 +55,7 @@ export class _GameSocketIO {
       await this.#connectErrorHandler(jsonString, URI);
     });
 
-    this.#socketIO.on('disconnect', () => {
-      console.log('disconnected from game server');
-    });
+    this.#socketIO.on('disconnect', () => {});
 
     this.#socketIO.on('fatal_error', async (data) => {
       console.error('Server fatal error: ', data['error_message']);
@@ -169,7 +167,6 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-    console.log('update_paddle received');
 
     const paddle = new PlayerLocation(data['player_location'])
         .getPlayerFromScene(this.#engine.scene).paddle;
@@ -181,7 +178,6 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-    console.log('prepare_ball_for_match received');
 
     const match = this.#engine.scene
         .getMatchFromLocation(data['match_location']);
@@ -202,7 +198,6 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-    console.log('update_ball received');
 
     const match = this.#engine.scene
         .getMatchFromLocation(data['match_location']);
@@ -226,7 +221,6 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-    console.log('player_won_match received');
 
     const newMatchJson = data['new_match_json'];
     await this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
@@ -284,7 +278,6 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-    console.log('game_over received');
 
     const winnerIndex = data;
     const finalMatch = this.#engine.scene.matches[0];
