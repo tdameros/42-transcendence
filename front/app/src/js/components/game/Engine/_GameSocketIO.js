@@ -124,14 +124,13 @@ export class _GameSocketIO {
       ToastNotifications.addErrorNotification(error['message']);
       getRouter().redirect('/');
       return;
-    } else {
-      console.error('Connection error:', error['message']);
-      ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
-      this.disconnect(false);
-      this.#reconnectAttempts++;
-      await sleep(2000);
-      await this.init(URI);
     }
+    console.error('Connection error:', error['message']);
+    ToastNotifications.addErrorNotification(`Connection error: ${error['message']}`);
+    this.disconnect(false);
+    this.#reconnectAttempts++;
+    await sleep(2000);
+    await this.init(URI);
   }
 
   async #sceneEventHandler(data) {
@@ -145,15 +144,24 @@ export class _GameSocketIO {
         data['player_location'],
     );
     this.#engine.scene = scene;
-    this.#engine.scene.updateCamera();
-    this.#engine.displayGameScene();
     this.#gameHasStarted = data['game_has_started'];
     if (this.#gameHasStarted) {
       this.#engine.startListeningForKeyHooks();
+      this.#setCamera(false);
     } else {
       this.emit('player_is_ready', {});
       this.#engine.component.addWaitingForOpponent();
-      this.#engine.scene.updateCamera(true);
+      this.#setCamera(true);
+    }
+    this.#engine.displayGameScene();
+  }
+
+  #setCamera(animate) {
+    const currentPlayer = this.#engine.scene.getCurrentPlayer();
+    if (currentPlayer.isAnimating) {
+      this.#engine.scene.setSpectatorCameraSettings();
+    } else {
+      this.#engine.scene.updateCamera(animate);
     }
   }
 
@@ -166,7 +174,7 @@ export class _GameSocketIO {
     const paddle = new PlayerLocation(data['player_location'])
         .getPlayerFromScene(this.#engine.scene).paddle;
     paddle.setDirection(data['direction']);
-    paddle.setPosition(data['position']);
+    paddle.setYPosition(data['y_position']);
   }
 
   async #prepareBallForMatchEventHandler(data) {
@@ -218,27 +226,46 @@ export class _GameSocketIO {
     }
     console.log('player_won_match received');
 
-    const winnerIndex = data['winner_index'];
-    const finishedMatchLocation = data['finished_match_location'];
-    this.#engine.scene.removeLooserFromMatch(finishedMatchLocation,
-        1 - winnerIndex);
-
-    const winner = this.#engine.scene
-        .getMatchFromLocation(finishedMatchLocation)
-        .players[winnerIndex];
-
     const newMatchJson = data['new_match_json'];
     await this.#engine.scene.createMatchIfDoesntExist(newMatchJson);
 
-    const newWinnerIndex = finishedMatchLocation['match'] % 2;
-    this.#engine.scene.addWinnerToMatch(
-        newMatchJson['location'], winner, winnerIndex, newWinnerIndex,
+    const winnerIndex = data['winner_index'];
+    const finishedMatchLocation = data['finished_match_location'];
+
+    this.#engine.scene.removeLooserFromMatch(finishedMatchLocation,
+        1 - winnerIndex);
+
+    this.#handleMatchWinner(
+        finishedMatchLocation, winnerIndex, newMatchJson['location'],
+        ServerTime.fixServerTime(data['animation_start_time']),
+        ServerTime.fixServerTime(data['animation_end_time']),
     );
-    winner.resetPoints();
 
     this.#engine.scene.deleteMatch(finishedMatchLocation);
+  }
 
-    this.#engine.scene.updateCamera();
+  #handleMatchWinner(finishedMatchLocation,
+      winnerIndex,
+      newMatchLocation,
+      animationStartTime,
+      animationEndTime) {
+    const winner = this.#engine.scene
+        .getMatchFromLocation(finishedMatchLocation)
+        .players[winnerIndex];
+    const newWinnerIndex = finishedMatchLocation['match'] % 2;
+    const finishedMatch = this.#engine.scene
+        .getMatchFromLocation(finishedMatchLocation);
+    const newMatch = this.#engine.scene.getMatchFromLocation(newMatchLocation);
+
+    winner.startAnimation(
+        newWinnerIndex !== winnerIndex, animationStartTime, animationEndTime,
+        finishedMatch, newMatch,
+    );
+
+    this.#engine.scene.addWinnerToMatch(
+        newMatchLocation, winner, winnerIndex, newWinnerIndex,
+    );
+    winner.resetPoints();
   }
 
   async #playerScoredAPointEventHandler(data) {
@@ -257,20 +284,29 @@ export class _GameSocketIO {
     }
     console.log('game_over received');
 
-    const winnerIndex = data['winner_index'];
-    this.#engine.scene.matches[0].players[winnerIndex].addPoint();
-    this.#engine.scene.matches[0].ball.removeBall();
+    const winnerIndex = data;
+    const finalMatch = this.#engine.scene.matches[0];
+
+    finalMatch.players[winnerIndex].addPoint();
+    finalMatch.ball.removeBall();
 
     const currentPlayerLocation = this.#engine.scene.currentPlayerLocation;
+    const winnerScore = finalMatch.players[winnerIndex].score;
+    const looserScore = finalMatch.players[1 - winnerIndex].score;
+
+    this.#displayGameOverMessage(
+        currentPlayerLocation, winnerIndex, winnerScore, looserScore,
+    );
+  }
+
+  #displayGameOverMessage(currentPlayerLocation,
+      winnerIndex,
+      winnerScore,
+      looserScore) {
     if (currentPlayerLocation.isLooser) {
       this.#handleGameOverPlayerHasNotReachedTheFinal();
       return;
     }
-
-    const finalMatch = currentPlayerLocation.getPlayerMatchFromScene(
-        this.#engine.scene);
-    const winnerScore = finalMatch.players[winnerIndex].score;
-    const looserScore = finalMatch.players[1 - winnerIndex].score;
 
     if (currentPlayerLocation.playerIndex === winnerIndex) {
       if (this.#engine.scene.loosers.length !== 0) {
