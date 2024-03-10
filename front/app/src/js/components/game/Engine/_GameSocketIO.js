@@ -190,10 +190,11 @@ export class _GameSocketIO {
       this.#gameHasStarted = true;
       this.#engine.startListeningForKeyHooks();
       this.#engine.component.removeWaitingForOpponent();
-      this.#engine.component.startCountdown(ballStartTime / 1000.);
-    } else if ((match.players[0].isCurrentPlayer ||
+    }
+    if ((match.players[0].isCurrentPlayer ||
         match.players[1].isCurrentPlayer) && !match.hasMatchStarted()) {
       this.#engine.scene.updateCamera();
+      this.#engine.component.startCountdown(ballStartTime / 1000.);
     }
     match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
   }
