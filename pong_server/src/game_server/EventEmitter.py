@@ -4,6 +4,7 @@ from typing import Optional
 import numpy
 
 import rooms
+import settings
 from Game.MatchLocation import MatchLocation
 from Game.PlayerLocation import PlayerLocation
 from Server import Server
@@ -32,12 +33,12 @@ class EventEmitter(object):
     @staticmethod
     async def update_paddle(player_location: PlayerLocation,
                             direction: str,
-                            paddle_position: numpy.ndarray,
+                            paddle_y_position: float,
                             skip_sid: Optional[str]):
         await Server.emit('update_paddle', rooms.ALL_PLAYERS, {
             'player_location': player_location.to_json(),
             'direction': direction,
-            'position': vector_to_dict(paddle_position)
+            'y_position': paddle_y_position
         }, skip_sid)
 
     @staticmethod
@@ -64,18 +65,19 @@ class EventEmitter(object):
     @staticmethod
     async def player_won_match(finished_match_location: MatchLocation,
                                winner_index: int,
-                               new_match_json: dict):
+                               new_match_json: dict,
+                               current_time: float):
         await Server.emit('player_won_match', rooms.ALL_PLAYERS, {
             'finished_match_location': finished_match_location.to_json(),
             'winner_index': winner_index,
             'new_match_json': new_match_json,
+            'animation_start_time': current_time,
+            'animation_end_time': current_time + settings.ANIMATION_DURATION,
         })
 
     @staticmethod
     async def game_over(winner_index: int):
-        await Server.emit('game_over', rooms.ALL_PLAYERS, {
-            'winner_index': winner_index
-        })
+        await Server.emit('game_over', rooms.ALL_PLAYERS, winner_index)
 
     @staticmethod
     async def fatal_error(error: str):

@@ -40,7 +40,7 @@ class AntiCheat(object):
 
         await EventEmitter.update_paddle(player.get_location(),
                                          direction,
-                                         paddle_position,
+                                         paddle_position[1],
                                          skip_sid)
 
     @staticmethod

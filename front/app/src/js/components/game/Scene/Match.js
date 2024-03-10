@@ -28,8 +28,12 @@ export class Match {
 
     if (shouldCreatePlayers === true) {
       const playersJson = matchJson['players'];
-      await this.#createPlayer(playersJson[0], 0, points[0], pointsToWinMatch);
-      await this.#createPlayer(playersJson[1], 1, points[1], pointsToWinMatch);
+      await this.#createPlayer(
+          playersJson[0], 0, points[0], pointsToWinMatch,
+      );
+      await this.#createPlayer(
+          playersJson[1], 1, points[1], pointsToWinMatch,
+      );
     }
 
     this.#threeJSGroup.add(this.#ball.threeJSGroup);
@@ -37,10 +41,10 @@ export class Match {
 
   updateFrame(timeDelta, currentTime, paddleBoundingBox, boardSize) {
     if (this.#players[0] !== null) {
-      this.#players[0].updateFrame(timeDelta, paddleBoundingBox);
+      this.#players[0].updateFrame(timeDelta, currentTime, paddleBoundingBox);
     }
     if (this.#players[1] !== null) {
-      this.#players[1].updateFrame(timeDelta, paddleBoundingBox);
+      this.#players[1].updateFrame(timeDelta, currentTime, paddleBoundingBox);
     }
 
     if (this.#ballStartTime === null ||
@@ -99,6 +103,10 @@ export class Match {
     }
     this.#threeJSGroup.remove(player.threeJSGroup);
     this.#players[index] = null;
+  }
+
+  hasMatchStarted() {
+    return this.#ballStartTime !== null;
   }
 
   get threeJSGroup() {

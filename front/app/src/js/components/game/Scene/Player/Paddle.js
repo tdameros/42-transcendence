@@ -18,6 +18,14 @@ export class Paddle {
   #paddleSize;
   #paddleIsOnTheRight;
 
+  #rightColor = 0xff1111;
+  #leftColor = 0x11ff11;
+
+  #startingPosition;
+  #positionChange;
+  #startingColor;
+  #endingColor;
+
   constructor(paddleJson, playerPosition) {
     this.#moveSpeed = paddleJson['move_speed'];
     this.#movement = jsonToVector3(paddleJson['movement']);
@@ -52,6 +60,47 @@ export class Paddle {
     this.#setCollisionSegments();
   }
 
+  animate(t, isChangingSide) {
+    if (t >= 1.) {
+      if (isChangingSide) {
+        this.changeSide();
+      }
+      return;
+    }
+    if (isChangingSide) {
+      const color = this.#mergeColor(t);
+      this.#paddleObject.material.color = color;
+      this.#light.color = color;
+    }
+
+    this.#threeJSGroup.position.set(this.#threeJSGroup.position.x,
+        this.#startingPosition + this.#positionChange * t,
+        this.#threeJSGroup.position.z,
+    );
+  }
+
+  #mergeColor(t) {
+    const red = (this.#startingColor >> 16) * (1. - t) +
+        (this.#endingColor >> 16) * t;
+    const green = ((this.#startingColor & 0xff00) >> 8) * (1. - t) +
+        ((this.#endingColor & 0xff00) >> 8) * t;
+    const blue = (this.#startingColor & 0xff) * (1. - t) +
+        (this.#endingColor & 0xff) * t;
+    return new THREE.Color((red << 16) | (green << 8) | blue);
+  }
+
+  startAnimation() {
+    this.#startingPosition = this.#threeJSGroup.position.y;
+    this.#positionChange = -this.#startingPosition;
+    if (this.#paddleIsOnTheRight) {
+      this.#startingColor = this.#rightColor;
+      this.#endingColor = this.#leftColor;
+    } else {
+      this.#startingColor = this.#leftColor;
+      this.#endingColor = this.#rightColor;
+    }
+  }
+
   setDirection(direction) {
     if (direction === 'up') {
       this.#movement.y = this.#moveSpeed;
@@ -70,6 +119,11 @@ export class Paddle {
     this.#setCollisionSegments();
   }
 
+  setYPosition(y) {
+    this.#threeJSGroup.position.y = y;
+    this.#setCollisionSegments();
+  }
+
   getPosition() {
     return this.#threeJSGroup.position;
   }
@@ -80,9 +134,9 @@ export class Paddle {
 
   #getColor() {
     if (this.#paddleIsOnTheRight) {
-      return new THREE.Color(0xff1111);
+      return new THREE.Color(this.#rightColor);
     } else {
-      return new THREE.Color(0x11ff11);
+      return new THREE.Color(this.#leftColor);
     }
   }
 
@@ -147,7 +201,7 @@ export class Paddle {
 
   changeSide() {
     this.#threeJSGroup.position.set(this.#threeJSGroup.position.x * -1.,
-        this.#threeJSGroup.position.y,
+        0.,
         this.#threeJSGroup.position.z);
     this.#paddleIsOnTheRight = !this.#paddleIsOnTheRight;
     this.#threeJSGroup.remove(this.#paddleObject);

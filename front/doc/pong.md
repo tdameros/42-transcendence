@@ -36,45 +36,62 @@
   >> ```
   >> {
   >>     'scene': {
-  >>         "matches": [
+  >>         'matches': [
   >>             {
-  >>                 "location": {
-  >>                     "game_round": int,
-  >>                     "match": int
+  >>                 'location': {
+  >>                     'game_round': int,
+  >>                     'match': int
   >>                 },
-  >>                 "position": {"x": float, "y": float, "z": float},
-  >>                 "players": [
+  >>                 'position': {'x': float, 'y': float, 'z': float},
+  >>                 'players': [
   >>                     {
-  >>                         "position": {"x": float, "y": float, "z": float}, // Relative to the match
-  >>                         "move_speed": float,
-  >>                         "board": {
+  >>                         'position': {'x': float, 'y': float, 'z': float}, // Relative to the match
+  >>                         'destination': {'x': float, 'y': float, 'z': float}, // Relative to the match
+  >>                         'is_animating': bool,
+  >>                         'animation_start_time': float (Seconds since the Epoch),
+  >>                         'animation_end_time': float (Seconds since the Epoch),
+  >>                         'is_changing_side': bool,
+  >>                         'board': {
   >>                             // Position is [0, 0, 0] relative to the player
-  >>                             "size": {"x": float, "y": float, "z": float}
+  >>                             'size': {'x': float, 'y': float, 'z': float}
   >>                         },
-  >>                         "paddle": {
-  >>                             "size": {"x": float, "y": float, "z": float},
-  >>                             "position": {"x": float, "y": float, "z": float}, // Relative to the player
-  >>                             "movement": {"x": float, "y": float, "z": float},
-  >>                             "move_speed": float
+  >>                         'paddle': {
+  >>                             'size': {'x': float, 'y': float, 'z': float},
+  >>                             'position': {'x': float, 'y': float, 'z': float}, // Relative to the player
+  >>                             'movement': {'x': float, 'y': float, 'z': float},
+  >>                             'move_speed': float
   >>                         }
   >>                     },
   >>                     ... second player
   >>                     (Players can be null if the match is not full yet)
   >>                 ],
-  >>                 "ball": {
-  >>                     "position": {"x": float, "y": float, "z": float}, // Relative to the match
-  >>                     "movement": {"x": float, "y": float, "z": float},
-  >>                     "radius": float,
-  >>                     "acceleration": float
+  >>                 'ball': {
+  >>                     'position': {'x': float, 'y': float, 'z': float}, // Relative to the match
+  >>                     'movement': {'x': float, 'y': float, 'z': float},
+  >>                     'radius': float,
+  >>                     'acceleration': float
   >>                 },
-  >>                 "ball_is_waiting": bool,
-  >>                 "ball_start_time": Optinal[float] (Seconds since the Epoch)
-  >>                 "points": [int, int], // [player1_score, player2_score]
+  >>                 'ball_is_waiting': bool,
+  >>                 'ball_start_time': Optinal[float] (Seconds since the Epoch)
+  >>                 'points': [int, int], // [player1_score, player2_score]
   >>             }
   >>         ],
   >> 
-  >>         "loosers": [
-  >>             (List of players with the same structure as the players in the matches exept the position is global)
+  >>         'loosers': [
+  >>             {
+  >>                 'position': {'x': float, 'y': float, 'z': float}, // Global
+  >>                 'board': {
+  >>                     // Position is [0, 0, 0] relative to the player
+  >>                     'size': {'x': float, 'y': float, 'z': float}
+  >>                 },
+  >>                 'paddle': {
+  >>                     'size': {'x': float, 'y': float, 'z': float},
+  >>                     'position': {'x': float, 'y': float, 'z': float}, // Relative to the player
+  >>                     'movement': {'x': float, 'y': float, 'z': float},
+  >>                     'move_speed': float
+  >>                 }
+  >>                 'index_when_lost_match': int (0 (left) | 1 (right)),
+  >>             },
   >>         ],
   >> 
   >>         'matches_middle': {
@@ -87,6 +104,9 @@
   >>         'matches_y_offset': float,
   >>
   >>         'points_to_win_match': int,
+  >> 
+  >>         'paddle_height': float,
+  >>         'board_size': {'x': float, 'y': float, 'z': float},
   >>     },
   >>
   >>     'player_location': { // Location of current client
@@ -103,7 +123,7 @@
   >
   >> Replaces current scene with received scene
 
-- ### `update_player`:
+- ### `update_paddle`:
   >> Argument:
   >> ```
   >> {
@@ -116,7 +136,7 @@
   >>         'player_index': int
   >>     },
   >>     'direction': str ('up' | 'down' | 'none'),
-  >>     'position': {'x': float, 'y': float, 'z': float}
+  >>     'y_position': float,
   >> }
   >> ```
   >
@@ -166,6 +186,8 @@
   >>     },
   >>     'winner_index': int,
   >>     'new_match_json': (Same as the match in the scene but without the 'players' field)
+  >>     'animation_start_time': float (Seconds since the Epoch),
+  >>     'animation_end_time': float (Seconds since the Epoch),
   >> }
   >> ```
   >
@@ -189,14 +211,14 @@
   >> ```
   >
   >> Should be sent when a player scores a point without winning the match
-  >> Work in progress 
+  >> Adds a point to the player on the screen 
 
 - ### `game_over`:
   >> Argument:
   >> ```
-  >> {
-  >>     'winner_index': int
-  >> }
+  >> 'winner_index': int
   >> ```
   >
-  >> Work in progress
+  >> Adds a point to the winner
+  >> Removes the ball from the scene
+  >> Displays a game over message

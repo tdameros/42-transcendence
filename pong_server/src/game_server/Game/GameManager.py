@@ -10,6 +10,7 @@ from Game.Player.Player import Player
 from Game.PlayerLocation import PlayerLocation
 from PostSender.PostSender import PostSender
 from Server import Server
+from vector_to_dict import vector_to_dict
 
 
 class GameManager(object):
@@ -60,6 +61,8 @@ class GameManager(object):
                 await PostSender.post_start_match(GameManager.GAME_ID,
                                                   player_1.PLAYER_ID,
                                                   player_2.PLAYER_ID)
+            else:
+                match.set_is_animating(True)
 
     @staticmethod
     def get_scene() -> dict:
@@ -75,6 +78,8 @@ class GameManager(object):
             'matches_x_offset': settings.MATCHES_X_OFFSET,
             'matches_y_offset': settings.MATCHES_Y_OFFSET,
             'points_to_win_match': settings.POINTS_TO_WIN_MATCH,
+            'paddle_height': settings.PADDLE_SIZE[1],
+            'board_size': vector_to_dict(settings.BOARD_SIZE),
         }
 
     @staticmethod
@@ -94,19 +99,22 @@ class GameManager(object):
             finished_matches: list[Match] = []
 
             for match in GameManager._matches:
+                match_is_animating = match.is_animating()
                 await match.update(current_time, time_delta)
-                if match.is_over():
+                if match_is_animating and not match.is_animating():
+                    await match.start_match()
+                elif match.is_over():
                     finished_matches.append(match)
 
             for match in finished_matches:
-                await GameManager.match_was_won(match)
+                await GameManager.match_was_won(match, current_time)
 
             await Server.sio.sleep(0.01)
             if GameManager._is_game_over:
                 return
 
     @staticmethod
-    async def match_was_won(match: Match):
+    async def match_was_won(match: Match, current_time: float):
         winner_index = match.get_winner_index()
         looser_index = 1 - winner_index
         await PostSender.post_end_match(
@@ -123,25 +131,28 @@ class GameManager(object):
             await EventEmitter.game_over(match.get_winner_index())
             return
 
-        await GameManager.move_players_after_match_over(match, winner_index, looser_index)
+        await GameManager.move_players_after_match_over(
+            match, winner_index, looser_index, current_time,
+        )
 
     @staticmethod
     async def move_players_after_match_over(match: Match,
                                             winner_index: int,
-                                            looser_index: int):
+                                            looser_index: int,
+                                            current_time: float):
         GameManager._handle_match_looser(match, looser_index)
 
         new_match: Match = GameManager._get_or_create_match(MatchLocation(
             match.LOCATION.game_round + 1, match.LOCATION.match // 2
-        ))
+        ), should_animate=True)
 
-        GameManager._handle_match_winner(match, winner_index, new_match)
+        GameManager._handle_match_winner(match, winner_index, new_match, current_time)
 
         await EventEmitter.player_won_match(
-            match.LOCATION, winner_index, new_match.to_json(should_include_players=False)
+            match.LOCATION, winner_index, new_match.to_json(should_include_players=False),
+            current_time
         )
         if new_match.is_full():
-            await new_match.start_match()
             await PostSender.post_start_match(
                 GameManager.GAME_ID,
                 new_match.get_player(0).PLAYER_ID,
@@ -157,16 +168,24 @@ class GameManager(object):
         # instead of relative to the match
         looser.set_position(looser.get_position() + match.get_position())
         looser.set_location(PlayerLocation(-1, -1, len(GameManager._loosers), True))
+        looser.set_index_when_lost_match(looser_index)
         GameManager._loosers.append(looser)
 
     @staticmethod
     def _handle_match_winner(match: Match,
                              winner_index: int,
-                             new_match: Match):
+                             new_match: Match,
+                             current_time: float):
         winner: Player = match.get_player(winner_index)
+        player_new_index: int = match.LOCATION.match % 2
+
+        winner.start_animation(current_time, player_new_index != winner_index,
+                               match, new_match)
+
         winner.set_location(PlayerLocation(
-            new_match.LOCATION.game_round, new_match.LOCATION.match, match.LOCATION.match % 2
+            new_match.LOCATION.game_round, new_match.LOCATION.match, player_new_index
         ))
+
         new_match.set_player(winner.get_location().player_index, winner)
 
     @staticmethod
@@ -194,10 +213,11 @@ class GameManager(object):
         match.set_player(player_location.player_index, player)
 
     @staticmethod
-    def _get_or_create_match(match_location: MatchLocation) -> Match:
+    def _get_or_create_match(match_location: MatchLocation,
+                             should_animate: bool = False) -> Match:
         match = GameManager.get_match(match_location)
         if not match:
-            match = Match(GameManager.GAME_ID, match_location)
+            match = Match(GameManager.GAME_ID, match_location, should_animate)
             GameManager._matches.append(match)
             GameManager._match_table[match_location] = match
         return match

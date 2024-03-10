@@ -11,6 +11,8 @@ export class _Board {
   #pointColor;
   #board;
   #goal;
+  #pointOriginalY;
+  #pointDestinationY;
 
   static #leftSideColor = 0x00ff00;
   static #rightSideColor = 0xff0000;
@@ -168,6 +170,23 @@ export class _Board {
     });
   }
 
+  animate(t) {
+    if (t >= 1.) {
+      this.changeSide();
+      return;
+    }
+    const yDiff = this.#pointDestinationY - this.#pointOriginalY;
+    const currentY = this.#pointOriginalY + yDiff * t;
+    for (const point of this.#points) {
+      point.position.y = currentY;
+    }
+  }
+
+  startAnimation() {
+    this.#pointOriginalY = this.#points[0].position.y;
+    this.#pointDestinationY = -this.#pointOriginalY;
+  }
+
   changeSide() {
     this.#side = 1 - this.#side;
     this.#pointColor = this.#side ?
@@ -175,6 +194,7 @@ export class _Board {
     this.#board.rotateZ(Math.PI);
     for (const point of this.#points) {
       point.position.x *= -1;
+      point.position.y = this.#pointOriginalY;
     }
     this.#goal.position.x *= -1;
     this.#goal.rotateY(Math.PI);

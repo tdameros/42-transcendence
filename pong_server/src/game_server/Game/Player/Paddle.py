@@ -6,13 +6,13 @@ from vector_to_dict import vector_to_dict
 
 
 class Paddle(object):
-    def __init__(self, position: numpy.ndarray, player_position: numpy.ndarray):
+    def __init__(self, position: numpy.ndarray, player):
         self._position: numpy.ndarray = position.copy()
         self._movement: numpy.ndarray = numpy.array([0., 0., 0.], dtype=float)
 
         self._paddle_is_on_the_right: bool = self._position[0] > 0.
 
-        self._player_position: numpy.ndarray = player_position
+        self._player = player
 
         self._set_collision_segments()
 
@@ -50,6 +50,11 @@ class Paddle(object):
 
         self._set_collision_segments()
 
+    def set_y_position(self, y: float):
+        self._position[1] = y
+
+        self._set_collision_segments()
+
     def get_position(self):
         return self._position
 
@@ -65,20 +70,20 @@ class Paddle(object):
     def is_paddle_on_the_right(self) -> bool:
         return self._paddle_is_on_the_right
 
-    def set_paddle_is_on_the_right(self, paddle_is_on_the_right: bool):
-        if paddle_is_on_the_right != self._paddle_is_on_the_right:
-            self._position[0] *= -1
-            self._paddle_is_on_the_right = paddle_is_on_the_right
+    def change_side(self):
+        self._position[0] *= -1
+        self._paddle_is_on_the_right = not self._paddle_is_on_the_right
 
     def _set_collision_segments(self):
-        x_left = (self._player_position[0] + self._position[0]
+        player_position = self._player.get_position()
+        x_left = (player_position[0] + self._position[0]
                   - settings.PADDLE_SIZE[0] * 0.5)
-        x_right = (self._player_position[0] + self._position[0]
+        x_right = (player_position[0] + self._position[0]
                    + settings.PADDLE_SIZE[0] * 0.5)
 
-        y_top = (self._player_position[1] + self._position[1]
+        y_top = (player_position[1] + self._position[1]
                  + settings.PADDLE_SIZE[1] * 0.5)
-        y_bottom = (self._player_position[1] + self._position[1]
+        y_bottom = (player_position[1] + self._position[1]
                     - settings.PADDLE_SIZE[1] * 0.5)
 
         top_left = numpy.array([x_left, y_top], dtype=float)

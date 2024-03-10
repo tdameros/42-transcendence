@@ -47,7 +47,7 @@ export class Scene {
     const loosersJson = sceneJson['loosers'];
     for (const looserJson of loosersJson) {
       const newLooser = new Player();
-      await newLooser.init(looserJson);
+      await newLooser.initLooser(looserJson, this.#pointsToWinMatch);
       this.#loosers.push(newLooser);
       this.#threeJSScene.add(newLooser.threeJSGroup);
     }
@@ -58,10 +58,12 @@ export class Scene {
     this.#threeJSScene.add(light);
 
     this.#currentPlayerLocation = new PlayerLocation(playerLocationJson);
+    this.#currentPlayerLocation.getPlayerFromScene(this).isCurrentPlayer = true;
 
-    const playerJson = matchesJson[0]['players'][0];
-    this.#paddleBoundingBox = new PaddleBoundingBox(playerJson);
-    this.#boardSize = jsonToVector3(playerJson['board']['size']);
+    this.#boardSize = jsonToVector3(sceneJson['board_size']);
+    this.#paddleBoundingBox = new PaddleBoundingBox(
+        this.#boardSize.y, sceneJson['paddle_height'],
+    );
 
     this.#matchesMiddleX = sceneJson['matches_middle']['x'];
     this.#matchesMiddleY = sceneJson['matches_middle']['y'];
@@ -69,7 +71,6 @@ export class Scene {
     this.#matchHalfHeight = sceneJson['match_half_height'];
     this.#matchesXOffset = sceneJson['matches_x_offset'];
     this.#matchesYOffset = sceneJson['matches_y_offset'];
-    this.#engine.threeJS.controls.target.set(30, 25, 0);
   }
 
   setLightTheme() {
@@ -91,7 +92,7 @@ export class Scene {
     }
 
     for (const looser of this.#loosers) {
-      looser.updateFrame(timeDelta, this.#paddleBoundingBox);
+      looser.updateFrame(timeDelta, currentTime, this.#paddleBoundingBox);
     }
   }
 
@@ -104,6 +105,8 @@ export class Scene {
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
+      this.#engine.component.addEndGameCard('eliminated', 0, 0);
+      this.updateCamera();
     }
     match.removePlayer(looserIndex);
 
@@ -119,11 +122,9 @@ export class Scene {
         'match_location': matchLocationJson,
         'player_index': newWinnerIndex,
       });
+      this.setSpectatorCameraSettings();
     }
 
-    if (winnerIndex !== newWinnerIndex) {
-      winner.changeSide();
-    }
     const match = this.getMatchFromLocation(matchLocationJson);
     match.addPlayer(winner, newWinnerIndex);
   }
@@ -131,6 +132,10 @@ export class Scene {
   getCurrentPlayerPaddlePositionY() {
     return this.#currentPlayerLocation.getPlayerFromScene(this)
         .paddle.getPosition().y;
+  }
+
+  getCurrentPlayer() {
+    return this.#currentPlayerLocation.getPlayerFromScene(this);
   }
 
   setCurrentPlayerPaddleDirection(direction) {
@@ -147,14 +152,13 @@ export class Scene {
         getPlayerMatchFromScene(this);
 
     if (currentPlayerMatch === null) {
-      this.#setSpectatorCameraSettings();
+      this.setSpectatorCameraSettings(animation);
     } else {
       this.#setMatchCameraSettings(currentPlayerMatch, animation);
     }
   }
 
-  #setSpectatorCameraSettings() {
-    console.log('setSpectatorCameraSettings'); // TODO delete me
+  setSpectatorCameraSettings() {
     const xHeight = this.#matchesMiddleX /
       Math.tan(this.#engine.threeJS.getCameraHorizontalFOVRadian() * .5);
     const yHeight = this.#matchesMiddleY /
