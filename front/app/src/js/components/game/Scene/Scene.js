@@ -38,7 +38,7 @@ export class Scene {
     const matchesJson = sceneJson['matches'];
     for (const matchJson of matchesJson) {
       const newMatch = new Match();
-      await newMatch.init(this, matchJson, true, this.#pointsToWinMatch);
+      await newMatch.init(matchJson, true, this.#pointsToWinMatch);
       this.#matches.push(newMatch);
       this.#addMatchToMatchMap(newMatch, matchJson['location']);
       this.#threeJSScene.add(newMatch.threeJSGroup);
@@ -46,7 +46,7 @@ export class Scene {
 
     const loosersJson = sceneJson['loosers'];
     for (const looserJson of loosersJson) {
-      const newLooser = new Player(this);
+      const newLooser = new Player();
       await newLooser.initLooser(looserJson, this.#pointsToWinMatch);
       this.#loosers.push(newLooser);
       this.#threeJSScene.add(newLooser.threeJSGroup);
@@ -105,6 +105,7 @@ export class Scene {
         'match_location': {'game_round': -1, 'match': -1},
         'player_index': this.#loosers.length,
       });
+      this.#engine.component.addEndGameCard('eliminated', 0, 0);
       this.updateCamera();
     }
     match.removePlayer(looserIndex);

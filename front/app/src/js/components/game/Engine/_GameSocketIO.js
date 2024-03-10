@@ -183,17 +183,19 @@ export class _GameSocketIO {
     }
     console.log('prepare_ball_for_match received');
 
+    const match = this.#engine.scene
+        .getMatchFromLocation(data['match_location']);
     const ballStartTime = ServerTime.fixServerTime(data['ball_start_time']);
+    match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
     if (!this.#gameHasStarted) {
       this.#gameHasStarted = true;
       this.#engine.startListeningForKeyHooks();
       this.#engine.component.removeWaitingForOpponent();
       this.#engine.component.startCountdown(ballStartTime / 1000.);
+    } else if (match.players[0].isCurrentPlayer ||
+        match.players[1].isCurrentPlayer && !match.hasMatchStarted()) {
+      this.#engine.scene.updateCamera();
     }
-
-    const match = this.#engine.scene
-        .getMatchFromLocation(data['match_location']);
-    match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
   }
 
   async #updateBallEventHandler(data) {
@@ -327,7 +329,6 @@ export class _GameSocketIO {
   }
 
   #handleGameOverPlayerHasNotReachedTheFinal() {
-    this.#engine.component.addEndGameCard('eliminated', 0, 0);
   }
 
   #handleGameOverPlayerWonTournamentFinal(winnerScore, looserScore) {

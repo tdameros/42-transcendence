@@ -5,8 +5,6 @@ import {jsonToVector3} from '@components/game/jsonToVector3.js';
 import {ServerTime} from '@components/game/ServerTime.js';
 
 export class Player {
-  #scene;
-
   #threeJSGroup = new THREE.Group();
   #board;
   #paddle;
@@ -19,9 +17,7 @@ export class Player {
 
   #isCurrentPlayer = false;
 
-  constructor(scene) {
-    this.#scene = scene;
-  }
+  constructor() {}
 
   async init(playerJson, index, pointsToWinMatch) {
     this.#originalPosition = jsonToVector3(playerJson['position']);
@@ -91,9 +87,6 @@ export class Player {
     );
 
     if (t >= 1.) {
-      if (this.#isCurrentPlayer) {
-        this.#scene.updateCamera();
-      }
       this.#isAnimating = false;
     }
 
@@ -184,6 +177,10 @@ export class Player {
 
   set isCurrentPlayer(isCurrentPlayer) {
     this.#isCurrentPlayer = isCurrentPlayer;
+  }
+
+  get isCurrentPlayer() {
+    return this.#isCurrentPlayer;
   }
 
   get isAnimating() {

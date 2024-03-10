@@ -13,7 +13,7 @@ export class Match {
 
   constructor() {}
 
-  async init(scene, matchJson, shouldCreatePlayers, pointsToWinMatch) {
+  async init(matchJson, shouldCreatePlayers, pointsToWinMatch) {
     this.#ball = new Ball(matchJson['ball']);
     this.#ballIsWaiting = matchJson['ball_is_waiting'];
     this.#ballStartTime = ServerTime.fixServerTime(
@@ -29,10 +29,10 @@ export class Match {
     if (shouldCreatePlayers === true) {
       const playersJson = matchJson['players'];
       await this.#createPlayer(
-          scene, playersJson[0], 0, points[0], pointsToWinMatch,
+          playersJson[0], 0, points[0], pointsToWinMatch,
       );
       await this.#createPlayer(
-          scene, playersJson[1], 1, points[1], pointsToWinMatch,
+          playersJson[1], 1, points[1], pointsToWinMatch,
       );
     }
 
@@ -78,11 +78,11 @@ export class Match {
     return this.#threeJSGroup.position;
   }
 
-  async #createPlayer(scene, playerJson, index, points, pointsToWinMatch) {
+  async #createPlayer(playerJson, index, points, pointsToWinMatch) {
     if (playerJson === null) {
       return;
     }
-    const newPlayer = new Player(scene);
+    const newPlayer = new Player();
     await newPlayer.init(playerJson, index, pointsToWinMatch);
     for (let i = 0; i < points; i++) {
       newPlayer.addPoint();
@@ -103,6 +103,10 @@ export class Match {
     }
     this.#threeJSGroup.remove(player.threeJSGroup);
     this.#players[index] = null;
+  }
+
+  hasMatchStarted() {
+    return this.#ballStartTime !== null;
   }
 
   get threeJSGroup() {
