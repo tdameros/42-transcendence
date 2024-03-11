@@ -20,13 +20,13 @@ export class TournamentsList extends Component {
               <li class="list-group-item d-flex m-2">
                   <input class="form-check-input me-1" type="checkbox" value=""
                          id="${TournamentsList.privateCheckBoxId}"
-                         ${Cookies.get(TournamentsList.privateCheckBoxCookie) === 'true' ? 'checked': ''}>
+                         ${Cookies.get(TournamentsList.privateCheckBoxCookie) === 'false' ? '': 'checked'}>
                   <label class="form-check-label" for="private-check-box">private</label>
               </li>
               <li class="list-group-item d-flex m-2">
                   <input class="form-check-input me-1" type="checkbox" value=""
                          id="${TournamentsList.finishedCheckBoxId}"
-                         ${Cookies.get(TournamentsList.finishedCheckBoxCookie) === 'true' ? 'checked': ''}>
+                         ${Cookies.get(TournamentsList.finishedCheckBoxCookie) === 'false' ? '': 'checked'}>
                   <label class="form-check-label" for="finished-check-box">finished</label>
               </li>
             </div>
