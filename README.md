@@ -25,7 +25,7 @@ Transcendence is a project at 42 School aimed at introducing us to the web by cr
 Generate the `.env` file using .env.example as a template.
 
 ```bash
-cp .env.example .env
+cp .env_example .env
 ```
 
 Generate .env files for each service
