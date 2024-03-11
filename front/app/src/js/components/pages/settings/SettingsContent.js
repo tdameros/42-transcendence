@@ -333,6 +333,25 @@ export class SettingsContent extends Component {
     input.accept = 'image/jpeg, image/png';
     input.onchange = (event) => {
       const file = event.target.files[0];
+      try {
+        if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+          this.alertForm.setAttribute(
+              'alert-message',
+              'Invalid file format. Please select a JPEG or PNG image.',
+          );
+          this.alertForm.setAttribute('alert-type', 'error');
+          this.alertForm.setAttribute('alert-display', 'true');
+          return;
+        }
+      } catch (error) {
+        this.alertForm.setAttribute(
+            'alert-message',
+            'Invalid file format. Please select a JPEG or PNG image.',
+        );
+        this.alertForm.setAttribute('alert-type', 'error');
+        this.alertForm.setAttribute('alert-display', 'true');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = async (event) => {
         this.base64Avatar = event.target.result;
