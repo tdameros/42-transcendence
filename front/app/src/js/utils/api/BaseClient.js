@@ -122,6 +122,7 @@ export class BaseApiClient {
     const response = await JSONRequests.get(url, params, headers);
     if (response.status === 401) {
       await this.refreshAccessToken();
+      headers['Authorization'] = this.accessToken.jwt;
       return await JSONRequests.get(url, params, headers);
     }
     return response;
@@ -136,6 +137,7 @@ export class BaseApiClient {
     const response = await JSONRequests.post(url, body, headers);
     if (response.status === 401) {
       await this.refreshAccessToken();
+      headers['Authorization'] = this.accessToken.jwt;
       return await JSONRequests.post(url, body, headers);
     }
     return response;
@@ -150,6 +152,7 @@ export class BaseApiClient {
     const response = await JSONRequests.patch(url, body, headers);
     if (response.status === 401) {
       await this.refreshAccessToken();
+      headers['Authorization'] = this.accessToken.jwt;
       return await JSONRequests.patch(url, body, headers);
     }
     return response;
@@ -164,6 +167,7 @@ export class BaseApiClient {
     const response = await JSONRequests.delete(url, params, headers);
     if (response.status === 401) {
       await this.refreshAccessToken();
+      headers['Authorization'] = this.accessToken.jwt;
       return await JSONRequests.delete(url, params, headers);
     }
     return response;
