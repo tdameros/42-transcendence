@@ -40,6 +40,7 @@ export class _KeyHookHandler {
   }
 
   async touchStart(event) {
+    this.#engine.threeJS.controls.enabled = false;
     const touch = event.touches[0];
     if (screen.orientation.type.indexOf('landscape') !== -1) {
       if (touch.clientX < window.innerWidth / 2) {

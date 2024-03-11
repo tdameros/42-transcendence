@@ -39,6 +39,7 @@ export class _KeyHookHandler {
   }
 
   touchStart(event) {
+    this.#engine.threeJS.controls.enabled = false;
     for (const touch of event.touches) {
       if (touch.clientX < window.innerWidth / 2) {
         this.touchStartLeft(touch);
