@@ -31,7 +31,7 @@ export class TournamentCreateContent extends Component {
                       </div>
                       <div class="form-group mb-4">
                         <label for="max-players" class="form-label">Max players: 8</label>
-                        <input type="range" value=8 class="form-range" id="max-players" min="3" max="16">
+                        <input type="range" value=8 class="form-range" id="max-players" min="2" max="16">
                         </div>
                       <div class="form-group mb-4">
                       <div class="form-check form-switch">
