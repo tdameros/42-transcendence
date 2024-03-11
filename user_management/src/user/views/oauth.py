@@ -62,6 +62,11 @@ class OAuth(View):
     @staticmethod
     def get(request, auth_service):
         source = request.GET.get('source')
+        error = request.GET.get('error')
+        if error:
+            if not source:
+                source = settings.FRONT_URL + 'signin/'
+            return redirect(f'{source}?error=Could not authenticate : {error}')
         if source is None:
             return JsonResponse(data={'errors': ['No source provided']}, status=400)
         if not source.endswith('/'):
