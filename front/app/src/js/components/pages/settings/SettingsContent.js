@@ -272,6 +272,7 @@ export class SettingsContent extends Component {
 
     if (this.error) {
       this.alertForm.setAttribute('alert-message', this.errorMessage);
+      this.alertForm.setAttribute('alert-type', 'error');
       this.alertForm.setAttribute('alert-display', 'true');
       this.error = false;
     }
@@ -285,6 +286,7 @@ export class SettingsContent extends Component {
     this.deleteModal = new Modal(deleteModal);
     super.addComponentEventListener(deleteModal, 'hidden.bs.modal', () => {
       this.alertDelete.setAttribute('alert-message', '');
+      this.alertForm.setAttribute('alert-type', 'error');
       this.alertDelete.setAttribute('alert-display', 'false');
     });
 
@@ -339,6 +341,7 @@ export class SettingsContent extends Component {
         const sizeInMB = file.size / (1024 * 1024);
         if (sizeInMB > 1) {
           this.alertForm.setAttribute('alert-message', 'File too large.');
+          this.alertForm.setAttribute('alert-type', 'error');
           this.alertForm.setAttribute('alert-display', 'true');
           return;
         }
@@ -580,6 +583,7 @@ export class SettingsContent extends Component {
       );
       if (!response.ok) {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-type', 'error');
         this.alertForm.setAttribute('alert-display', 'true');
         return false;
       }
@@ -597,6 +601,7 @@ export class SettingsContent extends Component {
       );
       if (!response.ok) {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-type', 'error');
         this.alertForm.setAttribute('alert-display', 'true');
         return false;
       }
@@ -623,6 +628,7 @@ export class SettingsContent extends Component {
         return true;
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-type', 'error');
         this.alertForm.setAttribute('alert-display', 'true');
         return false;
       }
@@ -667,6 +673,7 @@ export class SettingsContent extends Component {
         return true;
       }
       this.alertForm.setAttribute('alert-message', body.errors[0]);
+      this.alertForm.setAttribute('alert-type', 'error');
       this.alertForm.setAttribute('alert-display', 'true');
       return false;
     } catch (error) {
@@ -692,6 +699,7 @@ export class SettingsContent extends Component {
         this.alertForm.setAttribute('alert-display', 'true');
       } else {
         this.alertForm.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-type', 'error');
         this.alertForm.setAttribute('alert-display', 'true');
       }
       this.exportButton.innerHTML = 'Export data';
@@ -727,6 +735,7 @@ export class SettingsContent extends Component {
         return;
       } else {
         this.alertDelete.setAttribute('alert-message', body.errors[0]);
+        this.alertForm.setAttribute('alert-type', 'error');
         this.alertDelete.setAttribute('alert-display', 'true');
       }
       this.deleteAccountButton.innerHTML = 'Delete';
