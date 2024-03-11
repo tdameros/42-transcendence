@@ -195,12 +195,17 @@ class OAuthCallback(View):
     @staticmethod
     def _create_user(login, email, avatar_url, auth_service, api_id):
         try:
+            if User.objects.filter(email=email).exists():
+                raise UserCreationError('Email already exists')
+            if User.objects.filter(username=login).exists():
+                raise UserCreationError('Username already exists')
             user = User.objects.create(username=login, email=email, password=None)
             UserOAuth.objects.create(user=user, service=auth_service, service_id=api_id)
             success, error = post_user_stats(user.id)
             if not success:
                 raise UserCreationError(f'Failed to post user stats: {error}')
-            download_image_from_url(avatar_url, user)
+            if (download_image_from_url(avatar_url, user)) is False:
+                raise UserCreationError('Failed to download avatar')
             user.emailVerified = True
             user.save()
             return user
