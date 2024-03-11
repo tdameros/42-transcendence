@@ -186,10 +186,11 @@ export class _GameSocketIO {
       this.#gameHasStarted = true;
       this.#engine.startListeningForKeyHooks();
       this.#engine.component.removeWaitingForOpponent();
-      this.#engine.component.startCountdown(ballStartTime / 1000.);
-    } else if ((match.players[0].isCurrentPlayer ||
+    }
+    if ((match.players[0].isCurrentPlayer ||
         match.players[1].isCurrentPlayer) && !match.hasMatchStarted()) {
       this.#engine.scene.updateCamera();
+      this.#engine.component.startCountdown(ballStartTime / 1000.);
     }
     match.prepare_ball_for_match(ballStartTime, data['ball_movement']);
   }
@@ -278,9 +279,18 @@ export class _GameSocketIO {
     while (!(this.#engine.scene instanceof Scene)) {
       await sleep(50);
     }
-
+    for (const looser of this.#engine.scene.loosers) {
+      if (!looser.isCurrentPlayer) {
+        looser.paddle.setDirection('none');
+      }
+    }
     const winnerIndex = data;
     const finalMatch = this.#engine.scene.matches[0];
+    for (const player of finalMatch.players) {
+      if (!player.isCurrentPlayer) {
+        player.paddle.setDirection('none');
+      }
+    }
 
     finalMatch.players[winnerIndex].addPoint();
     finalMatch.ball.removeBall();
