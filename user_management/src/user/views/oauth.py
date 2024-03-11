@@ -121,12 +121,14 @@ class OAuthCallback(View):
             self.auth_supported = True
 
     def get(self, request, auth_service):
-        if request.GET.get('error'):
-            return redirect(f'{self.get_source_url(request.GET.get("state"))}?error='
-                            f'Could not authenticate with {auth_service}')
         code = request.GET.get('code')
         state = request.GET.get('state')
         source, errors = self.get_source_url(state)
+        if request.GET.get('error'):
+            if source is None:
+                source = settings.FRONT_URL + 'signin/'
+            return redirect(f'{source}?error='
+                            f'Could not authenticate with {auth_service}')
         self.set_params(auth_service)
         if not source or self.auth_supported is False:
             source = settings.FRONT_URL
