@@ -16,7 +16,7 @@ class MatchesView(View):
     def get(request: HttpRequest, tournament_id: int) -> JsonResponse:
         try:
             tournament = Tournament.objects.get(id=tournament_id)
-            matches = list(tournament.matches.all())
+            matches = list(tournament.matches.all().order_by('match_id'))
         except ObjectDoesNotExist:
             return JsonResponse({'errors': [f'tournament with id `{tournament_id}` does not exist']}, status=404)
         except Exception as e:
