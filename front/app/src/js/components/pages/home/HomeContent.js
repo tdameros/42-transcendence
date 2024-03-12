@@ -45,6 +45,9 @@ export class HomeContent extends Component {
            #text {
         font-size: 10px;
         }
+        h1 {
+        font-size: 20px;
+        }
       }
       
       @media only screen and (max-aspect-ratio: 1/1) {
@@ -165,6 +168,8 @@ export class HomeContent extends Component {
     this.camera.aspect = this.getContainerWidth() / this.getContainerHeight();
     this.camera.updateProjectionMatrix();
     this.setCameraPosition(this.camera, this.island, this.size);
+    this.renderer.domElement.style.width = '100%';
+    this.renderer.domElement.style.height = '100%';
   }
 
   async themeEvent(event) {
@@ -296,6 +301,9 @@ export class HomeContent extends Component {
     const marginLeft = style.getPropertyValue('margin-left');
     const marginRight = style.getPropertyValue('margin-right');
     let friendsWidth;
+    if (this.sidebarContent === null) {
+      return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
+    }
     if (this.sidebarContent.classList.contains('active')) {
       friendsWidth = 0;
     } else {
