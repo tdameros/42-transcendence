@@ -120,7 +120,7 @@ export class BaseApiClient {
     }
     headers['Authorization'] = this.accessToken.jwt;
     const response = await JSONRequests.get(url, params, headers);
-    if (response.status === 401) {
+    if (response.response.status === 401) {
       if (!await this.refreshAccessToken()) {
         return {response: {ok: false, status: 401}, body: {}};
       }
@@ -137,7 +137,7 @@ export class BaseApiClient {
     }
     headers['Authorization'] = this.accessToken.jwt;
     const response = await JSONRequests.post(url, body, headers);
-    if (response.status === 401) {
+    if (response.response.status === 401) {
       if (!await this.refreshAccessToken()) {
         return {response: {ok: false, status: 401}, body: {}};
       }
@@ -154,7 +154,7 @@ export class BaseApiClient {
     }
     headers['Authorization'] = this.accessToken.jwt;
     const response = await JSONRequests.patch(url, body, headers);
-    if (response.status === 401) {
+    if (response.response.status === 401) {
       if (!await this.refreshAccessToken()) {
         return {response: {ok: false, status: 401}, body: {}};
       }
@@ -171,7 +171,7 @@ export class BaseApiClient {
     }
     headers['Authorization'] = this.accessToken.jwt;
     const response = await JSONRequests.delete(url, params, headers);
-    if (response.status === 401) {
+    if (response.response.status === 401) {
       if (!await this.refreshAccessToken()) {
         return {response: {ok: false, status: 401}, body: {}};
       }
