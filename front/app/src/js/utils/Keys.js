@@ -1,12 +1,9 @@
 export class Keys {
-  static digitKeyMaxCode = 57;
-  static digitKeyMinCode = 48;
   static deleteKeyCode = 8;
   static vKeyCode = 86;
 
   static isDigitKey(event) {
-    const keyCode = Keys.getKeyCode(event);
-    return (keyCode >= Keys.digitKeyMinCode && keyCode <= Keys.digitKeyMaxCode);
+    return (/^\d$/.test(Keys.getKeyValue(event)));
   }
 
   static isDeleteKey(event) {
@@ -17,8 +14,13 @@ export class Keys {
     return event.keyCode || event.which;
   }
 
+  static getKeyValue(event) {
+    return event.data || event.key;
+  }
+
   static isPasteShortcut(event) {
-    const isVPressed = (event.key === 'v' || event.keyCode === Keys.vKeyCode);
+    const isVPressed = (Keys.getKeyValue(event) === 'v' ||
+      event.keyCode === Keys.vKeyCode);
     return (isVPressed && Keys.isCtrlPressed(event));
   }
 
@@ -27,6 +29,6 @@ export class Keys {
   }
 
   static getDigitValue(event) {
-    return Keys.getKeyCode(event) - Keys.digitKeyMinCode;
+    return parseInt(Keys.getKeyValue(event));
   }
 }
