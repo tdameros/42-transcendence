@@ -33,6 +33,9 @@ class UserUpdateInfosManager:
             return False, errors
 
         for field in change_list:
+            if field not in UserUpdateInfosManager.FIELD_VALIDATORS.keys():
+                errors.append(f'Field {field} is not valid')
+                return False, errors
             value = json_request.get(field)
             success, update_errors = UserUpdateInfosManager.update_user_field(user_id, field, value)
             if not success:
