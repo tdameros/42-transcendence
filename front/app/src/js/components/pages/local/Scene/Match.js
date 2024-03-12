@@ -28,7 +28,7 @@ export class Match {
 
     for (let i = 0; i < 2; i++) {
       this.#players[i] = new Player();
-      this.#players[i].init(i, this.#pointsToWinMatch);
+      await this.#players[i].init(i, this.#pointsToWinMatch);
       this.#threeJSGroup.add(this.#players[i].threeJSGroup);
     }
   }
