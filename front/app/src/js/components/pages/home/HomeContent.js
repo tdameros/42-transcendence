@@ -45,6 +45,9 @@ export class HomeContent extends Component {
            #text {
         font-size: 10px;
         }
+        h1 {
+        font-size: 20px;
+        }
       }
       
       @media only screen and (max-aspect-ratio: 1/1) {
@@ -106,6 +109,8 @@ export class HomeContent extends Component {
       return;
     }
     this.container = document.querySelector('#container');
+    this.sidebarContent = document.querySelector('#sidebar-content');
+    this.navbarHeight = document.querySelector('navbar-component').height;
     if (!WebGL.isWebGLAvailable()) {
       ToastNotifications.addErrorNotification(
           'WebGL is not available on this device',
@@ -163,6 +168,8 @@ export class HomeContent extends Component {
     this.camera.aspect = this.getContainerWidth() / this.getContainerHeight();
     this.camera.updateProjectionMatrix();
     this.setCameraPosition(this.camera, this.island, this.size);
+    this.renderer.domElement.style.width = '100%';
+    this.renderer.domElement.style.height = '100%';
   }
 
   async themeEvent(event) {
@@ -285,15 +292,27 @@ export class HomeContent extends Component {
     const style = window.getComputedStyle(this.container);
     const marginTop = style.getPropertyValue('margin-top');
     const marginBottom = style.getPropertyValue('margin-bottom');
-    return window.innerHeight - NavbarUtils.height -
+    const height = window.innerHeight - this.navbarHeight -
         parseInt(marginTop) - parseInt(marginBottom) - 2;
+    return height > 0 ? height : 0;
   }
 
   getContainerWidth() {
     const style = window.getComputedStyle(this.container);
     const marginLeft = style.getPropertyValue('margin-left');
     const marginRight = style.getPropertyValue('margin-right');
-    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
+    let friendsWidth;
+    if (this.sidebarContent === null) {
+      return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
+    }
+    if (this.sidebarContent.classList.contains('active')) {
+      friendsWidth = 0;
+    } else {
+      friendsWidth = this.sidebarContent.offsetWidth;
+    }
+    const width = window.innerWidth - parseInt(marginLeft) -
+        parseInt(marginRight) - friendsWidth;
+    return width > 0 ? width : 0;
   }
 
   setCameraPosition(camera, object, size) {

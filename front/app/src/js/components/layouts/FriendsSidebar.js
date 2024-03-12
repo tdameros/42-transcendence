@@ -103,6 +103,7 @@ a[data-toggle="collapse"] {
     } else {
       Cookies.add('sidebar-position', 'visible');
     }
+    window.dispatchEvent(new Event('resize'));
   }
 
   getHeritedAttributes() {
