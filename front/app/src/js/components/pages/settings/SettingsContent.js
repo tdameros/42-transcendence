@@ -356,7 +356,6 @@ export class SettingsContent extends Component {
       }
       const reader = new FileReader();
       reader.onload = async (event) => {
-        this.base64Avatar = event.target.result;
         const sizeInMB = file.size / (1024 * 1024);
         if (sizeInMB > 1) {
           this.alertForm.setAttribute(
@@ -367,6 +366,7 @@ export class SettingsContent extends Component {
           this.alertForm.setAttribute('alert-display', 'true');
           return;
         }
+        this.base64Avatar = event.target.result;
         this.hasChangeAvatar = true;
         this.#formHandler();
         this.avatar.src = event.target.result;
