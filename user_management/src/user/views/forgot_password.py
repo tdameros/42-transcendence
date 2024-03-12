@@ -62,7 +62,7 @@ class ForgotPasswordSendCodeView(View):
                                       'expires': user.forgotPasswordCodeExpiration}, status=200)
 
         except Exception as e:
-            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
+            return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=400)
 
 
 def anonymize_email(email):

@@ -57,7 +57,7 @@ class SignUpView(View):
             user.delete()
             return JsonResponse(data={'errors': [
                 f'An error occurred while sending the verification email : {e}'
-            ]}, status=500)
+            ]}, status=400)
 
         try:
             user.save()

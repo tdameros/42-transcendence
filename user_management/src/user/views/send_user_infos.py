@@ -31,7 +31,7 @@ class SendUserInfosView(View):
             email.send()
             return JsonResponse(data={'ok': 'Email sent', 'email': anonymize_email(user.email)})
         except Exception as e:
-            return JsonResponse(data={'errors': [f'Error while sending email: {e}']}, status=500)
+            return JsonResponse(data={'errors': [f'Error while sending email: {e}']}, status=400)
 
     def _prepare_email(self, recipient_email):
         subject = "Your user information"
