@@ -292,8 +292,9 @@ export class HomeContent extends Component {
     const style = window.getComputedStyle(this.container);
     const marginTop = style.getPropertyValue('margin-top');
     const marginBottom = style.getPropertyValue('margin-bottom');
-    return window.innerHeight - this.navbarHeight -
+    const height = window.innerHeight - this.navbarHeight -
         parseInt(marginTop) - parseInt(marginBottom) - 2;
+    return height > 0 ? height : 0;
   }
 
   getContainerWidth() {
@@ -309,8 +310,9 @@ export class HomeContent extends Component {
     } else {
       friendsWidth = this.sidebarContent.offsetWidth;
     }
-    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight) -
-        friendsWidth;
+    const width = window.innerWidth - parseInt(marginLeft) -
+        parseInt(marginRight) - friendsWidth;
+    return width > 0 ? width : 0;
   }
 
   setCameraPosition(camera, object, size) {
