@@ -56,8 +56,10 @@ class AvatarView(View):
             return JsonResponse(data={'errors': ['Invalid image format']}, status=400)
         if sys.getsizeof(image_data) > settings.MAX_IMAGE_SIZE:
             return JsonResponse(data={
-                'errors': [f'Image too big (max {settings.MAX_IMAGE_SIZE / 1000000} Mb, ',
-                           f'your image is {sys.getsizeof(image_data) / 1000000} Mb)']}, status=400)
+                'errors': [
+                    f'Image too big (max {settings.MAX_IMAGE_SIZE / 1000000} Mb, '
+                    f'your image is {sys.getsizeof(image_data) / 1000000} Mb)']},
+                status=400)
         success, error = save_image_from_base64(base64_data, user)
         if not success:
             return JsonResponse(data={'errors': [error]}, status=400)
