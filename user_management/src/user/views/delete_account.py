@@ -65,8 +65,9 @@ def delete_account(user_id, access_token):
     try:
         friends = Friend.objects.filter(user=user.id)
         for friend in friends:
-            post_friends_increment(friend.friend.id, {'increment': False})
-            Friend.objects.filter(user=friend.friend.id, friend=user.id).delete()
+            if friend.status == Friend.ACCEPTED:
+                post_friends_increment(friend.friend.id, {'increment': False})
+                Friend.objects.filter(user=friend.friend.id, friend=user.id).delete()
     except Exception as e:
         return JsonResponse(data={'errors': [f'An unexpected error occurred : {e}']}, status=500)
     try:
