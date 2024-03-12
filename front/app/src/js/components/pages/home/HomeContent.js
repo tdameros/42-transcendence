@@ -106,6 +106,8 @@ export class HomeContent extends Component {
       return;
     }
     this.container = document.querySelector('#container');
+    this.sidebarContent = document.querySelector('#sidebar-content');
+    this.navbarHeight = document.querySelector('navbar-component').height;
     if (!WebGL.isWebGLAvailable()) {
       ToastNotifications.addErrorNotification(
           'WebGL is not available on this device',
@@ -285,7 +287,7 @@ export class HomeContent extends Component {
     const style = window.getComputedStyle(this.container);
     const marginTop = style.getPropertyValue('margin-top');
     const marginBottom = style.getPropertyValue('margin-bottom');
-    return window.innerHeight - NavbarUtils.height -
+    return window.innerHeight - this.navbarHeight -
         parseInt(marginTop) - parseInt(marginBottom) - 2;
   }
 
@@ -293,7 +295,14 @@ export class HomeContent extends Component {
     const style = window.getComputedStyle(this.container);
     const marginLeft = style.getPropertyValue('margin-left');
     const marginRight = style.getPropertyValue('margin-right');
-    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight);
+    let friendsWidth;
+    if (this.sidebarContent.classList.contains('active')) {
+      friendsWidth = 0;
+    } else {
+      friendsWidth = this.sidebarContent.offsetWidth;
+    }
+    return window.innerWidth - parseInt(marginLeft) - parseInt(marginRight) -
+        friendsWidth;
   }
 
   setCameraPosition(camera, object, size) {
