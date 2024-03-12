@@ -119,7 +119,15 @@ export class BaseApiClient {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.get(url, params, headers);
+    const response = await JSONRequests.get(url, params, headers);
+    if (response.status === 401) {
+      const auth = await this.authRequired();
+      if (!auth) {
+        return {response: {ok: false, status: 401}, body: {}};
+      }
+      return await JSONRequests.get(url, params, headers);
+    }
+    return response;
   }
 
   async postAuthRequest(url, body, headers = {}) {
@@ -128,7 +136,15 @@ export class BaseApiClient {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.post(url, body, headers);
+    const response = await JSONRequests.post(url, body, headers);
+    if (response.status === 401) {
+      const auth = await this.authRequired();
+      if (!auth) {
+        return {response: {ok: false, status: 401}, body: {}};
+      }
+      return await JSONRequests.post(url, body, headers);
+    }
+    return response;
   }
 
   async patchAuthRequest(url, body = {}, headers = {}) {
@@ -137,7 +153,15 @@ export class BaseApiClient {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.patch(url, body, headers);
+    const response = await JSONRequests.patch(url, body, headers);
+    if (response.status === 401) {
+      const auth = await this.authRequired();
+      if (!auth) {
+        return {response: {ok: false, status: 401}, body: {}};
+      }
+      return await JSONRequests.patch(url, body, headers);
+    }
+    return response;
   }
 
   async deleteAuthRequest(url, params = {}, headers = {}) {
@@ -146,6 +170,14 @@ export class BaseApiClient {
       return {response: {ok: false, status: 401}, body: {}};
     }
     headers['Authorization'] = this.accessToken.jwt;
-    return await JSONRequests.delete(url, params, headers);
+    const response = await JSONRequests.delete(url, params, headers);
+    if (response.status === 401) {
+      const auth = await this.authRequired();
+      if (!auth) {
+        return {response: {ok: false, status: 401}, body: {}};
+      }
+      return await JSONRequests.delete(url, params, headers);
+    }
+    return response;
   }
 }
