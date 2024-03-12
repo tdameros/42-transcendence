@@ -62,6 +62,11 @@ class OAuth(View):
     @staticmethod
     def get(request, auth_service):
         source = request.GET.get('source')
+        error = request.GET.get('error')
+        if error:
+            if not source:
+                source = settings.FRONT_URL + 'signin/'
+            return redirect(f'{source}?error=Could not authenticate : {error}')
         if source is None:
             return JsonResponse(data={'errors': ['No source provided']}, status=400)
         if not source.endswith('/'):
@@ -121,12 +126,14 @@ class OAuthCallback(View):
             self.auth_supported = True
 
     def get(self, request, auth_service):
-        if request.GET.get('error'):
-            return redirect(f'{self.get_source_url(request.GET.get("state"))}?error='
-                            f'Could not authenticate with {auth_service}')
         code = request.GET.get('code')
         state = request.GET.get('state')
         source, errors = self.get_source_url(state)
+        if request.GET.get('error'):
+            if source is None:
+                source = settings.FRONT_URL + 'signin/'
+            return redirect(f'{source}?error='
+                            f'Could not authenticate with {auth_service}')
         self.set_params(auth_service)
         if not source or self.auth_supported is False:
             source = settings.FRONT_URL
@@ -188,12 +195,17 @@ class OAuthCallback(View):
     @staticmethod
     def _create_user(login, email, avatar_url, auth_service, api_id):
         try:
+            if User.objects.filter(email=email).exists():
+                raise UserCreationError('Email already exists')
+            if User.objects.filter(username=login).exists():
+                raise UserCreationError('Username already exists')
             user = User.objects.create(username=login, email=email, password=None)
             UserOAuth.objects.create(user=user, service=auth_service, service_id=api_id)
             success, error = post_user_stats(user.id)
             if not success:
                 raise UserCreationError(f'Failed to post user stats: {error}')
-            download_image_from_url(avatar_url, user)
+            if (download_image_from_url(avatar_url, user)) is False:
+                raise UserCreationError('Failed to download avatar')
             user.emailVerified = True
             user.save()
             return user
