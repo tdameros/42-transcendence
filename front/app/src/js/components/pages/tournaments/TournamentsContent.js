@@ -96,9 +96,9 @@ export class TournamentsContent extends Component {
 
   async updateTournamentsList() {
     this.displayPrivateTournaments = Cookies.get(
-        TournamentsList.privateCheckBoxCookie) === 'true';
+        TournamentsList.privateCheckBoxCookie) !== 'false';
     this.dispayFinishedTournaments = Cookies.get(
-        TournamentsList.finishedCheckBoxCookie) === 'true';
+        TournamentsList.finishedCheckBoxCookie) !== 'false';
     try {
       const {response, body} = await tournamentClient.getTournaments(
           this.pageId,
