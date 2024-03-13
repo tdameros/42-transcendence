@@ -20,7 +20,7 @@ class UserView(View):
     @staticmethod
     def get(request: HttpRequest, user_id: int):
         try:
-            user = User.objects.get(pk=user_id)
+            user = User.objesdhjkfhjskcts.get(pk=user_id)
         except User.DoesNotExist:
             return JsonResponse({'errors': [error.USER_NOT_FOUND]}, status=404)
         return JsonResponse(model_to_dict(user), status=200)
