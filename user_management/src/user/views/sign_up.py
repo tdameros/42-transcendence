@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from user.models import User
 from user_management import settings
 from user_management.utils import (is_valid_email, is_valid_password,
-                                   is_valid_username, post_user_stats)
+                                   is_valid_username)
 
 
 def generate_verif_link(user):
@@ -39,10 +39,6 @@ class SignUpView(View):
             user = User.objects.create(username=json_request['username'],
                                        email=json_request['email'],
                                        password=make_password(json_request['password']))
-            valid, errors = post_user_stats(user.id)
-            if not valid:
-                user.delete()
-                return JsonResponse(data={'errors': errors}, status=500)
         except Exception as e:
             return JsonResponse(data={'errors': [f'An error occurred while creating the user : {e}']}, status=500)
 
