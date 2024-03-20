@@ -27,6 +27,12 @@ Start microservices
 make
 ```
 
+Open the website at https://localhost/
+
+```bash
+open https://localhost/
+```
+
 ## Features
 
 - Remote player functionality
