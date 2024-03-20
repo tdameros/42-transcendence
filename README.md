@@ -2,30 +2,10 @@
 
 
 
-Transcendence is a project at 42 School aimed at introducing us to the web by creating a competitive multiplayer Pong.
-
+Transcendence is a project at 42 School aimed at familiarizing us with web development by creating a competitive multiplayer version of Pong.
 
 
 https://github.com/tdameros/42-transcendence/assets/97832618/af364140-2886-4818-b81b-99d09d70ce3e
-
-
-
-<table align=center>
-	<thead>
-		<tr>
-			<th colspan=2>Some renders</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td><image src="assets/homepage.png"></image></td>
-			<td><image src="assets/pong.png"></image></td>
-		</tr>
-	</tbody>
-</table>
-
-
-
 
 ## Usage
 
@@ -49,28 +29,29 @@ make
 
 ## Features
 
-- Remote player
-- Remote authentication
-- Microservices architecture
-- 3D pong game
-- GDPR compliant
-- User and game statistics
+- Remote player functionality
+- Remote authentication capability
+- Microservices architecture implementation
+- 3D pong game integration
+- GDPR compliance
+- User and game statistics tracking
 - Support for multiple devices
-- Tournament with a maximum of 32 players
-- Ranking system
-- Elo based matchmaking
+- Tournament feature accommodating up to 32 players
+- Ranking system implementation
+- Elo-based matchmaking system
+
+## Technologies
+
+![](assets/technologies.png)
 
 
-## Techonologies
+## Microservices Architecture
 
-- Docker (images only based on debian bookworm)
-- Docker compose
-- Python 3.12
-- Django 4.2.7
-- Bootstrap 5.3
-- Vitejs (with only vanilla js)
-- Postgres 14 and Redis 7.2.4
+![](assets/architecture.png)
 
+## Databases Architecture
+
+![](assets/databases.png)
 
 ## Default Ports
 
@@ -82,12 +63,6 @@ make
 - Notification: 6005
 - Game creator: 6006
 - Game server: 50200:50400
-
-## Microservices Architecture
-
-We have chosen to use a microservices architecture.
-
-![](assets/architecture.png)
 
 ## Documentation
 
