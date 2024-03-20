@@ -11,7 +11,7 @@ from user_management.JWTManager import (UserAccessJWTManager,
 
 
 class FriendsTest(TestCase):
-    @patch('user.views.sign_up.post_user_stats')
+    @patch('user.views.verify_email.post_user_stats')
     def create_user(self, body, mock_user_stats):
         mock_user_stats.return_value = (True, None)
         user = User.objects.create(**body, emailVerified=True)

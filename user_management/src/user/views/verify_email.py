@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user.models import User
 from user_management.JWTManager import UserRefreshJWTManager
+from user_management.utils import post_user_stats
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -34,6 +35,9 @@ class VerifyEmailView(View):
                 return JsonResponse(
                     data={'errors': ['an error occurred while removing the expired token']}, status=500)
             return JsonResponse(data={'errors': ['verification token expired']}, status=401)
+        valid, errors = post_user_stats(user.id)
+        if not valid:
+            return JsonResponse(data={'errors': errors}, status=500)
         try:
             user.emailVerified = True
             user.save()
