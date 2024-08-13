@@ -9,6 +9,12 @@ https://github.com/tdameros/42-transcendence/assets/97832618/af364140-2886-4818-
 
 ## Usage
 
+Install the common dependencies.
+
+```bash
+pip3 install -r common/docker/requirements.txt
+```
+
 Generate the `.env` file using .env.example as a template.
 
 ```bash
